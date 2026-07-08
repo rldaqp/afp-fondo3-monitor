@@ -1,0 +1,171 @@
+{
+  "version": "modelo48_reporte_operativo_diario",
+  "resumen": [
+    {
+      "fecha_prediccion": "2026-07-03",
+      "estado_global": "VALIDADO_DEBIL",
+      "intensidad_global": "debil",
+      "consenso_direccion": "positiva",
+      "diferenciacion_entre_afp": "baja",
+      "accionabilidad_estadistica": "no_concluyente_por_si_sola",
+      "afp_validadas": 4,
+      "retorno_medio_pct": 0.11205473870438998,
+      "retorno_mediano_pct": 0.109824165725805,
+      "retorno_minimo_pct": 0.1021033721733699,
+      "retorno_maximo_pct": 0.12646725119258,
+      "dispersion_entre_afp_pp": 0.02436387901921011,
+      "ratio_rmse_mediano": 0.26173307512749333,
+      "dias_tendencia_disponibles": 3,
+      "modelo_operativo": "M0_base_mercado",
+      "composicion_utilizada": false,
+      "lectura": "Sesgo positivo débil y homogéneo; sin diferenciación estadística suficiente entre AFP y sin señal fuerte por sí sola."
+    }
+  ],
+  "nowcast": [
+    {
+      "afp": "Habitat",
+      "fecha_prediccion": "2026-07-03",
+      "fecha_mercado_referencia": "2026-07-03",
+      "dias_atraso": 0,
+      "estimador_raw": "ElasticNet",
+      "familia_modelo": "M0_base_mercado",
+      "modelo_operativo_actual": "M0_base_mercado",
+      "lambda_operativo_actual": 0.0,
+      "composicion_vigente": false,
+      "periodo_ultima_composicion": "2026-01",
+      "fecha_fin_validez": "2026-04-15",
+      "prediccion_retorno": 0.0012646725119258,
+      "prediccion_retorno_pct": 0.12646725119258,
+      "rmse_oos_base": 0.0042706424059927,
+      "ratio_prediccion_rmse": 0.2961316803652705,
+      "direccion_analitica": "positiva",
+      "magnitud_analitica": "debil_frente_al_error_oos",
+      "familia_compatible_con_politica": true,
+      "prediccion_plausible": true,
+      "estado_validacion": "validado",
+      "observacion": null
+    },
+    {
+      "afp": "Integra",
+      "fecha_prediccion": "2026-07-03",
+      "fecha_mercado_referencia": "2026-07-03",
+      "dias_atraso": 0,
+      "estimador_raw": "Huber_robusto",
+      "familia_modelo": "M0_base_mercado",
+      "modelo_operativo_actual": "M0_base_mercado",
+      "lambda_operativo_actual": 0.0,
+      "composicion_vigente": false,
+      "periodo_ultima_composicion": "2026-01",
+      "fecha_fin_validez": "2026-04-15",
+      "prediccion_retorno": 0.0010619242976673,
+      "prediccion_retorno_pct": 0.10619242976673,
+      "rmse_oos_base": 0.0042305688244919,
+      "ratio_prediccion_rmse": 0.2510121786743037,
+      "direccion_analitica": "positiva",
+      "magnitud_analitica": "debil_frente_al_error_oos",
+      "familia_compatible_con_politica": true,
+      "prediccion_plausible": true,
+      "estado_validacion": "validado",
+      "observacion": null
+    },
+    {
+      "afp": "Prima",
+      "fecha_prediccion": "2026-07-03",
+      "fecha_mercado_referencia": "2026-07-03",
+      "dias_atraso": 0,
+      "estimador_raw": "Huber_robusto",
+      "familia_modelo": "M0_base_mercado",
+      "modelo_operativo_actual": "M0_base_mercado",
+      "lambda_operativo_actual": 0.0,
+      "composicion_vigente": false,
+      "periodo_ultima_composicion": "2026-01",
+      "fecha_fin_validez": "2026-04-15",
+      "prediccion_retorno": 0.0010210337217337,
+      "prediccion_retorno_pct": 0.1021033721733699,
+      "rmse_oos_base": 0.0044123121883967,
+      "ratio_prediccion_rmse": 0.2314055937426115,
+      "direccion_analitica": "positiva",
+      "magnitud_analitica": "debil_frente_al_error_oos",
+      "familia_compatible_con_politica": true,
+      "prediccion_plausible": true,
+      "estado_validacion": "validado",
+      "observacion": null
+    },
+    {
+      "afp": "Profuturo",
+      "fecha_prediccion": "2026-07-03",
+      "fecha_mercado_referencia": "2026-07-03",
+      "dias_atraso": 0,
+      "estimador_raw": "Huber_robusto",
+      "familia_modelo": "M0_base_mercado",
+      "modelo_operativo_actual": "M0_base_mercado",
+      "lambda_operativo_actual": 0.0,
+      "composicion_vigente": false,
+      "periodo_ultima_composicion": "2025-12",
+      "fecha_fin_validez": "2026-03-16",
+      "prediccion_retorno": 0.0011345590168488,
+      "prediccion_retorno_pct": 0.11345590168488,
+      "rmse_oos_base": 0.0041642227135339,
+      "ratio_prediccion_rmse": 0.272453971580683,
+      "direccion_analitica": "positiva",
+      "magnitud_analitica": "debil_frente_al_error_oos",
+      "familia_compatible_con_politica": true,
+      "prediccion_plausible": true,
+      "estado_validacion": "validado",
+      "observacion": null
+    }
+  ],
+  "tendencia": [
+    {
+      "fecha_prediccion": "2026-07-01",
+      "afp_disponibles": 4,
+      "retorno_medio_pct": -0.4440087730108625,
+      "retorno_mediano_pct": -0.44508546694939,
+      "retorno_minimo_pct": -0.5372258861535399,
+      "retorno_maximo_pct": -0.34863827199113,
+      "afp_positivas": 0,
+      "afp_negativas": 4,
+      "dispersion_entre_afp_pp": 0.18858761416240993
+    },
+    {
+      "fecha_prediccion": "2026-07-02",
+      "afp_disponibles": 4,
+      "retorno_medio_pct": 0.042864292248119995,
+      "retorno_mediano_pct": 0.04496361589646,
+      "retorno_minimo_pct": 0.02523107306617,
+      "retorno_maximo_pct": 0.05629886413339,
+      "afp_positivas": 4,
+      "afp_negativas": 0,
+      "dispersion_entre_afp_pp": 0.031067791067219998
+    },
+    {
+      "fecha_prediccion": "2026-07-03",
+      "afp_disponibles": 4,
+      "retorno_medio_pct": 0.11205473870439,
+      "retorno_mediano_pct": 0.109824165725805,
+      "retorno_minimo_pct": 0.10210337217336998,
+      "retorno_maximo_pct": 0.12646725119258,
+      "afp_positivas": 4,
+      "afp_negativas": 0,
+      "dispersion_entre_afp_pp": 0.024363879019210027
+    }
+  ],
+  "alertas": [
+    {
+      "nivel": "informativo",
+      "codigo": "SENAL_DEBIL",
+      "mensaje": "La predicción mediana equivale a 0.262 veces el RMSE OOS."
+    },
+    {
+      "nivel": "informativo",
+      "codigo": "BAJA_DIFERENCIACION_AFP",
+      "mensaje": "La dispersión entre AFP es 0.0244 puntos porcentuales."
+    },
+    {
+      "nivel": "operativo",
+      "codigo": "COMPOSICION_VENCIDA",
+      "mensaje": "4 AFP operan con fallback M0_base_mercado."
+    }
+  ],
+  "nota": "Diagnóstico estadístico; no constituye recomendación financiera."
+}

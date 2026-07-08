@@ -1,0 +1,145 @@
+{
+  "version": "modelo57_seguimiento_operativo_cobertura_v2",
+  "fecha_ultima_sbs": "2026-06-30",
+  "fecha_ultimo_mercado": "2026-07-03",
+  "resumen": [
+    {
+      "afp": "Habitat",
+      "fecha_ultima_cuota_oficial": "2026-06-30 00:00:00",
+      "cuota_ultima_oficial": 33.5370629,
+      "fecha_estimada_hasta": "2026-07-03 00:00:00",
+      "dias_estimados": 3,
+      "retorno_estimado_acumulado": 0.0017717986851273348,
+      "cuota_estimada_actual": 33.59648382394926,
+      "direccion": "positiva",
+      "intensidad": "debil",
+      "ratio_senal_rmse": 0.15763349288235276,
+      "rmse_diario_referencia": 0.0064894105250307,
+      "factores": "ret_IDX_VIX | ret_COPX",
+      "factores_total": 2,
+      "factores_con_dato_nuevo": 1,
+      "cobertura_factores_pct": 50.0,
+      "cobertura_promedio_periodo_pct": 83.33333333333333,
+      "estado_cobertura": "PARCIAL",
+      "factores_actualizados": "ret_IDX_VIX",
+      "factores_sin_actualizar": "ret_COPX"
+    },
+    {
+      "afp": "Integra",
+      "fecha_ultima_cuota_oficial": "2026-06-30 00:00:00",
+      "cuota_ultima_oficial": 72.3284597,
+      "fecha_estimada_hasta": "2026-07-03 00:00:00",
+      "dias_estimados": 3,
+      "retorno_estimado_acumulado": 0.0009170764299679668,
+      "cuota_estimada_actual": 72.39479042560676,
+      "direccion": "positiva",
+      "intensidad": "debil",
+      "ratio_senal_rmse": 0.07556144179989766,
+      "rmse_diario_referencia": 0.0070072024976922,
+      "factores": "ret_COPX | ret_EPU",
+      "factores_total": 2,
+      "factores_con_dato_nuevo": 0,
+      "cobertura_factores_pct": 0.0,
+      "cobertura_promedio_periodo_pct": 66.66666666666667,
+      "estado_cobertura": "SIN_NUEVA_SENAL",
+      "factores_actualizados": "",
+      "factores_sin_actualizar": "ret_COPX | ret_EPU"
+    },
+    {
+      "afp": "Prima",
+      "fecha_ultima_cuota_oficial": "2026-06-30 00:00:00",
+      "cuota_ultima_oficial": 65.7918163,
+      "fecha_estimada_hasta": "2026-07-03 00:00:00",
+      "dias_estimados": 3,
+      "retorno_estimado_acumulado": 0.0007216466690007639,
+      "cuota_estimada_actual": 65.8392947450804,
+      "direccion": "positiva",
+      "intensidad": "debil",
+      "ratio_senal_rmse": 0.05828074043088447,
+      "rmse_diario_referencia": 0.0071488950814118,
+      "factores": "ret_COPX | ret_EPU | ret_IDX_VIX | ret_XLB",
+      "factores_total": 4,
+      "factores_con_dato_nuevo": 1,
+      "cobertura_factores_pct": 25.0,
+      "cobertura_promedio_periodo_pct": 75.0,
+      "estado_cobertura": "PARCIAL",
+      "factores_actualizados": "ret_IDX_VIX",
+      "factores_sin_actualizar": "ret_COPX | ret_EPU | ret_XLB"
+    },
+    {
+      "afp": "Profuturo",
+      "fecha_ultima_cuota_oficial": "2026-06-30 00:00:00",
+      "cuota_ultima_oficial": 71.9348302,
+      "fecha_estimada_hasta": "2026-07-03 00:00:00",
+      "dias_estimados": 3,
+      "retorno_estimado_acumulado": 0.001019040198837029,
+      "cuota_estimada_actual": 72.0081346836703,
+      "direccion": "positiva",
+      "intensidad": "debil",
+      "ratio_senal_rmse": 0.08161225116380327,
+      "rmse_diario_referencia": 0.0072090050785727,
+      "factores": "ret_COPX | ret_EPU",
+      "factores_total": 2,
+      "factores_con_dato_nuevo": 0,
+      "cobertura_factores_pct": 0.0,
+      "cobertura_promedio_periodo_pct": 66.66666666666667,
+      "estado_cobertura": "SIN_NUEVA_SENAL",
+      "factores_actualizados": "",
+      "factores_sin_actualizar": "ret_COPX | ret_EPU"
+    }
+  ],
+  "controles": [
+    {
+      "control": "canasta_fija",
+      "estado": "correcto",
+      "detalle": "se usan los activos seleccionados en el módulo 51"
+    },
+    {
+      "control": "alpha_fijo_modulo56",
+      "estado": "correcto",
+      "detalle": "la regularización ya fue elegida antes del uso operativo"
+    },
+    {
+      "control": "entrenamiento_con_todo_el_historico_oficial",
+      "estado": "correcto",
+      "detalle": "el modelo se reajusta con todas las cuotas oficialmente conocidas sin cambiar la canasta"
+    },
+    {
+      "control": "fecha_ultima_sbs",
+      "estado": "correcto",
+      "detalle": "2026-06-30"
+    },
+    {
+      "control": "fecha_ultimo_mercado",
+      "estado": "correcto",
+      "detalle": "2026-07-03"
+    },
+    {
+      "control": "estimaciones_solo_despues_de_sbs",
+      "estado": "correcto",
+      "detalle": "filas_estimadas=12"
+    },
+    {
+      "control": "cuatro_afp_resumidas",
+      "estado": "correcto",
+      "detalle": "afp=4"
+    },
+    {
+      "control": "cobertura_factores_informada",
+      "estado": "correcto",
+      "detalle": "se distingue cobertura completa, parcial y sin nueva señal"
+    },
+    {
+      "control": "cobertura_en_rango",
+      "estado": "correcto",
+      "detalle": "la cobertura debe estar entre 0 y 100 %"
+    }
+  ],
+  "graficos": [
+    "modelo57_habitat_oficial_y_estimado.png",
+    "modelo57_integra_oficial_y_estimado.png",
+    "modelo57_prima_oficial_y_estimado.png",
+    "modelo57_profuturo_oficial_y_estimado.png"
+  ],
+  "nota": "La serie estimada comienza después de la última cuota oficial, informa la cobertura efectiva de factores y separa las contribuciones en escala original."
+}

@@ -1,0 +1,139 @@
+﻿nivel_profundidad,nivel_1,nivel_2,nivel_3,descripcion,ruta_jerarquica,tipo_fila,es_hoja
+1,I. INVERSIONES LOCALES,,,I. INVERSIONES LOCALES,I. INVERSIONES LOCALES,categoria_nivel_1,False
+1,II. INVERSIONES EN EL EXTERIOR,,,II. INVERSIONES EN EL EXTERIOR,II. INVERSIONES EN EL EXTERIOR,categoria_nivel_1,False
+1,III. OPERACIONES EN TRÁNSITO,,,III. OPERACIONES EN TRÁNSITO,III. OPERACIONES EN TRÁNSITO,categoria_nivel_1,True
+1,TOTAL,,,TOTAL,TOTAL,total,False
+2,,I. INVERSIONES LOCALES,,I. INVERSIONES LOCALES,I. INVERSIONES LOCALES,categoria_nivel_2,False
+2,I. INVERSIONES LOCALES,1. Gobierno,,1. Gobierno,I. INVERSIONES LOCALES > 1. Gobierno,categoria_nivel_2,False
+2,I. INVERSIONES LOCALES,2. Sistema Financiero,,2. Sistema Financiero,I. INVERSIONES LOCALES > 2. Sistema Financiero,categoria_nivel_2,False
+2,I. INVERSIONES LOCALES,3. Empresas no Financieras,,3. Empresas no Financieras,I. INVERSIONES LOCALES > 3. Empresas no Financieras,categoria_nivel_2,False
+2,I. INVERSIONES LOCALES,4. Administradoras de Fondos,,4. Administradoras de Fondos,I. INVERSIONES LOCALES > 4. Administradoras de Fondos,categoria_nivel_2,False
+2,I. INVERSIONES LOCALES,5. Sociedades Titulizadoras,,5. Sociedades Titulizadoras,I. INVERSIONES LOCALES > 5. Sociedades Titulizadoras,categoria_nivel_2,False
+2,,II. INVERSIONES EN EL EXTERIOR,,II. INVERSIONES EN EL EXTERIOR,II. INVERSIONES EN EL EXTERIOR,categoria_nivel_2,False
+2,II. INVERSIONES EN EL EXTERIOR,1. Gobierno,,1. Gobierno,II. INVERSIONES EN EL EXTERIOR > 1. Gobierno,categoria_nivel_2,False
+2,II. INVERSIONES EN EL EXTERIOR,2. Sistema Financiero,,2. Sistema Financiero,II. INVERSIONES EN EL EXTERIOR > 2. Sistema Financiero,categoria_nivel_2,False
+2,II. INVERSIONES EN EL EXTERIOR,3. Empresas no Financieras,,3. Empresas no Financieras,II. INVERSIONES EN EL EXTERIOR > 3. Empresas no Financieras,categoria_nivel_2,False
+2,II. INVERSIONES EN EL EXTERIOR,4. Administradoras de Fondos,,4. Administradoras de Fondos,II. INVERSIONES EN EL EXTERIOR > 4. Administradoras de Fondos,categoria_nivel_2,False
+2,II. INVERSIONES EN EL EXTERIOR,5. Sociedades Titulizadoras,,5. Sociedades Titulizadoras,II. INVERSIONES EN EL EXTERIOR > 5. Sociedades Titulizadoras,categoria_nivel_2,False
+2,,III. OPERACIONES EN TRÁNSITO,,III. OPERACIONES EN TRÁNSITO,III. OPERACIONES EN TRÁNSITO,categoria_nivel_2,True
+2,,TOTAL,,TOTAL,TOTAL,total,False
+3,,I. INVERSIONES LOCALES,1. Gobierno,1. Gobierno,I. INVERSIONES LOCALES > 1. Gobierno,instrumento_o_detalle,False
+3,I. INVERSIONES LOCALES,1. Gobierno,Bonos Brady,Bonos Brady,I. INVERSIONES LOCALES > 1. Gobierno > Bonos Brady,instrumento_o_detalle,True
+3,I. INVERSIONES LOCALES,1. Gobierno,Bonos del Gobierno Central,Bonos del Gobierno Central,I. INVERSIONES LOCALES > 1. Gobierno > Bonos del Gobierno Central,instrumento_o_detalle,True
+3,I. INVERSIONES LOCALES,1. Gobierno,Certificado Deposito Liquidaciones En Dolares BCRP,Certificado Deposito Liquidaciones En Dolares BCRP,I. INVERSIONES LOCALES > 1. Gobierno > Certificado Deposito Liquidaciones En Dolares BCRP,instrumento_o_detalle,True
+3,I. INVERSIONES LOCALES,1. Gobierno,Certificados y Depósitos a Plazo del BCRP (1),Certificados y Depósitos a Plazo del BCRP (1),I. INVERSIONES LOCALES > 1. Gobierno > Certificados y Depósitos a Plazo del BCRP (1),instrumento_o_detalle,True
+3,I. INVERSIONES LOCALES,1. Gobierno,Certificados y Depósitos a Plazo del BCRP 1/,Certificados y Depósitos a Plazo del BCRP 1/,I. INVERSIONES LOCALES > 1. Gobierno > Certificados y Depósitos a Plazo del BCRP 1/,instrumento_o_detalle,True
+3,I. INVERSIONES LOCALES,1. Gobierno,Letras del Tesoro,Letras del Tesoro,I. INVERSIONES LOCALES > 1. Gobierno > Letras del Tesoro,instrumento_o_detalle,True
+3,,I. INVERSIONES LOCALES,2. Sistema Financiero,2. Sistema Financiero,I. INVERSIONES LOCALES > 2. Sistema Financiero,instrumento_o_detalle,False
+3,I. INVERSIONES LOCALES,2. Sistema Financiero,Acciones Preferentes,Acciones Preferentes,I. INVERSIONES LOCALES > 2. Sistema Financiero > Acciones Preferentes,instrumento_o_detalle,True
+3,I. INVERSIONES LOCALES,2. Sistema Financiero,Acciones y Valores representativos sobre Acciones,Acciones y Valores representativos sobre Acciones,I. INVERSIONES LOCALES > 2. Sistema Financiero > Acciones y Valores representativos sobre Acciones,instrumento_o_detalle,True
+3,I. INVERSIONES LOCALES,2. Sistema Financiero,Bonos Hipotecarios,Bonos Hipotecarios,I. INVERSIONES LOCALES > 2. Sistema Financiero > Bonos Hipotecarios,instrumento_o_detalle,True
+3,I. INVERSIONES LOCALES,2. Sistema Financiero,Bonos Subordinados,Bonos Subordinados,I. INVERSIONES LOCALES > 2. Sistema Financiero > Bonos Subordinados,instrumento_o_detalle,True
+3,I. INVERSIONES LOCALES,2. Sistema Financiero,Bonos de Arrendamiento Financiero,Bonos de Arrendamiento Financiero,I. INVERSIONES LOCALES > 2. Sistema Financiero > Bonos de Arrendamiento Financiero,instrumento_o_detalle,True
+3,I. INVERSIONES LOCALES,2. Sistema Financiero,Certificados y Depósitos a Plazo (2),Certificados y Depósitos a Plazo (2),I. INVERSIONES LOCALES > 2. Sistema Financiero > Certificados y Depósitos a Plazo (2),instrumento_o_detalle,True
+3,I. INVERSIONES LOCALES,2. Sistema Financiero,Certificados y Depósitos a Plazo 2/,Certificados y Depósitos a Plazo 2/,I. INVERSIONES LOCALES > 2. Sistema Financiero > Certificados y Depósitos a Plazo 2/,instrumento_o_detalle,True
+3,I. INVERSIONES LOCALES,2. Sistema Financiero,Letras Hipotecarias,Letras Hipotecarias,I. INVERSIONES LOCALES > 2. Sistema Financiero > Letras Hipotecarias,instrumento_o_detalle,True
+3,I. INVERSIONES LOCALES,2. Sistema Financiero,Otros Bonos Sector Financiero,Otros Bonos Sector Financiero,I. INVERSIONES LOCALES > 2. Sistema Financiero > Otros Bonos Sector Financiero,instrumento_o_detalle,True
+3,I. INVERSIONES LOCALES,2. Sistema Financiero,Papeles Comerciales,Papeles Comerciales,I. INVERSIONES LOCALES > 2. Sistema Financiero > Papeles Comerciales,instrumento_o_detalle,True
+3,I. INVERSIONES LOCALES,2. Sistema Financiero,Títulos de Deuda emitidos por Entidades Financieras del Exterior en el mercado local,Títulos de Deuda emitidos por Entidades Financieras del Exterior en el mercado local,I. INVERSIONES LOCALES > 2. Sistema Financiero > Títulos de Deuda emitidos por Entidades Financieras del Exterior en el mercado local,instrumento_o_detalle,True
+3,I. INVERSIONES LOCALES,2. Sistema Financiero,Títulos de Deuda emitidos por Organismos Internacionales en el mercado local,Títulos de Deuda emitidos por Organismos Internacionales en el mercado local,I. INVERSIONES LOCALES > 2. Sistema Financiero > Títulos de Deuda emitidos por Organismos Internacionales en el mercado local,instrumento_o_detalle,True
+3,,I. INVERSIONES LOCALES,3. Empresas no Financieras,3. Empresas no Financieras,I. INVERSIONES LOCALES > 3. Empresas no Financieras,instrumento_o_detalle,False
+3,I. INVERSIONES LOCALES,3. Empresas no Financieras,Acciones de Capital por Privatización,Acciones de Capital por Privatización,I. INVERSIONES LOCALES > 3. Empresas no Financieras > Acciones de Capital por Privatización,instrumento_o_detalle,True
+3,I. INVERSIONES LOCALES,3. Empresas no Financieras,Acciones y Valores representativos sobre Acciones,Acciones y Valores representativos sobre Acciones,I. INVERSIONES LOCALES > 3. Empresas no Financieras > Acciones y Valores representativos sobre Acciones,instrumento_o_detalle,True
+3,I. INVERSIONES LOCALES,3. Empresas no Financieras,Bonos Convertibles emitidos en el mercado local,Bonos Convertibles emitidos en el mercado local,I. INVERSIONES LOCALES > 3. Empresas no Financieras > Bonos Convertibles emitidos en el mercado local,instrumento_o_detalle,True
+3,I. INVERSIONES LOCALES,3. Empresas no Financieras,Bonos Corporativos Coemitidos,Bonos Corporativos Coemitidos,I. INVERSIONES LOCALES > 3. Empresas no Financieras > Bonos Corporativos Coemitidos,instrumento_o_detalle,True
+3,I. INVERSIONES LOCALES,3. Empresas no Financieras,Bonos Estructurados,Bonos Estructurados,I. INVERSIONES LOCALES > 3. Empresas no Financieras > Bonos Estructurados,instrumento_o_detalle,True
+3,I. INVERSIONES LOCALES,3. Empresas no Financieras,Bonos convertibles emitidos en el mercado local,Bonos convertibles emitidos en el mercado local,I. INVERSIONES LOCALES > 3. Empresas no Financieras > Bonos convertibles emitidos en el mercado local,instrumento_o_detalle,True
+3,I. INVERSIONES LOCALES,3. Empresas no Financieras,Bonos de Empresas no Financieras,Bonos de Empresas no Financieras,I. INVERSIONES LOCALES > 3. Empresas no Financieras > Bonos de Empresas no Financieras,instrumento_o_detalle,True
+3,I. INVERSIONES LOCALES,3. Empresas no Financieras,Bonos para Nuevos Proyectos,Bonos para Nuevos Proyectos,I. INVERSIONES LOCALES > 3. Empresas no Financieras > Bonos para Nuevos Proyectos,instrumento_o_detalle,True
+3,I. INVERSIONES LOCALES,3. Empresas no Financieras,Certificados Prov. Acc.,Certificados Prov. Acc.,I. INVERSIONES LOCALES > 3. Empresas no Financieras > Certificados Prov. Acc.,instrumento_o_detalle,True
+3,I. INVERSIONES LOCALES,3. Empresas no Financieras,Certificados de Suscripción Preferente,Certificados de Suscripción Preferente,I. INVERSIONES LOCALES > 3. Empresas no Financieras > Certificados de Suscripción Preferente,instrumento_o_detalle,True
+3,I. INVERSIONES LOCALES,3. Empresas no Financieras,Fondo de inversiones alternativos,Fondo de inversiones alternativos,I. INVERSIONES LOCALES > 3. Empresas no Financieras > Fondo de inversiones alternativos,instrumento_o_detalle,True
+3,I. INVERSIONES LOCALES,3. Empresas no Financieras,Otros instrumentos autorizados (3),Otros instrumentos autorizados (3),I. INVERSIONES LOCALES > 3. Empresas no Financieras > Otros instrumentos autorizados (3),instrumento_o_detalle,True
+3,I. INVERSIONES LOCALES,3. Empresas no Financieras,Pagarés LP,Pagarés LP,I. INVERSIONES LOCALES > 3. Empresas no Financieras > Pagarés LP,instrumento_o_detalle,True
+3,I. INVERSIONES LOCALES,3. Empresas no Financieras,Papeles Comerciales,Papeles Comerciales,I. INVERSIONES LOCALES > 3. Empresas no Financieras > Papeles Comerciales,instrumento_o_detalle,True
+3,I. INVERSIONES LOCALES,3. Empresas no Financieras,Títulos de Deuda emitidos por Entidades No Financieras del Exterior en el mercado local,Títulos de Deuda emitidos por Entidades No Financieras del Exterior en el mercado local,I. INVERSIONES LOCALES > 3. Empresas no Financieras > Títulos de Deuda emitidos por Entidades No Financieras del Exterior en el mercado local,instrumento_o_detalle,True
+3,,I. INVERSIONES LOCALES,4. Administradoras de Fondos,4. Administradoras de Fondos,I. INVERSIONES LOCALES > 4. Administradoras de Fondos,instrumento_o_detalle,False
+3,I. INVERSIONES LOCALES,4. Administradoras de Fondos,Bonos de Fondos de Inversión,Bonos de Fondos de Inversión,I. INVERSIONES LOCALES > 4. Administradoras de Fondos > Bonos de Fondos de Inversión,instrumento_o_detalle,True
+3,I. INVERSIONES LOCALES,4. Administradoras de Fondos,Cuotas de Fondos Mutuos,Cuotas de Fondos Mutuos,I. INVERSIONES LOCALES > 4. Administradoras de Fondos > Cuotas de Fondos Mutuos,instrumento_o_detalle,True
+3,I. INVERSIONES LOCALES,4. Administradoras de Fondos,Cuotas de Fondos de Inversión,Cuotas de Fondos de Inversión,I. INVERSIONES LOCALES > 4. Administradoras de Fondos > Cuotas de Fondos de Inversión,instrumento_o_detalle,True
+3,I. INVERSIONES LOCALES,4. Administradoras de Fondos,Fondo Mutuo Alternativo Extranjero - Límite,Fondo Mutuo Alternativo Extranjero - Límite,I. INVERSIONES LOCALES > 4. Administradoras de Fondos > Fondo Mutuo Alternativo Extranjero - Límite,instrumento_o_detalle,True
+3,I. INVERSIONES LOCALES,4. Administradoras de Fondos,Fondo Mutuo Local,Fondo Mutuo Local,I. INVERSIONES LOCALES > 4. Administradoras de Fondos > Fondo Mutuo Local,instrumento_o_detalle,True
+3,I. INVERSIONES LOCALES,4. Administradoras de Fondos,Fondo de Inversión Alternativo,Fondo de Inversión Alternativo,I. INVERSIONES LOCALES > 4. Administradoras de Fondos > Fondo de Inversión Alternativo,instrumento_o_detalle,True
+3,I. INVERSIONES LOCALES,4. Administradoras de Fondos,Fondo de Inversión Tradicional,Fondo de Inversión Tradicional,I. INVERSIONES LOCALES > 4. Administradoras de Fondos > Fondo de Inversión Tradicional,instrumento_o_detalle,True
+3,I. INVERSIONES LOCALES,4. Administradoras de Fondos,Fondos Mutuos del Extranjero - ETF del mercado local,Fondos Mutuos del Extranjero - ETF del mercado local,I. INVERSIONES LOCALES > 4. Administradoras de Fondos > Fondos Mutuos del Extranjero - ETF del mercado local,instrumento_o_detalle,True
+3,,I. INVERSIONES LOCALES,5. Sociedades Titulizadoras,5. Sociedades Titulizadoras,I. INVERSIONES LOCALES > 5. Sociedades Titulizadoras,instrumento_o_detalle,False
+3,I. INVERSIONES LOCALES,5. Sociedades Titulizadoras,Bonos de Titulización (5),Bonos de Titulización (5),I. INVERSIONES LOCALES > 5. Sociedades Titulizadoras > Bonos de Titulización (5),instrumento_o_detalle,True
+3,I. INVERSIONES LOCALES,5. Sociedades Titulizadoras,Bonos de Titulización 3/,Bonos de Titulización 3/,I. INVERSIONES LOCALES > 5. Sociedades Titulizadoras > Bonos de Titulización 3/,instrumento_o_detalle,True
+3,I. INVERSIONES LOCALES,5. Sociedades Titulizadoras,Papel Comercial,Papel Comercial,I. INVERSIONES LOCALES > 5. Sociedades Titulizadoras > Papel Comercial,instrumento_o_detalle,True
+3,I. INVERSIONES LOCALES,5. Sociedades Titulizadoras,Papel Comercial TIT,Papel Comercial TIT,I. INVERSIONES LOCALES > 5. Sociedades Titulizadoras > Papel Comercial TIT,instrumento_o_detalle,True
+3,I. INVERSIONES LOCALES,5. Sociedades Titulizadoras,Titulos con Derecho de Participación,Titulos con Derecho de Participación,I. INVERSIONES LOCALES > 5. Sociedades Titulizadoras > Titulos con Derecho de Participación,instrumento_o_detalle,True
+3,,II. INVERSIONES EN EL EXTERIOR,1. Gobierno,1. Gobierno,II. INVERSIONES EN EL EXTERIOR > 1. Gobierno,instrumento_o_detalle,False
+3,II. INVERSIONES EN EL EXTERIOR,1. Gobierno,Títulos de Deuda,Títulos de Deuda,II. INVERSIONES EN EL EXTERIOR > 1. Gobierno > Títulos de Deuda,instrumento_o_detalle,True
+3,,II. INVERSIONES EN EL EXTERIOR,2. Sistema Financiero,2. Sistema Financiero,II. INVERSIONES EN EL EXTERIOR > 2. Sistema Financiero,instrumento_o_detalle,False
+3,II. INVERSIONES EN EL EXTERIOR,2. Sistema Financiero,Acciones y Valores representativos sobre Acciones,Acciones y Valores representativos sobre Acciones,II. INVERSIONES EN EL EXTERIOR > 2. Sistema Financiero > Acciones y Valores representativos sobre Acciones,instrumento_o_detalle,True
+3,II. INVERSIONES EN EL EXTERIOR,2. Sistema Financiero,Bonos del Sistema Financiero,Bonos del Sistema Financiero,II. INVERSIONES EN EL EXTERIOR > 2. Sistema Financiero > Bonos del Sistema Financiero,instrumento_o_detalle,True
+3,II. INVERSIONES EN EL EXTERIOR,2. Sistema Financiero,Certificados y Depósitos a Plazo (2) (4),Certificados y Depósitos a Plazo (2) (4),II. INVERSIONES EN EL EXTERIOR > 2. Sistema Financiero > Certificados y Depósitos a Plazo (2) (4),instrumento_o_detalle,True
+3,II. INVERSIONES EN EL EXTERIOR,2. Sistema Financiero,Certificados y Depósitos a Plazo 2/ 4/,Certificados y Depósitos a Plazo 2/ 4/,II. INVERSIONES EN EL EXTERIOR > 2. Sistema Financiero > Certificados y Depósitos a Plazo 2/ 4/,instrumento_o_detalle,True
+3,II. INVERSIONES EN EL EXTERIOR,2. Sistema Financiero,Fondos Mutuos,Fondos Mutuos,II. INVERSIONES EN EL EXTERIOR > 2. Sistema Financiero > Fondos Mutuos,instrumento_o_detalle,True
+3,II. INVERSIONES EN EL EXTERIOR,2. Sistema Financiero,Títulos de Deuda Emitidos por Organismo Internacional,Títulos de Deuda Emitidos por Organismo Internacional,II. INVERSIONES EN EL EXTERIOR > 2. Sistema Financiero > Títulos de Deuda Emitidos por Organismo Internacional,instrumento_o_detalle,True
+3,II. INVERSIONES EN EL EXTERIOR,2. Sistema Financiero,Títulos de Deuda de Agencias,Títulos de Deuda de Agencias,II. INVERSIONES EN EL EXTERIOR > 2. Sistema Financiero > Títulos de Deuda de Agencias,instrumento_o_detalle,True
+3,,II. INVERSIONES EN EL EXTERIOR,3. Empresas no Financieras,3. Empresas no Financieras,II. INVERSIONES EN EL EXTERIOR > 3. Empresas no Financieras,instrumento_o_detalle,False
+3,II. INVERSIONES EN EL EXTERIOR,3. Empresas no Financieras,Acciones y Valores representativos sobre Acciones,Acciones y Valores representativos sobre Acciones,II. INVERSIONES EN EL EXTERIOR > 3. Empresas no Financieras > Acciones y Valores representativos sobre Acciones,instrumento_o_detalle,True
+3,II. INVERSIONES EN EL EXTERIOR,3. Empresas no Financieras,Bonos Corporativos,Bonos Corporativos,II. INVERSIONES EN EL EXTERIOR > 3. Empresas no Financieras > Bonos Corporativos,instrumento_o_detalle,True
+3,II. INVERSIONES EN EL EXTERIOR,3. Empresas no Financieras,Bonos Corporativos Coemitidos,Bonos Corporativos Coemitidos,II. INVERSIONES EN EL EXTERIOR > 3. Empresas no Financieras > Bonos Corporativos Coemitidos,instrumento_o_detalle,True
+3,II. INVERSIONES EN EL EXTERIOR,3. Empresas no Financieras,Depósitos del Extranjero,Depósitos del Extranjero,II. INVERSIONES EN EL EXTERIOR > 3. Empresas no Financieras > Depósitos del Extranjero,instrumento_o_detalle,True
+3,,II. INVERSIONES EN EL EXTERIOR,4. Administradoras de Fondos,4. Administradoras de Fondos,II. INVERSIONES EN EL EXTERIOR > 4. Administradoras de Fondos,instrumento_o_detalle,False
+3,II. INVERSIONES EN EL EXTERIOR,4. Administradoras de Fondos,Cuotas de Fondos Mutuos,Cuotas de Fondos Mutuos,II. INVERSIONES EN EL EXTERIOR > 4. Administradoras de Fondos > Cuotas de Fondos Mutuos,instrumento_o_detalle,True
+3,II. INVERSIONES EN EL EXTERIOR,4. Administradoras de Fondos,Cuotas de Fondos de Inversión,Cuotas de Fondos de Inversión,II. INVERSIONES EN EL EXTERIOR > 4. Administradoras de Fondos > Cuotas de Fondos de Inversión,instrumento_o_detalle,True
+3,II. INVERSIONES EN EL EXTERIOR,4. Administradoras de Fondos,Fondos Mutuos Alternativos del Extranjero,Fondos Mutuos Alternativos del Extranjero,II. INVERSIONES EN EL EXTERIOR > 4. Administradoras de Fondos > Fondos Mutuos Alternativos del Extranjero,instrumento_o_detalle,True
+3,II. INVERSIONES EN EL EXTERIOR,4. Administradoras de Fondos,Fondos Mutuos del Extranjero,Fondos Mutuos del Extranjero,II. INVERSIONES EN EL EXTERIOR > 4. Administradoras de Fondos > Fondos Mutuos del Extranjero,instrumento_o_detalle,True
+3,II. INVERSIONES EN EL EXTERIOR,4. Administradoras de Fondos,Fondos de inversión,Fondos de inversión,II. INVERSIONES EN EL EXTERIOR > 4. Administradoras de Fondos > Fondos de inversión,instrumento_o_detalle,True
+3,,II. INVERSIONES EN EL EXTERIOR,5. Sociedades Titulizadoras,5. Sociedades Titulizadoras,II. INVERSIONES EN EL EXTERIOR > 5. Sociedades Titulizadoras,instrumento_o_detalle,False
+3,II. INVERSIONES EN EL EXTERIOR,5. Sociedades Titulizadoras,Bonos de Titulización,Bonos de Titulización,II. INVERSIONES EN EL EXTERIOR > 5. Sociedades Titulizadoras > Bonos de Titulización,instrumento_o_detalle,True
+3,TOTAL,,Encaje Legal,Encaje Legal,TOTAL > Encaje Legal,instrumento_o_detalle,True
+3,TOTAL,,Fondo de Pensiones,Fondo de Pensiones,TOTAL > Fondo de Pensiones,instrumento_o_detalle,True
+4,,I. INVERSIONES LOCALES,1. Gobierno,Bonos Brady,I. INVERSIONES LOCALES > 1. Gobierno > Bonos Brady,instrumento_o_detalle,True
+4,,I. INVERSIONES LOCALES,1. Gobierno,Bonos del Gobierno Central,I. INVERSIONES LOCALES > 1. Gobierno > Bonos del Gobierno Central,instrumento_o_detalle,True
+4,,I. INVERSIONES LOCALES,1. Gobierno,Certificados y Depósitos a Plazo del BCRP (1),I. INVERSIONES LOCALES > 1. Gobierno > Certificados y Depósitos a Plazo del BCRP (1),instrumento_o_detalle,True
+4,,I. INVERSIONES LOCALES,1. Gobierno,Letras del Tesoro,I. INVERSIONES LOCALES > 1. Gobierno > Letras del Tesoro,instrumento_o_detalle,True
+4,,I. INVERSIONES LOCALES,2. Sistema Financiero,Acciones Preferentes,I. INVERSIONES LOCALES > 2. Sistema Financiero > Acciones Preferentes,instrumento_o_detalle,True
+4,,I. INVERSIONES LOCALES,2. Sistema Financiero,Acciones y Valores representativos sobre Acciones,I. INVERSIONES LOCALES > 2. Sistema Financiero > Acciones y Valores representativos sobre Acciones,instrumento_o_detalle,True
+4,,I. INVERSIONES LOCALES,2. Sistema Financiero,Bonos Hipotecarios,I. INVERSIONES LOCALES > 2. Sistema Financiero > Bonos Hipotecarios,instrumento_o_detalle,True
+4,,I. INVERSIONES LOCALES,2. Sistema Financiero,Bonos Subordinados,I. INVERSIONES LOCALES > 2. Sistema Financiero > Bonos Subordinados,instrumento_o_detalle,True
+4,,I. INVERSIONES LOCALES,2. Sistema Financiero,Bonos de Arrendamiento Financiero,I. INVERSIONES LOCALES > 2. Sistema Financiero > Bonos de Arrendamiento Financiero,instrumento_o_detalle,True
+4,,I. INVERSIONES LOCALES,2. Sistema Financiero,Certificados y Depósitos a Plazo (2),I. INVERSIONES LOCALES > 2. Sistema Financiero > Certificados y Depósitos a Plazo (2),instrumento_o_detalle,True
+4,,I. INVERSIONES LOCALES,2. Sistema Financiero,Letras Hipotecarias,I. INVERSIONES LOCALES > 2. Sistema Financiero > Letras Hipotecarias,instrumento_o_detalle,True
+4,,I. INVERSIONES LOCALES,2. Sistema Financiero,Otros Bonos Sector Financiero,I. INVERSIONES LOCALES > 2. Sistema Financiero > Otros Bonos Sector Financiero,instrumento_o_detalle,True
+4,,I. INVERSIONES LOCALES,2. Sistema Financiero,Papeles Comerciales,I. INVERSIONES LOCALES > 2. Sistema Financiero > Papeles Comerciales,instrumento_o_detalle,True
+4,,I. INVERSIONES LOCALES,2. Sistema Financiero,Títulos de Deuda emitidos por Entidades Financieras del Exterior en el mercado local,I. INVERSIONES LOCALES > 2. Sistema Financiero > Títulos de Deuda emitidos por Entidades Financieras del Exterior en el mercado local,instrumento_o_detalle,True
+4,,I. INVERSIONES LOCALES,2. Sistema Financiero,Títulos de Deuda emitidos por Organismos Internacionales en el mercado local,I. INVERSIONES LOCALES > 2. Sistema Financiero > Títulos de Deuda emitidos por Organismos Internacionales en el mercado local,instrumento_o_detalle,True
+4,,I. INVERSIONES LOCALES,3. Empresas no Financieras,Acciones de Capital por Privatización,I. INVERSIONES LOCALES > 3. Empresas no Financieras > Acciones de Capital por Privatización,instrumento_o_detalle,True
+4,,I. INVERSIONES LOCALES,3. Empresas no Financieras,Acciones y Valores representativos sobre Acciones,I. INVERSIONES LOCALES > 3. Empresas no Financieras > Acciones y Valores representativos sobre Acciones,instrumento_o_detalle,True
+4,,I. INVERSIONES LOCALES,3. Empresas no Financieras,Bonos Estructurados,I. INVERSIONES LOCALES > 3. Empresas no Financieras > Bonos Estructurados,instrumento_o_detalle,True
+4,,I. INVERSIONES LOCALES,3. Empresas no Financieras,Bonos de Empresas no Financieras,I. INVERSIONES LOCALES > 3. Empresas no Financieras > Bonos de Empresas no Financieras,instrumento_o_detalle,True
+4,,I. INVERSIONES LOCALES,3. Empresas no Financieras,Bonos para Nuevos Proyectos,I. INVERSIONES LOCALES > 3. Empresas no Financieras > Bonos para Nuevos Proyectos,instrumento_o_detalle,True
+4,,I. INVERSIONES LOCALES,3. Empresas no Financieras,Certificados de Suscripción Preferente,I. INVERSIONES LOCALES > 3. Empresas no Financieras > Certificados de Suscripción Preferente,instrumento_o_detalle,True
+4,,I. INVERSIONES LOCALES,3. Empresas no Financieras,Otros instrumentos autorizados (3),I. INVERSIONES LOCALES > 3. Empresas no Financieras > Otros instrumentos autorizados (3),instrumento_o_detalle,True
+4,,I. INVERSIONES LOCALES,3. Empresas no Financieras,Pagarés LP,I. INVERSIONES LOCALES > 3. Empresas no Financieras > Pagarés LP,instrumento_o_detalle,True
+4,,I. INVERSIONES LOCALES,3. Empresas no Financieras,Papeles Comerciales,I. INVERSIONES LOCALES > 3. Empresas no Financieras > Papeles Comerciales,instrumento_o_detalle,True
+4,,I. INVERSIONES LOCALES,3. Empresas no Financieras,Títulos de Deuda emitidos por Entidades No Financieras del Exterior en el mercado local,I. INVERSIONES LOCALES > 3. Empresas no Financieras > Títulos de Deuda emitidos por Entidades No Financieras del Exterior en el mercado local,instrumento_o_detalle,True
+4,,I. INVERSIONES LOCALES,4. Administradoras de Fondos,Bonos de Fondos de Inversión,I. INVERSIONES LOCALES > 4. Administradoras de Fondos > Bonos de Fondos de Inversión,instrumento_o_detalle,True
+4,,I. INVERSIONES LOCALES,4. Administradoras de Fondos,Cuotas de Fondos Mutuos,I. INVERSIONES LOCALES > 4. Administradoras de Fondos > Cuotas de Fondos Mutuos,instrumento_o_detalle,True
+4,,I. INVERSIONES LOCALES,4. Administradoras de Fondos,Cuotas de Fondos de Inversión,I. INVERSIONES LOCALES > 4. Administradoras de Fondos > Cuotas de Fondos de Inversión,instrumento_o_detalle,True
+4,,I. INVERSIONES LOCALES,5. Sociedades Titulizadoras,Bonos Hipotecarios,I. INVERSIONES LOCALES > 5. Sociedades Titulizadoras > Bonos Hipotecarios,instrumento_o_detalle,True
+4,,I. INVERSIONES LOCALES,5. Sociedades Titulizadoras,Bonos de Titulización (5),I. INVERSIONES LOCALES > 5. Sociedades Titulizadoras > Bonos de Titulización (5),instrumento_o_detalle,True
+4,,I. INVERSIONES LOCALES,5. Sociedades Titulizadoras,Titulos con Derecho de Participación,I. INVERSIONES LOCALES > 5. Sociedades Titulizadoras > Titulos con Derecho de Participación,instrumento_o_detalle,True
+4,,II. INVERSIONES EN EL EXTERIOR,1. Gobierno,Títulos de Deuda,II. INVERSIONES EN EL EXTERIOR > 1. Gobierno > Títulos de Deuda,instrumento_o_detalle,True
+4,,II. INVERSIONES EN EL EXTERIOR,2. Sistema Financiero,Acciones y Valores representativos sobre Acciones,II. INVERSIONES EN EL EXTERIOR > 2. Sistema Financiero > Acciones y Valores representativos sobre Acciones,instrumento_o_detalle,True
+4,,II. INVERSIONES EN EL EXTERIOR,2. Sistema Financiero,Bonos del Sistema Financiero,II. INVERSIONES EN EL EXTERIOR > 2. Sistema Financiero > Bonos del Sistema Financiero,instrumento_o_detalle,True
+4,,II. INVERSIONES EN EL EXTERIOR,2. Sistema Financiero,Certificados y Depósitos a Plazo (2) (4),II. INVERSIONES EN EL EXTERIOR > 2. Sistema Financiero > Certificados y Depósitos a Plazo (2) (4),instrumento_o_detalle,True
+4,,II. INVERSIONES EN EL EXTERIOR,2. Sistema Financiero,Títulos de Deuda Emitidos por Organismo Internacional,II. INVERSIONES EN EL EXTERIOR > 2. Sistema Financiero > Títulos de Deuda Emitidos por Organismo Internacional,instrumento_o_detalle,True
+4,,II. INVERSIONES EN EL EXTERIOR,2. Sistema Financiero,Títulos de Deuda de Agencias,II. INVERSIONES EN EL EXTERIOR > 2. Sistema Financiero > Títulos de Deuda de Agencias,instrumento_o_detalle,True
+4,,II. INVERSIONES EN EL EXTERIOR,3. Empresas no Financieras,Acciones y Valores representativos sobre Acciones,II. INVERSIONES EN EL EXTERIOR > 3. Empresas no Financieras > Acciones y Valores representativos sobre Acciones,instrumento_o_detalle,True
+4,,II. INVERSIONES EN EL EXTERIOR,3. Empresas no Financieras,Bonos Corporativos,II. INVERSIONES EN EL EXTERIOR > 3. Empresas no Financieras > Bonos Corporativos,instrumento_o_detalle,True
+4,,II. INVERSIONES EN EL EXTERIOR,4. Administradoras de Fondos,Cuotas de Fondos Mutuos,II. INVERSIONES EN EL EXTERIOR > 4. Administradoras de Fondos > Cuotas de Fondos Mutuos,instrumento_o_detalle,True
+4,,II. INVERSIONES EN EL EXTERIOR,4. Administradoras de Fondos,Cuotas de Fondos de Inversión,II. INVERSIONES EN EL EXTERIOR > 4. Administradoras de Fondos > Cuotas de Fondos de Inversión,instrumento_o_detalle,True
+4,,II. INVERSIONES EN EL EXTERIOR,5. Sociedades Titulizadoras,Bonos de Titulización,II. INVERSIONES EN EL EXTERIOR > 5. Sociedades Titulizadoras > Bonos de Titulización,instrumento_o_detalle,True
+4,,TOTAL,,Encaje Legal,TOTAL > Encaje Legal,instrumento_o_detalle,True
+4,,TOTAL,,Fondo de Pensiones,TOTAL > Fondo de Pensiones,instrumento_o_detalle,True

@@ -1,0 +1,28 @@
+﻿ticker,nombre,grupo,moneda,columna_modelo
+ACWI,Acciones globales,mercado,USD,ret_ACWI
+SPY,Estados Unidos - S&P 500,mercado,USD,ret_SPY
+QQQ,Estados Unidos - Nasdaq 100,mercado,USD,ret_QQQ
+EEM,Mercados emergentes,mercado,USD,ret_EEM
+ILF,América Latina,mercado,USD,ret_ILF
+EPU,Perú - ETF,mercado,USD,ret_EPU
+VGK,Europa,region,USD,ret_VGK
+EWJ,Japón,region,USD,ret_EWJ
+MCHI,China,region,USD,ret_MCHI
+XLK,Tecnología,sector,USD,ret_XLK
+XLF,Finanzas,sector,USD,ret_XLF
+XLE,Energía,sector,USD,ret_XLE
+XLB,Materiales,sector,USD,ret_XLB
+XLI,Industria,sector,USD,ret_XLI
+XLV,Salud,sector,USD,ret_XLV
+XLY,Consumo discrecional,sector,USD,ret_XLY
+XLP,Consumo básico,sector,USD,ret_XLP
+GLD,Oro,materia_prima,USD,ret_GLD
+CPER,Cobre,materia_prima,USD,ret_CPER
+COPX,Mineras de cobre,materia_prima,USD,ret_COPX
+USO,Petróleo,materia_prima,USD,ret_USO
+TLT,Bonos Tesoro EE. UU. largo plazo,bonos,USD,ret_TLT
+LQD,Bonos corporativos grado inversión,bonos,USD,ret_LQD
+HYG,Bonos corporativos alto rendimiento,bonos,USD,ret_HYG
+^VIX,Volatilidad VIX,riesgo,INDICE,ret_IDX_VIX
+DX-Y.NYB,Índice dólar DXY,moneda,INDICE,ret_DX_Y_NYB
+PEN=X,Tipo de cambio USD/PEN,moneda,PEN_POR_USD,ret_PEN_X

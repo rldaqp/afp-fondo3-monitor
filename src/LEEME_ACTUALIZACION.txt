@@ -1,0 +1,47 @@
+ACTUALIZACIÓN OPERATIVA MODELOS 57-60
+=====================================
+
+OBJETIVO
+1. Informar la cobertura efectiva de los factores en cada fecha estimada.
+2. Diferenciar cobertura COMPLETA, PARCIAL y SIN_NUEVA_SENAL.
+3. Expresar las contribuciones en la escala original de los retornos.
+4. Conservar la cobertura en el archivo histórico de pronósticos.
+
+ARCHIVOS QUE DEBEN REEMPLAZARSE EN LA CARPETA src
+- 57_generar_seguimiento_operativo_y_grafica_actual.py
+- 58_archivar_y_validar_estimaciones_sbs.py
+- 59_generar_panel_operativo_fondo3.py
+- 60_orquestar_flujo_operativo_fondo3.py
+
+ANTES DE REEMPLAZAR
+Cree una copia de seguridad de los cuatro scripts actuales.
+
+EJECUCIÓN
+Desde la carpeta principal del proyecto:
+
+python src\60_orquestar_flujo_operativo_fondo3.py
+
+NUEVAS COLUMNAS PRINCIPALES
+- factores_total
+- factores_con_dato_nuevo
+- cobertura_factores_pct
+- cobertura_promedio_periodo_pct
+- estado_cobertura
+- factores_actualizados
+- factores_sin_actualizar
+
+REGLA DE COBERTURA
+- COMPLETA: todos los factores de la canasta tienen un nuevo dato.
+- PARCIAL: solo algunos factores tienen un nuevo dato.
+- SIN_NUEVA_SENAL: ningún factor tiene un nuevo dato.
+
+CONTRIBUCIONES
+La regresión Ridge sigue produciendo exactamente la misma predicción. Solo cambia la descomposición explicativa:
+- coeficiente_original = coeficiente_estandarizado / escala
+- intercepto_original = intercepto_estandarizado - suma(coeficiente_original * media)
+- contribución_factor = coeficiente_original * retorno_factor
+
+Por ello, cuando el retorno de un factor es cero, su contribución directa también es cero.
+
+CONTROL REALIZADO
+Los cuatro scripts fueron compilados y probados en un flujo sintético completo 57 -> 58 -> 59 -> 60.

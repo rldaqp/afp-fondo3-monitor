@@ -1,0 +1,53 @@
+{
+  "version": "modelo62_diagnostico_series_y_ondas",
+  "principio_metodologico": "Los diagnósticos para sugerir modelos usan únicamente el 60 % de entrenamiento. Los gráficos de trayectoria pueden mostrar todo el histórico con líneas de separación temporal.",
+  "fecha_fin_train": "2021-11-12",
+  "fecha_fin_validacion": "2024-02-23",
+  "afp": [
+    {
+      "afp": "Habitat",
+      "modelos_candidatos_sugeridos": "Ridge | Huber | ARDL | ARIMAX | GARCH | RegresionCuantil | LAD",
+      "razones": "autocorrelación temporal (Ljung-Box lag 10 p=0.0000) | heterocedasticidad/volatilidad agrupada (ARCH-LM p=0.0000) | colas y extremos (outliers 1.35 %, curtosis exceso 5.70)",
+      "vif_maximo": 1.2121785246852068,
+      "ljungbox_pvalor_lag10": 7.464987972241288e-35,
+      "arch_lm_pvalor": 5.224638192856537e-54,
+      "outliers_pct": 1.3490725126475547,
+      "curtosis_exceso": 5.696475616657921,
+      "dispersion_correlacion_movil_250": 0.11437295801269187
+    },
+    {
+      "afp": "Integra",
+      "modelos_candidatos_sugeridos": "Ridge | Huber | ARDL | ARIMAX | GARCH | RegresionCuantil | LAD",
+      "razones": "autocorrelación temporal (Ljung-Box lag 10 p=0.0000) | heterocedasticidad/volatilidad agrupada (ARCH-LM p=0.0000) | colas y extremos (outliers 1.24 %, curtosis exceso 8.98)",
+      "vif_maximo": 2.6277748354018287,
+      "ljungbox_pvalor_lag10": 2.270336400184847e-22,
+      "arch_lm_pvalor": 7.235073439297386e-64,
+      "outliers_pct": 1.2366498032602586,
+      "curtosis_exceso": 8.979971785714097,
+      "dispersion_correlacion_movil_250": 0.14738265095160558
+    },
+    {
+      "afp": "Prima",
+      "modelos_candidatos_sugeridos": "Ridge | Huber | ARDL | ARIMAX | GARCH | RegresionCuantil | LAD",
+      "razones": "autocorrelación temporal (Ljung-Box lag 10 p=0.0000) | heterocedasticidad/volatilidad agrupada (ARCH-LM p=0.0000) | colas y extremos (outliers 1.01 %, curtosis exceso 11.79)",
+      "vif_maximo": 3.4940994593421797,
+      "ljungbox_pvalor_lag10": 1.5871526966054313e-24,
+      "arch_lm_pvalor": 3.574038744746673e-87,
+      "outliers_pct": 1.0118043844856661,
+      "curtosis_exceso": 11.788321148082549,
+      "dispersion_correlacion_movil_250": 0.1399380553964364
+    },
+    {
+      "afp": "Profuturo",
+      "modelos_candidatos_sugeridos": "Ridge | Huber | ARDL | ARIMAX | GARCH | RegresionCuantil | LAD",
+      "razones": "autocorrelación temporal (Ljung-Box lag 10 p=0.0000) | heterocedasticidad/volatilidad agrupada (ARCH-LM p=0.0000) | colas y extremos (outliers 1.24 %, curtosis exceso 8.26)",
+      "vif_maximo": 2.6277748354018287,
+      "ljungbox_pvalor_lag10": 2.264488207313235e-13,
+      "arch_lm_pvalor": 2.5235789904988703e-75,
+      "outliers_pct": 1.2366498032602586,
+      "curtosis_exceso": 8.263856938183542,
+      "dispersion_correlacion_movil_250": 0.14161077202949068
+    }
+  ],
+  "graficos_generados": 55
+}

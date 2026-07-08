@@ -1,0 +1,8 @@
+﻿control,estado,detalle
+configuracion_cuatro_afp,correcto,afp=4
+archivo_nowcast_detectado,correcto,C:\Users\PC\Downloads\afp_fondo3_inicio\afp_fondo3_inicio\data\processed\modelo_base_nowcast_predicciones.csv
+prediccion_por_cuatro_afp,correcto,predicciones_validas=4
+predicciones_plausibles,correcto,max_abs=0.003630
+modelo_fuente_explicito,correcto,no se aceptan predicciones con modelo no identificado
+politica_modelo_respetada,correcto,M0 no debe sustituirse por M2 cuando la composición está vencida
+candidato_principal_auditado,correcto,candidatos=4

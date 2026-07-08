@@ -1,0 +1,33 @@
+{
+  "version": "modelo66_no_lineales_y_objetivo_directo",
+  "fin_entrenamiento": "2021-11-12",
+  "fin_validacion": "2024-02-23",
+  "criterio_seleccion": "Menor MAPE de cuota en validación; desempate por MAE del retorno acumulado y P90.",
+  "ganadores_validacion": [
+    {
+      "afp": "Habitat",
+      "modelo": "EW_RIDGE_HL60_A0.001",
+      "tarea": "referencia",
+      "mape_validacion_ganador_pct": 0.741083543092443
+    },
+    {
+      "afp": "Integra",
+      "modelo": "DIARIO_RIDGE",
+      "tarea": "diario_recursivo",
+      "mape_validacion_ganador_pct": 0.6501577243836113
+    },
+    {
+      "afp": "Prima",
+      "modelo": "DIARIO_RIDGE",
+      "tarea": "diario_recursivo",
+      "mape_validacion_ganador_pct": 0.6110833075219549
+    },
+    {
+      "afp": "Profuturo",
+      "modelo": "DIARIO_RIDGE",
+      "tarea": "diario_recursivo",
+      "mape_validacion_ganador_pct": 0.6223169080091988
+    }
+  ],
+  "graficos_generados": 15
+}

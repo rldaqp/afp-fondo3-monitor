@@ -1,0 +1,233 @@
+{
+  "version": "modelo49_validacion_expost",
+  "resumen_global": [
+    {
+      "observaciones_validadas": 0,
+      "nivel_muestra": "sin_datos",
+      "rmse": null,
+      "mae": null,
+      "sesgo_medio": null,
+      "rmse_pct": null,
+      "mae_pct": null,
+      "sesgo_medio_pct": null,
+      "direccion_correcta_pct": null,
+      "correlacion": null,
+      "prediccion_media_pct": null,
+      "retorno_real_medio_pct": null,
+      "fechas_validadas": 0,
+      "fechas_pendientes": 3,
+      "filas_pendientes": 12,
+      "fecha_maxima_prediccion": "2026-07-03",
+      "fecha_maxima_real_disponible": "2026-06-30",
+      "primera_fecha_pendiente": "2026-07-01",
+      "ultima_fecha_pendiente": "2026-07-03",
+      "dias_brecha_hasta_primera_pendiente": 1,
+      "estado_ciclo": "PENDIENTE_DE_DATOS_OFICIALES"
+    }
+  ],
+  "metricas_por_afp": [
+    {
+      "afp": "Habitat",
+      "observaciones_validadas": 0,
+      "nivel_muestra": "sin_datos",
+      "rmse": null,
+      "mae": null,
+      "sesgo_medio": null,
+      "rmse_pct": null,
+      "mae_pct": null,
+      "sesgo_medio_pct": null,
+      "direccion_correcta_pct": null,
+      "correlacion": null,
+      "prediccion_media_pct": null,
+      "retorno_real_medio_pct": null,
+      "observaciones_pendientes": 3,
+      "primera_fecha_prediccion": "2026-07-01",
+      "ultima_fecha_prediccion": "2026-07-03"
+    },
+    {
+      "afp": "Integra",
+      "observaciones_validadas": 0,
+      "nivel_muestra": "sin_datos",
+      "rmse": null,
+      "mae": null,
+      "sesgo_medio": null,
+      "rmse_pct": null,
+      "mae_pct": null,
+      "sesgo_medio_pct": null,
+      "direccion_correcta_pct": null,
+      "correlacion": null,
+      "prediccion_media_pct": null,
+      "retorno_real_medio_pct": null,
+      "observaciones_pendientes": 3,
+      "primera_fecha_prediccion": "2026-07-01",
+      "ultima_fecha_prediccion": "2026-07-03"
+    },
+    {
+      "afp": "Prima",
+      "observaciones_validadas": 0,
+      "nivel_muestra": "sin_datos",
+      "rmse": null,
+      "mae": null,
+      "sesgo_medio": null,
+      "rmse_pct": null,
+      "mae_pct": null,
+      "sesgo_medio_pct": null,
+      "direccion_correcta_pct": null,
+      "correlacion": null,
+      "prediccion_media_pct": null,
+      "retorno_real_medio_pct": null,
+      "observaciones_pendientes": 3,
+      "primera_fecha_prediccion": "2026-07-01",
+      "ultima_fecha_prediccion": "2026-07-03"
+    },
+    {
+      "afp": "Profuturo",
+      "observaciones_validadas": 0,
+      "nivel_muestra": "sin_datos",
+      "rmse": null,
+      "mae": null,
+      "sesgo_medio": null,
+      "rmse_pct": null,
+      "mae_pct": null,
+      "sesgo_medio_pct": null,
+      "direccion_correcta_pct": null,
+      "correlacion": null,
+      "prediccion_media_pct": null,
+      "retorno_real_medio_pct": null,
+      "observaciones_pendientes": 3,
+      "primera_fecha_prediccion": "2026-07-01",
+      "ultima_fecha_prediccion": "2026-07-03"
+    }
+  ],
+  "pendientes": [
+    {
+      "fecha_prediccion": "2026-07-01",
+      "afp": "Habitat",
+      "estimador": "ElasticNet",
+      "prediccion_retorno": -0.0034863827199113,
+      "prediccion_retorno_pct": -0.34863827199113,
+      "estado_validacion": "PENDIENTE_PUBLICACION"
+    },
+    {
+      "fecha_prediccion": "2026-07-01",
+      "afp": "Integra",
+      "estimador": "Huber_robusto",
+      "prediccion_retorno": -0.0049809078843801,
+      "prediccion_retorno_pct": -0.49809078843801,
+      "estado_validacion": "PENDIENTE_PUBLICACION"
+    },
+    {
+      "fecha_prediccion": "2026-07-01",
+      "afp": "Prima",
+      "estimador": "Huber_robusto",
+      "prediccion_retorno": -0.0039208014546077,
+      "prediccion_retorno_pct": -0.39208014546077,
+      "estado_validacion": "PENDIENTE_PUBLICACION"
+    },
+    {
+      "fecha_prediccion": "2026-07-01",
+      "afp": "Profuturo",
+      "estimador": "Huber_robusto",
+      "prediccion_retorno": -0.0053722588615354,
+      "prediccion_retorno_pct": -0.5372258861535399,
+      "estado_validacion": "PENDIENTE_PUBLICACION"
+    },
+    {
+      "fecha_prediccion": "2026-07-02",
+      "afp": "Habitat",
+      "estimador": "ElasticNet",
+      "prediccion_retorno": 0.0004232982929808,
+      "prediccion_retorno_pct": 0.04232982929808,
+      "estado_validacion": "PENDIENTE_PUBLICACION"
+    },
+    {
+      "fecha_prediccion": "2026-07-02",
+      "afp": "Integra",
+      "estimador": "Huber_robusto",
+      "prediccion_retorno": 0.0002523107306617,
+      "prediccion_retorno_pct": 0.02523107306617,
+      "estado_validacion": "PENDIENTE_PUBLICACION"
+    },
+    {
+      "fecha_prediccion": "2026-07-02",
+      "afp": "Prima",
+      "estimador": "Huber_robusto",
+      "prediccion_retorno": 0.0004759740249484,
+      "prediccion_retorno_pct": 0.04759740249484,
+      "estado_validacion": "PENDIENTE_PUBLICACION"
+    },
+    {
+      "fecha_prediccion": "2026-07-02",
+      "afp": "Profuturo",
+      "estimador": "Huber_robusto",
+      "prediccion_retorno": 0.0005629886413339,
+      "prediccion_retorno_pct": 0.05629886413339,
+      "estado_validacion": "PENDIENTE_PUBLICACION"
+    },
+    {
+      "fecha_prediccion": "2026-07-03",
+      "afp": "Habitat",
+      "estimador": "ElasticNet",
+      "prediccion_retorno": 0.0012646725119258,
+      "prediccion_retorno_pct": 0.12646725119258,
+      "estado_validacion": "PENDIENTE_PUBLICACION"
+    },
+    {
+      "fecha_prediccion": "2026-07-03",
+      "afp": "Integra",
+      "estimador": "Huber_robusto",
+      "prediccion_retorno": 0.0010619242976673,
+      "prediccion_retorno_pct": 0.10619242976673,
+      "estado_validacion": "PENDIENTE_PUBLICACION"
+    },
+    {
+      "fecha_prediccion": "2026-07-03",
+      "afp": "Prima",
+      "estimador": "Huber_robusto",
+      "prediccion_retorno": 0.0010210337217337,
+      "prediccion_retorno_pct": 0.10210337217336998,
+      "estado_validacion": "PENDIENTE_PUBLICACION"
+    },
+    {
+      "fecha_prediccion": "2026-07-03",
+      "afp": "Profuturo",
+      "estimador": "Huber_robusto",
+      "prediccion_retorno": 0.0011345590168488,
+      "prediccion_retorno_pct": 0.11345590168488,
+      "estado_validacion": "PENDIENTE_PUBLICACION"
+    }
+  ],
+  "control": [
+    {
+      "control": "predicciones_sin_duplicados",
+      "estado": "correcto",
+      "detalle": "filas=12"
+    },
+    {
+      "control": "cuatro_afp_en_predicciones",
+      "estado": "correcto",
+      "detalle": "Habitat, Integra, Prima, Profuturo"
+    },
+    {
+      "control": "base_real_sin_duplicados",
+      "estado": "correcto",
+      "detalle": "filas=11860"
+    },
+    {
+      "control": "afp_en_base_real",
+      "estado": "correcto",
+      "detalle": "afp=4"
+    },
+    {
+      "control": "alineacion_sin_lookahead",
+      "estado": "correcto",
+      "detalle": "cada predicción se compara solo con el retorno oficial de su misma fecha y AFP"
+    },
+    {
+      "control": "estado_publicacion",
+      "estado": "pendiente",
+      "detalle": "pendientes=12; fecha_maxima_real=2026-06-30 00:00:00"
+    }
+  ],
+  "nota": "Las métricas solo se calculan con retornos oficiales ya publicados. Una muestra menor a 20 observaciones es insuficiente para conclusiones de desempeño."
+}

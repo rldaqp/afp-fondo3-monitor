@@ -1,0 +1,116 @@
+{
+  "version": "modelo45_motor_operativo_v2",
+  "archivo_predicciones": "C:\\Users\\PC\\Downloads\\afp_fondo3_inicio\\afp_fondo3_inicio\\data\\processed\\modelo_base_nowcast_predicciones.csv",
+  "nota": "Las etiquetas de dirección y magnitud son diagnósticos analíticos; no constituyen una recomendación de operación.",
+  "predicciones": [
+    {
+      "afp": "Habitat",
+      "fecha_prediccion": "2026-06-30",
+      "fecha_mercado_referencia": "2026-07-03",
+      "dias_atraso": 3,
+      "modelo_operativo": "M0_base_mercado",
+      "modelo_fuente": "M0_base_mercado",
+      "lambda_operativo": 0.0,
+      "prediccion_retorno": 0.0032789342612915,
+      "prediccion_retorno_pct": 0.32789342612915,
+      "rmse_oos_referencia": 0.0042706424059927,
+      "ratio_prediccion_rmse": 0.7677847849518836,
+      "direccion_analitica": "positiva",
+      "magnitud_analitica": "moderada_frente_al_error_oos",
+      "prediccion_plausible": true,
+      "estado_prediccion": "correcto",
+      "observacion": ""
+    },
+    {
+      "afp": "Integra",
+      "fecha_prediccion": "2026-06-30",
+      "fecha_mercado_referencia": "2026-07-03",
+      "dias_atraso": 3,
+      "modelo_operativo": "M0_base_mercado",
+      "modelo_fuente": "M0_base_mercado",
+      "lambda_operativo": 0.0,
+      "prediccion_retorno": 0.0036199288509647,
+      "prediccion_retorno_pct": 0.36199288509647,
+      "rmse_oos_referencia": 0.0042305688244919,
+      "ratio_prediccion_rmse": 0.8556600781455106,
+      "direccion_analitica": "positiva",
+      "magnitud_analitica": "moderada_frente_al_error_oos",
+      "prediccion_plausible": true,
+      "estado_prediccion": "correcto",
+      "observacion": ""
+    },
+    {
+      "afp": "Prima",
+      "fecha_prediccion": "2026-06-30",
+      "fecha_mercado_referencia": "2026-07-03",
+      "dias_atraso": 3,
+      "modelo_operativo": "M0_base_mercado",
+      "modelo_fuente": "M0_base_mercado",
+      "lambda_operativo": 0.0,
+      "prediccion_retorno": 0.0031613458315417,
+      "prediccion_retorno_pct": 0.31613458315417,
+      "rmse_oos_referencia": 0.0044123121883967,
+      "ratio_prediccion_rmse": 0.7164828091392229,
+      "direccion_analitica": "positiva",
+      "magnitud_analitica": "moderada_frente_al_error_oos",
+      "prediccion_plausible": true,
+      "estado_prediccion": "correcto",
+      "observacion": ""
+    },
+    {
+      "afp": "Profuturo",
+      "fecha_prediccion": "2026-06-30",
+      "fecha_mercado_referencia": "2026-07-03",
+      "dias_atraso": 3,
+      "modelo_operativo": "M0_base_mercado",
+      "modelo_fuente": "M0_base_mercado",
+      "lambda_operativo": 0.0,
+      "prediccion_retorno": 0.0036303340661419,
+      "prediccion_retorno_pct": 0.36303340661419,
+      "rmse_oos_referencia": 0.0041642227135339,
+      "ratio_prediccion_rmse": 0.8717915241044051,
+      "direccion_analitica": "positiva",
+      "magnitud_analitica": "moderada_frente_al_error_oos",
+      "prediccion_plausible": true,
+      "estado_prediccion": "correcto",
+      "observacion": ""
+    }
+  ],
+  "control": [
+    {
+      "control": "configuracion_cuatro_afp",
+      "estado": "correcto",
+      "detalle": "afp=4"
+    },
+    {
+      "control": "archivo_nowcast_detectado",
+      "estado": "correcto",
+      "detalle": "C:\\Users\\PC\\Downloads\\afp_fondo3_inicio\\afp_fondo3_inicio\\data\\processed\\modelo_base_nowcast_predicciones.csv"
+    },
+    {
+      "control": "prediccion_por_cuatro_afp",
+      "estado": "correcto",
+      "detalle": "predicciones_validas=4"
+    },
+    {
+      "control": "predicciones_plausibles",
+      "estado": "correcto",
+      "detalle": "max_abs=0.003630"
+    },
+    {
+      "control": "modelo_fuente_explicito",
+      "estado": "correcto",
+      "detalle": "no se aceptan predicciones con modelo no identificado"
+    },
+    {
+      "control": "politica_modelo_respetada",
+      "estado": "correcto",
+      "detalle": "M0 no debe sustituirse por M2 cuando la composición está vencida"
+    },
+    {
+      "control": "candidato_principal_auditado",
+      "estado": "correcto",
+      "detalle": "candidatos=4"
+    }
+  ]
+}

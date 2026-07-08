@@ -1,0 +1,168 @@
+{
+  "version": "modelo58_archivo_y_validacion",
+  "fecha_archivo_modulo57": "2026-07-04 22:51:13.004750",
+  "pronosticos_agregados_esta_ejecucion": 0,
+  "pronosticos_archivados_total": 12,
+  "pronosticos_validados_total": 0,
+  "nuevas_validaciones": 0,
+  "pronosticos_pendientes": 12,
+  "metricas": [
+    {
+      "version_evaluada": "primera_prediccion",
+      "afp": "Habitat",
+      "observaciones_validadas": 0,
+      "fecha_inicio": "NaT",
+      "fecha_fin": "NaT",
+      "mape_cuota_pct": NaN,
+      "mediana_error_abs_pct": NaN,
+      "p90_error_abs_pct": NaN,
+      "sesgo_medio_pct": NaN,
+      "rmse_retorno_diario": NaN,
+      "direccion_diaria_correcta_pct": NaN,
+      "direccion_acumulada_correcta_pct": NaN,
+      "mape_ultimas_20_pct": NaN,
+      "direccion_ultimas_20_pct": NaN
+    },
+    {
+      "version_evaluada": "primera_prediccion",
+      "afp": "Integra",
+      "observaciones_validadas": 0,
+      "fecha_inicio": "NaT",
+      "fecha_fin": "NaT",
+      "mape_cuota_pct": NaN,
+      "mediana_error_abs_pct": NaN,
+      "p90_error_abs_pct": NaN,
+      "sesgo_medio_pct": NaN,
+      "rmse_retorno_diario": NaN,
+      "direccion_diaria_correcta_pct": NaN,
+      "direccion_acumulada_correcta_pct": NaN,
+      "mape_ultimas_20_pct": NaN,
+      "direccion_ultimas_20_pct": NaN
+    },
+    {
+      "version_evaluada": "primera_prediccion",
+      "afp": "Prima",
+      "observaciones_validadas": 0,
+      "fecha_inicio": "NaT",
+      "fecha_fin": "NaT",
+      "mape_cuota_pct": NaN,
+      "mediana_error_abs_pct": NaN,
+      "p90_error_abs_pct": NaN,
+      "sesgo_medio_pct": NaN,
+      "rmse_retorno_diario": NaN,
+      "direccion_diaria_correcta_pct": NaN,
+      "direccion_acumulada_correcta_pct": NaN,
+      "mape_ultimas_20_pct": NaN,
+      "direccion_ultimas_20_pct": NaN
+    },
+    {
+      "version_evaluada": "primera_prediccion",
+      "afp": "Profuturo",
+      "observaciones_validadas": 0,
+      "fecha_inicio": "NaT",
+      "fecha_fin": "NaT",
+      "mape_cuota_pct": NaN,
+      "mediana_error_abs_pct": NaN,
+      "p90_error_abs_pct": NaN,
+      "sesgo_medio_pct": NaN,
+      "rmse_retorno_diario": NaN,
+      "direccion_diaria_correcta_pct": NaN,
+      "direccion_acumulada_correcta_pct": NaN,
+      "mape_ultimas_20_pct": NaN,
+      "direccion_ultimas_20_pct": NaN
+    },
+    {
+      "version_evaluada": "ultima_prediccion",
+      "afp": "Habitat",
+      "observaciones_validadas": 0,
+      "fecha_inicio": "NaT",
+      "fecha_fin": "NaT",
+      "mape_cuota_pct": NaN,
+      "mediana_error_abs_pct": NaN,
+      "p90_error_abs_pct": NaN,
+      "sesgo_medio_pct": NaN,
+      "rmse_retorno_diario": NaN,
+      "direccion_diaria_correcta_pct": NaN,
+      "direccion_acumulada_correcta_pct": NaN,
+      "mape_ultimas_20_pct": NaN,
+      "direccion_ultimas_20_pct": NaN
+    },
+    {
+      "version_evaluada": "ultima_prediccion",
+      "afp": "Integra",
+      "observaciones_validadas": 0,
+      "fecha_inicio": "NaT",
+      "fecha_fin": "NaT",
+      "mape_cuota_pct": NaN,
+      "mediana_error_abs_pct": NaN,
+      "p90_error_abs_pct": NaN,
+      "sesgo_medio_pct": NaN,
+      "rmse_retorno_diario": NaN,
+      "direccion_diaria_correcta_pct": NaN,
+      "direccion_acumulada_correcta_pct": NaN,
+      "mape_ultimas_20_pct": NaN,
+      "direccion_ultimas_20_pct": NaN
+    },
+    {
+      "version_evaluada": "ultima_prediccion",
+      "afp": "Prima",
+      "observaciones_validadas": 0,
+      "fecha_inicio": "NaT",
+      "fecha_fin": "NaT",
+      "mape_cuota_pct": NaN,
+      "mediana_error_abs_pct": NaN,
+      "p90_error_abs_pct": NaN,
+      "sesgo_medio_pct": NaN,
+      "rmse_retorno_diario": NaN,
+      "direccion_diaria_correcta_pct": NaN,
+      "direccion_acumulada_correcta_pct": NaN,
+      "mape_ultimas_20_pct": NaN,
+      "direccion_ultimas_20_pct": NaN
+    },
+    {
+      "version_evaluada": "ultima_prediccion",
+      "afp": "Profuturo",
+      "observaciones_validadas": 0,
+      "fecha_inicio": "NaT",
+      "fecha_fin": "NaT",
+      "mape_cuota_pct": NaN,
+      "mediana_error_abs_pct": NaN,
+      "p90_error_abs_pct": NaN,
+      "sesgo_medio_pct": NaN,
+      "rmse_retorno_diario": NaN,
+      "direccion_diaria_correcta_pct": NaN,
+      "direccion_acumulada_correcta_pct": NaN,
+      "mape_ultimas_20_pct": NaN,
+      "direccion_ultimas_20_pct": NaN
+    }
+  ],
+  "controles": [
+    {
+      "control": "pronosticos_actuales_archivados",
+      "estado": "correcto",
+      "detalle": "actuales=12, archivados=12"
+    },
+    {
+      "control": "ids_sin_duplicados",
+      "estado": "correcto",
+      "detalle": "filas_archivo=12"
+    },
+    {
+      "control": "reconciliacion_con_intercepto",
+      "estado": "correcto",
+      "detalle": "la suma de factores más intercepto debe igualar el retorno estimado"
+    },
+    {
+      "control": "archivo_no_sobrescribe_pronosticos",
+      "estado": "correcto",
+      "detalle": "cada versión se conserva con fecha de generación e identificador propio"
+    },
+    {
+      "control": "metadatos_cobertura_archivados",
+      "estado": "correcto",
+      "detalle": "la cobertura observada al generar el pronóstico queda conservada para su validación posterior"
+    }
+  ],
+  "graficos": [],
+  "nota": "Para no perder un pronóstico, el módulo 58 debe ejecutarse antes de volver a generar el módulo 57 después de una actualización de cuotas SBS."
+}

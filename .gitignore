@@ -1,0 +1,20 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+.venv/
+venv/
+
+# Lanzadores locales de Windows: GitHub Actions los reemplaza.
+*.bat
+*.vbs
+
+# Respaldos pesados y cuadernos exploratorios locales.
+archive/
+notebooks/
+automatizacion/
+
+# Salidas temporales.
+data/processed/bat_ultimo_error.log

@@ -1,0 +1,6 @@
+﻿control,estado,detalle
+pronosticos_actuales_archivados,correcto,"actuales=12, archivados=12"
+ids_sin_duplicados,correcto,filas_archivo=12
+reconciliacion_con_intercepto,correcto,la suma de factores más intercepto debe igualar el retorno estimado
+archivo_no_sobrescribe_pronosticos,correcto,cada versión se conserva con fecha de generación e identificador propio
+metadatos_cobertura_archivados,correcto,la cobertura observada al generar el pronóstico queda conservada para su validación posterior

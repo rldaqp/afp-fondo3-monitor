@@ -1,0 +1,147 @@
+﻿ticker,nombre,categoria,tipo,factor,transformacion,moneda_modelo
+SPY,S&P 500 ETF,RV_GLOBAL_USA,USD_ASSET,ret_USD_SPY,retorno_en_moneda_USD,USD
+SPY,S&P 500 ETF,RV_GLOBAL_USA,USD_ASSET,ret_PEN_SPY,retorno_convertido_a_PEN,PEN
+QQQ,Nasdaq 100 ETF,RV_GLOBAL_USA,USD_ASSET,ret_USD_QQQ,retorno_en_moneda_USD,USD
+QQQ,Nasdaq 100 ETF,RV_GLOBAL_USA,USD_ASSET,ret_PEN_QQQ,retorno_convertido_a_PEN,PEN
+IWM,Russell 2000 ETF,RV_GLOBAL_USA,USD_ASSET,ret_USD_IWM,retorno_en_moneda_USD,USD
+IWM,Russell 2000 ETF,RV_GLOBAL_USA,USD_ASSET,ret_PEN_IWM,retorno_convertido_a_PEN,PEN
+DIA,Dow Jones ETF,RV_GLOBAL_USA,USD_ASSET,ret_USD_DIA,retorno_en_moneda_USD,USD
+DIA,Dow Jones ETF,RV_GLOBAL_USA,USD_ASSET,ret_PEN_DIA,retorno_convertido_a_PEN,PEN
+VT,Total World Stock ETF,RV_GLOBAL,USD_ASSET,ret_USD_VT,retorno_en_moneda_USD,USD
+VT,Total World Stock ETF,RV_GLOBAL,USD_ASSET,ret_PEN_VT,retorno_convertido_a_PEN,PEN
+ACWI,MSCI All Country World ETF,RV_GLOBAL,USD_ASSET,ret_USD_ACWI,retorno_en_moneda_USD,USD
+ACWI,MSCI All Country World ETF,RV_GLOBAL,USD_ASSET,ret_PEN_ACWI,retorno_convertido_a_PEN,PEN
+EFA,Mercados desarrollados fuera de USA,RV_DESARROLLADOS,USD_ASSET,ret_USD_EFA,retorno_en_moneda_USD,USD
+EFA,Mercados desarrollados fuera de USA,RV_DESARROLLADOS,USD_ASSET,ret_PEN_EFA,retorno_convertido_a_PEN,PEN
+IEFA,Mercados desarrollados Core,RV_DESARROLLADOS,USD_ASSET,ret_USD_IEFA,retorno_en_moneda_USD,USD
+IEFA,Mercados desarrollados Core,RV_DESARROLLADOS,USD_ASSET,ret_PEN_IEFA,retorno_convertido_a_PEN,PEN
+EEM,Mercados emergentes ETF,RV_EMERGENTES,USD_ASSET,ret_USD_EEM,retorno_en_moneda_USD,USD
+EEM,Mercados emergentes ETF,RV_EMERGENTES,USD_ASSET,ret_PEN_EEM,retorno_convertido_a_PEN,PEN
+VWO,Mercados emergentes Vanguard,RV_EMERGENTES,USD_ASSET,ret_USD_VWO,retorno_en_moneda_USD,USD
+VWO,Mercados emergentes Vanguard,RV_EMERGENTES,USD_ASSET,ret_PEN_VWO,retorno_convertido_a_PEN,PEN
+ILF,Latinoamérica 40 ETF,RV_LATAM,USD_ASSET,ret_USD_ILF,retorno_en_moneda_USD,USD
+ILF,Latinoamérica 40 ETF,RV_LATAM,USD_ASSET,ret_PEN_ILF,retorno_convertido_a_PEN,PEN
+EPU,Perú ETF,PAISES,USD_ASSET,ret_USD_EPU,retorno_en_moneda_USD,USD
+EPU,Perú ETF,PAISES,USD_ASSET,ret_PEN_EPU,retorno_convertido_a_PEN,PEN
+EWZ,Brasil ETF,PAISES,USD_ASSET,ret_USD_EWZ,retorno_en_moneda_USD,USD
+EWZ,Brasil ETF,PAISES,USD_ASSET,ret_PEN_EWZ,retorno_convertido_a_PEN,PEN
+EWW,México ETF,PAISES,USD_ASSET,ret_USD_EWW,retorno_en_moneda_USD,USD
+EWW,México ETF,PAISES,USD_ASSET,ret_PEN_EWW,retorno_convertido_a_PEN,PEN
+ECH,Chile ETF,PAISES,USD_ASSET,ret_USD_ECH,retorno_en_moneda_USD,USD
+ECH,Chile ETF,PAISES,USD_ASSET,ret_PEN_ECH,retorno_convertido_a_PEN,PEN
+ARGT,Argentina ETF,PAISES,USD_ASSET,ret_USD_ARGT,retorno_en_moneda_USD,USD
+ARGT,Argentina ETF,PAISES,USD_ASSET,ret_PEN_ARGT,retorno_convertido_a_PEN,PEN
+GXG,Colombia ETF,PAISES,USD_ASSET,ret_USD_GXG,retorno_en_moneda_USD,USD
+GXG,Colombia ETF,PAISES,USD_ASSET,ret_PEN_GXG,retorno_convertido_a_PEN,PEN
+INDA,India ETF,PAISES,USD_ASSET,ret_USD_INDA,retorno_en_moneda_USD,USD
+INDA,India ETF,PAISES,USD_ASSET,ret_PEN_INDA,retorno_convertido_a_PEN,PEN
+MCHI,China ETF,PAISES,USD_ASSET,ret_USD_MCHI,retorno_en_moneda_USD,USD
+MCHI,China ETF,PAISES,USD_ASSET,ret_PEN_MCHI,retorno_convertido_a_PEN,PEN
+EWY,Corea del Sur ETF,PAISES,USD_ASSET,ret_USD_EWY,retorno_en_moneda_USD,USD
+EWY,Corea del Sur ETF,PAISES,USD_ASSET,ret_PEN_EWY,retorno_convertido_a_PEN,PEN
+EWT,Taiwán ETF,PAISES,USD_ASSET,ret_USD_EWT,retorno_en_moneda_USD,USD
+EWT,Taiwán ETF,PAISES,USD_ASSET,ret_PEN_EWT,retorno_convertido_a_PEN,PEN
+EWJ,Japón ETF,PAISES,USD_ASSET,ret_USD_EWJ,retorno_en_moneda_USD,USD
+EWJ,Japón ETF,PAISES,USD_ASSET,ret_PEN_EWJ,retorno_convertido_a_PEN,PEN
+EWG,Alemania ETF,PAISES,USD_ASSET,ret_USD_EWG,retorno_en_moneda_USD,USD
+EWG,Alemania ETF,PAISES,USD_ASSET,ret_PEN_EWG,retorno_convertido_a_PEN,PEN
+EWU,Reino Unido ETF,PAISES,USD_ASSET,ret_USD_EWU,retorno_en_moneda_USD,USD
+EWU,Reino Unido ETF,PAISES,USD_ASSET,ret_PEN_EWU,retorno_convertido_a_PEN,PEN
+XLB,Materiales USA,SECTORES,USD_ASSET,ret_USD_XLB,retorno_en_moneda_USD,USD
+XLB,Materiales USA,SECTORES,USD_ASSET,ret_PEN_XLB,retorno_convertido_a_PEN,PEN
+XLI,Industriales USA,SECTORES,USD_ASSET,ret_USD_XLI,retorno_en_moneda_USD,USD
+XLI,Industriales USA,SECTORES,USD_ASSET,ret_PEN_XLI,retorno_convertido_a_PEN,PEN
+XLF,Financiero USA,SECTORES,USD_ASSET,ret_USD_XLF,retorno_en_moneda_USD,USD
+XLF,Financiero USA,SECTORES,USD_ASSET,ret_PEN_XLF,retorno_convertido_a_PEN,PEN
+XLK,Tecnología USA,SECTORES,USD_ASSET,ret_USD_XLK,retorno_en_moneda_USD,USD
+XLK,Tecnología USA,SECTORES,USD_ASSET,ret_PEN_XLK,retorno_convertido_a_PEN,PEN
+XLE,Energía USA,SECTORES,USD_ASSET,ret_USD_XLE,retorno_en_moneda_USD,USD
+XLE,Energía USA,SECTORES,USD_ASSET,ret_PEN_XLE,retorno_convertido_a_PEN,PEN
+XLY,Consumo discrecional USA,SECTORES,USD_ASSET,ret_USD_XLY,retorno_en_moneda_USD,USD
+XLY,Consumo discrecional USA,SECTORES,USD_ASSET,ret_PEN_XLY,retorno_convertido_a_PEN,PEN
+XLP,Consumo básico USA,SECTORES,USD_ASSET,ret_USD_XLP,retorno_en_moneda_USD,USD
+XLP,Consumo básico USA,SECTORES,USD_ASSET,ret_PEN_XLP,retorno_convertido_a_PEN,PEN
+XLV,Salud USA,SECTORES,USD_ASSET,ret_USD_XLV,retorno_en_moneda_USD,USD
+XLV,Salud USA,SECTORES,USD_ASSET,ret_PEN_XLV,retorno_convertido_a_PEN,PEN
+XLU,Utilities USA,SECTORES,USD_ASSET,ret_USD_XLU,retorno_en_moneda_USD,USD
+XLU,Utilities USA,SECTORES,USD_ASSET,ret_PEN_XLU,retorno_convertido_a_PEN,PEN
+XLC,Comunicaciones USA,SECTORES,USD_ASSET,ret_USD_XLC,retorno_en_moneda_USD,USD
+XLC,Comunicaciones USA,SECTORES,USD_ASSET,ret_PEN_XLC,retorno_convertido_a_PEN,PEN
+VNQ,Real estate USA,SECTORES,USD_ASSET,ret_USD_VNQ,retorno_en_moneda_USD,USD
+VNQ,Real estate USA,SECTORES,USD_ASSET,ret_PEN_VNQ,retorno_convertido_a_PEN,PEN
+COPX,Minera de cobre ETF,MINERIA_MATERIALES,USD_ASSET,ret_USD_COPX,retorno_en_moneda_USD,USD
+COPX,Minera de cobre ETF,MINERIA_MATERIALES,USD_ASSET,ret_PEN_COPX,retorno_convertido_a_PEN,PEN
+PICK,Minería global ETF,MINERIA_MATERIALES,USD_ASSET,ret_USD_PICK,retorno_en_moneda_USD,USD
+PICK,Minería global ETF,MINERIA_MATERIALES,USD_ASSET,ret_PEN_PICK,retorno_convertido_a_PEN,PEN
+REMX,Tierras raras ETF,MINERIA_MATERIALES,USD_ASSET,ret_USD_REMX,retorno_en_moneda_USD,USD
+REMX,Tierras raras ETF,MINERIA_MATERIALES,USD_ASSET,ret_PEN_REMX,retorno_convertido_a_PEN,PEN
+LIT,Litio y baterías ETF,MINERIA_MATERIALES,USD_ASSET,ret_USD_LIT,retorno_en_moneda_USD,USD
+LIT,Litio y baterías ETF,MINERIA_MATERIALES,USD_ASSET,ret_PEN_LIT,retorno_convertido_a_PEN,PEN
+URA,Uranio ETF,MINERIA_MATERIALES,USD_ASSET,ret_USD_URA,retorno_en_moneda_USD,USD
+URA,Uranio ETF,MINERIA_MATERIALES,USD_ASSET,ret_PEN_URA,retorno_convertido_a_PEN,PEN
+SLX,Acero global ETF,MINERIA_MATERIALES,USD_ASSET,ret_USD_SLX,retorno_en_moneda_USD,USD
+SLX,Acero global ETF,MINERIA_MATERIALES,USD_ASSET,ret_PEN_SLX,retorno_convertido_a_PEN,PEN
+ICLN,Energía limpia global,TRANSICION_ENERGETICA,USD_ASSET,ret_USD_ICLN,retorno_en_moneda_USD,USD
+ICLN,Energía limpia global,TRANSICION_ENERGETICA,USD_ASSET,ret_PEN_ICLN,retorno_convertido_a_PEN,PEN
+GLD,Oro ETF,COMMODITIES,USD_ASSET,ret_USD_GLD,retorno_en_moneda_USD,USD
+GLD,Oro ETF,COMMODITIES,USD_ASSET,ret_PEN_GLD,retorno_convertido_a_PEN,PEN
+SLV,Plata ETF,COMMODITIES,USD_ASSET,ret_USD_SLV,retorno_en_moneda_USD,USD
+SLV,Plata ETF,COMMODITIES,USD_ASSET,ret_PEN_SLV,retorno_convertido_a_PEN,PEN
+GDX,Mineras de oro ETF,COMMODITIES,USD_ASSET,ret_USD_GDX,retorno_en_moneda_USD,USD
+GDX,Mineras de oro ETF,COMMODITIES,USD_ASSET,ret_PEN_GDX,retorno_convertido_a_PEN,PEN
+GDXJ,Mineras junior de oro ETF,COMMODITIES,USD_ASSET,ret_USD_GDXJ,retorno_en_moneda_USD,USD
+GDXJ,Mineras junior de oro ETF,COMMODITIES,USD_ASSET,ret_PEN_GDXJ,retorno_convertido_a_PEN,PEN
+USO,Petróleo WTI ETF,COMMODITIES,USD_ASSET,ret_USD_USO,retorno_en_moneda_USD,USD
+USO,Petróleo WTI ETF,COMMODITIES,USD_ASSET,ret_PEN_USO,retorno_convertido_a_PEN,PEN
+BNO,Petróleo Brent ETF,COMMODITIES,USD_ASSET,ret_USD_BNO,retorno_en_moneda_USD,USD
+BNO,Petróleo Brent ETF,COMMODITIES,USD_ASSET,ret_PEN_BNO,retorno_convertido_a_PEN,PEN
+CPER,Cobre físico/futuros ETF,COMMODITIES,USD_ASSET,ret_USD_CPER,retorno_en_moneda_USD,USD
+CPER,Cobre físico/futuros ETF,COMMODITIES,USD_ASSET,ret_PEN_CPER,retorno_convertido_a_PEN,PEN
+DBA,Agricultura ETF,COMMODITIES,USD_ASSET,ret_USD_DBA,retorno_en_moneda_USD,USD
+DBA,Agricultura ETF,COMMODITIES,USD_ASSET,ret_PEN_DBA,retorno_convertido_a_PEN,PEN
+SHY,Treasury 1-3 años,RENTA_FIJA,USD_ASSET,ret_USD_SHY,retorno_en_moneda_USD,USD
+SHY,Treasury 1-3 años,RENTA_FIJA,USD_ASSET,ret_PEN_SHY,retorno_convertido_a_PEN,PEN
+IEF,Treasury 7-10 años,RENTA_FIJA,USD_ASSET,ret_USD_IEF,retorno_en_moneda_USD,USD
+IEF,Treasury 7-10 años,RENTA_FIJA,USD_ASSET,ret_PEN_IEF,retorno_convertido_a_PEN,PEN
+TLT,Treasury 20+ años,RENTA_FIJA,USD_ASSET,ret_USD_TLT,retorno_en_moneda_USD,USD
+TLT,Treasury 20+ años,RENTA_FIJA,USD_ASSET,ret_PEN_TLT,retorno_convertido_a_PEN,PEN
+TIP,Bonos protegidos por inflación,RENTA_FIJA,USD_ASSET,ret_USD_TIP,retorno_en_moneda_USD,USD
+TIP,Bonos protegidos por inflación,RENTA_FIJA,USD_ASSET,ret_PEN_TIP,retorno_convertido_a_PEN,PEN
+LQD,Crédito corporativo investment grade,CREDITO,USD_ASSET,ret_USD_LQD,retorno_en_moneda_USD,USD
+LQD,Crédito corporativo investment grade,CREDITO,USD_ASSET,ret_PEN_LQD,retorno_convertido_a_PEN,PEN
+HYG,Crédito high yield,CREDITO,USD_ASSET,ret_USD_HYG,retorno_en_moneda_USD,USD
+HYG,Crédito high yield,CREDITO,USD_ASSET,ret_PEN_HYG,retorno_convertido_a_PEN,PEN
+EMB,Bonos soberanos emergentes USD,CREDITO_EMERGENTE,USD_ASSET,ret_USD_EMB,retorno_en_moneda_USD,USD
+EMB,Bonos soberanos emergentes USD,CREDITO_EMERGENTE,USD_ASSET,ret_PEN_EMB,retorno_convertido_a_PEN,PEN
+AGG,Bonos agregados USA,RENTA_FIJA,USD_ASSET,ret_USD_AGG,retorno_en_moneda_USD,USD
+AGG,Bonos agregados USA,RENTA_FIJA,USD_ASSET,ret_PEN_AGG,retorno_convertido_a_PEN,PEN
+BNDX,Bonos internacionales,RENTA_FIJA,USD_ASSET,ret_USD_BNDX,retorno_en_moneda_USD,USD
+BNDX,Bonos internacionales,RENTA_FIJA,USD_ASSET,ret_PEN_BNDX,retorno_convertido_a_PEN,PEN
+SCCO,Southern Copper,ACCIONES_MINERAS,USD_ASSET,ret_USD_SCCO,retorno_en_moneda_USD,USD
+SCCO,Southern Copper,ACCIONES_MINERAS,USD_ASSET,ret_PEN_SCCO,retorno_convertido_a_PEN,PEN
+BVN,Buenaventura ADR,ACCIONES_PERU,USD_ASSET,ret_USD_BVN,retorno_en_moneda_USD,USD
+BVN,Buenaventura ADR,ACCIONES_PERU,USD_ASSET,ret_PEN_BVN,retorno_convertido_a_PEN,PEN
+BAP,Credicorp,ACCIONES_PERU,USD_ASSET,ret_USD_BAP,retorno_en_moneda_USD,USD
+BAP,Credicorp,ACCIONES_PERU,USD_ASSET,ret_PEN_BAP,retorno_convertido_a_PEN,PEN
+FCX,Freeport-McMoRan,ACCIONES_MINERAS,USD_ASSET,ret_USD_FCX,retorno_en_moneda_USD,USD
+FCX,Freeport-McMoRan,ACCIONES_MINERAS,USD_ASSET,ret_PEN_FCX,retorno_convertido_a_PEN,PEN
+NEM,Newmont,ACCIONES_MINERAS,USD_ASSET,ret_USD_NEM,retorno_en_moneda_USD,USD
+NEM,Newmont,ACCIONES_MINERAS,USD_ASSET,ret_PEN_NEM,retorno_convertido_a_PEN,PEN
+RIO,Rio Tinto ADR,ACCIONES_MINERAS,USD_ASSET,ret_USD_RIO,retorno_en_moneda_USD,USD
+RIO,Rio Tinto ADR,ACCIONES_MINERAS,USD_ASSET,ret_PEN_RIO,retorno_convertido_a_PEN,PEN
+BHP,BHP ADR,ACCIONES_MINERAS,USD_ASSET,ret_USD_BHP,retorno_en_moneda_USD,USD
+BHP,BHP ADR,ACCIONES_MINERAS,USD_ASSET,ret_PEN_BHP,retorno_convertido_a_PEN,PEN
+VALE,Vale ADR,ACCIONES_MINERAS,USD_ASSET,ret_USD_VALE,retorno_en_moneda_USD,USD
+VALE,Vale ADR,ACCIONES_MINERAS,USD_ASSET,ret_PEN_VALE,retorno_convertido_a_PEN,PEN
+^VIX,Índice VIX,VOLATILIDAD,INDEX_RETURN,ret_IDX_VIX,retorno_porcentual,NIVEL_ORIGINAL
+^TNX,Tasa Treasury 10 años,TASAS,RATE_CHANGE,chg_IDX_TNX,cambio_absoluto_de_tasa,UNIDAD_INDICE
+^FVX,Tasa Treasury 5 años,TASAS,RATE_CHANGE,chg_IDX_FVX,cambio_absoluto_de_tasa,UNIDAD_INDICE
+^IRX,Tasa Treasury 13 semanas,TASAS,RATE_CHANGE,chg_IDX_IRX,cambio_absoluto_de_tasa,UNIDAD_INDICE
+PEN=X,USD/PEN,FX,FX_RETURN,ret_PEN_X,retorno_porcentual,NIVEL_ORIGINAL
+DX-Y.NYB,Índice dólar DXY,FX,FX_RETURN,ret_DX_Y_NYB,retorno_porcentual,NIVEL_ORIGINAL
+EURUSD=X,EUR/USD,FX,FX_RETURN,ret_EURUSD_X,retorno_porcentual,NIVEL_ORIGINAL
+JPY=X,USD/JPY,FX,FX_RETURN,ret_JPY_X,retorno_porcentual,NIVEL_ORIGINAL
+BRL=X,USD/BRL,FX,FX_RETURN,ret_BRL_X,retorno_porcentual,NIVEL_ORIGINAL
+CLP=X,USD/CLP,FX,FX_RETURN,ret_CLP_X,retorno_porcentual,NIVEL_ORIGINAL
+COP=X,USD/COP,FX,FX_RETURN,ret_COP_X,retorno_porcentual,NIVEL_ORIGINAL
+MXN=X,USD/MXN,FX,FX_RETURN,ret_MXN_X,retorno_porcentual,NIVEL_ORIGINAL

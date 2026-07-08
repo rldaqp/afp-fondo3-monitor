@@ -1,0 +1,59 @@
+﻿factor,indice,pais_region,ticker_elegido,moneda_local,moneda_modelo,transformacion,fx_ticker,fx_modo
+ret_IDX_LOCAL_ESTADOS_UNIDOS_S_P_500,S&P 500,Estados Unidos,^GSPC,USD,USD,retorno_indice_moneda_local,,USD
+ret_IDX_PEN_ESTADOS_UNIDOS_S_P_500,S&P 500,Estados Unidos,^GSPC,USD,PEN,indice_local_convertido_a_PEN,,USD
+ret_IDX_LOCAL_ESTADOS_UNIDOS_NASDAQ_COMPOSITE,Nasdaq Composite,Estados Unidos,^IXIC,USD,USD,retorno_indice_moneda_local,,USD
+ret_IDX_PEN_ESTADOS_UNIDOS_NASDAQ_COMPOSITE,Nasdaq Composite,Estados Unidos,^IXIC,USD,PEN,indice_local_convertido_a_PEN,,USD
+ret_IDX_LOCAL_ESTADOS_UNIDOS_NASDAQ_100,Nasdaq 100,Estados Unidos,^NDX,USD,USD,retorno_indice_moneda_local,,USD
+ret_IDX_PEN_ESTADOS_UNIDOS_NASDAQ_100,Nasdaq 100,Estados Unidos,^NDX,USD,PEN,indice_local_convertido_a_PEN,,USD
+ret_IDX_LOCAL_ESTADOS_UNIDOS_DOW_JONES_INDUSTRIAL_AVERAGE,Dow Jones Industrial Average,Estados Unidos,^DJI,USD,USD,retorno_indice_moneda_local,,USD
+ret_IDX_PEN_ESTADOS_UNIDOS_DOW_JONES_INDUSTRIAL_AVERAGE,Dow Jones Industrial Average,Estados Unidos,^DJI,USD,PEN,indice_local_convertido_a_PEN,,USD
+ret_IDX_LOCAL_ESTADOS_UNIDOS_RUSSELL_2000,Russell 2000,Estados Unidos,^RUT,USD,USD,retorno_indice_moneda_local,,USD
+ret_IDX_PEN_ESTADOS_UNIDOS_RUSSELL_2000,Russell 2000,Estados Unidos,^RUT,USD,PEN,indice_local_convertido_a_PEN,,USD
+ret_IDX_LOCAL_ALEMANIA_DAX,DAX,Alemania,^GDAXI,EUR,EUR,retorno_indice_moneda_local,EURUSD=X,DIRECTO
+ret_IDX_PEN_ALEMANIA_DAX,DAX,Alemania,^GDAXI,EUR,PEN,indice_local_convertido_a_PEN,EURUSD=X,DIRECTO
+ret_IDX_LOCAL_ALEMANIA_MDAX,MDAX,Alemania,^MDAXI,EUR,EUR,retorno_indice_moneda_local,EURUSD=X,DIRECTO
+ret_IDX_PEN_ALEMANIA_MDAX,MDAX,Alemania,^MDAXI,EUR,PEN,indice_local_convertido_a_PEN,EURUSD=X,DIRECTO
+ret_IDX_LOCAL_FRANCIA_CAC_40,CAC 40,Francia,^FCHI,EUR,EUR,retorno_indice_moneda_local,EURUSD=X,DIRECTO
+ret_IDX_PEN_FRANCIA_CAC_40,CAC 40,Francia,^FCHI,EUR,PEN,indice_local_convertido_a_PEN,EURUSD=X,DIRECTO
+ret_IDX_LOCAL_ZONA_EURO_EURO_STOXX_50,EURO STOXX 50,Zona euro,^STOXX50E,EUR,EUR,retorno_indice_moneda_local,EURUSD=X,DIRECTO
+ret_IDX_PEN_ZONA_EURO_EURO_STOXX_50,EURO STOXX 50,Zona euro,^STOXX50E,EUR,PEN,indice_local_convertido_a_PEN,EURUSD=X,DIRECTO
+ret_IDX_LOCAL_EUROPA_STOXX_EUROPE_600,STOXX Europe 600,Europa,^STOXX,EUR,EUR,retorno_indice_moneda_local,EURUSD=X,DIRECTO
+ret_IDX_PEN_EUROPA_STOXX_EUROPE_600,STOXX Europe 600,Europa,^STOXX,EUR,PEN,indice_local_convertido_a_PEN,EURUSD=X,DIRECTO
+ret_IDX_LOCAL_REINO_UNIDO_FTSE_100,FTSE 100,Reino Unido,^FTSE,GBP,GBP,retorno_indice_moneda_local,GBPUSD=X,DIRECTO
+ret_IDX_PEN_REINO_UNIDO_FTSE_100,FTSE 100,Reino Unido,^FTSE,GBP,PEN,indice_local_convertido_a_PEN,GBPUSD=X,DIRECTO
+ret_IDX_LOCAL_SUIZA_SMI,SMI,Suiza,^SSMI,CHF,CHF,retorno_indice_moneda_local,CHF=X,INVERSO
+ret_IDX_PEN_SUIZA_SMI,SMI,Suiza,^SSMI,CHF,PEN,indice_local_convertido_a_PEN,CHF=X,INVERSO
+ret_IDX_LOCAL_PA_SES_BAJOS_AEX,AEX,Países Bajos,^AEX,EUR,EUR,retorno_indice_moneda_local,EURUSD=X,DIRECTO
+ret_IDX_PEN_PA_SES_BAJOS_AEX,AEX,Países Bajos,^AEX,EUR,PEN,indice_local_convertido_a_PEN,EURUSD=X,DIRECTO
+ret_IDX_LOCAL_ESPA_A_IBEX_35,IBEX 35,España,^IBEX,EUR,EUR,retorno_indice_moneda_local,EURUSD=X,DIRECTO
+ret_IDX_PEN_ESPA_A_IBEX_35,IBEX 35,España,^IBEX,EUR,PEN,indice_local_convertido_a_PEN,EURUSD=X,DIRECTO
+ret_IDX_LOCAL_ITALIA_FTSE_MIB,FTSE MIB,Italia,FTSEMIB.MI,EUR,EUR,retorno_indice_moneda_local,EURUSD=X,DIRECTO
+ret_IDX_PEN_ITALIA_FTSE_MIB,FTSE MIB,Italia,FTSEMIB.MI,EUR,PEN,indice_local_convertido_a_PEN,EURUSD=X,DIRECTO
+ret_IDX_LOCAL_JAP_N_NIKKEI_225,Nikkei 225,Japón,^N225,JPY,JPY,retorno_indice_moneda_local,JPY=X,INVERSO
+ret_IDX_PEN_JAP_N_NIKKEI_225,Nikkei 225,Japón,^N225,JPY,PEN,indice_local_convertido_a_PEN,JPY=X,INVERSO
+ret_IDX_LOCAL_HONG_KONG_HANG_SENG,Hang Seng,Hong Kong,^HSI,HKD,HKD,retorno_indice_moneda_local,HKD=X,INVERSO
+ret_IDX_PEN_HONG_KONG_HANG_SENG,Hang Seng,Hong Kong,^HSI,HKD,PEN,indice_local_convertido_a_PEN,HKD=X,INVERSO
+ret_IDX_LOCAL_CHINA_SHANGHAI_COMPOSITE,Shanghai Composite,China,000001.SS,CNY,CNY,retorno_indice_moneda_local,CNY=X,INVERSO
+ret_IDX_PEN_CHINA_SHANGHAI_COMPOSITE,Shanghai Composite,China,000001.SS,CNY,PEN,indice_local_convertido_a_PEN,CNY=X,INVERSO
+ret_IDX_LOCAL_CHINA_CSI_300,CSI 300,China,000300.SS,CNY,CNY,retorno_indice_moneda_local,CNY=X,INVERSO
+ret_IDX_PEN_CHINA_CSI_300,CSI 300,China,000300.SS,CNY,PEN,indice_local_convertido_a_PEN,CNY=X,INVERSO
+ret_IDX_LOCAL_CHINA_SHENZHEN_COMPONENT,Shenzhen Component,China,399001.SZ,CNY,CNY,retorno_indice_moneda_local,CNY=X,INVERSO
+ret_IDX_PEN_CHINA_SHENZHEN_COMPONENT,Shenzhen Component,China,399001.SZ,CNY,PEN,indice_local_convertido_a_PEN,CNY=X,INVERSO
+ret_IDX_LOCAL_INDIA_NIFTY_50,Nifty 50,India,^NSEI,INR,INR,retorno_indice_moneda_local,INR=X,INVERSO
+ret_IDX_PEN_INDIA_NIFTY_50,Nifty 50,India,^NSEI,INR,PEN,indice_local_convertido_a_PEN,INR=X,INVERSO
+ret_IDX_LOCAL_INDIA_BSE_SENSEX,BSE Sensex,India,^BSESN,INR,INR,retorno_indice_moneda_local,INR=X,INVERSO
+ret_IDX_PEN_INDIA_BSE_SENSEX,BSE Sensex,India,^BSESN,INR,PEN,indice_local_convertido_a_PEN,INR=X,INVERSO
+ret_IDX_LOCAL_COREA_DEL_SUR_KOSPI,KOSPI,Corea del Sur,^KS11,KRW,KRW,retorno_indice_moneda_local,KRW=X,INVERSO
+ret_IDX_PEN_COREA_DEL_SUR_KOSPI,KOSPI,Corea del Sur,^KS11,KRW,PEN,indice_local_convertido_a_PEN,KRW=X,INVERSO
+ret_IDX_LOCAL_TAIW_N_TAIEX,TAIEX,Taiwán,^TWII,TWD,TWD,retorno_indice_moneda_local,TWD=X,INVERSO
+ret_IDX_PEN_TAIW_N_TAIEX,TAIEX,Taiwán,^TWII,TWD,PEN,indice_local_convertido_a_PEN,TWD=X,INVERSO
+ret_IDX_LOCAL_CANAD_S_P_TSX_COMPOSITE,S&P/TSX Composite,Canadá,^GSPTSE,CAD,CAD,retorno_indice_moneda_local,CAD=X,INVERSO
+ret_IDX_PEN_CANAD_S_P_TSX_COMPOSITE,S&P/TSX Composite,Canadá,^GSPTSE,CAD,PEN,indice_local_convertido_a_PEN,CAD=X,INVERSO
+ret_IDX_LOCAL_AUSTRALIA_S_P_ASX_200,S&P/ASX 200,Australia,^AXJO,AUD,AUD,retorno_indice_moneda_local,AUDUSD=X,DIRECTO
+ret_IDX_PEN_AUSTRALIA_S_P_ASX_200,S&P/ASX 200,Australia,^AXJO,AUD,PEN,indice_local_convertido_a_PEN,AUDUSD=X,DIRECTO
+ret_IDX_LOCAL_BRASIL_BOVESPA,Bovespa,Brasil,^BVSP,BRL,BRL,retorno_indice_moneda_local,BRL=X,INVERSO
+ret_IDX_PEN_BRASIL_BOVESPA,Bovespa,Brasil,^BVSP,BRL,PEN,indice_local_convertido_a_PEN,BRL=X,INVERSO
+ret_IDX_LOCAL_M_XICO_S_P_BMV_IPC,S&P/BMV IPC,México,^MXX,MXN,MXN,retorno_indice_moneda_local,MXN=X,INVERSO
+ret_IDX_PEN_M_XICO_S_P_BMV_IPC,S&P/BMV IPC,México,^MXX,MXN,PEN,indice_local_convertido_a_PEN,MXN=X,INVERSO
+ret_IDX_LOCAL_ARGENTINA_S_P_MERVAL,S&P MERVAL,Argentina,^MERV,ARS,ARS,retorno_indice_moneda_local,ARS=X,INVERSO
+ret_IDX_PEN_ARGENTINA_S_P_MERVAL,S&P MERVAL,Argentina,^MERV,ARS,PEN,indice_local_convertido_a_PEN,ARS=X,INVERSO

@@ -1,0 +1,9 @@
+﻿afp,orden_accion,factor,lag,ticker,nombre,categoria,transformacion,moneda_modelo
+Habitat,1,ret_PEN_FCX,1,FCX,Freeport-McMoRan,ACCIONES_MINERAS,retorno_convertido_a_PEN,PEN
+Habitat,2,ret_USD_BHP,0,BHP,BHP ADR,ACCIONES_MINERAS,retorno_en_moneda_USD,USD
+Habitat,3,ret_PEN_BHP,1,BHP,BHP ADR,ACCIONES_MINERAS,retorno_convertido_a_PEN,PEN
+Integra,1,ret_PEN_FCX,1,FCX,Freeport-McMoRan,ACCIONES_MINERAS,retorno_convertido_a_PEN,PEN
+Prima,1,ret_PEN_FCX,1,FCX,Freeport-McMoRan,ACCIONES_MINERAS,retorno_convertido_a_PEN,PEN
+Prima,2,ret_USD_NEM,0,NEM,Newmont,ACCIONES_MINERAS,retorno_en_moneda_USD,USD
+Profuturo,1,ret_USD_FCX,1,FCX,Freeport-McMoRan,ACCIONES_MINERAS,retorno_en_moneda_USD,USD
+Profuturo,2,ret_USD_NEM,0,NEM,Newmont,ACCIONES_MINERAS,retorno_en_moneda_USD,USD

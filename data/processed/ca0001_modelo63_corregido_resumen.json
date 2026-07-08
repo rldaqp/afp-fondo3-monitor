@@ -1,0 +1,6 @@
+{
+  "version": "modelo63_corregido_sin_fuga_de_informacion",
+  "correccion_clave": "En la simulación de retraso SBS, cada pronóstico usa solamente retornos visibles hasta la fecha de corte. Los días ocultos se generan recursivamente y nunca usan retornos oficiales ocultos.",
+  "fin_entrenamiento_60pct": "2021-11-12",
+  "fin_validacion_20pct": "2024-02-23"
+}

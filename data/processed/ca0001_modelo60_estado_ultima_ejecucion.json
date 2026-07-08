@@ -1,0 +1,188 @@
+{
+  "version": "modelo60_orquestador_operativo_cobertura_v2",
+  "fecha_ejecucion": "2026-07-04T22:51:10.538290",
+  "estado_general": "CORRECTO",
+  "ejecuciones": [
+    {
+      "etiqueta": "01_validar_pronosticos_previos",
+      "script": "58_archivar_y_validar_estimaciones_sbs.py",
+      "inicio": "2026-07-04T22:51:10.539244",
+      "fin": "2026-07-04T22:51:11.189729",
+      "duracion_segundos": 0.650485,
+      "codigo_retorno": 0,
+      "estado": "CORRECTO",
+      "ruta_log": "C:\\Users\\PC\\Downloads\\afp_fondo3_inicio\\afp_fondo3_inicio\\data\\processed\\logs_modelo60\\20260704_225110\\01_validar_pronosticos_previos.log"
+    },
+    {
+      "etiqueta": "02_generar_estimaciones_actuales",
+      "script": "57_generar_seguimiento_operativo_y_grafica_actual.py",
+      "inicio": "2026-07-04T22:51:11.190370",
+      "fin": "2026-07-04T22:51:13.155304",
+      "duracion_segundos": 1.964934,
+      "codigo_retorno": 0,
+      "estado": "CORRECTO",
+      "ruta_log": "C:\\Users\\PC\\Downloads\\afp_fondo3_inicio\\afp_fondo3_inicio\\data\\processed\\logs_modelo60\\20260704_225110\\02_generar_estimaciones_actuales.log"
+    },
+    {
+      "etiqueta": "03_archivar_estimaciones_actuales",
+      "script": "58_archivar_y_validar_estimaciones_sbs.py",
+      "inicio": "2026-07-04T22:51:13.156354",
+      "fin": "2026-07-04T22:51:13.838715",
+      "duracion_segundos": 0.682361,
+      "codigo_retorno": 0,
+      "estado": "CORRECTO",
+      "ruta_log": "C:\\Users\\PC\\Downloads\\afp_fondo3_inicio\\afp_fondo3_inicio\\data\\processed\\logs_modelo60\\20260704_225110\\03_archivar_estimaciones_actuales.log"
+    },
+    {
+      "etiqueta": "04_generar_panel_operativo",
+      "script": "59_generar_panel_operativo_fondo3.py",
+      "inicio": "2026-07-04T22:51:13.840448",
+      "fin": "2026-07-04T22:51:15.227798",
+      "duracion_segundos": 1.38735,
+      "codigo_retorno": 0,
+      "estado": "CORRECTO",
+      "ruta_log": "C:\\Users\\PC\\Downloads\\afp_fondo3_inicio\\afp_fondo3_inicio\\data\\processed\\logs_modelo60\\20260704_225110\\04_generar_panel_operativo.log"
+    }
+  ],
+  "panel_resumen": [
+    {
+      "afp": "Habitat",
+      "fecha_ultima_cuota_oficial": "2026-06-30",
+      "cuota_ultima_oficial": 33.5370629,
+      "fecha_estimada_hasta": "2026-07-03",
+      "cuota_estimada_actual": 33.59648382394926,
+      "retorno_estimado_acumulado_pct": 0.17717986851273,
+      "direccion": "positiva",
+      "intensidad": "debil",
+      "cobertura_factores_pct": 50.0,
+      "estado_cobertura": "PARCIAL",
+      "factores_actualizados": "ret_IDX_VIX",
+      "pronosticos_validados": 0,
+      "pronosticos_pendientes_archivados": 3,
+      "estado_datos": "DATOS_VIGENTES"
+    },
+    {
+      "afp": "Integra",
+      "fecha_ultima_cuota_oficial": "2026-06-30",
+      "cuota_ultima_oficial": 72.3284597,
+      "fecha_estimada_hasta": "2026-07-03",
+      "cuota_estimada_actual": 72.39479042560676,
+      "retorno_estimado_acumulado_pct": 0.09170764299679,
+      "direccion": "positiva",
+      "intensidad": "debil",
+      "cobertura_factores_pct": 0.0,
+      "estado_cobertura": "SIN_NUEVA_SENAL",
+      "factores_actualizados": "",
+      "pronosticos_validados": 0,
+      "pronosticos_pendientes_archivados": 3,
+      "estado_datos": "DATOS_VIGENTES"
+    },
+    {
+      "afp": "Prima",
+      "fecha_ultima_cuota_oficial": "2026-06-30",
+      "cuota_ultima_oficial": 65.7918163,
+      "fecha_estimada_hasta": "2026-07-03",
+      "cuota_estimada_actual": 65.8392947450804,
+      "retorno_estimado_acumulado_pct": 0.07216466690007,
+      "direccion": "positiva",
+      "intensidad": "debil",
+      "cobertura_factores_pct": 25.0,
+      "estado_cobertura": "PARCIAL",
+      "factores_actualizados": "ret_IDX_VIX",
+      "pronosticos_validados": 0,
+      "pronosticos_pendientes_archivados": 3,
+      "estado_datos": "DATOS_VIGENTES"
+    },
+    {
+      "afp": "Profuturo",
+      "fecha_ultima_cuota_oficial": "2026-06-30",
+      "cuota_ultima_oficial": 71.9348302,
+      "fecha_estimada_hasta": "2026-07-03",
+      "cuota_estimada_actual": 72.0081346836703,
+      "retorno_estimado_acumulado_pct": 0.1019040198837,
+      "direccion": "positiva",
+      "intensidad": "debil",
+      "cobertura_factores_pct": 0.0,
+      "estado_cobertura": "SIN_NUEVA_SENAL",
+      "factores_actualizados": "",
+      "pronosticos_validados": 0,
+      "pronosticos_pendientes_archivados": 3,
+      "estado_datos": "DATOS_VIGENTES"
+    }
+  ],
+  "alertas": [
+    {
+      "afp": "Habitat",
+      "nivel": "MEDIA",
+      "tipo": "COBERTURA_PARCIAL",
+      "detalle": "La última fecha tiene cobertura de 50.0 %. Factores actualizados: ret_IDX_VIX."
+    },
+    {
+      "afp": "Habitat",
+      "nivel": "INFORMATIVA",
+      "tipo": "SIN_VALIDACIONES_NUEVAS",
+      "detalle": "Las estimaciones están archivadas, pero la SBS todavía no publicó cuotas coincidentes."
+    },
+    {
+      "afp": "Habitat",
+      "nivel": "INFORMATIVA",
+      "tipo": "SENAL_DEBIL",
+      "detalle": "La variación estimada es pequeña frente al error histórico del modelo."
+    },
+    {
+      "afp": "Integra",
+      "nivel": "INFORMATIVA",
+      "tipo": "SIN_NUEVA_SENAL_FACTORES",
+      "detalle": "Ningún factor de la canasta tuvo un nuevo cierre en la última fecha; el retorno estimado proviene principalmente del componente base del modelo."
+    },
+    {
+      "afp": "Integra",
+      "nivel": "INFORMATIVA",
+      "tipo": "SIN_VALIDACIONES_NUEVAS",
+      "detalle": "Las estimaciones están archivadas, pero la SBS todavía no publicó cuotas coincidentes."
+    },
+    {
+      "afp": "Integra",
+      "nivel": "INFORMATIVA",
+      "tipo": "SENAL_DEBIL",
+      "detalle": "La variación estimada es pequeña frente al error histórico del modelo."
+    },
+    {
+      "afp": "Prima",
+      "nivel": "MEDIA",
+      "tipo": "COBERTURA_PARCIAL",
+      "detalle": "La última fecha tiene cobertura de 25.0 %. Factores actualizados: ret_IDX_VIX."
+    },
+    {
+      "afp": "Prima",
+      "nivel": "INFORMATIVA",
+      "tipo": "SIN_VALIDACIONES_NUEVAS",
+      "detalle": "Las estimaciones están archivadas, pero la SBS todavía no publicó cuotas coincidentes."
+    },
+    {
+      "afp": "Prima",
+      "nivel": "INFORMATIVA",
+      "tipo": "SENAL_DEBIL",
+      "detalle": "La variación estimada es pequeña frente al error histórico del modelo."
+    },
+    {
+      "afp": "Profuturo",
+      "nivel": "INFORMATIVA",
+      "tipo": "SIN_NUEVA_SENAL_FACTORES",
+      "detalle": "Ningún factor de la canasta tuvo un nuevo cierre en la última fecha; el retorno estimado proviene principalmente del componente base del modelo."
+    },
+    {
+      "afp": "Profuturo",
+      "nivel": "INFORMATIVA",
+      "tipo": "SIN_VALIDACIONES_NUEVAS",
+      "detalle": "Las estimaciones están archivadas, pero la SBS todavía no publicó cuotas coincidentes."
+    },
+    {
+      "afp": "Profuturo",
+      "nivel": "INFORMATIVA",
+      "tipo": "SENAL_DEBIL",
+      "detalle": "La variación estimada es pequeña frente al error histórico del modelo."
+    }
+  ],
+  "nota": "Este orquestador no descarga datos. Debe ejecutarse después de actualizar las bases SBS y de mercados. El resumen incluye cobertura efectiva de factores."
+}

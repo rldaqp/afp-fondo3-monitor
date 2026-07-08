@@ -1,0 +1,117 @@
+{
+  "version": "modelo67_ensembles_y_estabilidad",
+  "metodologia": "Los pesos se seleccionan únicamente con validación. La prueba audita MAPE, P90, R² acumulado, dirección y estabilidad por cuatro subperiodos.",
+  "pesos_seleccionados": [
+    {
+      "afp": "Habitat",
+      "nombre": "BLEND_EW_RIDGE_HL60_A0.001_DIARIO_RIDGE_W0.50_0.50",
+      "tipo_ensemble": "PAR",
+      "modelos": "[\"EW_RIDGE_HL60_A0.001\", \"DIARIO_RIDGE\"]",
+      "pesos": "[0.5, 0.5]",
+      "mape_validacion_pct": 0.7208642580925151,
+      "p90_validacion_pct": 1.4758623791976084
+    },
+    {
+      "afp": "Integra",
+      "nombre": "BLEND_EW_RIDGE_HL120_A0.001_DIARIO_RIDGE_W0.25_0.75",
+      "tipo_ensemble": "PAR",
+      "modelos": "[\"EW_RIDGE_HL120_A0.001\", \"DIARIO_RIDGE\"]",
+      "pesos": "[0.25, 0.75]",
+      "mape_validacion_pct": 0.6467385575507865,
+      "p90_validacion_pct": 1.2202008166642868
+    },
+    {
+      "afp": "Prima",
+      "nombre": "BLEND_EW_RIDGE_HL250_A0.001_DIARIO_RIDGE_W0.35_0.65",
+      "tipo_ensemble": "PAR",
+      "modelos": "[\"EW_RIDGE_HL250_A0.001\", \"DIARIO_RIDGE\"]",
+      "pesos": "[0.35, 0.65]",
+      "mape_validacion_pct": 0.6012346391031286,
+      "p90_validacion_pct": 1.2533831013717835
+    },
+    {
+      "afp": "Profuturo",
+      "nombre": "BLEND_EW_RIDGE_HL250_A0.001_DIARIO_RIDGE_W0.00_1.00",
+      "tipo_ensemble": "PAR",
+      "modelos": "[\"EW_RIDGE_HL250_A0.001\", \"DIARIO_RIDGE\"]",
+      "pesos": "[0.0, 1.0]",
+      "mape_validacion_pct": 0.6223169080091993,
+      "p90_validacion_pct": 1.2590241336645176
+    }
+  ],
+  "metricas_prueba": [
+    {
+      "afp": "Habitat",
+      "modelo": "BLEND_EW_RIDGE_HL60_A0.001_DIARIO_RIDGE_W0.50_0.50",
+      "tipo_ensemble": "PAR",
+      "modelos": "[\"EW_RIDGE_HL60_A0.001\", \"DIARIO_RIDGE\"]",
+      "pesos": "[0.5, 0.5]",
+      "n": 593,
+      "mae_retorno": 0.008116942779487893,
+      "rmse_retorno": 0.012266422934578749,
+      "r2_retorno": 0.22821689559930358,
+      "correlacion_retorno": 0.49588779913085806,
+      "direccion_pct": 73.0185497470489,
+      "mape_cuota_pct": 0.8080860607945525,
+      "mediana_error_abs_pct": 0.549238960067111,
+      "p90_error_abs_pct": 1.9149149216515715,
+      "error_maximo_abs_pct": 7.136432758554911,
+      "sesgo_cuota_pct": -0.11332220685672709
+    },
+    {
+      "afp": "Integra",
+      "modelo": "BLEND_EW_RIDGE_HL120_A0.001_DIARIO_RIDGE_W0.25_0.75",
+      "tipo_ensemble": "PAR",
+      "modelos": "[\"EW_RIDGE_HL120_A0.001\", \"DIARIO_RIDGE\"]",
+      "pesos": "[0.25, 0.75]",
+      "n": 593,
+      "mae_retorno": 0.008963861610527743,
+      "rmse_retorno": 0.012588848308412408,
+      "r2_retorno": 0.25630632546161014,
+      "correlacion_retorno": 0.5117287316906358,
+      "direccion_pct": 65.26138279932546,
+      "mape_cuota_pct": 0.8955979312170133,
+      "mediana_error_abs_pct": 0.6277585021585042,
+      "p90_error_abs_pct": 2.173967454754399,
+      "error_maximo_abs_pct": 6.916686865385713,
+      "sesgo_cuota_pct": 0.019933114288636703
+    },
+    {
+      "afp": "Prima",
+      "modelo": "BLEND_EW_RIDGE_HL250_A0.001_DIARIO_RIDGE_W0.35_0.65",
+      "tipo_ensemble": "PAR",
+      "modelos": "[\"EW_RIDGE_HL250_A0.001\", \"DIARIO_RIDGE\"]",
+      "pesos": "[0.35, 0.65]",
+      "n": 593,
+      "mae_retorno": 0.008818746120803805,
+      "rmse_retorno": 0.013116555353521875,
+      "r2_retorno": 0.28182438645054486,
+      "correlacion_retorno": 0.5351870053391484,
+      "direccion_pct": 73.0185497470489,
+      "mape_cuota_pct": 0.8826411276733311,
+      "mediana_error_abs_pct": 0.5340571415392237,
+      "p90_error_abs_pct": 2.16506129530413,
+      "error_maximo_abs_pct": 6.818330043629595,
+      "sesgo_cuota_pct": -0.01839069124642321
+    },
+    {
+      "afp": "Profuturo",
+      "modelo": "BLEND_EW_RIDGE_HL250_A0.001_DIARIO_RIDGE_W0.00_1.00",
+      "tipo_ensemble": "PAR",
+      "modelos": "[\"EW_RIDGE_HL250_A0.001\", \"DIARIO_RIDGE\"]",
+      "pesos": "[0.0, 1.0]",
+      "n": 593,
+      "mae_retorno": 0.009529279540218812,
+      "rmse_retorno": 0.01312238654012739,
+      "r2_retorno": 0.2578046909279398,
+      "correlacion_retorno": 0.516056209185514,
+      "direccion_pct": 65.26138279932546,
+      "mape_cuota_pct": 0.9536011697870125,
+      "mediana_error_abs_pct": 0.7043352355273647,
+      "p90_error_abs_pct": 2.0905937902090486,
+      "error_maximo_abs_pct": 7.1246932310835565,
+      "sesgo_cuota_pct": 0.07999366586312552
+    }
+  ],
+  "graficos_generados": 8
+}

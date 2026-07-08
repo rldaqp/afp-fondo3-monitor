@@ -1,0 +1,8 @@
+﻿control,estado,detalle
+cuatro_afp_objetivo,correcto,afp=4
+factores_disponibles,correcto,factores=29
+seleccion_sin_test,correcto,rezagos y factores se eligen solo con train y validación
+prueba_no_usada_para_seleccion,correcto,test se usa únicamente para confirmar y medir desempeño final
+correlaciones_generadas,correcto,filas=116
+factores_estables_seleccionados,correcto,filas=32
+modelos_test_evaluados,correcto,evaluados=4

@@ -1,0 +1,69 @@
+{
+  "version": "modelo61_actualizador_fuentes",
+  "fecha_ejecucion": "2026-07-04T22:31:34.572411",
+  "modo": "SOLO_AUDITORIA",
+  "sbs": {
+    "archivo": "sbs_fondo3_base_maestra.csv",
+    "fecha_maxima_antes": "2026-06-30",
+    "fecha_maxima_web": "2026-06-30",
+    "fecha_maxima_despues": "2026-06-30",
+    "filas_antes": 11864,
+    "filas_despues": 11864,
+    "nuevas_claves_fecha_afp": 0,
+    "modo": "AUDITORIA"
+  },
+  "mercados": {
+    "archivo": "mercados_factores_modelo.csv",
+    "fecha_maxima_antes": "2026-07-03",
+    "fecha_maxima_descargada": "2026-07-02",
+    "fecha_maxima_despues": "2026-07-03",
+    "nuevas_fechas": 0,
+    "semanticas": {
+      "ret_COPX": "retorno",
+      "ret_EPU": "retorno",
+      "ret_XLB": "retorno",
+      "ret_IDX_VIX": "retorno",
+      "vix_retorno": "retorno"
+    },
+    "modo": "AUDITORIA"
+  },
+  "controles": [
+    {
+      "control": "sbs_ultima_fecha_tiene_4_afp",
+      "estado": "correcto",
+      "detalle": "fecha=2026-06-30, afp=4"
+    },
+    {
+      "control": "sbs_cuotas_positivas",
+      "estado": "correcto",
+      "detalle": "cuotas_no_positivas=0"
+    },
+    {
+      "control": "mercados_fecha_maxima",
+      "estado": "correcto",
+      "detalle": "2026-07-03"
+    },
+    {
+      "control": "mercado_ret_COPX_disponible",
+      "estado": "correcto",
+      "detalle": "observaciones=2694"
+    },
+    {
+      "control": "mercado_ret_EPU_disponible",
+      "estado": "correcto",
+      "detalle": "observaciones=2694"
+    },
+    {
+      "control": "mercado_ret_XLB_disponible",
+      "estado": "correcto",
+      "detalle": "observaciones=2694"
+    },
+    {
+      "control": "mercado_ret_IDX_VIX_disponible",
+      "estado": "correcto",
+      "detalle": "observaciones=2719"
+    }
+  ],
+  "directorio_auditoria": "C:\\Users\\PC\\Downloads\\afp_fondo3_inicio\\afp_fondo3_inicio\\data\\processed\\actualizaciones_modelo61\\20260704_223131",
+  "nota": "La página diaria de la SBS se usa como fuente oficial reciente. Los precios de mercado se descargan mediante yfinance. Las fuentes descargadas y los respaldos se conservan por ejecución."
+}

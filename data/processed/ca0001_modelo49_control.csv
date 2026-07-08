@@ -1,0 +1,7 @@
+﻿control,estado,detalle
+predicciones_sin_duplicados,correcto,filas=12
+cuatro_afp_en_predicciones,correcto,"Habitat, Integra, Prima, Profuturo"
+base_real_sin_duplicados,correcto,filas=11860
+afp_en_base_real,correcto,afp=4
+alineacion_sin_lookahead,correcto,cada predicción se compara solo con el retorno oficial de su misma fecha y AFP
+estado_publicacion,pendiente,pendientes=12; fecha_maxima_real=2026-06-30 00:00:00

@@ -1,0 +1,504 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="refresh" content="300">
+<title>Monitor AFP Fondo 3</title>
+<style>
+body {
+  font-family: Arial, sans-serif;
+  margin: 24px;
+  background: #f5f6f8;
+  color: #1f2937;
+}
+h1, h2, h3 { color: #17365d; }
+.tarjeta {
+  background: white;
+  padding: 18px;
+  margin-bottom: 18px;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,.08);
+}
+.tabla {
+  border-collapse: collapse;
+  width: 100%;
+  background: white;
+}
+.tabla th, .tabla td {
+  padding: 8px;
+  border-bottom: 1px solid #ddd;
+  text-align: right;
+}
+.tabla th:first-child, .tabla td:first-child {
+  text-align: left;
+}
+.grafico img {
+  max-width: 100%;
+  background: white;
+  border-radius: 8px;
+}
+.aviso {
+  background: #fff7d6;
+  border-left: 5px solid #d8a500;
+  padding: 12px;
+}
+.pendiente {
+  border-left: 6px solid #2563eb;
+}
+</style>
+</head>
+<body>
+<h1>Monitor prospectivo AFP Fondo 3</h1>
+
+<div class="tarjeta">
+  <strong>Última fecha detectada en SBS:</strong>
+  2026-07-06
+  <br>
+  <strong>Última actualización local:</strong>
+  2026-07-08 14:00:30
+</div>
+
+<div class="aviso">
+La estimación es un resultado estadístico anticipado.
+El valor oficial es el publicado por la SBS.
+</div>
+
+<div class="tarjeta pendiente">
+<h2>Pronósticos vigentes pendientes de publicación SBS</h2>
+<p>
+Estos son los resultados que el modelo ya dejó congelados.
+Cuando la SBS publique la misma fecha, pasarán automáticamente
+a la tabla de comparación.
+</p>
+<table class="dataframe tabla">
+  <thead>
+    <tr style="text-align: right;">
+      <th>AFP</th>
+      <th>Fecha pronosticada</th>
+      <th>Ancla SBS</th>
+      <th>Última cuota oficial</th>
+      <th>Cuota estimada</th>
+      <th>Variación estimada (%)</th>
+      <th>Dirección</th>
+      <th>Cobertura (%)</th>
+      <th>Nivel datos</th>
+      <th>Estado</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Habitat</td>
+      <td>NaT</td>
+      <td>2026-06-30 00:00:00</td>
+      <td>33.537063</td>
+      <td>33.497267</td>
+      <td>-0.118664</td>
+      <td>BAJA</td>
+      <td>100.000000</td>
+      <td>ALTA</td>
+      <td>ESPERANDO PUBLICACIÓN SBS</td>
+    </tr>
+    <tr>
+      <td>Habitat</td>
+      <td>NaT</td>
+      <td>2026-06-30 00:00:00</td>
+      <td>33.537063</td>
+      <td>33.575568</td>
+      <td>0.114815</td>
+      <td>SUBE</td>
+      <td>100.000000</td>
+      <td>ALTA</td>
+      <td>ESPERANDO PUBLICACIÓN SBS</td>
+    </tr>
+    <tr>
+      <td>Habitat</td>
+      <td>NaT</td>
+      <td>2026-07-02 00:00:00</td>
+      <td>32.885241</td>
+      <td>33.152550</td>
+      <td>0.812854</td>
+      <td>SUBE</td>
+      <td>100.000000</td>
+      <td>ALTA</td>
+      <td>ESPERANDO PUBLICACIÓN SBS</td>
+    </tr>
+    <tr>
+      <td>Habitat</td>
+      <td>NaT</td>
+      <td>2026-07-02 00:00:00</td>
+      <td>32.885241</td>
+      <td>32.768054</td>
+      <td>-0.356352</td>
+      <td>BAJA</td>
+      <td>100.000000</td>
+      <td>ALTA</td>
+      <td>ESPERANDO PUBLICACIÓN SBS</td>
+    </tr>
+    <tr>
+      <td>Integra</td>
+      <td>NaT</td>
+      <td>2026-06-30 00:00:00</td>
+      <td>72.328460</td>
+      <td>72.124040</td>
+      <td>-0.282627</td>
+      <td>BAJA</td>
+      <td>100.000000</td>
+      <td>ALTA</td>
+      <td>ESPERANDO PUBLICACIÓN SBS</td>
+    </tr>
+    <tr>
+      <td>Integra</td>
+      <td>NaT</td>
+      <td>2026-06-30 00:00:00</td>
+      <td>72.328460</td>
+      <td>72.442357</td>
+      <td>0.157473</td>
+      <td>SUBE</td>
+      <td>100.000000</td>
+      <td>ALTA</td>
+      <td>ESPERANDO PUBLICACIÓN SBS</td>
+    </tr>
+    <tr>
+      <td>Integra</td>
+      <td>NaT</td>
+      <td>2026-07-02 00:00:00</td>
+      <td>70.285852</td>
+      <td>69.745490</td>
+      <td>-0.768807</td>
+      <td>BAJA</td>
+      <td>100.000000</td>
+      <td>ALTA</td>
+      <td>ESPERANDO PUBLICACIÓN SBS</td>
+    </tr>
+    <tr>
+      <td>Integra</td>
+      <td>NaT</td>
+      <td>2026-07-02 00:00:00</td>
+      <td>70.285852</td>
+      <td>69.490412</td>
+      <td>-1.131721</td>
+      <td>BAJA</td>
+      <td>100.000000</td>
+      <td>ALTA</td>
+      <td>ESPERANDO PUBLICACIÓN SBS</td>
+    </tr>
+    <tr>
+      <td>Prima</td>
+      <td>NaT</td>
+      <td>2026-06-30 00:00:00</td>
+      <td>65.791816</td>
+      <td>65.576369</td>
+      <td>-0.327469</td>
+      <td>BAJA</td>
+      <td>100.000000</td>
+      <td>ALTA</td>
+      <td>ESPERANDO PUBLICACIÓN SBS</td>
+    </tr>
+    <tr>
+      <td>Prima</td>
+      <td>NaT</td>
+      <td>2026-06-30 00:00:00</td>
+      <td>65.791816</td>
+      <td>65.830393</td>
+      <td>0.058634</td>
+      <td>SUBE</td>
+      <td>100.000000</td>
+      <td>ALTA</td>
+      <td>ESPERANDO PUBLICACIÓN SBS</td>
+    </tr>
+    <tr>
+      <td>Prima</td>
+      <td>NaT</td>
+      <td>2026-06-30 00:00:00</td>
+      <td>65.791816</td>
+      <td>66.142824</td>
+      <td>0.533513</td>
+      <td>SUBE</td>
+      <td>100.000000</td>
+      <td>ALTA</td>
+      <td>ESPERANDO PUBLICACIÓN SBS</td>
+    </tr>
+    <tr>
+      <td>Prima</td>
+      <td>NaT</td>
+      <td>2026-07-02 00:00:00</td>
+      <td>63.920638</td>
+      <td>63.798227</td>
+      <td>-0.191505</td>
+      <td>BAJA</td>
+      <td>100.000000</td>
+      <td>ALTA</td>
+      <td>ESPERANDO PUBLICACIÓN SBS</td>
+    </tr>
+    <tr>
+      <td>Prima</td>
+      <td>NaT</td>
+      <td>2026-07-02 00:00:00</td>
+      <td>63.920638</td>
+      <td>63.643236</td>
+      <td>-0.433980</td>
+      <td>BAJA</td>
+      <td>100.000000</td>
+      <td>ALTA</td>
+      <td>ESPERANDO PUBLICACIÓN SBS</td>
+    </tr>
+    <tr>
+      <td>Profuturo</td>
+      <td>NaT</td>
+      <td>2026-06-30 00:00:00</td>
+      <td>71.934830</td>
+      <td>71.747945</td>
+      <td>-0.259798</td>
+      <td>BAJA</td>
+      <td>100.000000</td>
+      <td>ALTA</td>
+      <td>ESPERANDO PUBLICACIÓN SBS</td>
+    </tr>
+    <tr>
+      <td>Profuturo</td>
+      <td>NaT</td>
+      <td>2026-06-30 00:00:00</td>
+      <td>71.934830</td>
+      <td>72.147418</td>
+      <td>0.295529</td>
+      <td>SUBE</td>
+      <td>100.000000</td>
+      <td>ALTA</td>
+      <td>ESPERANDO PUBLICACIÓN SBS</td>
+    </tr>
+    <tr>
+      <td>Profuturo</td>
+      <td>NaT</td>
+      <td>2026-07-02 00:00:00</td>
+      <td>70.335854</td>
+      <td>69.787424</td>
+      <td>-0.779730</td>
+      <td>BAJA</td>
+      <td>100.000000</td>
+      <td>ALTA</td>
+      <td>ESPERANDO PUBLICACIÓN SBS</td>
+    </tr>
+    <tr>
+      <td>Profuturo</td>
+      <td>NaT</td>
+      <td>2026-07-02 00:00:00</td>
+      <td>70.335854</td>
+      <td>69.520323</td>
+      <td>-1.159481</td>
+      <td>BAJA</td>
+      <td>100.000000</td>
+      <td>ALTA</td>
+      <td>ESPERANDO PUBLICACIÓN SBS</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<div class="tarjeta">
+<h2>Pronóstico congelado frente a cuota real SBS</h2>
+<table class="dataframe tabla">
+  <thead>
+    <tr style="text-align: right;">
+      <th>AFP</th>
+      <th>Fecha</th>
+      <th>Cuota estimada</th>
+      <th>Cuota real SBS</th>
+      <th>Desviación cuota</th>
+      <th>Error (%)</th>
+      <th>Error absoluto (%)</th>
+      <th>Dirección estimada</th>
+      <th>Dirección real</th>
+      <th>¿Acertó dirección?</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Habitat</td>
+      <td>2026-07-02</td>
+      <td>33.575568</td>
+      <td>32.885241</td>
+      <td>0.690327</td>
+      <td>2.099201</td>
+      <td>2.099201</td>
+      <td>SUBE</td>
+      <td>BAJA</td>
+      <td>False</td>
+    </tr>
+    <tr>
+      <td>Integra</td>
+      <td>2026-07-02</td>
+      <td>72.442357</td>
+      <td>70.285852</td>
+      <td>2.156505</td>
+      <td>3.068192</td>
+      <td>3.068192</td>
+      <td>SUBE</td>
+      <td>BAJA</td>
+      <td>False</td>
+    </tr>
+    <tr>
+      <td>Prima</td>
+      <td>2026-07-02</td>
+      <td>65.830393</td>
+      <td>63.920638</td>
+      <td>1.909754</td>
+      <td>2.987696</td>
+      <td>2.987696</td>
+      <td>SUBE</td>
+      <td>BAJA</td>
+      <td>False</td>
+    </tr>
+    <tr>
+      <td>Profuturo</td>
+      <td>2026-07-02</td>
+      <td>72.147418</td>
+      <td>70.335854</td>
+      <td>1.811564</td>
+      <td>2.575591</td>
+      <td>2.575591</td>
+      <td>SUBE</td>
+      <td>BAJA</td>
+      <td>False</td>
+    </tr>
+    <tr>
+      <td>Habitat</td>
+      <td>2026-07-01</td>
+      <td>33.497267</td>
+      <td>33.101987</td>
+      <td>0.395280</td>
+      <td>1.194127</td>
+      <td>1.194127</td>
+      <td>BAJA</td>
+      <td>BAJA</td>
+      <td>True</td>
+    </tr>
+    <tr>
+      <td>Integra</td>
+      <td>2026-07-01</td>
+      <td>72.124040</td>
+      <td>70.968107</td>
+      <td>1.155933</td>
+      <td>1.628806</td>
+      <td>1.628806</td>
+      <td>BAJA</td>
+      <td>BAJA</td>
+      <td>True</td>
+    </tr>
+    <tr>
+      <td>Prima</td>
+      <td>2026-07-01</td>
+      <td>65.576369</td>
+      <td>64.509148</td>
+      <td>1.067221</td>
+      <td>1.654371</td>
+      <td>1.654371</td>
+      <td>BAJA</td>
+      <td>BAJA</td>
+      <td>True</td>
+    </tr>
+    <tr>
+      <td>Profuturo</td>
+      <td>2026-07-01</td>
+      <td>71.747945</td>
+      <td>70.922633</td>
+      <td>0.825312</td>
+      <td>1.163679</td>
+      <td>1.163679</td>
+      <td>BAJA</td>
+      <td>BAJA</td>
+      <td>True</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<div class="tarjeta">
+<h2>Métricas prospectivas acumuladas</h2>
+<table class="dataframe tabla">
+  <thead>
+    <tr style="text-align: right;">
+      <th>afp</th>
+      <th>n_pronosticos_evaluados</th>
+      <th>mape_prospectivo_pct</th>
+      <th>sesgo_pct</th>
+      <th>p90_error_abs_pct</th>
+      <th>error_maximo_abs_pct</th>
+      <th>acierto_direccion_pct</th>
+      <th>pearson_retorno</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Habitat</td>
+      <td>2</td>
+      <td>1.646664</td>
+      <td>1.646664</td>
+      <td>2.008694</td>
+      <td>2.099201</td>
+      <td>50.000000</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <td>Integra</td>
+      <td>2</td>
+      <td>2.348499</td>
+      <td>2.348499</td>
+      <td>2.924254</td>
+      <td>3.068192</td>
+      <td>50.000000</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <td>Prima</td>
+      <td>2</td>
+      <td>2.321034</td>
+      <td>2.321034</td>
+      <td>2.854364</td>
+      <td>2.987696</td>
+      <td>50.000000</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <td>Profuturo</td>
+      <td>2</td>
+      <td>1.869635</td>
+      <td>1.869635</td>
+      <td>2.434400</td>
+      <td>2.575591</td>
+      <td>50.000000</td>
+      <td>NaN</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<div class="tarjeta">
+<h2>Gráficos de validación prospectiva</h2>
+
+                <section class="grafico">
+                  <h3>Habitat</h3>
+                  <img src="graficos_modelo80/01_real_vs_pronostico_habitat.png"
+                       alt="Real vs pronóstico Habitat">
+                </section>
+                
+                <section class="grafico">
+                  <h3>Integra</h3>
+                  <img src="graficos_modelo80/01_real_vs_pronostico_integra.png"
+                       alt="Real vs pronóstico Integra">
+                </section>
+                
+                <section class="grafico">
+                  <h3>Prima</h3>
+                  <img src="graficos_modelo80/01_real_vs_pronostico_prima.png"
+                       alt="Real vs pronóstico Prima">
+                </section>
+                
+                <section class="grafico">
+                  <h3>Profuturo</h3>
+                  <img src="graficos_modelo80/01_real_vs_pronostico_profuturo.png"
+                       alt="Real vs pronóstico Profuturo">
+                </section>
+                
+</div>
+</body>
+</html>
