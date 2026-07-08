@@ -19,3 +19,10 @@ automatizacion/
 # Salidas temporales.
 data/processed/bat_ultimo_error.log
 data/processed/bat_ultimo_estado.log
+data/processed/*.log
+data/processed/ca0001_archivos_inspeccionados.csv
+data/processed/ca0001_modelo41_archivos_detectados.csv
+data/processed/ca0001_modelo45_candidatos_prediccion.csv
+data/processed/ca0001_modelo45_control.csv
+data/processed/ca0001_modelo46_auditoria_semantica_archivos.csv
+data/processed/fp1356_inventario_archivos_inspeccionados.csv
