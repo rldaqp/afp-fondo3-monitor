@@ -946,6 +946,21 @@ def construir_vela_intradia(afp: str, intradia: pd.DataFrame) -> dict[str, Any] 
     maximo = float(valores.max())
     minimo = float(valores.min())
     cierre = float(valores.iloc[-1])
+    z["hora_bloque"] = z["timestamp"].dt.floor("h")
+
+    velas_horarias = []
+    for hora, grupo in z.groupby("hora_bloque", sort=True):
+        valores_hora = grupo["cuota_estimada_intradia"].astype(float)
+        velas_horarias.append(
+            {
+                "hora": pd.Timestamp(hora).strftime("%H:%M"),
+                "apertura": float(valores_hora.iloc[0]),
+                "maximo": float(valores_hora.max()),
+                "minimo": float(valores_hora.min()),
+                "cierre": float(valores_hora.iloc[-1]),
+                "n": int(len(valores_hora)),
+            }
+        )
 
     return {
         "fecha_guardado": fecha_texto(ultima_fecha),
@@ -958,6 +973,7 @@ def construir_vela_intradia(afp: str, intradia: pd.DataFrame) -> dict[str, Any] 
         "primer_registro": z["timestamp"].iloc[0].strftime("%H:%M:%S"),
         "ultimo_registro": z["timestamp"].iloc[-1].strftime("%H:%M:%S"),
         "variacion_pct": (cierre / apertura - 1.0) * 100.0 if apertura else None,
+        "velas_horarias": velas_horarias,
         "serie": [
             {
                 "hora": fila["timestamp"].strftime("%H:%M:%S"),
@@ -1795,18 +1811,19 @@ th{color:var(--azul);background:#f7f9fc}
 
 <section id="velaIntradia" class="vista">
   <div class="aviso">
-    Esta vista muestra la vela intradía del valor cuota estimado usando únicamente valores guardados durante el día.
-    La vela no usa cuotas oficiales intradía ni operaciones de mercado: resume las estimaciones del valor cuota que el sistema fue registrando.
+    Esta vista muestra velas intradía del valor cuota estimado usando únicamente valores guardados durante el día.
+    La vela no usa cuotas oficiales intradía SBS: resume las estimaciones del valor cuota que el sistema fue registrando.
   </div>
   <div class="bloque metodologia-vela">
     <h3>Cómo se construye la vela del valor cuota</h3>
-    <p>Para construirla, el sistema toma todos los valores cuota estimados que quedaron guardados para una AFP durante el mismo día y los ordena por hora de registro.</p>
+    <p>Para construirla como en MetaTrader, cada actualización guardada del valor cuota estimado se toma como un dato intradía. Luego se agrupa por hora de registro y cada hora forma una vela.</p>
     <ul>
-      <li><strong>Apertura</strong> = primer valor estimado guardado del día.</li>
-      <li><strong>Máximo</strong> = mayor valor estimado guardado del día.</li>
-      <li><strong>Mínimo</strong> = menor valor estimado guardado del día.</li>
-      <li><strong>Cierre</strong> = último valor estimado guardado del día.</li>
+      <li><strong>Apertura</strong> = primer valor estimado guardado en la hora.</li>
+      <li><strong>Máximo</strong> = mayor valor estimado guardado en la hora.</li>
+      <li><strong>Mínimo</strong> = menor valor estimado guardado en la hora.</li>
+      <li><strong>Cierre</strong> = último valor estimado guardado en la hora.</li>
     </ul>
+    <p class="nota">Si en una hora solo existe una actualización, apertura, máximo, mínimo y cierre serán iguales. Por eso también se muestra la línea de valores guardados.</p>
   </div>
   <div id="selectorVelaIntradia" class="selector"></div>
   <div id="resumenVelaIntradia" class="resumen-linea">
@@ -1814,6 +1831,7 @@ th{color:var(--azul);background:#f7f9fc}
   </div>
   <div id="bloqueGraficoVelaIntradia" class="bloque" style="display:none">
     <div id="graficoVelaIntradia" class="grafico"></div>
+    <div id="tablaVelaIntradia" class="tabla-wrap"></div>
   </div>
 </section>
 
@@ -1871,7 +1889,7 @@ function activarVista(nombre){
     }catch(e){
       const vista=document.getElementById(nombre);
       if(vista){
-        vista.insertAdjacentHTML("beforeend",'<div class="sin-datos">No se pudo cargar esta vista. Vuelve a actualizar el monitor.</div>');
+        vista.insertAdjacentHTML("beforeend",'<div class="sin-datos">La vista cambió, pero algún gráfico no terminó de cargar. Revisa la tabla de datos o recarga el monitor.</div>');
       }
       console.error(e);
     }
@@ -1900,11 +1918,11 @@ function renderVelaIntradia(){
     resumen.innerHTML=`
       <div class="sin-datos">
         Todavía no hay estimaciones intradía guardadas para construir la vela del valor cuota de ${afpVelaIntradia}.
-        Cuando el sistema guarde valores durante el día, esta página mostrará apertura, máximo, mínimo y cierre.
+        Cuando el sistema guarde valores durante el día, esta página mostrará velas por hora con apertura, máximo, mínimo y cierre.
       </div>`;
     const bloqueGrafico=document.getElementById("bloqueGraficoVelaIntradia");
     if(bloqueGrafico) bloqueGrafico.style.display="none";
-    Plotly.purge("graficoVelaIntradia");
+    if(window.Plotly) Plotly.purge("graficoVelaIntradia");
     return;
   }
 
@@ -1916,24 +1934,62 @@ function renderVelaIntradia(){
     <div class="mini-card"><span>Día guardado</span><strong>${vela.fecha_guardado||"Sin dato"}</strong></div>
     <div class="mini-card"><span>Fecha objetivo</span><strong>${vela.fecha_objetivo||"Sin dato"}</strong></div>
     <div class="mini-card"><span>Estimaciones guardadas</span><strong>${vela.n_estimaciones}</strong></div>
-    <div class="mini-card"><span>Apertura</span><strong>${fmtNumero(vela.apertura)}</strong></div>
-    <div class="mini-card"><span>Máximo</span><strong>${fmtNumero(vela.maximo)}</strong></div>
-    <div class="mini-card"><span>Mínimo</span><strong>${fmtNumero(vela.minimo)}</strong></div>
-    <div class="mini-card"><span>Cierre</span><strong>${fmtNumero(vela.cierre)}</strong></div>
+    <div class="mini-card"><span>Apertura del día</span><strong>${fmtNumero(vela.apertura)}</strong></div>
+    <div class="mini-card"><span>Máximo del día</span><strong>${fmtNumero(vela.maximo)}</strong></div>
+    <div class="mini-card"><span>Mínimo del día</span><strong>${fmtNumero(vela.minimo)}</strong></div>
+    <div class="mini-card"><span>Cierre del día</span><strong>${fmtNumero(vela.cierre)}</strong></div>
     <div class="mini-card"><span>Variación del día</span><strong class="${claseNumero(vela.variacion_pct)}">${fmtPct(vela.variacion_pct)}</strong></div>
     <div class="mini-card"><span>Ventana</span><strong>${vela.primer_registro||"--"} a ${vela.ultimo_registro||"--"}</strong></div>`;
 
+  const velasHorarias=vela.velas_horarias||[];
   const horas=(vela.serie||[]).map(x=>x.hora);
   const cuotas=(vela.serie||[]).map(x=>x.cuota);
+  const tabla=document.getElementById("tablaVelaIntradia");
+  if(tabla){
+    tabla.innerHTML=`
+      <table>
+        <thead>
+          <tr>
+            <th>Hora</th>
+            <th class="num">Apertura</th>
+            <th class="num">Máximo</th>
+            <th class="num">Mínimo</th>
+            <th class="num">Cierre</th>
+            <th class="num">Registros</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${velasHorarias.map(v=>`
+            <tr>
+              <td><strong>${v.hora}</strong></td>
+              <td class="num">${fmtNumero(v.apertura)}</td>
+              <td class="num">${fmtNumero(v.maximo)}</td>
+              <td class="num">${fmtNumero(v.minimo)}</td>
+              <td class="num">${fmtNumero(v.cierre)}</td>
+              <td class="num">${v.n}</td>
+            </tr>
+          `).join("")}
+        </tbody>
+      </table>
+      <p class="nota">Cada fila es una vela horaria del valor cuota estimado guardado.</p>
+    `;
+  }
+
+  if(!window.Plotly){
+    document.getElementById("graficoVelaIntradia").innerHTML=
+      '<div class="sin-datos">No se cargó la librería de gráficos. La tabla inferior muestra las velas horarias calculadas.</div>';
+    return;
+  }
+
   const trazas=[
     {
       type:"candlestick",
-      x:[vela.fecha_guardado],
-      open:[vela.apertura],
-      high:[vela.maximo],
-      low:[vela.minimo],
-      close:[vela.cierre],
-      name:"Vela intradía del valor cuota",
+      x:velasHorarias.map(v=>v.hora),
+      open:velasHorarias.map(v=>v.apertura),
+      high:velasHorarias.map(v=>v.maximo),
+      low:velasHorarias.map(v=>v.minimo),
+      close:velasHorarias.map(v=>v.cierre),
+      name:"Velas horarias",
       increasing:{line:{color:"#15803d"},fillcolor:"rgba(22,163,74,.28)"},
       decreasing:{line:{color:"#b91c1c"},fillcolor:"rgba(220,38,38,.25)"}
     },
@@ -1943,21 +1999,21 @@ function renderVelaIntradia(){
       x:horas,
       y:cuotas,
       yaxis:"y2",
-      name:"Valores guardados",
+      name:"Actualizaciones guardadas",
       line:{color:"#2563eb",width:2},
       marker:{size:6}
     }
   ];
 
   Plotly.react("graficoVelaIntradia",trazas,{
-    title:`${afpVelaIntradia}: vela intradía del valor cuota`,
+    title:`${afpVelaIntradia}: velas horarias del valor cuota estimado`,
     height:520,
     margin:{l:62,r:52,t:70,b:60},
     paper_bgcolor:"white",
     plot_bgcolor:"white",
     showlegend:true,
-    xaxis:{title:"Día de registro",rangeslider:{visible:false}},
-    yaxis:{title:"Vela del valor cuota",gridcolor:"#e8edf5",domain:[0.42,1]},
+    xaxis:{title:"Hora",rangeslider:{visible:false}},
+    yaxis:{title:"OHLC por hora",gridcolor:"#e8edf5",domain:[0.42,1]},
     yaxis2:{title:"Valores guardados",gridcolor:"#eef2f7",domain:[0,0.30]},
     hovermode:"x unified"
   },{responsive:true,displayModeBar:false});
