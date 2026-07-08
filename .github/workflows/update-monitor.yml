@@ -2,6 +2,16 @@ name: Actualizar monitor Fondo 3
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - migracion-github-actions
+    paths:
+      - ".github/workflows/update-monitor.yml"
+      - "129_monitor_fondo3_ACTUALIZA_Y_ABRE.py"
+      - "scripts/**"
+      - "src/**"
+      - "requirements.txt"
+      - "data/**"
   schedule:
     # America/Lima = UTC-5. Estas dos reglas cubren lunes a viernes completos en Lima.
     - cron: "0 5-23 * * 1-5"
