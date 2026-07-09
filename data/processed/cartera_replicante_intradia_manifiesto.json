@@ -1,0 +1,17 @@
+{
+  "proyecto": "valor_cuota_intradia_cartera_replicante",
+  "fecha_cartera": "2026-01-30",
+  "afps": [
+    "Habitat",
+    "Integra",
+    "Prima",
+    "Profuturo"
+  ],
+  "archivos_generados": [
+    "cartera_replicante_intradia_base_ultimo_mes.csv",
+    "cartera_replicante_intradia_resumen_afp.csv",
+    "cartera_replicante_intradia_fuentes.csv",
+    "cartera_replicante_intradia_metricas_plan.csv"
+  ],
+  "siguiente_paso": "Mapear instrumento_id/ISIN a ticker_precio o proxy para poder descargar precios intradia."
+}

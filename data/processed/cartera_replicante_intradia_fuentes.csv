@@ -1,0 +1,7 @@
+﻿bloque,fuente,uso,estado
+cartera,SBS CA-0001,instrumentos y pesos por AFP Fondo 3,disponible_en_repo
+cuota,SBS valor cuota Fondo 3,validacion diaria y ancla del valor cuota,disponible_en_repo
+precios,Yahoo Finance / yfinance,"precios intradia de ETF, acciones USA y proxies",pendiente_mapeo
+precios,BVL,acciones peruanas y precios locales,pendiente_mapeo
+fx,USD/PEN,convertir exposiciones extranjeras a soles,pendiente_fuente_operativa
+bonos,curvas/proxies de renta fija,aproximar instrumentos sin precio intradia,pendiente_proxy

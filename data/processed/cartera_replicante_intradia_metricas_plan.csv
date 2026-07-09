@@ -1,0 +1,9 @@
+﻿grupo,metrica,calculo,respuesta
+precision_diaria,MAE,promedio(abs(cuota_estimada - cuota_sbs_real)),cuanto se equivoca en unidades de valor cuota
+precision_diaria,MAPE,promedio(abs(cuota_estimada / cuota_sbs_real - 1)),error porcentual promedio
+precision_diaria,RMSE,raiz(promedio(error^2)),castiga mas los errores grandes
+direccion,acierto_direccion,signo(retorno_estimado) == signo(retorno_real),si acierta sube o baja
+relacion,correlacion_retornos,"corr(retorno_estimado, retorno_real)",si se mueve parecido a la SBS
+riesgo_modelo,tracking_error,desviacion_estandar(retorno_estimado - retorno_real),desviacion frente a la cuota oficial
+intradia,error_por_hora,"error de estimacion 10:00, 12:00, 15:00, cierre",a que hora la estimacion empieza a ser util
+comparacion,mejora_vs_modelo_tonto,MAE_modelo < MAE(ultima_cuota_sbs),si el modelo aporta valor real
