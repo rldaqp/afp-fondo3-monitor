@@ -36,6 +36,9 @@ def main() -> None:
     if not args.skip_update:
         run([sys.executable, "129_monitor_fondo3_ACTUALIZA_Y_ABRE.py", "--actualizar"])
 
+    run([sys.executable, "src/131_comparar_metricas_modelos.py"])
+    run([sys.executable, "src/132_generar_vista_comparativa_modelos.py"])
+
     PUBLIC.mkdir(parents=True, exist_ok=True)
 
     copy_if_exists(
@@ -57,6 +60,10 @@ def main() -> None:
     copy_if_exists(
         PROCESSED / "ca0001_modelo111_vela_pronostico_historico.html",
         PUBLIC / "vela-diaria.html",
+    )
+    copy_if_exists(
+        PROCESSED / "comparativa_metricas_modelos.html",
+        PUBLIC / "modelos.html",
     )
 
     if not (PUBLIC / "index.html").exists():
