@@ -1,0 +1,287 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Proyecto cartera replicante Fondo 3</title>
+  <style>
+    :root {
+      --bg: #eef3f8; --ink: #0b2340; --muted: #526b8a;
+      --blue: #174a7c; --line: #cad8e8; --green: #11844f;
+      --orange: #d78318; --violet: #7761b7; --red: #b84242;
+    }
+    * { box-sizing: border-box; }
+    body { margin:0; font-family: Arial, Helvetica, sans-serif; background:var(--bg); color:var(--ink); }
+    main { width:min(1160px, calc(100% - 32px)); margin:24px auto 48px; }
+    header { background:linear-gradient(120deg,#133f70,#2d70ad); color:#fff; border-radius:8px; padding:24px 28px; }
+    h1 { margin:0 0 8px; font-size:clamp(25px,4vw,34px); }
+    h2 { margin:0 0 14px; font-size:22px; }
+    h3 { margin:0 0 10px; font-size:18px; }
+    .sub { margin:0; line-height:1.45; }
+    .note { margin:18px 0; padding:14px 16px; border-left:6px solid #d7a900; background:#fff4cc; border-radius:8px; line-height:1.45; }
+    .panel, .afp-card { background:#fff; border:1px solid var(--line); border-radius:8px; padding:16px; }
+    .grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:14px; }
+    .stack { display:flex; height:18px; overflow:hidden; background:#e7eef7; border-radius:999px; }
+    .stack span { display:block; height:100%; }
+    .directo { background:var(--green); }
+    .nous { background:var(--orange); }
+    .privado { background:var(--violet); }
+    .pendiente { background:var(--red); }
+    .metrics { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:6px 10px; margin-top:12px; color:var(--muted); font-size:13px; }
+    .legend { display:flex; flex-wrap:wrap; gap:10px; color:var(--muted); font-size:13px; margin:10px 0 0; }
+    .legend span::before { content:""; display:inline-block; width:11px; height:11px; border-radius:50%; margin-right:6px; vertical-align:-1px; background:#999; }
+    .legend .l1::before { background:var(--green); }
+    .legend .l2::before { background:var(--orange); }
+    .legend .l3::before { background:var(--violet); }
+    .legend .l4::before { background:var(--red); }
+    table { width:100%; border-collapse:collapse; background:#fff; border:1px solid var(--line); border-radius:8px; overflow:hidden; }
+    th, td { padding:10px 11px; border-bottom:1px solid #e7eef6; text-align:left; font-size:14px; }
+    th { background:#f7f9fc; color:#244766; }
+    .steps { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px; }
+    .step { background:#fff; border:1px solid var(--line); border-radius:8px; padding:14px; }
+    .step strong { display:block; margin-bottom:6px; }
+    @media(max-width:850px){ .grid,.steps{grid-template-columns:1fr;} .metrics{grid-template-columns:1fr;} th,td{font-size:13px;padding:8px;} }
+    </style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>Proyecto cartera replicante Fondo 3</h1>
+    <p class="sub">Visor independiente para construir el modelo intradia basado en la cartera real publicada por SBS.</p>
+  </header>
+
+  <section class="note">
+    Este visor no reemplaza el monitor diario. Sirve para seguir el nuevo proyecto: identificar instrumentos, mapearlos a ticker o proxy y medir cuanta cartera puede valorizarse intradia.
+  </section>
+
+  <section class="panel">
+    <h2>Estado del mapeo inicial</h2>
+    <div class="legend">
+      <span class="l1">Ticker intradia probable</span>
+      <span class="l2">Ticker no US requiere fuente</span>
+      <span class="l3">Privado/proxy</span>
+      <span class="l4">Pendiente</span>
+    </div>
+  </section>
+
+  <section class="grid">
+    <section class='afp-card'><h3>Habitat</h3>
+<div class='stack'>
+<span class='directo' style='width:32.22%' title='Directo: 32.22%'></span>
+<span class='nous' style='width:9.93%' title='Ticker no US: 9.93%'></span>
+<span class='privado' style='width:10.20%' title='Privado: 10.20%'></span>
+<span class='pendiente' style='width:1.42%' title='Pendiente: 1.42%'></span>
+</div>
+
+            <div class='metrics'>
+              <span>Base: <strong>53.77%</strong></span>
+              <span>Directo: <strong>32.22%</strong></span>
+              <span>Requiere fuente: <strong>9.93%</strong></span>
+              <span>Privado/proxy: <strong>10.20%</strong></span>
+            </div>
+            
+</section>
+<section class='afp-card'><h3>Integra</h3>
+<div class='stack'>
+<span class='directo' style='width:41.30%' title='Directo: 41.30%'></span>
+<span class='nous' style='width:5.39%' title='Ticker no US: 5.39%'></span>
+<span class='privado' style='width:0.95%' title='Privado: 0.95%'></span>
+<span class='pendiente' style='width:11.98%' title='Pendiente: 11.98%'></span>
+</div>
+
+            <div class='metrics'>
+              <span>Base: <strong>59.62%</strong></span>
+              <span>Directo: <strong>41.30%</strong></span>
+              <span>Requiere fuente: <strong>5.39%</strong></span>
+              <span>Privado/proxy: <strong>0.95%</strong></span>
+            </div>
+            
+</section>
+<section class='afp-card'><h3>Prima</h3>
+<div class='stack'>
+<span class='directo' style='width:42.26%' title='Directo: 42.26%'></span>
+<span class='nous' style='width:4.77%' title='Ticker no US: 4.77%'></span>
+<span class='privado' style='width:6.34%' title='Privado: 6.34%'></span>
+<span class='pendiente' style='width:1.49%' title='Pendiente: 1.49%'></span>
+</div>
+
+            <div class='metrics'>
+              <span>Base: <strong>54.85%</strong></span>
+              <span>Directo: <strong>42.26%</strong></span>
+              <span>Requiere fuente: <strong>4.77%</strong></span>
+              <span>Privado/proxy: <strong>6.34%</strong></span>
+            </div>
+            
+</section>
+<section class='afp-card'><h3>Profuturo</h3>
+<div class='stack'>
+<span class='directo' style='width:47.38%' title='Directo: 47.38%'></span>
+<span class='nous' style='width:3.73%' title='Ticker no US: 3.73%'></span>
+<span class='pendiente' style='width:11.14%' title='Pendiente: 11.14%'></span>
+</div>
+
+            <div class='metrics'>
+              <span>Base: <strong>62.26%</strong></span>
+              <span>Directo: <strong>47.38%</strong></span>
+              <span>Requiere fuente: <strong>3.73%</strong></span>
+              <span>Privado/proxy: <strong>0.00%</strong></span>
+            </div>
+            
+</section>
+  </section>
+
+  <section class="note">
+    Siguiente parte correcta: confirmar los tickers directos, elegir proveedor para instrumentos no US y asignar proxy a fondos privados o instrumentos sin precio intradia.
+  </section>
+
+  <section class="panel">
+    <h2>Instrumentos de mayor peso para revisar primero</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>AFP</th><th>Instrumento</th><th>Peso</th><th>Ticker</th><th>Bolsa</th><th>Proxy</th><th>Estado</th>
+        </tr>
+      </thead>
+      <tbody>
+            <tr>
+              <td>Profuturo</td>
+              <td>US4642875235</td>
+              <td>9.74%</td>
+              <td>SOXX</td>
+              <td>US</td>
+              <td>XLK</td>
+              <td>ticker_intradia_probable</td>
+            </tr>
+            
+
+            <tr>
+              <td>Integra</td>
+              <td>US92189F6768</td>
+              <td>9.41%</td>
+              <td>SMH</td>
+              <td>US</td>
+              <td>XLK</td>
+              <td>ticker_intradia_probable</td>
+            </tr>
+            
+
+            <tr>
+              <td>Profuturo</td>
+              <td>US4642867729</td>
+              <td>7.81%</td>
+              <td>EWY</td>
+              <td>US</td>
+              <td>ACWI</td>
+              <td>ticker_intradia_probable</td>
+            </tr>
+            
+
+            <tr>
+              <td>Prima</td>
+              <td>US4642867729</td>
+              <td>7.20%</td>
+              <td>EWY</td>
+              <td>US</td>
+              <td>ACWI</td>
+              <td>ticker_intradia_probable</td>
+            </tr>
+            
+
+            <tr>
+              <td>Prima</td>
+              <td>US92189F6768</td>
+              <td>6.89%</td>
+              <td>SMH</td>
+              <td>US</td>
+              <td>XLK</td>
+              <td>ticker_intradia_probable</td>
+            </tr>
+            
+
+            <tr>
+              <td>Prima</td>
+              <td>US4642875235</td>
+              <td>6.87%</td>
+              <td>SOXX</td>
+              <td>US</td>
+              <td>XLK</td>
+              <td>ticker_intradia_probable</td>
+            </tr>
+            
+
+            <tr>
+              <td>Habitat</td>
+              <td>US4642875235</td>
+              <td>6.11%</td>
+              <td>SOXX</td>
+              <td>US</td>
+              <td>XLK</td>
+              <td>ticker_intradia_probable</td>
+            </tr>
+            
+
+            <tr>
+              <td>Integra</td>
+              <td>US46090E1038</td>
+              <td>5.68%</td>
+              <td>QQQ</td>
+              <td>US</td>
+              <td>ACWI</td>
+              <td>ticker_intradia_probable</td>
+            </tr>
+            
+
+            <tr>
+              <td>Profuturo</td>
+              <td>US9220427424</td>
+              <td>5.54%</td>
+              <td>VT</td>
+              <td>US</td>
+              <td>ACWI</td>
+              <td>ticker_intradia_probable</td>
+            </tr>
+            
+
+            <tr>
+              <td>Prima</td>
+              <td>US92189F1066</td>
+              <td>5.42%</td>
+              <td>GDX</td>
+              <td>US</td>
+              <td>COPX</td>
+              <td>ticker_intradia_probable</td>
+            </tr>
+            
+
+            <tr>
+              <td>Habitat</td>
+              <td>US92189F6768</td>
+              <td>5.10%</td>
+              <td>SMH</td>
+              <td>US</td>
+              <td>XLK</td>
+              <td>ticker_intradia_probable</td>
+            </tr>
+            
+
+            <tr>
+              <td>Prima</td>
+              <td>US37954Y8306</td>
+              <td>5.03%</td>
+              <td>COPX</td>
+              <td>US</td>
+              <td>COPX</td>
+              <td>ticker_intradia_probable</td>
+            </tr>
+            </tbody>
+    </table>
+  </section>
+
+  <section class="steps" style="margin-top:16px">
+    <div class="step"><strong>1. Mapear</strong>ISIN o instrumento SBS a ticker, fuente o proxy.</div>
+    <div class="step"><strong>2. Valorizar</strong>Descargar precios intradia y calcular peso por movimiento.</div>
+    <div class="step"><strong>3. Evaluar</strong>Comparar contra cuota SBS cuando se publique.</div>
+  </section>
+</main>
+</body>
+</html>

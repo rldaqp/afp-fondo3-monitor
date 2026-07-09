@@ -37,7 +37,7 @@ def main() -> None:
         run([sys.executable, "129_monitor_fondo3_ACTUALIZA_Y_ABRE.py", "--actualizar"])
 
     run([sys.executable, "src/131_comparar_metricas_modelos.py"])
-    run([sys.executable, "src/132_generar_vista_comparativa_modelos.py"])
+    run([sys.executable, "src/133_mapear_cartera_replicante_y_generar_visor.py"])
 
     PUBLIC.mkdir(parents=True, exist_ok=True)
 
@@ -62,8 +62,8 @@ def main() -> None:
         PUBLIC / "vela-diaria.html",
     )
     copy_if_exists(
-        PROCESSED / "comparativa_metricas_modelos.html",
-        PUBLIC / "modelos.html",
+        PROCESSED / "cartera_replicante_visor.html",
+        PUBLIC / "cartera-replicante" / "index.html",
     )
 
     if not (PUBLIC / "index.html").exists():
