@@ -1,0 +1,29 @@
+{
+  "proyecto": "cartera_replicante_intradia",
+  "criterio_particion": "60% entrenamiento, 20% validacion, 20% test final, siempre en orden temporal",
+  "archivo_base_particion": "fondo3_pesos_diarios_aplicados.csv",
+  "particion": [
+    {
+      "bloque": "entrenamiento",
+      "fecha_inicio": "2015-02-02",
+      "fecha_fin": "2021-11-24",
+      "fechas": 1767,
+      "porcentaje": 60.0
+    },
+    {
+      "bloque": "validacion",
+      "fecha_inicio": "2021-11-25",
+      "fecha_fin": "2024-02-29",
+      "fechas": 589,
+      "porcentaje": 20.0
+    },
+    {
+      "bloque": "test_final",
+      "fecha_inicio": "2024-03-01",
+      "fecha_fin": "2026-06-30",
+      "fechas": 589,
+      "porcentaje": 20.0
+    }
+  ],
+  "nota": "No se mezclan fechas al azar porque es serie de tiempo."
+}
