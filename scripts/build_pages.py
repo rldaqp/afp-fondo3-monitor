@@ -37,9 +37,11 @@ def main() -> None:
         run([sys.executable, "129_monitor_fondo3_ACTUALIZA_Y_ABRE.py", "--actualizar"])
 
     # El overlay conserva las metricas historicas. Luego se integran las fechas
-    # prospectivas del Modelo 79 congelado, sin recalibrar ni modificar la canasta.
+    # prospectivas del Modelo 79 congelado y se reconcilian con las cuotas SBS
+    # oficiales mas recientes, sin recalibrar ni modificar la canasta.
     run([sys.executable, "src/170_preparar_tablero_operativo_diario.py"])
     run([sys.executable, "src/172_integrar_modelo79_tablero.py"])
+    run([sys.executable, "src/173_reconciliar_sbs_tablero.py"])
     run([sys.executable, "src/171_generar_visor_operativo_simple.py"])
 
     PUBLIC.mkdir(parents=True, exist_ok=True)
@@ -86,9 +88,16 @@ def main() -> None:
             "No se genero tablero_operativo_auditoria_fechas.csv."
         )
 
+    auditoria_sbs = PROCESSED / "tablero_operativo_auditoria_sbs.csv"
+    if not auditoria_sbs.exists():
+        raise FileNotFoundError(
+            "No se genero tablero_operativo_auditoria_sbs.csv."
+        )
+
     print(f"GitHub Pages listo en: {(PUBLIC / 'index.html').resolve()}")
     print(f"Cartera replicante disponible en: {cartera.resolve()}")
     print(f"Auditoria de fechas: {auditoria.resolve()}")
+    print(f"Auditoria SBS: {auditoria_sbs.resolve()}")
 
 
 if __name__ == "__main__":
