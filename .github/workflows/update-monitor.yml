@@ -55,11 +55,27 @@ jobs:
         run: |
           python scripts/build_pages.py
 
-      - name: Validar HTML publicado
+      - name: Validar HTML y fechas publicadas
         run: |
           test -s public/index.html
+          test -s public/cartera-replicante/index.html
           grep -q "Monitor práctico" public/index.html
           grep -q "Vela intradía" public/index.html
+          grep -q "Fondo 3 AFP - tablero operativo" public/cartera-replicante/index.html
+          python - <<'PY'
+          import pandas as pd
+          ruta = "data/processed/tablero_operativo_auditoria_fechas.csv"
+          auditoria = pd.read_csv(ruta)
+          if auditoria.empty:
+              raise SystemExit("La auditoria de fechas esta vacia")
+          fallas = auditoria[auditoria["estado"].astype(str).ne("CORRECTO")]
+          if not fallas.empty:
+              raise SystemExit(
+                  "El visor no publico todas las fechas del Modelo 79:\n"
+                  + fallas.to_string(index=False)
+              )
+          print(auditoria.to_string(index=False))
+          PY
 
       - name: Guardar datos actualizados en la rama
         run: |
