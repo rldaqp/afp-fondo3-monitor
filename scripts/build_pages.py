@@ -33,11 +33,14 @@ def main() -> None:
     )
     args = parser.parse_args()
 
-    # Actualización principal. Se evita ejecutar aquí la cadena experimental
-    # de scripts 136-171 porque algunos archivos no están versionados en GitHub
-    # y hacían fallar toda la publicación automática.
     if not args.skip_update:
         run([sys.executable, "129_monitor_fondo3_ACTUALIZA_Y_ABRE.py", "--actualizar"])
+
+    # El overlay conserva las metricas historicas. Luego se integran las fechas
+    # prospectivas del Modelo 79 congelado, sin recalibrar ni modificar la canasta.
+    run([sys.executable, "src/170_preparar_tablero_operativo_diario.py"])
+    run([sys.executable, "src/172_integrar_modelo79_tablero.py"])
+    run([sys.executable, "src/171_generar_visor_operativo_simple.py"])
 
     PUBLIC.mkdir(parents=True, exist_ok=True)
 
@@ -61,9 +64,6 @@ def main() -> None:
         PROCESSED / "ca0001_modelo111_vela_pronostico_historico.html",
         PUBLIC / "vela-diaria.html",
     )
-
-    # Se conserva public/cartera-replicante/index.html ya publicado en el
-    # repositorio. Solo se reemplaza cuando existe un visor nuevo generado.
     copy_if_exists(
         PROCESSED / "cartera_replicante_visor.html",
         PUBLIC / "cartera-replicante" / "index.html",
@@ -80,8 +80,15 @@ def main() -> None:
             "No existe public/cartera-replicante/index.html."
         )
 
+    auditoria = PROCESSED / "tablero_operativo_auditoria_fechas.csv"
+    if not auditoria.exists():
+        raise FileNotFoundError(
+            "No se genero tablero_operativo_auditoria_fechas.csv."
+        )
+
     print(f"GitHub Pages listo en: {(PUBLIC / 'index.html').resolve()}")
     print(f"Cartera replicante disponible en: {cartera.resolve()}")
+    print(f"Auditoria de fechas: {auditoria.resolve()}")
 
 
 if __name__ == "__main__":
