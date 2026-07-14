@@ -42,6 +42,11 @@ def main() -> None:
     run([sys.executable, "src/170_preparar_tablero_operativo_diario.py"])
     run([sys.executable, "src/172_integrar_modelo79_tablero.py"])
     run([sys.executable, "src/173_reconciliar_sbs_tablero.py"])
+
+    # Challenger tecnico: indicadores de trading con division cronologica
+    # 60% entrenamiento, 20% validacion y 20% test reservado.
+    run([sys.executable, "src/174_modelo_tecnico_60_20_20.py"])
+
     run([sys.executable, "src/171_generar_visor_operativo_simple.py"])
 
     PUBLIC.mkdir(parents=True, exist_ok=True)
