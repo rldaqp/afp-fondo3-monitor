@@ -37,6 +37,12 @@ jobs:
       - name: Descargar repositorio
         uses: actions/checkout@v4
 
+      - name: Conservar visor publicado como referencia
+        run: |
+          if [ -s public/cartera-replicante/index.html ]; then
+            cp public/cartera-replicante/index.html /tmp/cartera_replicante_anterior.html
+          fi
+
       - name: Configurar Python
         uses: actions/setup-python@v5
         with:
@@ -55,7 +61,7 @@ jobs:
         run: |
           python scripts/build_pages.py
 
-      - name: Validar HTML y fechas publicadas
+      - name: Validar HTML, fechas y ausencia de retroceso
         run: |
           test -s public/index.html
           test -s public/cartera-replicante/index.html
@@ -63,7 +69,10 @@ jobs:
           grep -q "Vela intradía" public/index.html
           grep -q "Fondo 3 AFP - tablero operativo" public/cartera-replicante/index.html
           python - <<'PY'
+          import re
+          from pathlib import Path
           import pandas as pd
+
           ruta = "data/processed/tablero_operativo_auditoria_fechas.csv"
           auditoria = pd.read_csv(ruta)
           if auditoria.empty:
@@ -73,6 +82,23 @@ jobs:
               raise SystemExit(
                   "El visor no publico todas las fechas del Modelo 79:\n"
                   + fallas.to_string(index=False)
+              )
+
+          def fecha_maxima_html(ruta_html: str):
+              p = Path(ruta_html)
+              if not p.exists():
+                  return None
+              fechas = re.findall(r"20\d{2}-\d{2}-\d{2}", p.read_text(encoding="utf-8", errors="ignore"))
+              return max(fechas) if fechas else None
+
+          anterior = fecha_maxima_html("/tmp/cartera_replicante_anterior.html")
+          nueva = fecha_maxima_html("public/cartera-replicante/index.html")
+          print(f"Fecha maxima anterior: {anterior}")
+          print(f"Fecha maxima nueva: {nueva}")
+          if anterior and nueva and nueva < anterior:
+              raise SystemExit(
+                  f"BLOQUEADO: el visor intentó retroceder de {anterior} a {nueva}. "
+                  "No se guardara ni publicara esta version."
               )
           print(auditoria.to_string(index=False))
           PY
