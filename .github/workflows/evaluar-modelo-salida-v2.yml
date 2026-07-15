@@ -48,12 +48,13 @@ jobs:
       - name: Validar sintaxis
         run: |
           python -m py_compile \
+            src/modelo_salida/00_ejecutar_constructor_seguro.py \
             src/modelo_salida/01_construir_base_salida.py \
             src/modelo_salida/04_modelo_rebote_salida_v2.py
 
       - name: Reconstruir base temporal
         run: |
-          python src/modelo_salida/01_construir_base_salida.py
+          python src/modelo_salida/00_ejecutar_constructor_seguro.py
 
       - name: Evaluar episodios de rebote
         run: |
