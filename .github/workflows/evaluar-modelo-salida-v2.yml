@@ -1,0 +1,115 @@
+name: Evaluar modelo de salida V2
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - modelo-salida-60-20-20
+    paths:
+      - "src/modelo_salida/04_modelo_rebote_salida_v2.py"
+      - "config/modelo_salida_v2.json"
+      - ".github/workflows/evaluar-modelo-salida-v2.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: modelo-salida-v2
+  cancel-in-progress: true
+
+jobs:
+  evaluar:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Descargar rama experimental
+        uses: actions/checkout@v4
+        with:
+          ref: modelo-salida-60-20-20
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Instalar dependencias
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Validar sintaxis
+        run: |
+          python -m py_compile \
+            src/modelo_salida/01_construir_base_salida.py \
+            src/modelo_salida/04_modelo_rebote_salida_v2.py
+
+      - name: Reconstruir base temporal
+        run: |
+          python src/modelo_salida/01_construir_base_salida.py
+
+      - name: Evaluar episodios de rebote
+        run: |
+          python src/modelo_salida/04_modelo_rebote_salida_v2.py
+
+      - name: Auditar resultados
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          import pandas as pd
+
+          raiz = Path("data/processed/modelo_salida")
+          resumen = pd.read_csv(raiz / "v2_resumen.csv", encoding="utf-8-sig")
+          pred = pd.read_csv(raiz / "v2_predicciones_walk_forward.csv", encoding="utf-8-sig")
+
+          if set(resumen["afp"]) != {"Habitat", "Integra", "Prima", "Profuturo"}:
+              raise SystemExit("El resumen V2 no contiene las cuatro AFP")
+          if pred.empty:
+              raise SystemExit("La prueba walk-forward V2 esta vacia")
+
+          decision = pd.to_datetime(pred["fecha_cuota"], errors="coerce")
+          objetivo = pd.to_datetime(pred["fecha_objetivo_t1"], errors="coerce")
+          if decision.isna().any() or objetivo.isna().any():
+              raise SystemExit("Existen fechas invalidas")
+          if not (objetivo > decision).all():
+              raise SystemExit("Fuga temporal: el objetivo no es posterior a la decision")
+          if not pred["probabilidad_caida_relevante_t1"].between(0, 1).all():
+              raise SystemExit("Probabilidades fuera del rango 0-1")
+
+          manifiesto = json.loads((raiz / "v2_manifiesto.json").read_text(encoding="utf-8"))
+          if manifiesto.get("version") != "modelo_salida_v2_rebote":
+              raise SystemExit("Version inesperada del manifiesto")
+
+          print(resumen[[
+              "afp", "walk_auc", "walk_precision_alerta_pct",
+              "walk_cobertura_caidas_pct", "walk_proteccion_neta_suma_pct", "estado"
+          ]].to_string(index=False))
+          PY
+
+      - name: Subir resultados como artefacto
+        uses: actions/upload-artifact@v4
+        with:
+          name: modelo-salida-v2
+          path: |
+            data/processed/modelo_salida/v2_*.csv
+            data/processed/modelo_salida/v2_*.json
+            docs/modelo_salida_resultados_v2.md
+          retention-days: 30
+
+      - name: Guardar resultados en la rama experimental
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- \
+            data/processed/modelo_salida/v2_resumen.csv \
+            data/processed/modelo_salida/v2_candidatos_validacion.csv \
+            data/processed/modelo_salida/v2_predicciones_walk_forward.csv \
+            data/processed/modelo_salida/v2_manifiesto.json \
+            docs/modelo_salida_resultados_v2.md
+          if git diff --cached --quiet; then
+            echo "No hay resultados V2 nuevos."
+          else
+            git commit -m "Guardar resultados del modelo de salida V2 [skip ci]"
+            git push
+          fi
