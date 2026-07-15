@@ -56,10 +56,14 @@ jobs:
 
       - name: Validar sintaxis Python
         run: |
-          python -m py_compile src/modelo_salida/01_construir_base_salida.py
+          python -m py_compile \
+            src/modelo_salida/01_construir_base_salida.py \
+            src/modelo_salida/02_entrenar_modelos_60_20_20.py
 
       - name: Verificar regla contra fuga temporal
         run: |
           grep -q 'cuota_sbs_conocida.*shift(1)' src/modelo_salida/01_construir_base_salida.py
           grep -q 'retorno_real_t1.*shift(-1)' src/modelo_salida/01_construir_base_salida.py
           grep -q 'bloque_60_20_20' src/modelo_salida/01_construir_base_salida.py
+          grep -q 'test_reservado' src/modelo_salida/02_entrenar_modelos_60_20_20.py
+          grep -q 'puntaje_control_riesgo' src/modelo_salida/02_entrenar_modelos_60_20_20.py
