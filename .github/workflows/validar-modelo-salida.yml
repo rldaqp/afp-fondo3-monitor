@@ -71,6 +71,7 @@ jobs:
       - name: Validar sintaxis y reglas temporales
         run: |
           python -m py_compile \
+            src/modelo_salida/00_ejecutar_constructor_seguro.py \
             src/modelo_salida/01_construir_base_salida.py \
             src/modelo_salida/02_entrenar_modelos_60_20_20.py
           grep -q 'cuota_sbs_conocida.*shift(1)' src/modelo_salida/01_construir_base_salida.py
@@ -84,7 +85,7 @@ jobs:
           PYTHONUTF8: "1"
           PYTHONIOENCODING: "utf-8"
         run: |
-          python src/modelo_salida/01_construir_base_salida.py
+          python src/modelo_salida/00_ejecutar_constructor_seguro.py
 
       - name: Entrenar y evaluar 60-20-20
         env:
