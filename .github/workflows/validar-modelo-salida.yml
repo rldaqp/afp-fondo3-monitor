@@ -73,12 +73,14 @@ jobs:
           python -m py_compile \
             src/modelo_salida/00_ejecutar_constructor_seguro.py \
             src/modelo_salida/01_construir_base_salida.py \
-            src/modelo_salida/02_entrenar_modelos_60_20_20.py
+            src/modelo_salida/02_entrenar_modelos_60_20_20.py \
+            src/modelo_salida/03_walk_forward_salida.py
           grep -q 'cuota_sbs_conocida.*shift(1)' src/modelo_salida/01_construir_base_salida.py
           grep -q 'retorno_real_t1.*shift(-1)' src/modelo_salida/01_construir_base_salida.py
           grep -q 'bloque_60_20_20' src/modelo_salida/01_construir_base_salida.py
           grep -q 'test_reservado' src/modelo_salida/02_entrenar_modelos_60_20_20.py
           grep -q 'puntaje_control_riesgo' src/modelo_salida/02_entrenar_modelos_60_20_20.py
+          grep -q 'fecha_objetivo_t1.*lt(fecha_decision)' src/modelo_salida/03_walk_forward_salida.py
 
       - name: Construir base T+1
         env:
@@ -93,6 +95,13 @@ jobs:
           PYTHONIOENCODING: "utf-8"
         run: |
           python src/modelo_salida/02_entrenar_modelos_60_20_20.py
+
+      - name: Ejecutar auditoria walk-forward
+        env:
+          PYTHONUTF8: "1"
+          PYTHONIOENCODING: "utf-8"
+        run: |
+          python src/modelo_salida/03_walk_forward_salida.py
 
       - name: Auditar resultados y ausencia de fuga temporal
         run: |
@@ -111,6 +120,9 @@ jobs:
               "candidatos_validacion.csv",
               "predicciones_test_reservado.csv",
               "seleccion_modelos.json",
+              "walk_forward_resumen.csv",
+              "walk_forward_predicciones.csv",
+              "walk_forward_manifiesto.json",
           ]
           faltantes = [x for x in requeridos if not (raiz / x).is_file() or (raiz / x).stat().st_size == 0]
           if faltantes:
@@ -130,10 +142,13 @@ jobs:
 
           afps = {"Habitat", "Integra", "Prima", "Profuturo"}
           resumen = pd.read_csv(raiz / "resumen_modelos.csv")
-          if set(resumen["afp"].astype(str)) != afps:
-              raise SystemExit("El resumen no contiene las cuatro AFP")
+          walk = pd.read_csv(raiz / "walk_forward_resumen.csv")
+          if set(resumen["afp"].astype(str)) != afps or set(walk["afp"].astype(str)) != afps:
+              raise SystemExit("Los resultados no contienen las cuatro AFP")
           if (resumen[["n_train", "n_valid", "n_test"]].min(axis=1) < 50).any():
               raise SystemExit("Alguna AFP tiene un bloque demasiado pequeno")
+          if (walk["n_predicciones_walk_forward"] < walk["n_test_original"] * 0.90).any():
+              raise SystemExit("El walk-forward no cubre al menos 90% del test")
 
           seleccion = json.loads((raiz / "seleccion_modelos.json").read_text(encoding="utf-8"))
           prohibidas = {
@@ -146,8 +161,21 @@ jobs:
               if fuga:
                   raise SystemExit(f"Variables prohibidas en {afp}: {fuga}")
 
+          pred_walk = pd.read_csv(raiz / "walk_forward_predicciones.csv")
+          pred_walk["fecha_decision"] = pd.to_datetime(pred_walk["fecha_decision"], errors="coerce")
+          pred_walk["fecha_objetivo_t1"] = pd.to_datetime(pred_walk["fecha_objetivo_t1"], errors="coerce")
+          if not (pred_walk["fecha_objetivo_t1"] > pred_walk["fecha_decision"]).all():
+              raise SystemExit("El walk-forward contiene un objetivo no futuro")
+          if not pred_walk["regla_publicacion"].astype(str).eq(
+              "fecha_objetivo_entrenamiento < fecha_decision"
+          ).all():
+              raise SystemExit("La regla de publicación del walk-forward no es consistente")
+
           print("Auditoria temporal correcta")
+          print("Resultado 60/20/20:")
           print(resumen.to_string(index=False))
+          print("Resultado walk-forward:")
+          print(walk.to_string(index=False))
           PY
 
       - name: Subir resultados como artefacto
@@ -167,6 +195,6 @@ jobs:
           if git diff --cached --quiet; then
             echo "No hay resultados nuevos para confirmar."
           else
-            git commit -m "Generar resultados iniciales del modelo de salida"
+            git commit -m "Actualizar auditoria walk-forward del modelo de salida"
             git push origin HEAD:modelo-salida-60-20-20
           fi
