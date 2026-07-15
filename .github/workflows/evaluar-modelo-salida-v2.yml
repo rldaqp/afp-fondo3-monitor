@@ -9,6 +9,13 @@ on:
       - "src/modelo_salida/04_modelo_rebote_salida_v2.py"
       - "config/modelo_salida_v2.json"
       - ".github/workflows/evaluar-modelo-salida-v2.yml"
+  pull_request:
+    branches:
+      - migracion-github-actions
+    paths:
+      - "src/modelo_salida/04_modelo_rebote_salida_v2.py"
+      - "config/modelo_salida_v2.json"
+      - ".github/workflows/evaluar-modelo-salida-v2.yml"
 
 permissions:
   contents: write
@@ -98,6 +105,7 @@ jobs:
           retention-days: 30
 
       - name: Guardar resultados en la rama experimental
+        if: github.event_name != 'pull_request'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
