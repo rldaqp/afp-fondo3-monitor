@@ -46,7 +46,7 @@ jobs:
         run: |
           mkdir -p diagnostico_modelo_salida
           set +e
-          python src/modelo_salida/01_construir_base_salida.py > diagnostico_modelo_salida/constructor.log 2>&1
+          python src/modelo_salida/00_ejecutar_constructor_seguro.py > diagnostico_modelo_salida/constructor.log 2>&1
           estado=$?
           echo "$estado" > diagnostico_modelo_salida/estado.txt
           cat diagnostico_modelo_salida/constructor.log
