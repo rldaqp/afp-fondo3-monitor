@@ -1,0 +1,65 @@
+name: Validar modelo de salida 60-20-20
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - modelo-salida-60-20-20
+    paths:
+      - "src/modelo_salida/**"
+      - "config/modelo_salida.json"
+      - "docs/modelo_salida_60_20_20.md"
+      - ".github/workflows/validar-modelo-salida.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  validar:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Descargar repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Instalar dependencias
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Validar configuracion JSON
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          ruta = Path("config/modelo_salida.json")
+          datos = json.loads(ruta.read_text(encoding="utf-8"))
+          division = datos["division_temporal"]
+          total = (
+              float(division["entrenamiento"])
+              + float(division["validacion"])
+              + float(division["test_reservado"])
+          )
+          if abs(total - 1.0) > 1e-12:
+              raise SystemExit(f"La division temporal suma {total}, no 1.0")
+          if division.get("barajar_fechas") is not False:
+              raise SystemExit("Las fechas no deben barajarse")
+          print("Configuracion valida:", datos["version"])
+          PY
+
+      - name: Validar sintaxis Python
+        run: |
+          python -m py_compile src/modelo_salida/01_construir_base_salida.py
+
+      - name: Verificar regla contra fuga temporal
+        run: |
+          grep -q 'cuota_sbs_conocida.*shift(1)' src/modelo_salida/01_construir_base_salida.py
+          grep -q 'retorno_real_t1.*shift(-1)' src/modelo_salida/01_construir_base_salida.py
+          grep -q 'bloque_60_20_20' src/modelo_salida/01_construir_base_salida.py
