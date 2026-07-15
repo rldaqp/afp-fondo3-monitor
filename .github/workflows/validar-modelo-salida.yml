@@ -1,4 +1,4 @@
-name: Validar modelo de salida 60-20-20
+name: Ejecutar modelo de salida 60-20-20
 
 on:
   workflow_dispatch:
@@ -12,15 +12,21 @@ on:
       - ".github/workflows/validar-modelo-salida.yml"
 
 permissions:
-  contents: read
+  contents: write
+
+concurrency:
+  group: modelo-salida-60-20-20
+  cancel-in-progress: false
 
 jobs:
-  validar:
+  ejecutar:
     runs-on: ubuntu-latest
 
     steps:
       - name: Descargar repositorio
         uses: actions/checkout@v4
+        with:
+          ref: modelo-salida-60-20-20
 
       - name: Configurar Python
         uses: actions/setup-python@v5
@@ -54,16 +60,103 @@ jobs:
           print("Configuracion valida:", datos["version"])
           PY
 
-      - name: Validar sintaxis Python
+      - name: Validar sintaxis y reglas temporales
         run: |
           python -m py_compile \
             src/modelo_salida/01_construir_base_salida.py \
             src/modelo_salida/02_entrenar_modelos_60_20_20.py
-
-      - name: Verificar regla contra fuga temporal
-        run: |
           grep -q 'cuota_sbs_conocida.*shift(1)' src/modelo_salida/01_construir_base_salida.py
           grep -q 'retorno_real_t1.*shift(-1)' src/modelo_salida/01_construir_base_salida.py
           grep -q 'bloque_60_20_20' src/modelo_salida/01_construir_base_salida.py
           grep -q 'test_reservado' src/modelo_salida/02_entrenar_modelos_60_20_20.py
           grep -q 'puntaje_control_riesgo' src/modelo_salida/02_entrenar_modelos_60_20_20.py
+
+      - name: Construir base T+1
+        env:
+          PYTHONUTF8: "1"
+          PYTHONIOENCODING: "utf-8"
+        run: |
+          python src/modelo_salida/01_construir_base_salida.py
+
+      - name: Entrenar y evaluar 60-20-20
+        env:
+          PYTHONUTF8: "1"
+          PYTHONIOENCODING: "utf-8"
+        run: |
+          python src/modelo_salida/02_entrenar_modelos_60_20_20.py
+
+      - name: Auditar resultados y ausencia de fuga temporal
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          import pandas as pd
+
+          raiz = Path("data/processed/modelo_salida")
+          requeridos = [
+              "base_modelo_salida.csv",
+              "division_temporal.csv",
+              "resumen_base.csv",
+              "manifiesto_base.json",
+              "resumen_modelos.csv",
+              "candidatos_validacion.csv",
+              "predicciones_test_reservado.csv",
+              "seleccion_modelos.json",
+          ]
+          faltantes = [x for x in requeridos if not (raiz / x).is_file() or (raiz / x).stat().st_size == 0]
+          if faltantes:
+              raise SystemExit(f"Faltan resultados: {faltantes}")
+
+          division = pd.read_csv(raiz / "division_temporal.csv")
+          division["fecha_cuota"] = pd.to_datetime(division["fecha_cuota"], errors="coerce")
+          division["fecha_objetivo_t1"] = pd.to_datetime(division["fecha_objetivo_t1"], errors="coerce")
+          if division[["fecha_cuota", "fecha_objetivo_t1"]].isna().any().any():
+              raise SystemExit("Hay fechas invalidas en la division temporal")
+          if not (division["fecha_objetivo_t1"] > division["fecha_cuota"]).all():
+              raise SystemExit("Se detecto un objetivo que no pertenece al futuro")
+
+          bloques_esperados = {"entrenamiento", "validacion", "test_reservado"}
+          if set(division["bloque_60_20_20"].unique()) != bloques_esperados:
+              raise SystemExit("No aparecen los tres bloques 60/20/20")
+
+          afps = {"Habitat", "Integra", "Prima", "Profuturo"}
+          resumen = pd.read_csv(raiz / "resumen_modelos.csv")
+          if set(resumen["afp"].astype(str)) != afps:
+              raise SystemExit("El resumen no contiene las cuatro AFP")
+          if (resumen[["n_train", "n_valid", "n_test"]].min(axis=1) < 50).any():
+              raise SystemExit("Alguna AFP tiene un bloque demasiado pequeno")
+
+          seleccion = json.loads((raiz / "seleccion_modelos.json").read_text(encoding="utf-8"))
+          prohibidas = {
+              "cuota_sbs", "retorno_cuota", "retorno_real_t1", "caida_t1",
+              "fecha_objetivo_t1", "bloque_60_20_20"
+          }
+          for afp, datos in seleccion.items():
+              usadas = set(datos.get("columnas", []))
+              fuga = sorted(usadas & prohibidas)
+              if fuga:
+                  raise SystemExit(f"Variables prohibidas en {afp}: {fuga}")
+
+          print("Auditoria temporal correcta")
+          print(resumen.to_string(index=False))
+          PY
+
+      - name: Subir resultados como artefacto
+        uses: actions/upload-artifact@v4
+        with:
+          name: modelo-salida-60-20-20
+          path: data/processed/modelo_salida
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Guardar resultados en la rama experimental
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- data/processed/modelo_salida
+          if git diff --cached --quiet; then
+            echo "No hay resultados nuevos para confirmar."
+          else
+            git commit -m "Generar resultados iniciales del modelo de salida"
+            git push origin HEAD:modelo-salida-60-20-20
+          fi
