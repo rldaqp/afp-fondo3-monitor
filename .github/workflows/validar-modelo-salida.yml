@@ -10,6 +10,14 @@ on:
       - "config/modelo_salida.json"
       - "docs/modelo_salida_60_20_20.md"
       - ".github/workflows/validar-modelo-salida.yml"
+  pull_request:
+    branches:
+      - migracion-github-actions
+    paths:
+      - "src/modelo_salida/**"
+      - "config/modelo_salida.json"
+      - "docs/modelo_salida_60_20_20.md"
+      - ".github/workflows/validar-modelo-salida.yml"
 
 permissions:
   contents: write
@@ -150,6 +158,7 @@ jobs:
           retention-days: 30
 
       - name: Guardar resultados en la rama experimental
+        if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
