@@ -19,6 +19,7 @@ concurrency:
 jobs:
   evaluar:
     runs-on: ubuntu-latest
+    timeout-minutes: 45
 
     steps:
       - name: Descargar rama experimental
