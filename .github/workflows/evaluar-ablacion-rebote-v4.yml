@@ -8,18 +8,12 @@ on:
     paths:
       - "src/modelo_salida/08_ablacion_variables_rebote_v4.py"
       - ".github/workflows/evaluar-ablacion-rebote-v4.yml"
-  pull_request:
-    branches:
-      - migracion-github-actions
-    paths:
-      - "src/modelo_salida/08_ablacion_variables_rebote_v4.py"
-      - ".github/workflows/evaluar-ablacion-rebote-v4.yml"
 
 permissions:
   contents: write
 
 concurrency:
-  group: ablacion-rebote-v4-${{ github.event_name }}
+  group: ablacion-rebote-v4
   cancel-in-progress: true
 
 jobs:
@@ -53,24 +47,12 @@ jobs:
             src/modelo_salida/08_ablacion_variables_rebote_v4.py
 
       - name: Reconstruir base diaria
-        run: |
-          python src/modelo_salida/00_ejecutar_constructor_seguro.py
+        run: python src/modelo_salida/00_ejecutar_constructor_seguro.py
 
-      - name: Ejecutar prueba de ablacion y guardar registro
-        id: ablacion
-        continue-on-error: true
-        run: |
-          mkdir -p diagnostico_ablacion
-          set +e
-          python src/modelo_salida/08_ablacion_variables_rebote_v4.py \
-            > diagnostico_ablacion/ablacion.log 2>&1
-          estado=$?
-          echo "$estado" > diagnostico_ablacion/estado.txt
-          tail -n 120 diagnostico_ablacion/ablacion.log
-          exit "$estado"
+      - name: Ejecutar prueba de ablacion
+        run: python src/modelo_salida/08_ablacion_variables_rebote_v4.py
 
       - name: Auditar resultados
-        if: steps.ablacion.outcome == 'success'
         run: |
           python - <<'PY'
           import json
@@ -80,63 +62,50 @@ jobs:
           raiz = Path("data/processed/modelo_salida")
           resumen = pd.read_csv(raiz / "v4_ablacion_resumen.csv", encoding="utf-8-sig")
           pred = pd.read_csv(raiz / "v4_ablacion_predicciones.csv", encoding="utf-8-sig")
-          seleccion = pd.read_csv(
-              raiz / "v4_ablacion_seleccion_congelar.csv", encoding="utf-8-sig"
-          )
+          seleccion = pd.read_csv(raiz / "v4_ablacion_seleccion_congelar.csv", encoding="utf-8-sig")
 
           variantes = {
-              "base_sin_rebote",
-              "completo",
-              "completo_sin_distancia_temporal",
+              "base_sin_rebote", "completo", "completo_sin_distancia_temporal",
               "completo_sin_nivel_fraccion_recuperada",
               "completo_sin_velocidad_rebote",
               "completo_sin_retroceso_desde_maximo",
           }
           afps = {"Habitat", "Integra", "Prima", "Profuturo"}
-          if len(resumen) != 24:
-              raise SystemExit(f"Se esperaban 24 resultados y llegaron {len(resumen)}")
-          if set(resumen["afp"]) != afps:
-              raise SystemExit("Faltan AFP en la ablacion")
+          if len(resumen) != 24 or set(resumen["afp"]) != afps:
+              raise SystemExit("La tabla de ablacion esta incompleta")
           if set(resumen["variante"]) != variantes:
               raise SystemExit("Faltan variantes de ablacion")
           if len(seleccion) != 4 or set(seleccion["afp"]) != afps:
-              raise SystemExit("La seleccion para congelar no contiene las cuatro AFP")
-          if pred.empty:
-              raise SystemExit("Las predicciones de ablacion estan vacias")
+              raise SystemExit("La seleccion para congelar esta incompleta")
 
           decision = pd.to_datetime(pred["fecha_cuota"], errors="coerce")
           objetivo = pd.to_datetime(pred["fecha_objetivo_t1"], errors="coerce")
-          if decision.isna().any() or objetivo.isna().any():
-              raise SystemExit("Existen fechas invalidas")
-          if not (objetivo > decision).all():
-              raise SystemExit("Fuga temporal: objetivo no posterior a la decision")
+          if decision.isna().any() or objetivo.isna().any() or not (objetivo > decision).all():
+              raise SystemExit("Fuga temporal o fechas invalidas")
           if not pred["probabilidad_riesgo"].between(0, 1).all():
               raise SystemExit("Probabilidades fuera de 0-1")
 
-          manifiesto = json.loads(
-              (raiz / "v4_ablacion_manifiesto.json").read_text(encoding="utf-8")
-          )
-          if manifiesto.get("frecuencia") != "diaria":
-              raise SystemExit("La ablacion no conserva frecuencia diaria")
+          tamanos = pred.groupby(["afp", "variante"]).size().unstack()
+          if not tamanos.nunique(axis=1).eq(1).all():
+              raise SystemExit("Las variantes no usan las mismas fechas por AFP")
 
+          manifiesto = json.loads((raiz / "v4_ablacion_manifiesto.json").read_text(encoding="utf-8"))
+          if manifiesto.get("frecuencia") != "diaria":
+              raise SystemExit("Frecuencia distinta de diaria")
           print(seleccion.to_string(index=False))
           PY
 
-      - name: Subir resultados y diagnostico como artefacto
-        if: always()
+      - name: Subir resultados como artefacto
         uses: actions/upload-artifact@v4
         with:
-          name: ablacion-rebote-v4-${{ github.event_name }}
+          name: ablacion-rebote-v4
           path: |
-            diagnostico_ablacion
             data/processed/modelo_salida/v4_ablacion_*.csv
             data/processed/modelo_salida/v4_ablacion_*.json
             docs/modelo_salida_resultados_v4_ablacion.md
-          if-no-files-found: warn
           retention-days: 30
 
       - name: Guardar resultados en rama experimental
-        if: github.event_name != 'pull_request' && steps.ablacion.outcome == 'success'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -155,9 +124,3 @@ jobs:
             git commit -m "Guardar resultados de ablacion V4 [skip ci]"
             git push
           fi
-
-      - name: Confirmar estado de la ablacion
-        if: steps.ablacion.outcome == 'failure'
-        run: |
-          echo "La ablacion fallo. Revisar el artefacto y el registro ablacion.log."
-          exit 1
