@@ -8,12 +8,18 @@ on:
     paths:
       - "src/modelo_salida/08_ablacion_variables_rebote_v4.py"
       - ".github/workflows/evaluar-ablacion-rebote-v4.yml"
+  pull_request:
+    branches:
+      - migracion-github-actions
+    paths:
+      - "src/modelo_salida/08_ablacion_variables_rebote_v4.py"
+      - ".github/workflows/evaluar-ablacion-rebote-v4.yml"
 
 permissions:
   contents: write
 
 concurrency:
-  group: ablacion-rebote-v4
+  group: ablacion-rebote-v4-${{ github.event_name }}
   cancel-in-progress: true
 
 jobs:
@@ -109,7 +115,7 @@ jobs:
       - name: Subir resultados como artefacto
         uses: actions/upload-artifact@v4
         with:
-          name: ablacion-rebote-v4
+          name: ablacion-rebote-v4-${{ github.event_name }}
           path: |
             data/processed/modelo_salida/v4_ablacion_*.csv
             data/processed/modelo_salida/v4_ablacion_*.json
@@ -117,6 +123,7 @@ jobs:
           retention-days: 30
 
       - name: Guardar resultados en rama experimental
+        if: github.event_name != 'pull_request'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
