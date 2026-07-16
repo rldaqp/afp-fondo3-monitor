@@ -10,6 +10,7 @@ on:
     paths:
       - "config/modelo_salida_v4_congelado.json"
       - "src/modelo_salida/09_registrar_senales_prospectivas_v4.py"
+      - "src/modelo_salida/10_registrar_senales_prospectivas_seguras_v4.py"
       - ".github/workflows/registrar-senales-prospectivas-v4.yml"
   pull_request:
     branches:
@@ -17,6 +18,7 @@ on:
     paths:
       - "config/modelo_salida_v4_congelado.json"
       - "src/modelo_salida/09_registrar_senales_prospectivas_v4.py"
+      - "src/modelo_salida/10_registrar_senales_prospectivas_seguras_v4.py"
       - ".github/workflows/registrar-senales-prospectivas-v4.yml"
 
 permissions:
@@ -54,7 +56,8 @@ jobs:
             src/modelo_salida/00_ejecutar_constructor_seguro.py \
             src/modelo_salida/04_modelo_rebote_salida_v2.py \
             src/modelo_salida/06_modelo_selectivo_diario_v4.py \
-            src/modelo_salida/09_registrar_senales_prospectivas_v4.py
+            src/modelo_salida/09_registrar_senales_prospectivas_v4.py \
+            src/modelo_salida/10_registrar_senales_prospectivas_seguras_v4.py
           python - <<'PY'
           import json
           from pathlib import Path
@@ -69,11 +72,11 @@ jobs:
         run: |
           python src/modelo_salida/00_ejecutar_constructor_seguro.py
 
-      - name: Registrar senales congeladas
+      - name: Registrar solamente senales frescas y pendientes
         run: |
-          python src/modelo_salida/09_registrar_senales_prospectivas_v4.py
+          python src/modelo_salida/10_registrar_senales_prospectivas_seguras_v4.py
 
-      - name: Auditar registro append-only
+      - name: Auditar frescura y registro append-only
         run: |
           python - <<'PY'
           import json
@@ -83,34 +86,44 @@ jobs:
           raiz = Path("data/prospectivo/modelo_salida")
           ultima = pd.read_csv(raiz / "ultima_senal.csv", encoding="utf-8-sig")
           historial = pd.read_csv(raiz / "senales_diarias.csv", encoding="utf-8-sig")
+          estado = pd.read_csv(raiz / "estado_ejecucion.csv", encoding="utf-8-sig")
           manifiesto = json.loads(
               (raiz / "manifiesto_prospectivo.json").read_text(encoding="utf-8")
           )
 
-          if set(ultima["afp"]) != {"Habitat", "Integra", "Prima", "Profuturo"}:
-              raise SystemExit("La ultima ejecucion no contiene las cuatro AFP")
-          if len(ultima) != 4:
-              raise SystemExit("La ultima ejecucion debe tener una fila por AFP")
+          afps = {"Habitat", "Integra", "Prima", "Profuturo"}
+          if len(estado) != 4 or set(estado["afp"]) != afps:
+              raise SystemExit("El estado de ejecucion no contiene las cuatro AFP")
           if historial["signal_key"].duplicated().any():
               raise SystemExit("El historial contiene claves duplicadas")
-          if not ultima["probabilidad_riesgo"].between(0, 1).all():
-              raise SystemExit("Probabilidades fuera de 0-1")
-          if not ultima["frecuencia"].eq("diaria").all():
-              raise SystemExit("La frecuencia dejo de ser diaria")
-          decision = pd.to_datetime(ultima["fecha_decision"], errors="coerce")
-          objetivo = pd.to_datetime(ultima["fecha_objetivo"], errors="coerce")
-          if decision.isna().any() or objetivo.isna().any() or not (objetivo > decision).all():
-              raise SystemExit("Fechas invalidas o fuga temporal")
-          habilitadas = ultima[ultima["habilitado_senal"].astype(str).str.lower().isin(["true", "1"])]
-          if set(habilitadas["afp"]) != {"Habitat"}:
-              raise SystemExit("Solo Habitat puede tener senal habilitada")
           if manifiesto.get("regla_append_only") is not True:
               raise SystemExit("El manifiesto no confirma append-only")
+          if manifiesto.get("max_antiguedad_calendario_dias") != 5:
+              raise SystemExit("La regla de frescura no coincide con la configuracion")
 
-          print(ultima[[
-              "afp", "fecha_decision", "fecha_objetivo", "probabilidad_riesgo",
-              "umbral_dinamico", "estado_diario", "estado_validacion"
-          ]].to_string(index=False))
+          if not ultima.empty:
+              if not ultima["probabilidad_riesgo"].between(0, 1).all():
+                  raise SystemExit("Probabilidades fuera de 0-1")
+              if not ultima["frecuencia"].eq("diaria").all():
+                  raise SystemExit("La frecuencia dejo de ser diaria")
+              decision = pd.to_datetime(ultima["fecha_decision"], errors="coerce")
+              objetivo = pd.to_datetime(ultima["fecha_objetivo"], errors="coerce")
+              if decision.isna().any() or objetivo.isna().any() or not (objetivo > decision).all():
+                  raise SystemExit("Fechas invalidas o fuga temporal")
+              habilitadas = ultima[
+                  ultima["habilitado_senal"].astype(str).str.lower().isin(["true", "1"])
+              ]
+              if not set(habilitadas["afp"]).issubset({"Habitat"}):
+                  raise SystemExit("Una AFP no validada obtuvo una senal habilitada")
+
+          print(estado.to_string(index=False))
+          if ultima.empty:
+              print("No hubo una fecha fresca con resultado SBS pendiente.")
+          else:
+              print(ultima[[
+                  "afp", "fecha_decision", "fecha_objetivo", "probabilidad_riesgo",
+                  "umbral_dinamico", "estado_diario", "estado_validacion"
+              ]].to_string(index=False))
           PY
 
       - name: Subir registro como artefacto
@@ -121,7 +134,9 @@ jobs:
             data/prospectivo/modelo_salida/senales_diarias.csv
             data/prospectivo/modelo_salida/resultados_senales.csv
             data/prospectivo/modelo_salida/ultima_senal.csv
+            data/prospectivo/modelo_salida/estado_ejecucion.csv
             data/prospectivo/modelo_salida/manifiesto_prospectivo.json
+            data/prospectivo/modelo_salida/prueba_tecnica_inicial_no_prospectiva.csv
           retention-days: 30
 
       - name: Guardar nuevas senales en la rama
@@ -133,10 +148,11 @@ jobs:
             data/prospectivo/modelo_salida/senales_diarias.csv \
             data/prospectivo/modelo_salida/resultados_senales.csv \
             data/prospectivo/modelo_salida/ultima_senal.csv \
+            data/prospectivo/modelo_salida/estado_ejecucion.csv \
             data/prospectivo/modelo_salida/manifiesto_prospectivo.json
           if git diff --cached --quiet; then
-            echo "No existe una nueva fecha de decision para anexar."
+            echo "No existe una nueva fecha fresca para anexar."
           else
-            git commit -m "Registrar senales prospectivas V4 [skip ci]"
+            git commit -m "Registrar estado prospectivo V4 [skip ci]"
             git push
           fi
