@@ -56,11 +56,21 @@ jobs:
         run: |
           python src/modelo_salida/00_ejecutar_constructor_seguro.py
 
-      - name: Ejecutar prueba de ablacion
+      - name: Ejecutar prueba de ablacion y guardar registro
+        id: ablacion
+        continue-on-error: true
         run: |
-          python src/modelo_salida/08_ablacion_variables_rebote_v4.py
+          mkdir -p diagnostico_ablacion
+          set +e
+          python src/modelo_salida/08_ablacion_variables_rebote_v4.py \
+            > diagnostico_ablacion/ablacion.log 2>&1
+          estado=$?
+          echo "$estado" > diagnostico_ablacion/estado.txt
+          tail -n 120 diagnostico_ablacion/ablacion.log
+          exit "$estado"
 
       - name: Auditar resultados
+        if: steps.ablacion.outcome == 'success'
         run: |
           python - <<'PY'
           import json
@@ -112,18 +122,21 @@ jobs:
           print(seleccion.to_string(index=False))
           PY
 
-      - name: Subir resultados como artefacto
+      - name: Subir resultados y diagnostico como artefacto
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: ablacion-rebote-v4-${{ github.event_name }}
           path: |
+            diagnostico_ablacion
             data/processed/modelo_salida/v4_ablacion_*.csv
             data/processed/modelo_salida/v4_ablacion_*.json
             docs/modelo_salida_resultados_v4_ablacion.md
+          if-no-files-found: warn
           retention-days: 30
 
       - name: Guardar resultados en rama experimental
-        if: github.event_name != 'pull_request'
+        if: github.event_name != 'pull_request' && steps.ablacion.outcome == 'success'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -142,3 +155,9 @@ jobs:
             git commit -m "Guardar resultados de ablacion V4 [skip ci]"
             git push
           fi
+
+      - name: Confirmar estado de la ablacion
+        if: steps.ablacion.outcome == 'failure'
+        run: |
+          echo "La ablacion fallo. Revisar el artefacto y el registro ablacion.log."
+          exit 1
