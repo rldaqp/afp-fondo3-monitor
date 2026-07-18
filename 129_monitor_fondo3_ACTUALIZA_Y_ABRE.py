@@ -3205,9 +3205,24 @@ def asegurar_historico_completo(raiz: Path) -> None:
                             f"{fecha_min.date()} a {fecha_max.date()} "
                             f"({len(df):,} filas)."
                         )
-                        necesita_actualizar = (
-                            fecha_min > pd.Timestamp("2016-12-31")
+                        hoy = pd.Timestamp(datetime.now().date())
+                        mes_anterior_cerrado = (
+                            hoy.replace(day=1) - pd.Timedelta(days=1)
+                        ).normalize()
+                        falta_base_larga = fecha_min > pd.Timestamp("2016-12-31")
+                        falta_mes_sbs_cerrado = (
+                            hoy.day >= 5
+                            and fecha_max < mes_anterior_cerrado
                         )
+                        necesita_actualizar = (
+                            falta_base_larga or falta_mes_sbs_cerrado
+                        )
+                        if falta_mes_sbs_cerrado:
+                            print(
+                                "Historico mensual SBS pendiente de actualizar: "
+                                f"llega a {fecha_max.date()}, pero ya deberia "
+                                f"cubrir {mes_anterior_cerrado:%Y-%m}."
+                            )
         except Exception as exc:
             print(f"Advertencia al revisar el histórico consolidado: {exc}")
 
@@ -3250,6 +3265,21 @@ def asegurar_historico_completo(raiz: Path) -> None:
             f"ADVERTENCIA: {modulo.name} terminó con código "
             f"{resultado.returncode}. Se usarán los datos disponibles."
         )
+        return
+
+    modulo_base = raiz / "src" / "04_construir_base_maestra_fondo3.py"
+    if modulo_base.exists():
+        print(f"\nReconstruyendo base maestra SBS con {modulo_base.name}...")
+        resultado_base = subprocess.run(
+            [sys.executable, str(modulo_base)],
+            cwd=str(raiz),
+            check=False,
+        )
+        if resultado_base.returncode != 0:
+            print(
+                f"ADVERTENCIA: {modulo_base.name} termino con codigo "
+                f"{resultado_base.returncode}. Se usaran los datos disponibles."
+            )
 
 
 def ejecutar_actualizacion_modelo(raiz: Path) -> None:
