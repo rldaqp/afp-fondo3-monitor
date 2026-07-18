@@ -4,4 +4,4 @@ mercado_sin_futuro,correcto,cada cuota usa el último cierre de mercado disponib
 modelos_evaluados,correcto,modelos=4
 retraso_exactamente_5_dias,correcto,fecha de corte visible = fecha objetivo menos 5 días calendario
 sin_cuotas_futuras_en_estimacion,correcto,"la cuota real del objetivo se usa solo para evaluar, no para calcular la estimación"
-ventanas_completas,correcto,simulaciones_completas=2352
+ventanas_completas,correcto,simulaciones_completas=2412
