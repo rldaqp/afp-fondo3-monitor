@@ -3,6 +3,7 @@ from __future__ import annotations
 import importlib.util
 import json
 import math
+import sys
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
@@ -45,6 +46,7 @@ def cargar_modulo79(raiz: Path):
     if spec is None or spec.loader is None:
         raise RuntimeError(f"No se pudo cargar {ruta}")
     modulo = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = modulo
     spec.loader.exec_module(modulo)
     return modulo
 

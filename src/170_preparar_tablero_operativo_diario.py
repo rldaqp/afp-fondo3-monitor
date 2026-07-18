@@ -235,13 +235,132 @@ def construir_bitacora(pred: pd.DataFrame, seleccion: pd.DataFrame, confianza_se
     return out.sort_values(["afp", "fecha"])
 
 
+def preparar_salidas_sin_overlay(processed: Path) -> None:
+    columnas_bitacora = [
+        "fecha",
+        "afp",
+        "modelo_codigo",
+        "retorno_estimado",
+        "retorno_estimado_pct",
+        "direccion_estimada",
+        "confianza",
+        "usar_senal",
+        "razon",
+        "fecha_base_sbs",
+        "cuota_base_sbs",
+        "ruedas_estimadas_desde_sbs",
+        "cuota_base",
+        "cuota_estimada",
+        "retorno_acumulado_estimado_desde_sbs",
+        "retorno_acumulado_estimado_desde_sbs_pct",
+        "sbs_publicada",
+        "retorno_real",
+        "error_cuota",
+        "error_abs_pct",
+        "acierto_direccion",
+        "resultado",
+        "bloque",
+    ]
+    columnas_resumen = [
+        "afp",
+        "direccion_validacion",
+        "direccion_test",
+        "direccion_base_test",
+        "delta_dir_test_vs_base",
+        "rmse_test",
+        "cumple_72_test",
+        "direccion_alta_confianza_test",
+        "cobertura_alta_confianza_pct",
+    ]
+    columnas_confianza = [
+        "afp",
+        "filtro_codigo",
+        "filtro",
+        "umbral_abs_pred",
+        "direccion_validacion",
+        "cobertura_validacion_pct",
+        "direccion_test",
+        "cobertura_test_pct",
+        "rmse_test",
+        "resultado",
+    ]
+
+    metricas79 = leer_csv(processed / "ca0001_modelo80_metricas_prospectivas.csv")
+    if not metricas79.empty:
+        resumen = pd.DataFrame(
+            {
+                "afp": metricas79.get("afp"),
+                "direccion_validacion": np.nan,
+                "direccion_test": pd.to_numeric(
+                    metricas79.get("acierto_direccion_pct"), errors="coerce"
+                ),
+                "direccion_base_test": np.nan,
+                "delta_dir_test_vs_base": np.nan,
+                "rmse_test": np.nan,
+                "cumple_72_test": (
+                    pd.to_numeric(metricas79.get("acierto_direccion_pct"), errors="coerce")
+                    >= 72.0
+                ),
+                "direccion_alta_confianza_test": np.nan,
+                "cobertura_alta_confianza_pct": np.nan,
+            }
+        )
+    else:
+        resumen = pd.DataFrame(columns=columnas_resumen)
+
+    escribir_csv(pd.DataFrame(columns=columnas_confianza), processed / "tablero_operativo_confianza_metricas.csv")
+    escribir_csv(pd.DataFrame(columns=columnas_confianza), processed / "tablero_operativo_confianza_seleccion.csv")
+    escribir_csv(pd.DataFrame(columns=columnas_bitacora), processed / "tablero_operativo_bitacora_diaria.csv")
+    escribir_csv(pd.DataFrame(columns=columnas_bitacora), processed / "tablero_operativo_ultima_senal.csv")
+    escribir_csv(pd.DataFrame(columns=columnas_bitacora), processed / "tablero_operativo_ultimos_dias.csv")
+    escribir_csv(
+        pd.DataFrame(
+            columns=[
+                "fecha",
+                "afp",
+                "sbs_publicada",
+                "modelo_overlay_estimado",
+                "cuota_base",
+                "fecha_base_sbs",
+                "cuota_base_sbs",
+                "ruedas_estimadas_desde_sbs",
+                "retorno_estimado_pct",
+                "retorno_acumulado_estimado_desde_sbs_pct",
+                "direccion_estimada",
+                "error_cuota",
+                "error_abs_pct",
+                "resultado",
+            ]
+        ),
+        processed / "tablero_operativo_grafico.csv",
+    )
+    escribir_csv(resumen[columnas_resumen], processed / "tablero_operativo_resumen_metricas.csv")
+    (processed / "tablero_operativo_resumen.json").write_text(
+        json.dumps(
+            {
+                "objetivo": "Visor diario basado en el Modelo 79 congelado cuando no existe overlay historico.",
+                "uso": "El script 172 integra las fechas prospectivas y el script 173 reconcilia contra SBS.",
+                "estado_overlay": "No disponible en esta rama.",
+            },
+            indent=2,
+            ensure_ascii=False,
+        ),
+        encoding="utf-8",
+    )
+
+
 def main() -> None:
     raiz = Path(__file__).resolve().parents[1]
     processed = raiz / "data" / "processed"
     pred = leer_csv(processed / "overlay_direccion_predicciones.csv")
     seleccion = leer_csv(processed / "overlay_direccion_seleccion.csv")
     if pred.empty or seleccion.empty:
-        raise FileNotFoundError("Falta correr src/169_overlay_direccion_integra_profuturo.py")
+        preparar_salidas_sin_overlay(processed)
+        print(
+            "Overlay historico no disponible; se prepararon salidas base "
+            "para integrar el Modelo 79 congelado."
+        )
+        return
     pred["fecha"] = pd.to_datetime(pred["fecha"], errors="coerce")
 
     conf_metricas, conf_sel = construir_confianza(pred, seleccion)

@@ -259,19 +259,21 @@ def construir_filas(
 def actualizar_salidas(processed: Path, filas79: pd.DataFrame) -> pd.DataFrame:
     bitacora = leer_csv(processed / "tablero_operativo_bitacora_diaria.csv")
     if bitacora.empty:
-        raise FileNotFoundError(
-            "Falta tablero_operativo_bitacora_diaria.csv. Ejecuta primero el script 170."
-        )
-    bitacora["fecha"] = a_fecha(bitacora["fecha"])
-    bitacora["_prioridad"] = 1
-    filas79 = filas79.copy()
-    filas79["_prioridad"] = 2
-    combinado = pd.concat([bitacora, filas79], ignore_index=True, sort=False)
+        combinado = filas79.copy()
+    else:
+        bitacora["fecha"] = a_fecha(bitacora["fecha"])
+        bitacora["_prioridad"] = 1
+        filas79 = filas79.copy()
+        filas79["_prioridad"] = 2
+        combinado = pd.concat([bitacora, filas79], ignore_index=True, sort=False)
     combinado["run_id"] = combinado.get("run_id", "").fillna("").astype(str)
-    combinado = combinado.sort_values(
-        ["afp", "fecha", "_prioridad", "run_id"]
-    ).drop_duplicates(["afp", "fecha"], keep="last")
-    combinado = combinado.drop(columns=["_prioridad"]).sort_values(["afp", "fecha"])
+    orden = ["afp", "fecha", "run_id"]
+    if "_prioridad" in combinado.columns:
+        orden.insert(2, "_prioridad")
+    combinado = combinado.sort_values(orden).drop_duplicates(
+        ["afp", "fecha"], keep="last"
+    )
+    combinado = combinado.drop(columns=["_prioridad"], errors="ignore").sort_values(["afp", "fecha"])
 
     fecha_max = combinado["fecha"].max()
     ultima = combinado.groupby("afp", as_index=False).tail(1)
