@@ -35,6 +35,10 @@ def main() -> None:
 
     if not args.skip_update:
         run([sys.executable, "129_monitor_fondo3_ACTUALIZA_Y_ABRE.py", "--actualizar"])
+        run([sys.executable, "src/56_simular_publicacion_sbs_retrasada_5_dias.py"])
+        run([sys.executable, "src/78_consolidar_y_podar_canasta_final.py"])
+        run([sys.executable, "src/79A_graficos_y_correlaciones_finales.py"])
+        run([sys.executable, "129_monitor_fondo3_ACTUALIZA_Y_ABRE.py"])
 
     # El overlay conserva las metricas historicas. Luego se integran las fechas
     # prospectivas del Modelo 79 congelado y se reconcilian con las cuotas SBS
