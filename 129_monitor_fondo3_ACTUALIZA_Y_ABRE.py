@@ -1122,6 +1122,116 @@ def fecha_texto(valor: Any) -> str | None:
     return pd.Timestamp(valor).strftime("%Y-%m-%d")
 
 
+def ultimo_dia_habil_hasta_hoy() -> pd.Timestamp:
+    hoy = pd.Timestamp.now().normalize()
+    while hoy.weekday() >= 5:
+        hoy -= pd.Timedelta(days=1)
+    return hoy
+
+
+def dias_habiles_esperados(inicio_exclusivo: Any, fin_inclusivo: Any) -> list[pd.Timestamp]:
+    inicio = pd.to_datetime(inicio_exclusivo, errors="coerce")
+    fin = pd.to_datetime(fin_inclusivo, errors="coerce")
+    if pd.isna(inicio) or pd.isna(fin) or fin <= inicio:
+        return []
+    dias = pd.bdate_range(inicio + pd.offsets.BDay(1), fin)
+    return [pd.Timestamp(d).normalize() for d in dias]
+
+
+def construir_modelo_proyectado(
+    historico_modelo_afp: pd.DataFrame,
+    pronosticos_afp: pd.DataFrame,
+    ultimo_real: pd.Series | None,
+) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+    if ultimo_real is None:
+        return [], {
+            "fecha_inicio": None,
+            "fecha_fin": None,
+            "fechas_habiles_esperadas": [],
+            "fechas_habiles_cubiertas": [],
+            "fechas_habiles_faltantes": [],
+        }
+
+    fecha_real = pd.Timestamp(ultimo_real["fecha"]).normalize()
+    fin_esperado = max(fecha_real, ultimo_dia_habil_hasta_hoy())
+
+    mh = historico_modelo_afp.copy()
+    if not mh.empty:
+        mh["fecha"] = pd.to_datetime(mh["fecha"], errors="coerce").dt.normalize()
+        mh = mh.dropna(subset=["fecha", "cuota_estimada_historica"])
+        mh = mh[mh["fecha"].le(fecha_real)]
+        mh = mh[["fecha", "cuota_estimada_historica"]].rename(
+            columns={"cuota_estimada_historica": "cuota"}
+        )
+        mh["tipo"] = "historico"
+
+    futuros = pronosticos_afp.copy()
+    if not futuros.empty:
+        futuros["fecha_objetivo"] = pd.to_datetime(
+            futuros["fecha_objetivo"], errors="coerce"
+        ).dt.normalize()
+        futuros["cuota_estimada"] = a_numero(futuros["cuota_estimada"])
+        futuros = futuros.dropna(subset=["fecha_objetivo", "cuota_estimada"])
+        futuros = futuros[
+            futuros["fecha_objetivo"].gt(fecha_real)
+            & futuros["fecha_objetivo"].le(fin_esperado)
+            & futuros["cobertura_pct"].ge(COBERTURA_MINIMA)
+        ]
+        futuros = (
+            futuros.sort_values(["fecha_objetivo", "run_id"])
+            .drop_duplicates(["fecha_objetivo"], keep="last")
+            [["fecha_objetivo", "cuota_estimada"]]
+            .rename(columns={"fecha_objetivo": "fecha", "cuota_estimada": "cuota"})
+        )
+        futuros["tipo"] = "proyeccion"
+    else:
+        futuros = pd.DataFrame(columns=["fecha", "cuota", "tipo"])
+
+    partes = [x for x in (mh, futuros) if not x.empty]
+    combinado = (
+        pd.concat(partes, ignore_index=True)
+        if partes
+        else pd.DataFrame(columns=["fecha", "cuota", "tipo"])
+    )
+    if not combinado.empty:
+        combinado = (
+            combinado.sort_values(["fecha", "tipo"])
+            .drop_duplicates(["fecha"], keep="last")
+            .sort_values("fecha")
+        )
+
+    esperadas = dias_habiles_esperados(fecha_real, fin_esperado)
+    cubiertas = set(
+        pd.to_datetime(
+            futuros.get("fecha", pd.Series(dtype="datetime64[ns]")),
+            errors="coerce",
+        )
+        .dropna()
+        .dt.normalize()
+    )
+    faltantes = [d for d in esperadas if d not in cubiertas]
+
+    auditoria = {
+        "fecha_inicio": fecha_texto(combinado["fecha"].min()) if not combinado.empty else None,
+        "fecha_fin": fecha_texto(combinado["fecha"].max()) if not combinado.empty else None,
+        "fecha_ultima_sbs": fecha_texto(fecha_real),
+        "fecha_habil_objetivo": fecha_texto(fin_esperado),
+        "fechas_habiles_esperadas": [fecha_texto(d) for d in esperadas],
+        "fechas_habiles_cubiertas": [fecha_texto(d) for d in sorted(cubiertas)],
+        "fechas_habiles_faltantes": [fecha_texto(d) for d in faltantes],
+    }
+
+    serie = [
+        {
+            "fecha": fecha_texto(row["fecha"]),
+            "cuota": float(row["cuota"]),
+            "tipo": str(row["tipo"]),
+        }
+        for _, row in combinado.iterrows()
+    ]
+    return serie, auditoria
+
+
 
 def cargar_estado_canasta(processed: Path) -> dict[str, Any]:
     ruta = processed / "ca0001_modelo78_canasta_final_podada.csv"
@@ -1257,6 +1367,11 @@ def construir_payload(
         mh = historico_modelo[
             historico_modelo["afp"].eq(afp)
         ].sort_values("fecha").copy() if not historico_modelo.empty else pd.DataFrame()
+        modelo_proyectado, auditoria_modelo_proyectado = construir_modelo_proyectado(
+            mh,
+            p,
+            ultimo_real,
+        )
 
         validacion = construir_validacion(afp, oficial, historico)
         validacion_reciente = validacion.tail(30).copy()
@@ -1301,6 +1416,8 @@ def construir_payload(
                 "fecha_inicio": fecha_texto(mh["fecha"].min()) if not mh.empty else None,
                 "fecha_fin": fecha_texto(mh["fecha"].max()) if not mh.empty else None,
             },
+            "modelo_proyectado": modelo_proyectado,
+            "modelo_proyectado_resumen": auditoria_modelo_proyectado,
             "pronosticos": [
                 {
                     "fecha": fecha_texto(fila["fecha_objetivo"]),
@@ -2078,7 +2195,11 @@ function renderEvolucion(){
   const factores=d.factores||[];
   const modeloHistorico=(d.modelo_historico||[])
     .filter(v=>!real || v.fecha<=real.fecha);
+  const modeloProyectado=(d.modelo_proyectado&&d.modelo_proyectado.length
+    ? d.modelo_proyectado
+    : modeloHistorico);
   const resumenModeloHistorico=d.modelo_historico_resumen||{};
+  const resumenModeloProyectado=d.modelo_proyectado_resumen||{};
   const trayectoriaPronostico=(d.pronosticos||[])
     .filter(v=>real && v.fecha>real.fecha && (!a || v.fecha<=a.fecha_objetivo))
     .sort((x,y)=>x.fecha.localeCompare(y.fecha));
@@ -2191,17 +2312,18 @@ function renderEvolucion(){
     hovertemplate:"<b>Real SBS</b><br>%{x}<br>%{y:.6f}<extra></extra>"
   }];
 
-  if(modeloHistorico.length){
+  if(modeloProyectado.length){
     trazas.push({
       type:"scatter",
       mode:"lines",
-      x:modeloHistorico.map(v=>v.fecha),
-      y:modeloHistorico.map(v=>v.cuota),
-      name:"Modelo histórico",
+      x:modeloProyectado.map(v=>v.fecha),
+      y:modeloProyectado.map(v=>v.cuota),
+      name:"Modelo histórico y proyección",
       line:{color:"#ef6c3e",width:2.7,dash:"dot"},
       opacity:.92,
+      customdata:modeloProyectado.map(v=>v.tipo||"historico"),
       hovertemplate:
-        "<b>Modelo histórico</b><br>"+
+        "<b>Modelo %{customdata}</b><br>"+
         "%{x}<br>Cuota: %{y:.6f}<extra></extra>"
     });
   }
@@ -2365,14 +2487,20 @@ function renderEvolucion(){
         <strong>${a?fmtNumero(a.cuota_estimada):"Sin dato"}</strong>
       </div>
       <p class="nota">
-        La línea naranja punteada muestra cómo habría estimado históricamente el modelo.
-        La línea naranja con puntos muestra las estimaciones actuales del 1 y 2 de julio.
+        La línea naranja punteada une la estimación histórica con la proyección vigente hasta el último día hábil cubierto.
+        La línea naranja con puntos resalta las estimaciones actuales desde la última SBS.
       </p>
       <p class="nota">
         Serie histórica del modelo: <strong>${resumenModeloHistorico.n_estimaciones||0}</strong>
         estimaciones, desde <strong>${resumenModeloHistorico.fecha_inicio||"sin fecha"}</strong>
         hasta <strong>${resumenModeloHistorico.fecha_fin||"sin fecha"}</strong>.
         Fuente: ${resumenModeloHistorico.fuente||"no encontrada"}.
+      </p>
+      <p class="nota">
+        Proyección visible: desde <strong>${resumenModeloProyectado.fecha_inicio||"sin fecha"}</strong>
+        hasta <strong>${resumenModeloProyectado.fecha_fin||"sin fecha"}</strong>.
+        Fechas hábiles esperadas: <strong>${(resumenModeloProyectado.fechas_habiles_esperadas||[]).join(", ")||"ninguna"}</strong>.
+        Faltantes: <strong>${(resumenModeloProyectado.fechas_habiles_faltantes||[]).join(", ")||"ninguna"}</strong>.
       </p>
     </article>
 
