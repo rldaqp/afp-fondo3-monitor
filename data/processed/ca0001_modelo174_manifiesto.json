@@ -1,0 +1,21 @@
+{
+  "version": "modelo174_tecnico_60_20_20",
+  "fecha_hora_utc": "2026-07-18T15:39:53.241875+00:00",
+  "division": {
+    "train": 0.6,
+    "validacion": 0.2,
+    "test": 0.2
+  },
+  "regla_temporal": "Los bloques se forman en orden cronológico; no se barajan las fechas.",
+  "seleccion": "Alpha se elige solo con validación, priorizando dirección y luego menor RMSE.",
+  "test": "El 20% final no participa en selección ni ajuste previo a su evaluación.",
+  "indicadores": [
+    "ret1",
+    "momentum3",
+    "momentum5",
+    "media5_20",
+    "rsi14",
+    "volatilidad10",
+    "macd12_26"
+  ]
+}
