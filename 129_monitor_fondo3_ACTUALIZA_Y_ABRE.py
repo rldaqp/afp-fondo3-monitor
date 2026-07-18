@@ -2471,26 +2471,19 @@ function renderEvolucion(){
 
     annotations.push({
       x:a.fecha_objetivo,
-      y:a.cuota_estimada,
+      y:1.02,
       xref:"x",
-      yref:"y",
+      yref:"paper",
       text:
-        `<b>ESTIMADO ${fmtNumero(a.cuota_estimada)}</b><br>`+
-        `${a.direccion||""} ${variacionPct!=null?fmtPct(variacionPct):""}<br>`+
-        `${a.fecha_objetivo}`,
-      showarrow:true,
-      arrowhead:3,
-      arrowsize:1.2,
-      arrowwidth:2,
-      arrowcolor:"#ef6c3e",
-      ax:-115,
-      ay:-70,
-      bgcolor:"rgba(255,242,233,.96)",
-      bordercolor:"#ef6c3e",
-      borderwidth:2,
-      borderpad:7,
-      font:{color:"#9a3e1b",size:13},
-      align:"left"
+        `Estimado ${fmtNumero(a.cuota_estimada)} · ${a.fecha_objetivo}`,
+      showarrow:false,
+      bgcolor:"rgba(255,255,255,.72)",
+      bordercolor:"rgba(239,108,62,.35)",
+      borderwidth:1,
+      borderpad:4,
+      font:{color:"#9a3e1b",size:11},
+      align:"center",
+      opacity:.82
     });
   }
 
