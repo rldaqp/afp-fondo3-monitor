@@ -553,6 +553,56 @@ def cargar_pronosticos(processed: Path) -> tuple[pd.DataFrame, pd.DataFrame]:
     return historico, snapshot
 
 
+def cargar_pronosticos_operativos(processed: Path) -> pd.DataFrame:
+    df = leer_csv(processed / "tablero_operativo_bitacora_diaria.csv")
+    if df.empty:
+        return pd.DataFrame()
+
+    requeridas = {"afp", "fecha", "cuota_estimada"}
+    if not requeridas.issubset(df.columns):
+        return pd.DataFrame()
+
+    x = pd.DataFrame()
+    x["afp"] = df["afp"].map(normalizar_afp)
+    x["fecha_objetivo"] = a_fecha(df["fecha"])
+    x["cuota_estimada"] = a_numero(df["cuota_estimada"])
+    x["cuota_base"] = (
+        a_numero(df["cuota_base"])
+        if "cuota_base" in df.columns
+        else np.nan
+    )
+    x["fecha_base"] = (
+        a_fecha(df["fecha_base_sbs"])
+        if "fecha_base_sbs" in df.columns
+        else pd.NaT
+    )
+    x["direccion_estimada"] = (
+        df["direccion_estimada"].astype(str).str.strip()
+        if "direccion_estimada" in df.columns
+        else ""
+    )
+    x["cobertura_pct"] = 100.0
+    x["variacion_estimada_pct"] = (
+        a_numero(df["retorno_acumulado_estimado_desde_sbs_pct"])
+        if "retorno_acumulado_estimado_desde_sbs_pct" in df.columns
+        else np.nan
+    )
+    x["run_id"] = (
+        df["run_id"].astype(str)
+        if "run_id" in df.columns
+        else "tablero_operativo"
+    )
+    x["fuente"] = "TABLERO_OPERATIVO"
+
+    return (
+        x.dropna(subset=["afp", "fecha_objetivo", "cuota_estimada"])
+        .loc[lambda z: z["afp"].isin(AFPS)]
+        .sort_values(["afp", "fecha_objetivo", "run_id"])
+        .drop_duplicates(["afp", "fecha_objetivo"], keep="last")
+        .reset_index(drop=True)
+    )
+
+
 
 def _columna_por_alias(df: pd.DataFrame, aliases: tuple[str, ...]) -> str | None:
     mapa = {
@@ -1156,24 +1206,26 @@ def construir_modelo_proyectado(
     fin_esperado = max(fecha_real, ultimo_dia_habil_hasta_hoy())
 
     mh = historico_modelo_afp.copy()
+    fecha_fin_historico = pd.NaT
     if not mh.empty:
-        mh["fecha"] = pd.to_datetime(mh["fecha"], errors="coerce").dt.normalize()
+        mh["fecha"] = a_fecha(mh["fecha"])
         mh = mh.dropna(subset=["fecha", "cuota_estimada_historica"])
         mh = mh[mh["fecha"].le(fecha_real)]
+        if not mh.empty:
+            fecha_fin_historico = mh["fecha"].max()
         mh = mh[["fecha", "cuota_estimada_historica"]].rename(
             columns={"cuota_estimada_historica": "cuota"}
         )
         mh["tipo"] = "historico"
+    inicio_pronosticos = fecha_fin_historico if pd.notna(fecha_fin_historico) else fecha_real
 
     futuros = pronosticos_afp.copy()
     if not futuros.empty:
-        futuros["fecha_objetivo"] = pd.to_datetime(
-            futuros["fecha_objetivo"], errors="coerce"
-        ).dt.normalize()
+        futuros["fecha_objetivo"] = a_fecha(futuros["fecha_objetivo"])
         futuros["cuota_estimada"] = a_numero(futuros["cuota_estimada"])
         futuros = futuros.dropna(subset=["fecha_objetivo", "cuota_estimada"])
         futuros = futuros[
-            futuros["fecha_objetivo"].gt(fecha_real)
+            futuros["fecha_objetivo"].gt(inicio_pronosticos)
             & futuros["fecha_objetivo"].le(fin_esperado)
             & futuros["cobertura_pct"].ge(COBERTURA_MINIMA)
         ]
@@ -1183,7 +1235,11 @@ def construir_modelo_proyectado(
             [["fecha_objetivo", "cuota_estimada"]]
             .rename(columns={"fecha_objetivo": "fecha", "cuota_estimada": "cuota"})
         )
-        futuros["tipo"] = "proyeccion"
+        futuros["tipo"] = np.where(
+            futuros["fecha"].le(fecha_real),
+            "pronostico_evaluado",
+            "proyeccion",
+        )
     else:
         futuros = pd.DataFrame(columns=["fecha", "cuota", "tipo"])
 
@@ -1202,12 +1258,10 @@ def construir_modelo_proyectado(
 
     esperadas = dias_habiles_esperados(fecha_real, fin_esperado)
     cubiertas = set(
-        pd.to_datetime(
+        a_fecha(
             futuros.get("fecha", pd.Series(dtype="datetime64[ns]")),
-            errors="coerce",
         )
         .dropna()
-        .dt.normalize()
     )
     faltantes = [d for d in esperadas if d not in cubiertas]
 
@@ -1271,6 +1325,7 @@ def construir_payload(
     oficial: pd.DataFrame,
     historico: pd.DataFrame,
     snapshot: pd.DataFrame,
+    operativo: pd.DataFrame,
     contribuciones: pd.DataFrame,
     metricas: dict[str, dict[str, float]],
     fuente_oficial: str,
@@ -1342,10 +1397,26 @@ def construir_payload(
                 "error_pct": error_pct,
             }
 
-        p = historico[
-            historico["afp"].eq(afp)
-            & historico["cobertura_pct"].ge(COBERTURA_MINIMA)
-        ].copy()
+        partes_pronostico = []
+        if not historico.empty:
+            partes_pronostico.append(
+                historico[
+                    historico["afp"].eq(afp)
+                    & historico["cobertura_pct"].ge(COBERTURA_MINIMA)
+                ].copy()
+            )
+        if not operativo.empty:
+            partes_pronostico.append(
+                operativo[
+                    operativo["afp"].eq(afp)
+                    & operativo["cobertura_pct"].ge(COBERTURA_MINIMA)
+                ].copy()
+            )
+        p = (
+            pd.concat(partes_pronostico, ignore_index=True, sort=False)
+            if partes_pronostico
+            else pd.DataFrame()
+        )
         if actual is not None:
             p = pd.concat([p, pd.DataFrame([actual])], ignore_index=True)
         if not p.empty:
@@ -3299,6 +3370,7 @@ def main() -> None:
 
     oficial, fuente_oficial = cargar_oficial(processed)
     historico, snapshot = cargar_pronosticos(processed)
+    operativo = cargar_pronosticos_operativos(processed)
     historico_modelo, fuente_historico_modelo = cargar_serie_historica_modelo(
         processed,
         oficial,
@@ -3313,6 +3385,7 @@ def main() -> None:
         oficial,
         historico,
         snapshot,
+        operativo,
         contribuciones,
         metricas,
         fuente_oficial,
