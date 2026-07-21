@@ -19,7 +19,7 @@
       "fecha_ancla": "2026-07-17 00:00:00",
       "cuota_ancla": 68.4554312,
       "ecuacion_retorno_estandarizada": "0.000237501879 + 0.001240935959*((ret_USD_COPX[t-0] - 0.000752904636)/0.022731602686) + 0.003137534544*((ret_USD_EPU[t-0] - 0.000566071945)/0.014619970613) + 0.001478562535*((ret_USD_SPY[t-0] - 0.000564193385)/0.010914685378) + 0.000198948433*((ret_PEN_FCX[t-1] - 0.001074171835)/0.035997663589)",
-      "ecuacion_retorno_raw": "-0.000007447582 + 0.054590781672*ret_USD_COPX__lag0 + 0.214606077332*ret_USD_EPU__lag0 + 0.135465428830*ret_USD_SPY__lag0 + 0.005526704047*ret_PEN_FCX__lag1",
+      "ecuacion_retorno_raw": "-0.000007447582 + 0.054590781671*ret_USD_COPX__lag0 + 0.214606077332*ret_USD_EPU__lag0 + 0.135465428830*ret_USD_SPY__lag0 + 0.005526704047*ret_PEN_FCX__lag1",
       "formula_cuota": "cuota_estimada_t = cuota_ancla * PRODUCTO_u(1 + retorno_estimado_u)"
     },
     {
