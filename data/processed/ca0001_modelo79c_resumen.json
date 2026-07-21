@@ -5,10 +5,10 @@
       "familia": "EW_RIDGE",
       "alpha": 0.001,
       "half_life": 60,
-      "fecha_ancla": "2026-07-16 00:00:00",
-      "cuota_ancla": 32.2856466,
-      "ecuacion_retorno_estandarizada": "0.000198768291 + 0.002491412459*((ret_USD_EPU[t-0] - 0.000569125454)/0.014626753090) + 0.007677265716*((ret_USD_VT[t-0] - 0.000472535189)/0.010560237241) - 0.001349091195*((ret_USD_XLE[t-0] - 0.000419751201)/0.018049801355) + 0.001203196033*((ret_PEN_REMX[t-0] - 0.000535098852)/0.025824714274) - 0.001940722233*((ret_USD_EFA[t-0] - 0.000363050109)/0.010679305729) + 0.002265491627*((ret_BVL_PEN_MINSUR[t-0] - 0.000820220570)/0.022976593547) + 0.001229449467*((ret_BVL_PEN_INRETAIL_PERU[t-0] - 0.000406994612)/0.014022494835) - 0.000575566345*((ret_IDX_LOCAL_AUSTRALIA_S_P_ASX_200[t-0] - 0.000213257735)/0.009342568425) + 0.000541036139*((ret_IDX_LOCAL_JAP_N_NIKKEI_225[t-0] - 0.000585744334)/0.013224190596)",
-      "ecuacion_retorno_raw": "-0.000296669392 + 0.170332570973*ret_USD_EPU__lag0 + 0.726997466116*ret_USD_VT__lag0 - 0.074742717047*ret_USD_XLE__lag0 + 0.046590874945*ret_PEN_REMX__lag0 - 0.181727378409*ret_USD_EFA__lag0 + 0.098599978394*ret_BVL_PEN_MINSUR__lag0 + 0.087676942063*ret_BVL_PEN_INRETAIL_PERU__lag0 - 0.061606864314*ret_IDX_LOCAL_AUSTRALIA_S_P_ASX_200__lag0 + 0.040912608963*ret_IDX_LOCAL_JAP_N_NIKKEI_225__lag0",
+      "fecha_ancla": "2026-07-17 00:00:00",
+      "cuota_ancla": 32.0835618,
+      "ecuacion_retorno_estandarizada": "0.000311610895 + 0.001495358113*((ret_USD_EPU[t-0] - 0.000566071945)/0.014619970613) + 0.007327743957*((ret_USD_VT[t-0] - 0.000469312412)/0.010561081190) - 0.000940987517*((ret_USD_XLE[t-0] - 0.000415224027)/0.018047760142) + 0.001649009622*((ret_PEN_REMX[t-0] - 0.000528783581)/0.025820836347) - 0.001139959807*((ret_USD_EFA[t-0] - 0.000363146471)/0.010678592726) + 0.002293190405*((ret_BVL_PEN_MINSUR[t-0] - 0.000828001044)/0.022971453305) + 0.001533599536*((ret_BVL_PEN_INRETAIL_PERU[t-0] - 0.000398393255)/0.014022218921) - 0.000041208074*((ret_IDX_LOCAL_AUSTRALIA_S_P_ASX_200[t-0] - 0.000205683064)/0.009336085181) + 0.000182684938*((ret_IDX_LOCAL_JAP_N_NIKKEI_225[t-0] - 0.000569902041)/0.013229860690)",
+      "ecuacion_retorno_raw": "-0.000178462995 + 0.102281882260*ret_USD_EPU__lag0 + 0.693844107873*ret_USD_VT__lag0 - 0.052138742410*ret_USD_XLE__lag0 + 0.063863524800*ret_PEN_REMX__lag0 - 0.106751876004*ret_USD_EFA__lag0 + 0.099827833032*ret_BVL_PEN_MINSUR__lag0 + 0.109369247784*ret_BVL_PEN_INRETAIL_PERU__lag0 - 0.004413849403*ret_IDX_LOCAL_AUSTRALIA_S_P_ASX_200__lag0 + 0.013808530760*ret_IDX_LOCAL_JAP_N_NIKKEI_225__lag0",
       "formula_cuota": "cuota_estimada_t = cuota_ancla * PRODUCTO_u(1 + retorno_estimado_u)"
     },
     {
@@ -16,10 +16,10 @@
       "familia": "EW_RIDGE",
       "alpha": 0.001,
       "half_life": 500,
-      "fecha_ancla": "2026-07-16 00:00:00",
-      "cuota_ancla": 68.8450619,
-      "ecuacion_retorno_estandarizada": "0.000231393611 + 0.001188783177*((ret_USD_COPX[t-0] - 0.000763046745)/0.022740677441) + 0.003360437134*((ret_USD_EPU[t-0] - 0.000569125454)/0.014626753090) + 0.001444521568*((ret_USD_SPY[t-0] - 0.000568283099)/0.010913565851) + 0.000226724981*((ret_PEN_FCX[t-1] - 0.001094781024)/0.035988770385)",
-      "ecuacion_retorno_raw": "-0.000021364443 + 0.052275627225*ret_USD_COPX__lag0 + 0.229745939737*ret_USD_EPU__lag0 + 0.132360182548*ret_USD_SPY__lag0 + 0.006299881276*ret_PEN_FCX__lag1",
+      "fecha_ancla": "2026-07-17 00:00:00",
+      "cuota_ancla": 68.4554312,
+      "ecuacion_retorno_estandarizada": "0.000237501879 + 0.001240935959*((ret_USD_COPX[t-0] - 0.000752904636)/0.022731602686) + 0.003137534544*((ret_USD_EPU[t-0] - 0.000566071945)/0.014619970613) + 0.001478562535*((ret_USD_SPY[t-0] - 0.000564193385)/0.010914685378) + 0.000198948433*((ret_PEN_FCX[t-1] - 0.001074171835)/0.035997663589)",
+      "ecuacion_retorno_raw": "-0.000007447582 + 0.054590781672*ret_USD_COPX__lag0 + 0.214606077332*ret_USD_EPU__lag0 + 0.135465428830*ret_USD_SPY__lag0 + 0.005526704047*ret_PEN_FCX__lag1",
       "formula_cuota": "cuota_estimada_t = cuota_ancla * PRODUCTO_u(1 + retorno_estimado_u)"
     },
     {
@@ -27,10 +27,10 @@
       "familia": "EW_RIDGE",
       "alpha": 0.001,
       "half_life": 500,
-      "fecha_ancla": "2026-07-16 00:00:00",
-      "cuota_ancla": 62.3456937,
-      "ecuacion_retorno_estandarizada": "0.000222056419 + 0.003784558851*((ret_USD_EPU[t-0] - 0.000569125454)/0.014626753090) + 0.001265710545*((ret_USD_SPY[t-0] - 0.000568283099)/0.010913565851) + 0.001274596274*((ret_USD_VWO[t-0] - 0.000335014509)/0.012126359564)",
-      "ecuacion_retorno_raw": "-0.000026320742 + 0.258742239519*ret_USD_EPU__lag0 + 0.115975892979*ret_USD_SPY__lag0 + 0.105109556358*ret_USD_VWO__lag0",
+      "fecha_ancla": "2026-07-17 00:00:00",
+      "cuota_ancla": 62.048325,
+      "ecuacion_retorno_estandarizada": "0.000231230079 + 0.003510733742*((ret_USD_EPU[t-0] - 0.000566071945)/0.014619970613) + 0.001180031504*((ret_USD_SPY[t-0] - 0.000564193385)/0.010914685378) + 0.001545284201*((ret_USD_VWO[t-0] - 0.000325126765)/0.012129480256)",
+      "ecuacion_retorno_raw": "-0.000007120439 + 0.240132749586*ret_USD_EPU__lag0 + 0.108114110800*ret_USD_SPY__lag0 + 0.127399044976*ret_USD_VWO__lag0",
       "formula_cuota": "cuota_estimada_t = cuota_ancla * PRODUCTO_u(1 + retorno_estimado_u)"
     },
     {
@@ -38,10 +38,10 @@
       "familia": "EW_RIDGE",
       "alpha": 0.001,
       "half_life": 500,
-      "fecha_ancla": "2026-07-16 00:00:00",
-      "cuota_ancla": 68.4036329,
-      "ecuacion_retorno_estandarizada": "0.000197479955 + 0.004273008283*((ret_USD_EPU[t-0] - 0.000569125454)/0.014626753090) + 0.001315438139*((ret_USD_SPY[t-0] - 0.000568283099)/0.010913565851) - 0.000087143334*((ret_PEN_MCHI[t-0] - 0.000363663890)/0.021364648136) + 0.000314640249*((ret_USD_FCX[t-1] - 0.000956325727)/0.033446266880) + 0.000879556143*((ret_USD_NEM[t-0] - 0.000883782008)/0.023159206623)",
-      "ecuacion_retorno_raw": "-0.000078356894 + 0.292136488308*ret_USD_EPU__lag0 + 0.120532386638*ret_USD_SPY__lag0 - 0.004078856487*ret_PEN_MCHI__lag0 + 0.009407335348*ret_USD_FCX__lag1 + 0.037978681960*ret_USD_NEM__lag0",
+      "fecha_ancla": "2026-07-17 00:00:00",
+      "cuota_ancla": 68.2147702,
+      "ecuacion_retorno_estandarizada": "0.000207407473 + 0.004087325034*((ret_USD_EPU[t-0] - 0.000566071945)/0.014619970613) + 0.001326778546*((ret_USD_SPY[t-0] - 0.000564193385)/0.010914685378) + 0.000017668950*((ret_PEN_MCHI[t-0] - 0.000345586488)/0.021350995105) + 0.000307041423*((ret_USD_FCX[t-1] - 0.000941811628)/0.033445874483) + 0.000902407374*((ret_USD_NEM[t-0] - 0.000877110998)/0.023152521310)",
+      "ecuacion_retorno_raw": "-0.000062551717 + 0.279571357731*ret_USD_EPU__lag0 + 0.121559028077*ret_USD_SPY__lag0 + 0.000827546911*ret_PEN_MCHI__lag0 + 0.009180248007*ret_USD_FCX__lag1 + 0.038976635069*ret_USD_NEM__lag0",
       "formula_cuota": "cuota_estimada_t = cuota_ancla * PRODUCTO_u(1 + retorno_estimado_u)"
     }
   ],
