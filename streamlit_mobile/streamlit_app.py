@@ -122,6 +122,11 @@ if sbs.empty or history.empty:
 
 last_sbs = sbs.iloc[-1]
 latest = pending.iloc[-1] if not pending.empty else history.iloc[-1]
+latest_vc = (
+    float(latest["valor_cuota_estimado"])
+    if "valor_cuota_estimado" in latest.index
+    else float(latest["valor_cuota"])
+)
 complete = bool(latest.get("fuentes_completas", True))
 
 cards = st.columns(4)
@@ -132,7 +137,7 @@ cards[0].metric(
 )
 cards[1].metric(
     "VC estimado",
-    f"S/ {latest.get('valor_cuota_estimado', latest.valor_cuota):.7f}",
+    f"S/ {latest_vc:.7f}",
     f"{latest.fecha:%d/%m/%Y}",
 )
 cards[2].metric("Señal", latest.senal, f"{latest.ret_estimado:+.3%}")
