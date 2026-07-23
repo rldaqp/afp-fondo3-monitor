@@ -8,12 +8,15 @@ on:
     paths:
       - ".github/workflows/update-monitor.yml"
       - "scripts/build_rolling90_pages.py"
-      - "scripts/run_rolling90_resilient.py"
+      - "scripts/run_rolling90_live_v2.py"
       - "scripts/postprocess_mobile_ui.py"
       - "requirements.txt"
   schedule:
-    # America/Lima = UTC-5. Revisa nuevas publicaciones cada hora en días hábiles.
-    - cron: "0 5-23 * * 1-5"
+    # Ventana amplia que cubre la sesión de NY tanto con horario de verano como de invierno.
+    # Snapshot intradía aproximadamente cada 10 minutos.
+    - cron: "*/10 13-21 * * 1-5"
+    # Fuera de esa ventana se sigue revisando SBS/cierres cada hora.
+    - cron: "0 5-12,22-23 * * 1-5"
     - cron: "0 0-4 * * 2-6"
 
 permissions:
@@ -52,7 +55,7 @@ jobs:
           PYTHONUTF8: "1"
           PYTHONIOENCODING: "utf-8"
         run: |
-          python scripts/run_rolling90_resilient.py
+          python scripts/run_rolling90_live_v2.py
           sed -i "s/calc.onclick=calc;/document.getElementById('calc').onclick=calc;/" public/index.html
           python scripts/postprocess_mobile_ui.py
 
@@ -62,12 +65,18 @@ jobs:
           test -s public/data/latest.json
           test -s public/data/series.json
           test -s public/data/signals.json
+          test -s public/data/live_market.json
           grep -q "OLS Rolling 90" public/index.html
           grep -q "7 días" public/index.html
           grep -q "15 días" public/index.html
           grep -q "30 días" public/index.html
           grep -q "90 días" public/index.html
           grep -q "vcAll" public/index.html
+          grep -q "ret7" public/index.html
+          grep -q "ret15" public/index.html
+          grep -q "ret30" public/index.html
+          grep -q "ret90" public/index.html
+          grep -q "Mercado ahora" public/index.html
           grep -q "Retorno estimado del VC" public/index.html
           grep -q "calcNotebook" public/index.html
           grep -q "Señal" public/index.html
@@ -77,6 +86,7 @@ jobs:
 
           latest = json.loads(Path("public/data/latest.json").read_text(encoding="utf-8"))
           signals = json.loads(Path("public/data/signals.json").read_text(encoding="utf-8"))
+          live = json.loads(Path("public/data/live_market.json").read_text(encoding="utf-8"))
           assert latest["model"] == "OLS rolling 90"
           assert int(latest["window"]) == 90
           assert abs(float(latest["threshold"]) - 0.001) < 1e-12
@@ -86,8 +96,11 @@ jobs:
           assert float(latest["latest_sbs_vc"]) > 0
           assert float(latest["latest_estimated_vc"]) > 0
           assert len(signals) > 1
+          assert live["mode"]
+          assert live["signal"] in {"SUBE", "NEUTRO", "BAJA"}
           assert all(x.get("senal") in {"SUBE", "NEUTRO", "BAJA"} for x in signals if x.get("ret_estimado") is not None)
           print(json.dumps(latest, ensure_ascii=False, indent=2))
+          print(json.dumps(live, ensure_ascii=False, indent=2))
           print(f"Puntos de señal publicados: {len(signals)}")
           PY
 
