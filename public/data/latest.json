@@ -1,0 +1,31 @@
+{
+  "generated_at_lima": "2026-07-23T05:32:55.882205-05:00",
+  "model": "OLS rolling 90",
+  "window": 90,
+  "threshold": 0.001,
+  "training_start": "2026-02-17",
+  "training_end": "2026-06-30",
+  "training_n": 90,
+  "latest_sbs_date": "2026-06-30",
+  "latest_sbs_vc": 71.9348302,
+  "latest_market_date": "2026-07-21",
+  "latest_estimate_date": "2026-07-21",
+  "latest_estimated_vc": 73.69155221790905,
+  "latest_return_estimated": 0.02265989617799127,
+  "signal": "SUBE",
+  "estimate_type": "MODELO OLS",
+  "sources": {
+    "sbs": "SBS EN LÍNEA",
+    "market": "YAHOO FINANCE + BCRP"
+  },
+  "warnings": [],
+  "coefficients": {
+    "intercept": 0.0005643622748706832,
+    "ret_SPY": 0.3801423745313097,
+    "ret_NEM": 0.12269389505560818,
+    "ret_FCX": 0.06953416182455639,
+    "ret_EPU": 0.3260089081620098,
+    "ret_MCHI": 0.046863527160726975,
+    "ret_USD_PEN": 0.19610151407625784
+  }
+}
