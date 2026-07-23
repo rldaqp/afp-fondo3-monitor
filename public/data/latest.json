@@ -1,5 +1,5 @@
 {
-  "generated_at_lima": "2026-07-23T06:00:50.297792-05:00",
+  "generated_at_lima": "2026-07-23T06:21:58.417628-05:00",
   "model": "OLS rolling 90",
   "window": 90,
   "threshold": 0.001,
@@ -16,17 +16,18 @@
   "estimate_type": "MODELO OLS",
   "sources": {
     "sbs": "SBS EN LÍNEA",
-    "market": "Yahoo Finance (Stooq respaldo) + USD/PEN BCRP/Yahoo",
-    "fx": "BCRP; Yahoo PEN=X solo para fechas faltantes"
+    "market": "Yahoo Finance; Stooq solo cola nueva si Yahoo falla",
+    "fx": "BCRP histórico; Yahoo PEN=X solo cola posterior al último BCRP"
   },
   "warnings": [],
   "coefficients": {
-    "intercept": 4.567093680095885e-05,
-    "ret_SPY": 0.41003472151176523,
-    "ret_NEM": 0.13421330564394354,
+    "intercept": 4.567093680095903e-05,
+    "ret_SPY": 0.4100347215117651,
+    "ret_NEM": 0.13421330564394351,
     "ret_FCX": 0.06192437051328565,
-    "ret_EPU": 0.305345086353038,
-    "ret_MCHI": 0.03923644826918091,
-    "ret_USD_PEN": 0.10845698591358338
-  }
+    "ret_EPU": 0.30534508635303803,
+    "ret_MCHI": 0.03923644826918086,
+    "ret_USD_PEN": 0.10845698591358331
+  },
+  "vc_mode_rule": "INTRADÍA PROVISIONAL 09:30-16:10 NY; fuera de ese intervalo CIERRE DIARIO"
 }

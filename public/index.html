@@ -10,29 +10,36 @@ h1{font-size:1.45rem;margin:5px 0}.sub,.note{color:var(--muted);font-size:.82rem
 .tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}.tabs button,.primary{border:1px solid #334155;background:#132238;color:#fff;border-radius:10px;padding:11px;font-weight:650}.tabs button.active,.primary{background:#2563eb}
 .inputs{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:12px}input{width:100%;background:#07111f;color:#fff;border:1px solid #334155;border-radius:9px;padding:10px}label{font-size:.76rem;color:var(--muted)}.hidden{display:none}.chart{height:365px}.error{background:#451a1a;padding:12px;border-radius:10px}
 @media(max-width:700px){.grid,.metricrow{grid-template-columns:repeat(2,1fr)}.inputs{grid-template-columns:1fr}.chart{height:320px}}
-.chart-controls{display:flex;gap:8px;margin-bottom:8px}.chart-controls button{border:1px solid #334155;background:#132238;color:#fff;border-radius:9px;padding:8px 12px;font-weight:650}.chart-controls button.primary{background:#2563eb}</style>
+</style>
 <style>
+.chart-title{font-size:.96rem;font-weight:800;margin:0 0 8px;color:#f8fafc}
 .chart-controls{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:10px}
-.chart-controls button{flex:1 1 auto;min-width:64px;border:1px solid #334155;background:#132238;color:#fff;border-radius:9px;padding:9px 10px;font-weight:700}
+.chart-controls button{flex:1 1 auto;min-width:60px;border:1px solid #334155;background:#132238;color:#fff;border-radius:9px;padding:9px 8px;font-weight:700}
 .chart-controls button.primary{background:#2563eb}
 #ret{font-size:1rem;font-weight:800;color:#e2e8f0;margin-top:6px;line-height:1.25}
-.monitor-help{margin:8px 0 2px;padding:10px 12px;border:1px solid #243244;border-radius:10px;background:#0b1728;color:#cbd5e1;font-size:.84rem;line-height:1.35}
+.monitor-help{margin:8px 0 10px;padding:10px 12px;border:1px solid #243244;border-radius:10px;background:#0b1728;color:#cbd5e1;font-size:.84rem;line-height:1.4}
 #detail{margin-top:10px;line-height:1.45}
-@media(max-width:700px){
-  .wrap{padding:10px}.card,.panel{padding:11px}.value{font-size:1.2rem}
-  #ret{font-size:1.02rem}.chart{height:300px}.chart-controls button{padding:9px 7px;font-size:.82rem}
-}
+.market-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;margin-bottom:10px}.market-mode{font-weight:850}.market-time{font-size:.74rem;color:#94a3b8;text-align:right}
+.market-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.market-item{background:#0b1728;border:1px solid #243244;border-radius:11px;padding:10px}.market-symbol{font-size:.82rem;color:#cbd5e1;font-weight:800}.market-price{font-size:1.05rem;font-weight:850;margin-top:3px}.market-ret{font-size:.9rem;font-weight:800;margin-top:3px}.market-source{font-size:.68rem;color:#94a3b8;margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pos{color:#4ade80}.neg{color:#f87171}.zero{color:#fbbf24}
+@media(max-width:700px){.wrap{padding:10px}.card,.panel{padding:11px}.value{font-size:1.2rem}#ret{font-size:1.02rem}.chart{height:300px}.chart-controls button{padding:9px 5px;font-size:.79rem}.market-grid{grid-template-columns:repeat(2,1fr)}.market-head{display:block}.market-time{text-align:left;margin-top:4px}}
 </style>
 </head><body><main class="wrap">
 <h1>Profuturo Fondo 3</h1><div class="sub">GitHub Actions · OLS Rolling 90 · umbral ±0.10% · datos independientes del notebook</div><div id="error"></div>
 <section class="grid"><div class="card"><div class="label">Último VC SBS</div><div class="value" id="sbsVc">—</div><div class="sub" id="sbsDate">—</div></div>
 <div class="card"><div class="label">VC más reciente</div><div class="value" id="estVc">—</div><div class="sub" id="estDate">—</div></div>
 <div class="card"><div class="label">Señal</div><div class="value signal" id="signal">—</div><div class="sub" id="ret">—</div></div>
-<div class="card"><div class="label">Ventana vigente</div><div class="value">90</div><div class="sub" id="window">—</div></div></section><div id="monitorHelp" class="monitor-help"><b>Retorno estimado del VC (día):</b> es la variación diaria que el modelo OLS estima para el valor cuota de la fecha mostrada. No es la rentabilidad acumulada de tu inversión.</div>
+<div class="card"><div class="label">Ventana vigente</div><div class="value">90</div><div class="sub" id="window">—</div></div></section><div id="monitorHelp" class="monitor-help"><b>Retorno estimado del VC:</b> variación diaria estimada por el OLS. Durante mercado abierto es provisional; al cierre usa cierres diarios.</div>
 <section class="panel"><div class="tabs"><button class="active" data-mode="monitor">Solo monitorear</button><button data-mode="inside">Sigo dentro</button><button data-mode="closed">Ya salí</button></div>
 <div id="operation" class="hidden"><div class="inputs"><div><label>Fecha de entrada</label><input type="date" id="entry"></div><div><label>Capital invertido (S/)</label><input type="number" id="capital" value="25000" min="1" step="100"></div><div id="exitBox" class="hidden"><label>Fecha de salida</label><input type="date" id="exit"></div></div>
 <button class="primary" id="calc" style="width:100%;margin-top:10px">Calcular</button><div class="metricrow"><div class="card"><div class="label">Capital</div><div class="value" id="mCapital">—</div></div><div class="card"><div class="label">Valor actual/final</div><div class="value" id="mFinal">—</div></div><div class="card"><div class="label">Ganancia/pérdida</div><div class="value" id="mGain">—</div></div><div class="card"><div class="label">Rentabilidad</div><div class="value" id="mRent">—</div></div></div><div class="note" id="detail"></div><div id="opChart" class="chart"></div></div></section>
-<section class="panel"><div class="chart-controls" aria-label="Rango del gráfico"><button id="vc7" data-days="7">7 días</button><button id="vc15" data-days="15">15 días</button><button id="vc30" data-days="30">30 días</button><button id="vc90" data-days="90" class="primary">90 días</button><button id="vcAll" data-days="all">Todo</button></div><div id="vcChart" class="chart"></div></section><section class="panel"><div id="signalChart" class="chart"></div></section><section class="panel"><b>Auditoría</b><div class="note" id="audit">Cargando…</div></section>
+<section class="panel"><div class="chart-title">VC real vs VC estimado</div><div class="chart-controls vc-controls" aria-label="Rango del VC"><button id="vc7" data-days="7">7 días</button><button id="vc15" data-days="15">15 días</button><button id="vc30" data-days="30">30 días</button><button id="vc90" data-days="90" class="primary">90 días</button><button id="vcAll" data-days="all">Todo</button></div><div id="vcChart" class="chart"></div></section><section class="panel"><div class="chart-title">Retorno estimado diario del VC y señal</div><div class="chart-controls ret-controls" aria-label="Rango de retornos"><button id="ret7" data-days="7">7 días</button><button id="ret15" data-days="15">15 días</button><button id="ret30" data-days="30">30 días</button><button id="ret90" data-days="90" class="primary">90 días</button><button id="retAll" data-days="all">Todo</button></div><div id="signalChart" class="chart"></div></section>
+<section class="panel" id="marketPanel">
+  <div class="market-head"><div><div class="chart-title">Mercado ahora</div><div id="marketMode" class="market-mode">Cargando…</div></div><div id="marketTime" class="market-time">—</div></div>
+  <div id="marketGrid" class="market-grid"></div>
+  <div class="note" style="margin-top:9px">SPY, NEM, FCX, EPU y MCHI: Yahoo Finance. USD/PEN: BCRP primero; Yahoo PEN=X solo como respaldo cuando falta la fecha.</div>
+</section>
+<section class="panel"><b>Auditoría</b><div class="note" id="audit">Cargando…</div></section>
 <script>
 let latest,series=[],mode='monitor';const money=x=>new Intl.NumberFormat('es-PE',{style:'currency',currency:'PEN'}).format(x),pct=x=>(x*100).toFixed(2)+'%',fmt=x=>{if(!x)return'—';let[y,m,d]=x.slice(0,10).split('-');return d+'/'+m+'/'+y};
 const after=d=>series.find(x=>x.fecha>=d),before=d=>[...series].reverse().find(x=>x.fecha<=d);
@@ -40,98 +47,25 @@ function calc(){if(mode==='monitor')return;let a=after(entry.value),b=before(mod
 document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{mode=b.dataset.mode;document.querySelectorAll('.tabs button').forEach(x=>x.classList.toggle('active',x===b));operation.classList.toggle('hidden',mode==='monitor');exitBox.classList.toggle('hidden',mode!=='closed')});document.getElementById('calc').onclick=calc;
 Promise.all([fetch('data/latest.json',{cache:'no-store'}).then(r=>r.json()),fetch('data/series.json',{cache:'no-store'}).then(r=>r.json())]).then(([l,s])=>{latest=l;series=s.sort((a,b)=>a.fecha.localeCompare(b.fecha));sbsVc.textContent=Number(l.latest_sbs_vc).toFixed(7);sbsDate.textContent=fmt(l.latest_sbs_date);estVc.textContent=Number(l.latest_estimated_vc).toFixed(7);estDate.textContent=fmt(l.latest_estimate_date)+' · '+l.estimate_type;signal.textContent=l.signal;signal.className='value signal '+(l.signal==='SUBE'?'up':l.signal==='BAJA'?'down':'flat');ret.textContent=(l.latest_return_estimated*100).toFixed(3)+'%';window.textContent=fmt(l.training_start)+' → '+fmt(l.training_end);audit.innerHTML=`Actualizado: ${new Date(l.generated_at_lima).toLocaleString('es-PE')}<br>Último mercado completo: ${fmt(l.latest_market_date)}<br>Fuentes: ${l.sources.market} · ${l.sources.sbs}<br>El OLS se recalibra con las últimas 90 observaciones completas cada vez que entra un nuevo VC oficial SBS.`;entry.min=series[0].fecha;entry.max=series.at(-1).fecha;entry.value=l.latest_sbs_date;exit.min=series[0].fecha;exit.max=series.at(-1).fecha;exit.value=series.at(-1).fecha;let off=series.filter(x=>x.fuente==='SBS OFICIAL'),mod=series.filter(x=>x.fuente==='MODELO OLS');Plotly.newPlot('vcChart',[{x:off.map(x=>x.fecha),y:off.map(x=>x.vc),mode:'lines',name:'VC SBS'},{x:mod.map(x=>x.fecha),y:mod.map(x=>x.vc),mode:'lines+markers',name:'VC modelo'}],{title:'Valor cuota oficial y estimado',paper_bgcolor:'#0f1b2d',plot_bgcolor:'#0f1b2d',font:{color:'#fff'},legend:{orientation:'h'}},{responsive:true});Plotly.newPlot('signalChart',[{x:mod.map(x=>x.fecha),y:mod.map(x=>x.ret_estimado*100),mode:'lines+markers',name:'Retorno OLS'}],{title:'Retorno estimado',paper_bgcolor:'#0f1b2d',plot_bgcolor:'#0f1b2d',font:{color:'#fff'},shapes:[{type:'line',xref:'paper',x0:0,x1:1,y0:.1,y1:.1,line:{dash:'dot'}},{type:'line',xref:'paper',x0:0,x1:1,y0:-.1,y1:-.1,line:{dash:'dot'}}]},{responsive:true})}).catch(e=>error.innerHTML='<div class="error">No se pudieron cargar resultados: '+e+'</div>');
 </script></main>
-
 <script>
 (function(){
-  let richSignals=[], allSeries=[], vcDays=90;
-  const $=id=>document.getElementById(id);
-  const money=x=>new Intl.NumberFormat('es-PE',{style:'currency',currency:'PEN'}).format(x);
-  const pct=x=>(x*100).toFixed(2)+'%';
+  let richSignals=[],allSeries=[],latestData=null,liveData=null,vcDays=90,retDays=90;
+  const $=id=>document.getElementById(id),money=x=>new Intl.NumberFormat('es-PE',{style:'currency',currency:'PEN'}).format(x),pct=x=>(Number(x)*100).toFixed(2)+'%';
   const fmt=x=>{if(!x)return'—';let[y,m,d]=String(x).slice(0,10).split('-');return d+'/'+m+'/'+y};
-  const signalColor=s=>s==='SUBE'?'#4ade80':s==='BAJA'?'#f87171':'#fbbf24';
+  const signalColor=s=>s==='SUBE'?'#4ade80':s==='BAJA'?'#f87171':'#fbbf24',cls=x=>Number(x)>0?'pos':Number(x)<0?'neg':'zero';
+  function cutoff(items,days){if(days==='all'||!items.length)return items;const ds=items.map(x=>x.fecha).sort(),mx=new Date(ds.at(-1)+'T00:00:00'),mn=new Date(mx);mn.setDate(mn.getDate()-Number(days));return items.filter(x=>new Date(x.fecha+'T00:00:00')>=mn)}
+  function active(sel,days){document.querySelectorAll(sel+' button').forEach(b=>b.classList.toggle('primary',String(b.dataset.days)===String(days)))}
 
-  function cutoff(items,days){
-    if(days==='all'||!items.length)return items;
-    const dates=items.map(x=>x.fecha).sort();
-    const max=new Date(dates.at(-1)+'T00:00:00');
-    const min=new Date(max); min.setDate(min.getDate()-Number(days));
-    return items.filter(x=>new Date(x.fecha+'T00:00:00')>=min);
-  }
+  function renderVC(){let off=cutoff(allSeries.filter(x=>x.fuente==='SBS OFICIAL'),vcDays),est=cutoff(richSignals.filter(x=>x.vc_estimado!=null),vcDays);Plotly.react('vcChart',[{x:off.map(x=>x.fecha),y:off.map(x=>x.vc),mode:'lines+markers',name:'VC SBS real'},{x:est.map(x=>x.fecha),y:est.map(x=>x.vc_estimado),mode:'lines+markers',name:'VC estimado OLS',customdata:est.map(x=>x.senal),hovertemplate:'<b>%{x}</b><br>VC estimado: %{y:.7f}<br>Señal: %{customdata}<extra></extra>'}],{title:vcDays==='all'?'Todo el historial':`Últimos ${vcDays} días`,paper_bgcolor:'#0f1b2d',plot_bgcolor:'#0f1b2d',font:{color:'#fff',size:11},margin:{l:48,r:18,t:45,b:45},legend:{orientation:'h'}},{responsive:true});active('.vc-controls',vcDays)}
+  function renderSignals(){const p=cutoff(richSignals.filter(x=>x.ret_estimado!=null),retDays);Plotly.react('signalChart',[{x:p.map(x=>x.fecha),y:p.map(x=>x.ret_estimado*100),mode:'lines+markers',name:'Retorno estimado VC',marker:{color:p.map(x=>signalColor(x.senal)),size:8},customdata:p.map(x=>x.senal),hovertemplate:'<b>%{x}</b><br>Retorno estimado VC: %{y:+.3f}%<br>Señal: %{customdata}<extra></extra>'}],{title:retDays==='all'?'Todo el historial':`Últimos ${retDays} días`,paper_bgcolor:'#0f1b2d',plot_bgcolor:'#0f1b2d',font:{color:'#fff',size:11},margin:{l:48,r:18,t:45,b:45},shapes:[{type:'line',xref:'paper',x0:0,x1:1,y0:.1,y1:.1,line:{dash:'dot'}},{type:'line',xref:'paper',x0:0,x1:1,y0:-.1,y1:-.1,line:{dash:'dot'}}]},{responsive:true});active('.ret-controls',retDays)}
 
-  function renderVC(){
-    let official=allSeries.filter(x=>x.fuente==='SBS OFICIAL');
-    let estimated=richSignals.filter(x=>x.vc_estimado!=null);
-    official=cutoff(official,vcDays); estimated=cutoff(estimated,vcDays);
-    const title=vcDays==='all'?'VC real vs estimado · todo el historial':`VC real vs estimado · últimos ${vcDays} días`;
-    Plotly.react('vcChart',[
-      {x:official.map(x=>x.fecha),y:official.map(x=>x.vc),mode:'lines+markers',name:'VC SBS real'},
-      {x:estimated.map(x=>x.fecha),y:estimated.map(x=>x.vc_estimado),mode:'lines+markers',name:'VC estimado OLS',customdata:estimated.map(x=>x.senal),hovertemplate:'<b>%{x}</b><br>VC estimado: %{y:.7f}<br>Señal: %{customdata}<extra></extra>'}
-    ],{title,paper_bgcolor:'#0f1b2d',plot_bgcolor:'#0f1b2d',font:{color:'#fff',size:11},margin:{l:48,r:18,t:55,b:45},legend:{orientation:'h'}},{responsive:true});
-    document.querySelectorAll('.chart-controls button').forEach(b=>b.classList.toggle('primary',String(b.dataset.days)===String(vcDays)));
-  }
+  function renderTop(){if(!latestData)return;const live=liveData&&liveData.market_open&&String(liveData.mode).startsWith('INTRADÍA')&&Number.isFinite(Number(liveData.vc_estimated)),vc=live?Number(liveData.vc_estimated):Number(latestData.latest_estimated_vc),r=live?Number(liveData.return_estimated):Number(latestData.latest_return_estimated),s=live?liveData.signal:latestData.signal,d=live?liveData.signal_date:latestData.latest_estimate_date;$('estVc').textContent=vc.toFixed(7);$('estDate').textContent=fmt(d)+' · '+(live?'INTRADÍA PROVISIONAL':'CIERRE DIARIO');$('signal').textContent=s;$('signal').className='value signal '+(s==='SUBE'?'up':s==='BAJA'?'down':'flat');$('ret').textContent=`Retorno estimado VC (día): ${(r*100).toFixed(3)}%`;const h=$('monitorHelp');if(h)h.innerHTML=`<b>${live?'INTRADÍA PROVISIONAL':'CIERRE DIARIO'} · Retorno estimado del VC: ${(r*100).toFixed(3)}% · Señal ${s}</b><br>${live?'Usa cotizaciones intradía de Yahoo y puede cambiar hasta el cierre.':'Usa cierres diarios disponibles. No es la rentabilidad acumulada de tu inversión.'}`}
+  function renderMarket(){if(!liveData)return;$('marketMode').textContent=liveData.mode||'—';$('marketMode').className='market-mode '+(liveData.market_open?'pos':'zero');$('marketTime').textContent='Snapshot: '+new Date(liveData.generated_at_lima).toLocaleString('es-PE');$('marketGrid').innerHTML=(liveData.assets||[]).map(a=>`<div class="market-item"><div class="market-symbol">${a.serie}</div><div class="market-price">${Number(a.precio_actual).toFixed(a.serie==='USD_PEN'?4:2)}</div><div class="market-ret ${cls(a.retorno)}">${Number(a.retorno)>=0?'+':''}${(Number(a.retorno)*100).toFixed(2)}%</div><div class="market-source">${a.estado||''}</div></div>`).join('')||'<div class="note">Cotización intradía no disponible; se mantiene el último cierre.</div>';renderTop()}
 
-  function renderSignals(){
-    const points=richSignals.filter(x=>x.ret_estimado!=null).slice(-90);
-    Plotly.react('signalChart',[{
-      x:points.map(x=>x.fecha),y:points.map(x=>x.ret_estimado*100),mode:'lines+markers',name:'Retorno estimado VC',
-      marker:{color:points.map(x=>signalColor(x.senal)),size:8},customdata:points.map(x=>x.senal),
-      hovertemplate:'<b>%{x}</b><br>Retorno estimado VC: %{y:+.3f}%<br>Señal: %{customdata}<extra></extra>'
-    }],{title:'Retorno estimado diario del VC y señal · últimas 90 observaciones',paper_bgcolor:'#0f1b2d',plot_bgcolor:'#0f1b2d',font:{color:'#fff',size:11},margin:{l:48,r:18,t:55,b:45},shapes:[{type:'line',xref:'paper',x0:0,x1:1,y0:.1,y1:.1,line:{dash:'dot'}},{type:'line',xref:'paper',x0:0,x1:1,y0:-.1,y1:-.1,line:{dash:'dot'}}]},{responsive:true});
-  }
+  function calcNotebook(){const bt=document.querySelector('.tabs button.active'),mode=bt?bt.dataset.mode:'monitor';if(mode==='monitor')return;const entryDate=$('entry').value,capital=Number($('capital').value);if(!entryDate||!capital||capital<=0){$('detail').textContent='Completa fecha y capital.';return}const exitDate=mode==='closed'?$('exit').value:allSeries.at(-1)?.fecha;let interval=allSeries.filter(x=>x.fecha>=entryDate&&x.fecha<=exitDate&&Number.isFinite(Number(x.vc)));if(!interval.length){$('detail').textContent='No existe un valor cuota disponible entre las fechas seleccionadas.';return}const a=interval[0];let b=interval.at(-1),liveUsed=false;if(mode==='inside'&&liveData&&liveData.market_open&&String(liveData.mode).startsWith('INTRADÍA')&&Number.isFinite(Number(liveData.vc_estimated))){b={fecha:liveData.signal_date,vc:Number(liveData.vc_estimated),fuente:'MODELO OLS · INTRADÍA PROVISIONAL'};liveUsed=true}const vi=Number(a.vc),vo=Number(b.vc),u=capital/vi,final=capital*(vo/vi),gain=final-capital,rent=final/capital-1;$('mCapital').textContent=money(capital);$('mFinal').textContent=money(final);$('mGain').textContent=money(gain);$('mRent').textContent=pct(rent);const provisional=liveUsed||b.fuente!=='SBS OFICIAL',tag=provisional?'RESULTADO PROVISIONAL · VC MODELO':'RESULTADO CON VC OFICIAL SBS',adjusted=(a.fecha!==entryDate||(mode==='closed'&&b.fecha!==$('exit').value))?' · Fechas ajustadas a observaciones disponibles.':'';$('detail').innerHTML=`<b>${tag}</b><br>Entrada efectiva: ${fmt(a.fecha)} · VC ${vi.toFixed(7)} · ${a.fuente}<br>${mode==='closed'?'Salida':'Valoración'} efectiva: ${fmt(b.fecha)} · VC ${vo.toFixed(7)} · ${b.fuente}<br>Fórmula: ${money(capital)} × (${vo.toFixed(7)} / ${vi.toFixed(7)}) = <b>${money(final)}</b>${adjusted}${mode==='closed'?'<br><b>Operación cerrada: no se utiliza intradía.</b>':''}`;let g=interval.slice();if(liveUsed)g=[...g,b];Plotly.react('opChart',[{x:g.map(x=>x.fecha),y:g.map(x=>Number(x.vc)),mode:'lines+markers',name:'VC'},{x:g.map(x=>x.fecha),y:g.map(x=>u*Number(x.vc)-capital),mode:'lines+markers',name:'Ganancia',yaxis:'y2'}],{title:'Valor cuota y ganancia/pérdida',paper_bgcolor:'#0f1b2d',plot_bgcolor:'#0f1b2d',font:{color:'#fff',size:11},margin:{l:48,r:48,t:55,b:45},yaxis2:{overlaying:'y',side:'right'},legend:{orientation:'h'}},{responsive:true})}
 
-  // Réplica de la regla del notebook:
-  // 1) filtrar desde la fecha de entrada hasta la fecha de salida;
-  // 2) entrada = primera observación disponible del intervalo;
-  // 3) salida = última observación disponible del intervalo;
-  // 4) monto = capital * VC_salida / VC_entrada.
-  function calcNotebook(){
-    const active=document.querySelector('.tabs button.active');
-    const mode=active?active.dataset.mode:'monitor';
-    if(mode==='monitor')return;
-    const entryDate=$('entry').value;
-    const exitDate=mode==='closed'?$('exit').value:allSeries.at(-1)?.fecha;
-    const capital=Number($('capital').value);
-    if(!entryDate||!exitDate||!capital||capital<=0){$('detail').textContent='Completa fechas y capital.';return;}
-
-    const interval=allSeries.filter(x=>x.fecha>=entryDate&&x.fecha<=exitDate&&Number.isFinite(Number(x.vc)));
-    if(!interval.length){$('detail').textContent='No existe un valor cuota disponible entre las fechas seleccionadas.';return;}
-    const a=interval[0], b=interval.at(-1);
-    if(b.fecha<a.fecha){$('detail').textContent='La salida no puede ser anterior a la entrada.';return;}
-
-    const vcIn=Number(a.vc), vcOut=Number(b.vc);
-    const units=capital/vcIn;
-    const final=capital*(vcOut/vcIn);
-    const gain=final-capital;
-    const rent=final/capital-1;
-    $('mCapital').textContent=money(capital);
-    $('mFinal').textContent=money(final);
-    $('mGain').textContent=money(gain);
-    $('mRent').textContent=pct(rent);
-    const provisional=b.fuente!=='SBS OFICIAL';
-    const tag=provisional?'RESULTADO PROVISIONAL · VC MODELO':'RESULTADO CON VC OFICIAL SBS';
-    const adjusted=(a.fecha!==entryDate||b.fecha!==exitDate)?' · Se ajustaron las fechas a observaciones disponibles.':'';
-    $('detail').innerHTML=`<b>${tag}</b><br>Entrada efectiva: ${fmt(a.fecha)} · VC ${vcIn.toFixed(7)} · ${a.fuente}<br>Salida/valoración efectiva: ${fmt(b.fecha)} · VC ${vcOut.toFixed(7)} · ${b.fuente}<br>Fórmula: ${money(capital)} × (${vcOut.toFixed(7)} / ${vcIn.toFixed(7)}) = <b>${money(final)}</b>${adjusted}`;
-
-    Plotly.react('opChart',[
-      {x:interval.map(x=>x.fecha),y:interval.map(x=>Number(x.vc)),mode:'lines+markers',name:'VC'},
-      {x:interval.map(x=>x.fecha),y:interval.map(x=>units*Number(x.vc)-capital),mode:'lines+markers',name:'Ganancia',yaxis:'y2'}
-    ],{title:'Valor cuota y ganancia/pérdida',paper_bgcolor:'#0f1b2d',plot_bgcolor:'#0f1b2d',font:{color:'#fff',size:11},margin:{l:48,r:48,t:55,b:45},yaxis2:{overlaying:'y',side:'right'},legend:{orientation:'h'}},{responsive:true});
-  }
-
-  Promise.all([
-    fetch('data/signals.json',{cache:'no-store'}).then(r=>r.json()),
-    fetch('data/series.json',{cache:'no-store'}).then(r=>r.json()),
-    fetch('data/latest.json',{cache:'no-store'}).then(r=>r.json())
-  ]).then(([sig,ser,latest])=>{
-    richSignals=sig.sort((a,b)=>a.fecha.localeCompare(b.fecha));
-    allSeries=ser.sort((a,b)=>a.fecha.localeCompare(b.fecha));
-    renderVC();renderSignals();
-    document.querySelectorAll('.chart-controls button').forEach(b=>b.onclick=()=>{vcDays=b.dataset.days==='all'?'all':Number(b.dataset.days);renderVC()});
-    $('calc').onclick=calcNotebook;
-    $('ret').textContent=`Retorno estimado VC (día): ${(Number(latest.latest_return_estimated)*100).toFixed(3)}%`;
-    const help=$('monitorHelp');
-    if(help) help.innerHTML=`<b>Retorno estimado del VC (día): ${(Number(latest.latest_return_estimated)*100).toFixed(3)}%</b><br>Es la variación diaria estimada por el OLS para el valor cuota del ${fmt(latest.latest_estimate_date)}. No es tu rentabilidad acumulada. La señal asociada es <b>${latest.signal}</b>.`;
-  }).catch(e=>{const box=$('error');if(box)box.innerHTML='<div class="error">No se pudieron cargar resultados: '+e+'</div>'});
+  function loadLive(){return fetch('data/live_market.json?ts='+Date.now(),{cache:'no-store'}).then(r=>r.json()).then(x=>{liveData=x;renderMarket();return x}).catch(()=>null)}
+  Promise.all([fetch('data/signals.json',{cache:'no-store'}).then(r=>r.json()),fetch('data/series.json',{cache:'no-store'}).then(r=>r.json()),fetch('data/latest.json',{cache:'no-store'}).then(r=>r.json()),loadLive()]).then(([sig,ser,latest])=>{richSignals=sig.sort((a,b)=>a.fecha.localeCompare(b.fecha));allSeries=ser.sort((a,b)=>a.fecha.localeCompare(b.fecha));latestData=latest;renderVC();renderSignals();renderTop();renderMarket();document.querySelectorAll('.vc-controls button').forEach(b=>b.onclick=()=>{vcDays=b.dataset.days==='all'?'all':Number(b.dataset.days);renderVC()});document.querySelectorAll('.ret-controls button').forEach(b=>b.onclick=()=>{retDays=b.dataset.days==='all'?'all':Number(b.dataset.days);renderSignals()});$('calc').onclick=calcNotebook;setInterval(loadLive,60000)}).catch(e=>{const box=$('error');if(box)box.innerHTML='<div class="error">No se pudieron cargar resultados: '+e+'</div>'});
 })();
 </script>
 </body></html>
