@@ -1,33 +1,36 @@
 {
-  "generated_at_lima": "2026-07-23T06:21:58.417628-05:00",
+  "generated_at_lima": "2026-07-23T06:27:23.807338-05:00",
   "model": "OLS rolling 90",
   "window": 90,
   "threshold": 0.001,
-  "training_start": "2026-03-03",
+  "training_start": "2026-02-26",
   "training_end": "2026-07-20",
   "training_n": 90,
   "latest_sbs_date": "2026-07-20",
   "latest_sbs_vc": 68.06385,
   "latest_market_date": "2026-07-22",
   "latest_estimate_date": "2026-07-22",
-  "latest_estimated_vc": 70.22115020013366,
-  "latest_return_estimated": 0.009756894976691355,
+  "latest_estimated_vc": 70.2925875547297,
+  "latest_return_estimated": 0.010071293357732158,
   "signal": "SUBE",
-  "estimate_type": "MODELO OLS",
+  "estimate_type": "CIERRE DIARIO · MODELO OLS",
   "sources": {
     "sbs": "SBS EN LÍNEA",
-    "market": "Yahoo Finance; Stooq solo cola nueva si Yahoo falla",
-    "fx": "BCRP histórico; Yahoo PEN=X solo cola posterior al último BCRP"
+    "market": "Yahoo Finance; respaldo de cola reciente si Yahoo no responde",
+    "fx": "BCRP histórico; Yahoo PEN=X solo cola posterior a la última fecha BCRP"
   },
-  "warnings": [],
+  "warnings": [
+    "SBS índice: ReadTimeout: HTTPSConnectionPool(host='www.sbs.gob.pe', port=443): Read timed out. (read timeout=45)"
+  ],
   "coefficients": {
-    "intercept": 4.567093680095903e-05,
-    "ret_SPY": 0.4100347215117651,
-    "ret_NEM": 0.13421330564394351,
-    "ret_FCX": 0.06192437051328565,
-    "ret_EPU": 0.30534508635303803,
-    "ret_MCHI": 0.03923644826918086,
-    "ret_USD_PEN": 0.10845698591358331
+    "intercept": 6.98562490195416e-05,
+    "ret_SPY": 0.39047653253251335,
+    "ret_NEM": 0.13419816498483386,
+    "ret_FCX": 0.06815616753885775,
+    "ret_EPU": 0.3208508220392519,
+    "ret_MCHI": 0.03525130795863986,
+    "ret_USD_PEN": 0.18929104950389414
   },
+  "parity_rule": "Sin anticipación; 90 observaciones completas; BCRP histórico; sin imputación FX=0; VC pendiente encadenado",
   "vc_mode_rule": "INTRADÍA PROVISIONAL 09:30-16:10 NY; fuera de ese intervalo CIERRE DIARIO"
 }
