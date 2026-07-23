@@ -1,5 +1,5 @@
 {
-  "generated_at_lima": "2026-07-23T06:27:23.807338-05:00",
+  "generated_at_lima": "2026-07-23T06:37:51.895577-05:00",
   "model": "OLS rolling 90",
   "window": 90,
   "threshold": 0.001,
@@ -11,7 +11,7 @@
   "latest_market_date": "2026-07-22",
   "latest_estimate_date": "2026-07-22",
   "latest_estimated_vc": 70.2925875547297,
-  "latest_return_estimated": 0.010071293357732158,
+  "latest_return_estimated": 0.010071293357732164,
   "signal": "SUBE",
   "estimate_type": "CIERRE DIARIO · MODELO OLS",
   "sources": {
@@ -19,17 +19,15 @@
     "market": "Yahoo Finance; respaldo de cola reciente si Yahoo no responde",
     "fx": "BCRP histórico; Yahoo PEN=X solo cola posterior a la última fecha BCRP"
   },
-  "warnings": [
-    "SBS índice: ReadTimeout: HTTPSConnectionPool(host='www.sbs.gob.pe', port=443): Read timed out. (read timeout=45)"
-  ],
+  "warnings": [],
   "coefficients": {
-    "intercept": 6.98562490195416e-05,
+    "intercept": 6.985624901954178e-05,
     "ret_SPY": 0.39047653253251335,
-    "ret_NEM": 0.13419816498483386,
-    "ret_FCX": 0.06815616753885775,
-    "ret_EPU": 0.3208508220392519,
-    "ret_MCHI": 0.03525130795863986,
-    "ret_USD_PEN": 0.18929104950389414
+    "ret_NEM": 0.134198164984834,
+    "ret_FCX": 0.06815616753885764,
+    "ret_EPU": 0.3208508220392521,
+    "ret_MCHI": 0.03525130795863973,
+    "ret_USD_PEN": 0.18929104950389405
   },
   "parity_rule": "Sin anticipación; 90 observaciones completas; BCRP histórico; sin imputación FX=0; VC pendiente encadenado",
   "vc_mode_rule": "INTRADÍA PROVISIONAL 09:30-16:10 NY; fuera de ese intervalo CIERRE DIARIO"
