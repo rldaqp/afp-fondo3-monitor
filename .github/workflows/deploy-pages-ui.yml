@@ -28,18 +28,26 @@ jobs:
       - name: Descargar repositorio
         uses: actions/checkout@v4
 
-      - name: Validar visor
+      - name: Usar visor final como portada
+        run: |
+          test -s public/final.html
+          cp public/final.html public/index.html
+
+      - name: Validar visor final
         run: |
           test -s public/index.html
           test -s public/data/latest.json
           test -s public/data/series.json
           test -s public/data/signals.json
+          test -s public/data/live_market.json
           grep -q "7 días" public/index.html
           grep -q "15 días" public/index.html
           grep -q "30 días" public/index.html
           grep -q "90 días" public/index.html
-          grep -q "Retorno estimado del VC" public/index.html
-          grep -q "calcNotebook" public/index.html
+          grep -q "Fórmula del notebook" public/index.html
+          grep -q "Tallo desde 0" public/index.html
+          grep -q "Mercado ahora" public/index.html
+          grep -q "Corte Yahoo" public/index.html
 
       - name: Configurar GitHub Pages
         uses: actions/configure-pages@v5
