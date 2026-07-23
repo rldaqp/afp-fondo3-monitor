@@ -1,8 +1,7 @@
 """Punto de entrada seguro de Streamlit Community Cloud.
 
-Ejecuta la aplicación completa en cada rerun. No usa una importación
-convencional porque Python conserva los módulos importados en memoria y
-Streamlit podría mostrar una página vacía en las siguientes ejecuciones.
+Ejecuta la aplicación completa en cada rerun y corrige el conflicto entre
+la clave del formulario y la clave usada para guardar la operación.
 """
 
 from pathlib import Path
@@ -18,6 +17,20 @@ st.set_page_config(
     page_icon="📈",
     layout="wide",
 )
+
+# La versión unificada creó el formulario con la clave "operation" y después
+# intentó guardar el resultado en st.session_state.operation. Streamlit no
+# permite modificar la clave de un widget ya instanciado. Se cambia solamente
+# la clave interna del formulario y se conserva "operation" para el resultado.
+_original_form = st.form
+
+
+def _form_without_state_conflict(key, *args, **kwargs):
+    safe_key = "operation_form" if key == "operation" else key
+    return _original_form(safe_key, *args, **kwargs)
+
+
+st.form = _form_without_state_conflict
 
 loading = st.empty()
 loading.info("Cargando datos SBS, índices y modelo OLS rolling 90…")
