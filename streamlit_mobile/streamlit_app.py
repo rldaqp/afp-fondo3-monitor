@@ -1,7 +1,17 @@
-"""Punto de entrada de Streamlit Community Cloud.
+"""Punto de entrada seguro de Streamlit Community Cloud."""
 
-La implementación unificada vive en streamlit_unified.py para que el
-aplicativo y el notebook utilicen las mismas reglas operativas.
-"""
+from pathlib import Path
+import sys
 
-from streamlit_unified import *  # noqa: F401,F403
+HERE = Path(__file__).resolve().parent
+if str(HERE) not in sys.path:
+    sys.path.insert(0, str(HERE))
+
+try:
+    from streamlit_unified import *  # noqa: F401,F403
+except Exception as error:
+    import streamlit as st
+
+    st.error("La aplicación unificada no pudo iniciar.")
+    st.exception(error)
+    st.stop()
