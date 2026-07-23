@@ -1,4 +1,4 @@
-name: Actualizar monitor Fondo 3
+name: Actualizar OLS Rolling 90 Fondo 3
 
 on:
   workflow_dispatch:
@@ -7,13 +7,10 @@ on:
       - migracion-github-actions
     paths:
       - ".github/workflows/update-monitor.yml"
-      - "129_monitor_fondo3_ACTUALIZA_Y_ABRE.py"
-      - "scripts/**"
-      - "src/**"
+      - "scripts/build_rolling90_pages.py"
       - "requirements.txt"
-      - "data/**"
   schedule:
-    # America/Lima = UTC-5. Estas dos reglas cubren lunes a viernes completos en Lima.
+    # America/Lima = UTC-5. Se revisan nuevas publicaciones cada hora en días hábiles.
     - cron: "0 5-23 * * 1-5"
     - cron: "0 0-4 * * 2-6"
 
@@ -23,7 +20,7 @@ permissions:
   id-token: write
 
 concurrency:
-  group: fondo3-monitor
+  group: fondo3-rolling90
   cancel-in-progress: false
 
 jobs:
@@ -37,12 +34,6 @@ jobs:
       - name: Descargar repositorio
         uses: actions/checkout@v4
 
-      - name: Conservar visor publicado como referencia
-        run: |
-          if [ -s public/cartera-replicante/index.html ]; then
-            cp public/cartera-replicante/index.html /tmp/cartera_replicante_anterior.html
-          fi
-
       - name: Configurar Python
         uses: actions/setup-python@v5
         with:
@@ -54,75 +45,55 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Actualizar bases y generar monitor
+      - name: Descargar datos y recalibrar OLS rolling 90
         env:
           PYTHONUTF8: "1"
           PYTHONIOENCODING: "utf-8"
         run: |
-          python scripts/build_pages.py
+          python scripts/build_rolling90_pages.py
 
-      - name: Validar HTML, fechas y ausencia de retroceso
+      - name: Validar modelo y visor
         run: |
           test -s public/index.html
-          test -s public/cartera-replicante/index.html
-          grep -q "Monitor práctico" public/index.html
-          grep -q "Vela intradía" public/index.html
-          grep -q "Fondo 3 AFP - tablero operativo" public/cartera-replicante/index.html
+          test -s public/data/latest.json
+          test -s public/data/series.json
+          grep -q "OLS Rolling 90" public/index.html
           python - <<'PY'
-          import re
+          import json
           from pathlib import Path
-          import pandas as pd
 
-          ruta = "data/processed/tablero_operativo_auditoria_fechas.csv"
-          auditoria = pd.read_csv(ruta)
-          if auditoria.empty:
-              raise SystemExit("La auditoria de fechas esta vacia")
-          fallas = auditoria[auditoria["estado"].astype(str).ne("CORRECTO")]
-          if not fallas.empty:
-              raise SystemExit(
-                  "El visor no publico todas las fechas del Modelo 79:\n"
-                  + fallas.to_string(index=False)
-              )
-
-          def fecha_maxima_html(ruta_html: str):
-              p = Path(ruta_html)
-              if not p.exists():
-                  return None
-              fechas = re.findall(r"20\d{2}-\d{2}-\d{2}", p.read_text(encoding="utf-8", errors="ignore"))
-              return max(fechas) if fechas else None
-
-          anterior = fecha_maxima_html("/tmp/cartera_replicante_anterior.html")
-          nueva = fecha_maxima_html("public/cartera-replicante/index.html")
-          print(f"Fecha maxima anterior: {anterior}")
-          print(f"Fecha maxima nueva: {nueva}")
-          if anterior and nueva and nueva < anterior:
-              raise SystemExit(
-                  f"BLOQUEADO: el visor intentó retroceder de {anterior} a {nueva}. "
-                  "No se guardara ni publicara esta version."
-              )
-          print(auditoria.to_string(index=False))
+          latest = json.loads(Path("public/data/latest.json").read_text(encoding="utf-8"))
+          assert latest["model"] == "OLS rolling 90"
+          assert int(latest["window"]) == 90
+          assert abs(float(latest["threshold"]) - 0.001) < 1e-12
+          assert int(latest["training_n"]) == 90
+          assert latest["training_start"] <= latest["training_end"]
+          assert latest["signal"] in {"SUBE", "NEUTRO", "BAJA"}
+          assert float(latest["latest_sbs_vc"]) > 0
+          assert float(latest["latest_estimated_vc"]) > 0
+          print(json.dumps(latest, ensure_ascii=False, indent=2))
           PY
 
-      - name: Guardar datos actualizados en la rama
+      - name: Guardar datos y resultados actualizados
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data public
+          git add data/rolling90 public
           if git diff --cached --quiet; then
             echo "No hay cambios de datos para confirmar."
           else
-            git commit -m "Actualizar monitor Fondo 3"
+            git commit -m "Actualizar OLS rolling 90 Fondo 3"
             git push
           fi
 
       - name: Configurar GitHub Pages
         uses: actions/configure-pages@v5
 
-      - name: Subir artefacto Pages
+      - name: Subir visor a Pages
         uses: actions/upload-pages-artifact@v3
         with:
           path: public
 
-      - name: Publicar en GitHub Pages
+      - name: Publicar visor
         id: deployment
         uses: actions/deploy-pages@v4
