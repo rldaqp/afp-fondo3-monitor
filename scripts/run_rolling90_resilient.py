@@ -2,11 +2,13 @@ from __future__ import annotations
 
 import importlib.util
 import io
+import re
 import time
 from pathlib import Path
 
 import pandas as pd
 import requests
+from bs4 import BeautifulSoup
 
 ROOT = Path(__file__).resolve().parents[1]
 ENGINE = ROOT / "scripts" / "build_rolling90_pages.py"
@@ -18,6 +20,7 @@ engine = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(engine)
 
 _original_download_yahoo = engine.download_yahoo
+_original_download_sbs = engine.download_sbs
 
 
 def _get_text(url: str, attempts: int = 3) -> str:
@@ -36,6 +39,77 @@ def _get_text(url: str, attempts: int = 3) -> str:
     raise RuntimeError(
         f"No respondió {url}: {type(last_error).__name__}: {last_error}"
     )
+
+
+def _parse_sbs_daily_blocks() -> pd.DataFrame:
+    """Asocia cada 'Información al ...' con la tabla inmediata siguiente."""
+    response = requests.get(engine.SBS_DAILY, headers=engine.HEADERS, timeout=45)
+    response.raise_for_status()
+    soup = BeautifulSoup(response.content, "lxml")
+    rows: list[dict[str, object]] = []
+
+    for node in soup.find_all(string=True):
+        text = " ".join(str(node).split())
+        if "informacion al" not in engine.norm(text):
+            continue
+        match = re.search(r"(\d{2}/\d{2}/\d{4})", text)
+        if not match:
+            continue
+
+        fecha = pd.to_datetime(match.group(1), format="%d/%m/%Y")
+        parent = getattr(node, "parent", None)
+        table = parent.find_next("table") if parent is not None else None
+        if table is None:
+            continue
+
+        valor = None
+        for tr in table.find_all("tr"):
+            cells = tr.find_all(["th", "td"], recursive=False)
+            if not cells:
+                continue
+            texts = [" ".join(cell.get_text(" ", strip=True).split()) for cell in cells]
+            if texts and engine.norm(texts[0]) == "profuturo" and len(texts) >= 10:
+                valor = engine.parse_num(texts[9])
+                break
+
+        if valor is not None:
+            rows.append({"fecha": fecha, "valor_cuota": float(valor)})
+
+    if not rows:
+        raise RuntimeError("No se pudieron extraer bloques diarios SBS de Profuturo Fondo 3")
+
+    daily = pd.DataFrame(rows)
+    daily["fecha"] = pd.to_datetime(daily["fecha"], errors="coerce")
+    daily["valor_cuota"] = pd.to_numeric(daily["valor_cuota"], errors="coerce")
+    return (
+        daily.dropna()
+        .sort_values("fecha")
+        .drop_duplicates("fecha", keep="last")
+        .reset_index(drop=True)
+    )
+
+
+def download_sbs_resilient() -> tuple[pd.DataFrame, list[str]]:
+    base, warnings = _original_download_sbs()
+    try:
+        daily = _parse_sbs_daily_blocks()
+        combined = pd.concat([base, daily], ignore_index=True)
+        combined["fecha"] = pd.to_datetime(combined["fecha"], errors="coerce")
+        combined["valor_cuota"] = pd.to_numeric(combined["valor_cuota"], errors="coerce")
+        combined = (
+            combined.dropna()
+            .sort_values("fecha")
+            .drop_duplicates("fecha", keep="last")
+            .reset_index(drop=True)
+        )
+        print(
+            "SBS diaria incorporada hasta "
+            f"{combined['fecha'].max():%Y-%m-%d}"
+        )
+        return combined, warnings
+    except Exception as exc:
+        warnings.append(f"SBS diaria por bloques: {type(exc).__name__}: {exc}")
+        return base, warnings
 
 
 def _download_stooq_ticker(ticker: str) -> pd.DataFrame:
@@ -89,5 +163,6 @@ def download_market_resilient() -> pd.DataFrame:
         return market
 
 
+engine.download_sbs = download_sbs_resilient
 engine.download_yahoo = download_market_resilient
 engine.main()
