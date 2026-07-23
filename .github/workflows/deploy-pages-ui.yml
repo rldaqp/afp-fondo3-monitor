@@ -28,10 +28,9 @@ jobs:
       - name: Descargar repositorio
         uses: actions/checkout@v4
 
-      - name: Usar visor final como portada y enlazar mercado vivo
+      - name: Enlazar Mercado ahora con el snapshot vivo
         run: |
-          test -s public/final.html
-          cp public/final.html public/index.html
+          test -s public/index.html
           python - <<'PY'
           from pathlib import Path
 
