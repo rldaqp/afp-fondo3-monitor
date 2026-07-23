@@ -19,10 +19,8 @@ on:
       - "data/rolling90/notebook_training_reference.csv"
       - "requirements.txt"
   schedule:
-    # Sesión NY: snapshot Yahoo cada 5 minutos (puede haber retrasos propios de GitHub Actions).
-    - cron: "*/5 13-21 * * 1-5"
-    # Fuera de sesión: revisar SBS y cierres cada hora.
-    - cron: "0 5-12,22-23 * * 1-5"
+    # MODELO: revisión SBS/cierres una vez por hora. Mercado intradía vive en otro workflow.
+    - cron: "0 5-23 * * 1-5"
     - cron: "0 0-4 * * 2-6"
 
 permissions:
@@ -31,7 +29,7 @@ permissions:
   id-token: write
 
 concurrency:
-  group: fondo3-rolling90
+  group: fondo3-rolling90-model
   cancel-in-progress: true
 
 jobs:
@@ -56,30 +54,29 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Descargar datos y ejecutar rolling 90 con paridad notebook
+      - name: Actualizar exclusivamente modelo OLS y fuentes oficiales
         env:
           PYTHONUTF8: "1"
           PYTHONIOENCODING: "utf-8"
         run: |
-          # Primera pasada: descarga SBS/mercados y conserva el histórico.
+          # Primera pasada: SBS y cierres diarios. El snapshot live que este script
+          # heredado pueda producir se descarta; el mercado intradía tiene workflow propio.
           python scripts/run_rolling90_live_v2.py
-          # Corrige dos observaciones SBS detectadas al comparar con el HTML real.
           python scripts/apply_sbs_reference_corrections.py
-          # Autoridad matemática: ventana histórica exacta del notebook y rolling 90
-          # que continúa incorporando nuevas observaciones oficiales desde el corte.
           python scripts/finalize_notebook_parity_v5.py
+          # Mercado ahora es propiedad exclusiva de update-live-market.yml.
+          git restore --source=HEAD -- public/data/live_market.json || true
           python scripts/build_operation_series.py
           sed -i "s/calc.onclick=calc;/document.getElementById('calc').onclick=calc;/" public/index.html
           python scripts/postprocess_mobile_ui_v3.py
           python scripts/postprocess_mobile_ui_v4.py
 
-      - name: Validar modelo y visor final
+      - name: Validar solamente modelo y visor estructural
         run: |
           test -s public/index.html
           test -s public/data/latest.json
           test -s public/data/series.json
           test -s public/data/signals.json
-          test -s public/data/live_market.json
           test -s public/data/operation_series.json
           grep -q "OLS Rolling 90" public/index.html
           grep -q "7 días" public/index.html
@@ -107,7 +104,6 @@ jobs:
 
           latest = json.loads(Path("public/data/latest.json").read_text(encoding="utf-8"))
           signals = json.loads(Path("public/data/signals.json").read_text(encoding="utf-8"))
-          live = json.loads(Path("public/data/live_market.json").read_text(encoding="utf-8"))
           operation = json.loads(Path("public/data/operation_series.json").read_text(encoding="utf-8"))
 
           assert latest["model"] == "OLS rolling 90"
@@ -123,18 +119,12 @@ jobs:
           assert "0 % provisional" in latest["parity_rule"]
           assert "PEN=X nunca sustituye" in latest["sources"]["fx"]
           assert "Ventana canónica exacta" in latest.get("parity_reference", "")
+          assert latest.get("live_engine") == "INDEPENDIENTE: update_live_market_only.py"
           assert len(signals) > 1
           assert len(operation) > 1
-          assert live["mode"]
-          assert live["signal"] in {"SUBE", "NEUTRO", "BAJA"}
-          asset_names = {x.get("serie") for x in live.get("assets", [])}
-          assert asset_names == {"SPY", "NEM", "FCX", "EPU", "MCHI", "USD_PEN"}, asset_names
-          if live.get("market_open"):
-              assert live.get("action") == "ESPERAR"
           assert all(x.get("senal") in {"SUBE", "NEUTRO", "BAJA"} for x in signals if x.get("ret_estimado") is not None)
           assert all(float(x["vc"]) > 0 for x in operation)
 
-          # Regresión numérica contra el HTML real del notebook.
           if latest.get("latest_sbs_date") == "2026-07-20":
               assert latest["training_start"] == "2026-02-27", latest
               assert latest["training_end"] == "2026-07-20", latest
@@ -151,21 +141,22 @@ jobs:
                   assert abs(vc - vc_ref) < 1e-9, (fecha, vc, vc_ref)
 
           print(json.dumps(latest, ensure_ascii=False, indent=2))
-          print(json.dumps(live, ensure_ascii=False, indent=2))
           print(f"Puntos de señal publicados: {len(signals)}")
           print(f"Filas de operación tipo notebook: {len(operation)}")
           PY
 
-      - name: Guardar datos y resultados actualizados
+      - name: Guardar datos del modelo sin tocar Mercado ahora
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add data/rolling90 public
+          git reset public/data/live_market.json || true
           if git diff --cached --quiet; then
-            echo "No hay cambios de datos para confirmar."
+            echo "No hay cambios del modelo para confirmar."
           else
             git commit -m "Actualizar OLS rolling 90 Fondo 3"
-            git push
+            git pull --rebase origin migracion-github-actions
+            git push origin HEAD:migracion-github-actions
           fi
 
       - name: Configurar GitHub Pages
