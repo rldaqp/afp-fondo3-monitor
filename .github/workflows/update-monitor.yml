@@ -9,6 +9,7 @@ on:
       - ".github/workflows/update-monitor.yml"
       - "scripts/build_rolling90_pages.py"
       - "scripts/run_rolling90_resilient.py"
+      - "scripts/postprocess_mobile_ui.py"
       - "requirements.txt"
   schedule:
     # America/Lima = UTC-5. Revisa nuevas publicaciones cada hora en días hábiles.
@@ -53,6 +54,7 @@ jobs:
         run: |
           python scripts/run_rolling90_resilient.py
           sed -i "s/calc.onclick=calc;/document.getElementById('calc').onclick=calc;/" public/index.html
+          python scripts/postprocess_mobile_ui.py
 
       - name: Validar modelo y visor
         run: |
@@ -61,8 +63,13 @@ jobs:
           test -s public/data/series.json
           test -s public/data/signals.json
           grep -q "OLS Rolling 90" public/index.html
-          grep -q "Últimos 90 días" public/index.html
+          grep -q "7 días" public/index.html
+          grep -q "15 días" public/index.html
+          grep -q "30 días" public/index.html
+          grep -q "90 días" public/index.html
           grep -q "vcAll" public/index.html
+          grep -q "Retorno estimado del VC" public/index.html
+          grep -q "calcNotebook" public/index.html
           grep -q "Señal" public/index.html
           python - <<'PY'
           import json
