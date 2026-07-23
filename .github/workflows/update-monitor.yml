@@ -51,6 +51,7 @@ jobs:
           PYTHONIOENCODING: "utf-8"
         run: |
           python scripts/build_rolling90_pages.py
+          sed -i "s/calc.onclick=calc;/document.getElementById('calc').onclick=calc;/" public/index.html
 
       - name: Validar modelo y visor
         run: |
@@ -58,6 +59,7 @@ jobs:
           test -s public/data/latest.json
           test -s public/data/series.json
           grep -q "OLS Rolling 90" public/index.html
+          grep -q "document.getElementById('calc').onclick=calc" public/index.html
           python - <<'PY'
           import json
           from pathlib import Path
