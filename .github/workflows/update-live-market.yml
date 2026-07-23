@@ -1,0 +1,107 @@
+name: Actualizar mercado intradía Fondo 3
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - migracion-github-actions
+    paths:
+      - ".github/workflows/update-live-market.yml"
+      - "scripts/update_live_market_only.py"
+      - "requirements-live.txt"
+  schedule:
+    # Ventana amplia que cubre horario NY tanto con EDT como con EST.
+    # El script decide si el mercado está abierto (09:30-16:10 Nueva York).
+    - cron: "*/5 13-21 * * 1-5"
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: fondo3-live-market
+  cancel-in-progress: true
+
+jobs:
+  live:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Descargar repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar Python liviano
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+          cache-dependency-path: requirements-live.txt
+
+      - name: Instalar solo dependencias de mercado
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements-live.txt
+
+      - name: Actualizar únicamente Mercado ahora
+        env:
+          PYTHONUTF8: "1"
+          PYTHONIOENCODING: "utf-8"
+        run: python scripts/update_live_market_only.py
+
+      - name: Validar snapshot independiente
+        run: |
+          test -s public/data/live_market.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          live = json.loads(Path("public/data/live_market.json").read_text(encoding="utf-8"))
+          assert live.get("engine") == "LIVE INDEPENDIENTE", live
+          assert live.get("mode"), live
+          assert live.get("generated_at_lima"), live
+          assert live.get("signal") in {"SUBE", "NEUTRO", "BAJA"}, live
+          names = {x.get("serie") for x in live.get("assets", [])}
+          if not live.get("warning"):
+              assert names == {"SPY", "NEM", "FCX", "EPU", "MCHI", "USD_PEN"}, names
+          if live.get("market_open") and not live.get("warning"):
+              assert live.get("mode") == "INTRADÍA PROVISIONAL", live
+              assert live.get("action") == "ESPERAR", live
+          print(json.dumps(live, ensure_ascii=False, indent=2))
+          PY
+
+      - name: Guardar solo snapshot intradía
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/data/live_market.json
+          if git diff --cached --quiet; then
+            echo "Sin cambios de mercado."
+          else
+            git commit -m "Actualizar mercado intradía Fondo 3"
+            git pull --rebase origin migracion-github-actions
+            git push origin HEAD:migracion-github-actions
+          fi
+
+      - name: Sincronizar última versión antes de publicar
+        run: |
+          git fetch origin migracion-github-actions
+          git reset --hard origin/migracion-github-actions
+          test -s public/final.html
+          cp public/final.html public/index.html
+          test -s public/data/live_market.json
+
+      - name: Configurar GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Subir visor con snapshot nuevo
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: public
+
+      - name: Publicar visor
+        id: deployment
+        uses: actions/deploy-pages@v4
