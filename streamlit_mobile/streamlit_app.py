@@ -1,17 +1,32 @@
-"""Punto de entrada seguro de Streamlit Community Cloud."""
+"""Punto de entrada seguro de Streamlit Community Cloud.
+
+Ejecuta la aplicación completa en cada rerun. No usa una importación
+convencional porque Python conserva los módulos importados en memoria y
+Streamlit podría mostrar una página vacía en las siguientes ejecuciones.
+"""
 
 from pathlib import Path
-import sys
+import runpy
+
+import streamlit as st
 
 HERE = Path(__file__).resolve().parent
-if str(HERE) not in sys.path:
-    sys.path.insert(0, str(HERE))
+APP_FILE = HERE / "streamlit_unified.py"
+
+st.set_page_config(
+    page_title="Profuturo Fondo 3",
+    page_icon="📈",
+    layout="wide",
+)
+
+loading = st.empty()
+loading.info("Cargando datos SBS, índices y modelo OLS rolling 90…")
 
 try:
-    from streamlit_unified import *  # noqa: F401,F403
+    runpy.run_path(str(APP_FILE), run_name="__main__")
+    loading.empty()
 except Exception as error:
-    import streamlit as st
-
+    loading.empty()
     st.error("La aplicación unificada no pudo iniciar.")
     st.exception(error)
     st.stop()
