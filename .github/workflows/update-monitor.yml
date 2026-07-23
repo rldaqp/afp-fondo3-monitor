@@ -9,7 +9,7 @@ on:
       - ".github/workflows/update-monitor.yml"
       - "scripts/build_rolling90_pages.py"
       - "scripts/run_rolling90_live_v2.py"
-      - "scripts/postprocess_mobile_ui.py"
+      - "scripts/postprocess_mobile_ui_v2.py"
       - "requirements.txt"
   schedule:
     # Ventana amplia que cubre la sesión de NY tanto con horario de verano como de invierno.
@@ -57,7 +57,7 @@ jobs:
         run: |
           python scripts/run_rolling90_live_v2.py
           sed -i "s/calc.onclick=calc;/document.getElementById('calc').onclick=calc;/" public/index.html
-          python scripts/postprocess_mobile_ui.py
+          python scripts/postprocess_mobile_ui_v2.py
 
       - name: Validar modelo y visor
         run: |
@@ -83,7 +83,6 @@ jobs:
           python - <<'PY'
           import json
           from pathlib import Path
-
           latest = json.loads(Path("public/data/latest.json").read_text(encoding="utf-8"))
           signals = json.loads(Path("public/data/signals.json").read_text(encoding="utf-8"))
           live = json.loads(Path("public/data/live_market.json").read_text(encoding="utf-8"))
