@@ -28,10 +28,28 @@ jobs:
       - name: Descargar repositorio
         uses: actions/checkout@v4
 
-      - name: Usar visor final como portada
+      - name: Usar visor final como portada y enlazar mercado vivo
         run: |
           test -s public/final.html
           cp public/final.html public/index.html
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path("public/index.html")
+          html = path.read_text(encoding="utf-8")
+          raw_live = "https://raw.githubusercontent.com/rldaqp/afp-fondo3-monitor/migracion-github-actions/public/data/live_market.json"
+          html = html.replace(
+              "fetch('data/live_market.json?ts='+Date.now(),{cache:'no-store'})",
+              f"fetch('{raw_live}?ts='+Date.now(),{{cache:'no-store'}})",
+          )
+          html = html.replace(
+              "fetch('data/live_market.json',{cache:'no-store'})",
+              f"fetch('{raw_live}?ts='+Date.now(),{{cache:'no-store'}})",
+          )
+          if raw_live not in html:
+              raise RuntimeError("El visor no quedó enlazado al snapshot vivo")
+          path.write_text(html, encoding="utf-8")
+          PY
 
       - name: Validar visor final
         run: |
@@ -48,6 +66,7 @@ jobs:
           grep -q "Tallo desde 0" public/index.html
           grep -q "Mercado ahora" public/index.html
           grep -q "Corte Yahoo" public/index.html
+          grep -q "raw.githubusercontent.com/rldaqp/afp-fondo3-monitor" public/index.html
 
       - name: Configurar GitHub Pages
         uses: actions/configure-pages@v5
