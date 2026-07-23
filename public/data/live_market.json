@@ -1,11 +1,11 @@
 {
-  "generated_at_lima": "2026-07-23T15:03:00.915695-05:00",
+  "generated_at_lima": "2026-07-23T15:08:01.235226-05:00",
   "mode": "INTRADÍA PROVISIONAL",
   "market_open": true,
   "signal_date": "2026-07-23",
   "vc_base": 70.43398277251534,
-  "vc_estimated": 69.10869121444266,
-  "return_estimated": -0.0188160814695522,
+  "vc_estimated": 69.12770779979809,
+  "return_estimated": -0.018546089846093124,
   "signal": "BAJA",
   "assets": [
     {
@@ -35,9 +35,9 @@
       "ticker": "FCX",
       "timestamp": "2026-07-23T15:55:00-04:00",
       "precio_anterior": 65.0,
-      "precio_actual": 63.290000915527344,
-      "retorno": -0.026307678222656228,
-      "retorno_modelo": -0.026307678222656228,
+      "precio_actual": 63.52000045776367,
+      "retorno": -0.02276922372671275,
+      "retorno_modelo": -0.02276922372671275,
       "estado": "INTRADÍA YAHOO · USADO POR MODELO",
       "usado_modelo": true
     },
@@ -66,10 +66,10 @@
     {
       "serie": "USD_PEN",
       "ticker": "PEN=X referencia",
-      "timestamp": "2026-07-23T15:50:00-04:00",
+      "timestamp": "2026-07-23T16:00:00-04:00",
       "precio_anterior": 3.402,
-      "precio_actual": 3.3933000564575195,
-      "retorno": 0.0006782730789147706,
+      "precio_actual": 3.3931000232696533,
+      "retorno": 0.0006192836404146362,
       "retorno_modelo": 0.0,
       "estado": "YAHOO PEN=X · SOLO REFERENCIA · MODELO USA 0 %",
       "usado_modelo": false
