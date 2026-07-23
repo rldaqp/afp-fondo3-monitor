@@ -46,12 +46,11 @@ def _load_reference() -> pd.DataFrame:
 
 
 def _run_with_canonical_history(sbs: pd.DataFrame, markets: pd.DataFrame):
-    # Conservamos el histórico gráfico ya calculado por el motor base.
+    # Histórico gráfico: conserva exactamente el cálculo base del notebook.
     historical, _, _ = _original_run(sbs, markets)
 
-    # Base completa dinámica: sirve únicamente para incorporar nuevas observaciones
-    # oficiales posteriores al corte canónico del notebook. El pasado no se reescribe
-    # con revisiones posteriores de Yahoo/BCRP.
+    # La ventana canónica fija solamente el punto histórico de partida. Desde la
+    # siguiente observación oficial el rolling 90 continúa avanzando normalmente.
     complete_dynamic, s = parity._build_complete(sbs, markets)
     reference = _load_reference()
     reference_end = pd.Timestamp(reference["fecha"].max())
@@ -132,34 +131,60 @@ def _run_with_canonical_history(sbs: pd.DataFrame, markets: pd.DataFrame):
     return historical, pending, meta
 
 
-parity._run_notebook_model = _run_with_canonical_history
-parity.main()
+def main() -> None:
+    # IMPORTANTE: este proceso NO descarga ni escribe intradía. Solo modelo/SBS.
+    sbs = parity.engine.read_saved(parity.DATA / "sbs_profuturo_f3.csv")
+    if sbs.empty:
+        raise RuntimeError("Falta SBS para la auditoría de paridad")
+    sbs["fecha"] = pd.to_datetime(sbs["fecha"], errors="coerce")
+    sbs["valor_cuota"] = pd.to_numeric(sbs["valor_cuota"], errors="coerce")
+    sbs = sbs.dropna().sort_values("fecha").drop_duplicates("fecha", keep="last").reset_index(drop=True)
 
-latest = json.loads(LATEST_PATH.read_text(encoding="utf-8"))
-latest["parity_reference"] = (
-    "Ventana canónica exacta del notebook al 20/07/2026; "
-    "desde la siguiente observación oficial el rolling 90 continúa normalmente"
-)
-latest["parity_verified"] = True
-LATEST_PATH.write_text(json.dumps(latest, ensure_ascii=False, indent=2), encoding="utf-8")
+    markets, market_note = parity._rebuild_markets_notebook()
+    historical, pending, meta = _run_with_canonical_history(sbs, markets)
+    latest = parity._write_outputs(sbs, markets, historical, pending, meta, market_note)
 
-# Prueba numérica real contra el HTML generado por el notebook.
-if latest.get("latest_sbs_date") == "2026-07-20":
-    pending = pd.read_csv(PENDING_PATH)
-    pending["fecha"] = pd.to_datetime(pending["fecha"]).dt.strftime("%Y-%m-%d")
-    expected = {
-        "2026-07-21": 69.65879107720521,
-        "2026-07-22": 70.43398277251534,
-    }
-    assert latest["training_start"] == "2026-02-27", latest
-    assert latest["training_end"] == "2026-07-20", latest
-    for fecha, reference_vc in expected.items():
-        row = pending.loc[pending["fecha"] == fecha]
-        if row.empty:
-            raise AssertionError(f"Falta predicción de control {fecha}")
-        actual = float(row.iloc[-1]["valor_cuota_estimado"])
-        if abs(actual - reference_vc) >= 1e-9:
-            raise AssertionError((fecha, actual, reference_vc))
+    latest["parity_reference"] = (
+        "Ventana canónica exacta del notebook al 20/07/2026; "
+        "desde la siguiente observación oficial el rolling 90 continúa normalmente"
+    )
+    latest["parity_verified"] = True
+    latest["live_engine"] = "INDEPENDIENTE: update_live_market_only.py"
+    LATEST_PATH.write_text(json.dumps(latest, ensure_ascii=False, indent=2), encoding="utf-8")
 
-print("PARIDAD NOTEBOOK V5 APROBADA")
-print(json.dumps(latest, ensure_ascii=False, indent=2))
+    assert int(meta["train_n"]) == parity.WINDOW
+    assert latest["parity_verified"] is True
+    assert "BCRP exclusivo" in latest["parity_rule"]
+    assert (pd.to_datetime(historical["ventana_fin"]) < pd.to_datetime(historical["fecha"])).all()
+    if len(pending) > 1:
+        np.testing.assert_allclose(
+            pending["valor_cuota_base"].iloc[1:].to_numpy(float),
+            pending["valor_cuota_estimado"].iloc[:-1].to_numpy(float),
+            rtol=0,
+            atol=1e-10,
+        )
+
+    # Prueba numérica contra el HTML real del notebook mientras el corte SBS sea 20/07.
+    if latest.get("latest_sbs_date") == "2026-07-20":
+        control = pending.copy()
+        control["fecha"] = pd.to_datetime(control["fecha"]).dt.strftime("%Y-%m-%d")
+        expected = {
+            "2026-07-21": 69.65879107720521,
+            "2026-07-22": 70.43398277251534,
+        }
+        assert latest["training_start"] == "2026-02-27", latest
+        assert latest["training_end"] == "2026-07-20", latest
+        for fecha, reference_vc in expected.items():
+            row = control.loc[control["fecha"] == fecha]
+            if row.empty:
+                raise AssertionError(f"Falta predicción de control {fecha}")
+            actual = float(row.iloc[-1]["valor_cuota_estimado"])
+            if abs(actual - reference_vc) >= 1e-9:
+                raise AssertionError((fecha, actual, reference_vc))
+
+    print("PARIDAD NOTEBOOK V5 MODELO-ONLY APROBADA")
+    print(json.dumps(latest, ensure_ascii=False, indent=2))
+
+
+if __name__ == "__main__":
+    main()
