@@ -1,17 +1,17 @@
 {
-  "generated_at_lima": "2026-07-23T05:32:55.882205-05:00",
+  "generated_at_lima": "2026-07-23T05:36:49.364749-05:00",
   "model": "OLS rolling 90",
   "window": 90,
   "threshold": 0.001,
-  "training_start": "2026-02-17",
-  "training_end": "2026-06-30",
+  "training_start": "2026-02-25",
+  "training_end": "2026-07-20",
   "training_n": 90,
-  "latest_sbs_date": "2026-06-30",
-  "latest_sbs_vc": 71.9348302,
+  "latest_sbs_date": "2026-07-20",
+  "latest_sbs_vc": 68.2147702,
   "latest_market_date": "2026-07-21",
   "latest_estimate_date": "2026-07-21",
-  "latest_estimated_vc": 73.69155221790905,
-  "latest_return_estimated": 0.02265989617799127,
+  "latest_estimated_vc": 69.56068353606506,
+  "latest_return_estimated": 0.019730526572455703,
   "signal": "SUBE",
   "estimate_type": "MODELO OLS",
   "sources": {
@@ -20,12 +20,12 @@
   },
   "warnings": [],
   "coefficients": {
-    "intercept": 0.0005643622748706832,
-    "ret_SPY": 0.3801423745313097,
-    "ret_NEM": 0.12269389505560818,
-    "ret_FCX": 0.06953416182455639,
-    "ret_EPU": 0.3260089081620098,
-    "ret_MCHI": 0.046863527160726975,
-    "ret_USD_PEN": 0.19610151407625784
+    "intercept": 0.00011743860061138837,
+    "ret_SPY": 0.4924457917665362,
+    "ret_NEM": 0.12817732690480993,
+    "ret_FCX": 0.030425675711194047,
+    "ret_EPU": 0.29075313748442716,
+    "ret_MCHI": 0.07777735895587606,
+    "ret_USD_PEN": 0.12504395678557778
   }
 }
