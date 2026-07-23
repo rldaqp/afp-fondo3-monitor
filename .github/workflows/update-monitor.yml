@@ -11,10 +11,12 @@ on:
       - "scripts/run_rolling90_live_v2.py"
       - "scripts/apply_sbs_reference_corrections.py"
       - "scripts/finalize_notebook_parity_v4.py"
+      - "scripts/finalize_notebook_parity_v5.py"
       - "scripts/build_operation_series.py"
       - "scripts/postprocess_mobile_ui_v3.py"
       - "scripts/postprocess_mobile_ui_v4.py"
       - "data/rolling90/sbs_reference_corrections.csv"
+      - "data/rolling90/notebook_training_reference.csv"
       - "requirements.txt"
   schedule:
     # Sesión NY: snapshot Yahoo cada 5 minutos (puede haber retrasos propios de GitHub Actions).
@@ -61,11 +63,11 @@ jobs:
         run: |
           # Primera pasada: descarga SBS/mercados y conserva el histórico.
           python scripts/run_rolling90_live_v2.py
-          # Corrige dos observaciones SBS detectadas al comparar con el HTML real
-          # del notebook: 07/07 faltante y 15/07 mal asociado.
+          # Corrige dos observaciones SBS detectadas al comparar con el HTML real.
           python scripts/apply_sbs_reference_corrections.py
-          # Autoridad matemática: replica monitor_final.py sobre la base corregida.
-          python scripts/finalize_notebook_parity_v4.py
+          # Autoridad matemática: ventana histórica exacta del notebook y rolling 90
+          # que continúa incorporando nuevas observaciones oficiales desde el corte.
+          python scripts/finalize_notebook_parity_v5.py
           python scripts/build_operation_series.py
           sed -i "s/calc.onclick=calc;/document.getElementById('calc').onclick=calc;/" public/index.html
           python scripts/postprocess_mobile_ui_v3.py
@@ -120,6 +122,7 @@ jobs:
           assert "BCRP exclusivo" in latest["parity_rule"]
           assert "0 % provisional" in latest["parity_rule"]
           assert "PEN=X nunca sustituye" in latest["sources"]["fx"]
+          assert "Ventana canónica exacta" in latest.get("parity_reference", "")
           assert len(signals) > 1
           assert len(operation) > 1
           assert live["mode"]
@@ -131,11 +134,10 @@ jobs:
           assert all(x.get("senal") in {"SUBE", "NEUTRO", "BAJA"} for x in signals if x.get("ret_estimado") is not None)
           assert all(float(x["vc"]) > 0 for x in operation)
 
-          # Prueba de regresión contra el HTML real del notebook aportado por el usuario.
-          # Solo se aplica mientras la última SBS siga siendo 20/07/2026; cuando SBS
-          # avance, el modelo debe recalcular desde la nueva base oficial.
+          # Regresión numérica contra el HTML real del notebook.
           if latest.get("latest_sbs_date") == "2026-07-20":
               assert latest["training_start"] == "2026-02-27", latest
+              assert latest["training_end"] == "2026-07-20", latest
               pending = pd.read_csv("data/rolling90/pending_predictions.csv")
               pending["fecha"] = pd.to_datetime(pending["fecha"]).dt.strftime("%Y-%m-%d")
               expected = {
@@ -146,7 +148,7 @@ jobs:
                   row = pending.loc[pending["fecha"] == fecha]
                   assert not row.empty, f"Falta predicción {fecha}"
                   vc = float(row.iloc[-1]["valor_cuota_estimado"])
-                  assert abs(vc - vc_ref) < 1e-7, (fecha, vc, vc_ref)
+                  assert abs(vc - vc_ref) < 1e-9, (fecha, vc, vc_ref)
 
           print(json.dumps(latest, ensure_ascii=False, indent=2))
           print(json.dumps(live, ensure_ascii=False, indent=2))
@@ -157,7 +159,7 @@ jobs:
       - name: Guardar datos y resultados actualizados
         run: |
           git config user.name "github-actions[bot]"
-          git config user.email "4189826+github-actions[bot]@users.noreply.github.com"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add data/rolling90 public
           if git diff --cached --quiet; then
             echo "No hay cambios de datos para confirmar."
