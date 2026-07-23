@@ -10,7 +10,8 @@ on:
       - "scripts/build_rolling90_pages.py"
       - "scripts/run_rolling90_live_v2.py"
       - "scripts/finalize_model_v3.py"
-      - "scripts/postprocess_mobile_ui_v2.py"
+      - "scripts/build_operation_series.py"
+      - "scripts/postprocess_mobile_ui_v3.py"
       - "requirements.txt"
   schedule:
     # Sesión NY: snapshot Yahoo cada 5 minutos (puede haber retrasos propios de GitHub Actions).
@@ -57,8 +58,9 @@ jobs:
         run: |
           python scripts/run_rolling90_live_v2.py
           python scripts/finalize_model_v3.py
+          python scripts/build_operation_series.py
           sed -i "s/calc.onclick=calc;/document.getElementById('calc').onclick=calc;/" public/index.html
-          python scripts/postprocess_mobile_ui_v2.py
+          python scripts/postprocess_mobile_ui_v3.py
 
       - name: Validar modelo y visor final
         run: |
@@ -67,6 +69,7 @@ jobs:
           test -s public/data/series.json
           test -s public/data/signals.json
           test -s public/data/live_market.json
+          test -s public/data/operation_series.json
           grep -q "OLS Rolling 90" public/index.html
           grep -q "7 días" public/index.html
           grep -q "15 días" public/index.html
@@ -79,6 +82,9 @@ jobs:
           grep -q "ret90" public/index.html
           grep -q "retAll" public/index.html
           grep -q "Mercado ahora" public/index.html
+          grep -q "Tallo desde 0" public/index.html
+          grep -q "operation_series.json" public/index.html
+          grep -q "Fórmula notebook" public/index.html
           grep -q "Retorno estimado del VC" public/index.html
           grep -q "calcNotebook" public/index.html
           grep -q "Señal" public/index.html
@@ -88,6 +94,7 @@ jobs:
           latest = json.loads(Path("public/data/latest.json").read_text(encoding="utf-8"))
           signals = json.loads(Path("public/data/signals.json").read_text(encoding="utf-8"))
           live = json.loads(Path("public/data/live_market.json").read_text(encoding="utf-8"))
+          operation = json.loads(Path("public/data/operation_series.json").read_text(encoding="utf-8"))
           assert latest["model"] == "OLS rolling 90"
           assert int(latest["window"]) == 90
           assert abs(float(latest["threshold"]) - 0.001) < 1e-12
@@ -98,14 +105,17 @@ jobs:
           assert float(latest["latest_estimated_vc"]) > 0
           assert "sin imputación FX=0" in latest["parity_rule"]
           assert len(signals) > 1
+          assert len(operation) > 1
           assert live["mode"]
           assert live["signal"] in {"SUBE", "NEUTRO", "BAJA"}
           if live.get("market_open"):
               assert live.get("action") == "ESPERAR"
           assert all(x.get("senal") in {"SUBE", "NEUTRO", "BAJA"} for x in signals if x.get("ret_estimado") is not None)
+          assert all(float(x["vc"]) > 0 for x in operation)
           print(json.dumps(latest, ensure_ascii=False, indent=2))
           print(json.dumps(live, ensure_ascii=False, indent=2))
           print(f"Puntos de señal publicados: {len(signals)}")
+          print(f"Filas de operación tipo notebook: {len(operation)}")
           PY
 
       - name: Guardar datos y resultados actualizados
