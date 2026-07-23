@@ -35,5 +35,20 @@ old_card = "<div class=\"market-source\">${a.estado||''}</div></div>"
 new_card = "<div class=\"market-source\">${a.estado||''}${a.retorno_modelo!=null&&Number(a.retorno_modelo)!==Number(a.retorno)?'<br>Modelo: '+(Number(a.retorno_modelo)*100).toFixed(2)+'%':''}</div></div>"
 html = html.replace(old_card, new_card)
 
+# Mercado ahora debe leer el snapshot vivo del repositorio, no la copia estática
+# de GitHub Pages. El parámetro ts evita reutilizar una respuesta cacheada.
+raw_live = "https://raw.githubusercontent.com/rldaqp/afp-fondo3-monitor/migracion-github-actions/public/data/live_market.json"
+html = html.replace(
+    "fetch('data/live_market.json?ts='+Date.now(),{cache:'no-store'})",
+    f"fetch('{raw_live}?ts='+Date.now(),{{cache:'no-store'}})",
+)
+html = html.replace(
+    "fetch('data/live_market.json',{cache:'no-store'})",
+    f"fetch('{raw_live}?ts='+Date.now(),{{cache:'no-store'}})",
+)
+
+if raw_live not in html:
+    raise RuntimeError("No se pudo enlazar Mercado ahora con el snapshot vivo del repositorio")
+
 HTML_PATH.write_text(html, encoding="utf-8")
-print("Visor v4: sin leyenda en retornos + USD/PEN con regla de paridad notebook.")
+print("Visor v4: gráfico limpio + USD/PEN notebook + Mercado ahora directo desde repositorio.")
