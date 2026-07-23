@@ -1,5 +1,5 @@
 {
-  "generated_at_lima": "2026-07-23T05:50:17.982973-05:00",
+  "generated_at_lima": "2026-07-23T06:00:50.297792-05:00",
   "model": "OLS rolling 90",
   "window": 90,
   "threshold": 0.001,
@@ -10,8 +10,8 @@
   "latest_sbs_vc": 68.06385,
   "latest_market_date": "2026-07-22",
   "latest_estimate_date": "2026-07-22",
-  "latest_estimated_vc": 70.17834964679982,
-  "latest_return_estimated": 0.009475158379319816,
+  "latest_estimated_vc": 70.22115020013366,
+  "latest_return_estimated": 0.009756894976691355,
   "signal": "SUBE",
   "estimate_type": "MODELO OLS",
   "sources": {
@@ -19,16 +19,14 @@
     "market": "Yahoo Finance (Stooq respaldo) + USD/PEN BCRP/Yahoo",
     "fx": "BCRP; Yahoo PEN=X solo para fechas faltantes"
   },
-  "warnings": [
-    "SBS índice: ReadTimeout: HTTPSConnectionPool(host='www.sbs.gob.pe', port=443): Read timed out. (read timeout=45)"
-  ],
+  "warnings": [],
   "coefficients": {
-    "intercept": -1.8789905894158104e-05,
-    "ret_SPY": 0.42624209414248193,
-    "ret_NEM": 0.13151813171456092,
-    "ret_FCX": 0.05111299893961118,
-    "ret_EPU": 0.31656766541293246,
-    "ret_MCHI": 0.009382814694795414,
-    "ret_USD_PEN": 0.13063563409482085
+    "intercept": 4.567093680095885e-05,
+    "ret_SPY": 0.41003472151176523,
+    "ret_NEM": 0.13421330564394354,
+    "ret_FCX": 0.06192437051328565,
+    "ret_EPU": 0.305345086353038,
+    "ret_MCHI": 0.03923644826918091,
+    "ret_USD_PEN": 0.10845698591358338
   }
 }
