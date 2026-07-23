@@ -17,6 +17,7 @@ on:
 
 permissions:
   contents: write
+  actions: write
 
 concurrency:
   group: fondo3-live-market-continuo
@@ -49,6 +50,7 @@ jobs:
         env:
           PYTHONUTF8: "1"
           PYTHONIOENCODING: "utf-8"
+          GH_TOKEN: ${{ github.token }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -86,6 +88,10 @@ jobs:
                 git pull --rebase origin migracion-github-actions
                 git push origin HEAD:migracion-github-actions
               fi
+
+              # Los commits creados con GITHUB_TOKEN no disparan automáticamente otros workflows.
+              # Por eso se ordena explícitamente la publicación de GitHub Pages en cada snapshot.
+              gh workflow run deploy-pages-ui.yml --ref migracion-github-actions
             fi
 
             # Cadencia aproximada de 300 s medida desde el inicio de cada ciclo.
