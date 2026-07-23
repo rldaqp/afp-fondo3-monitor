@@ -42,28 +42,27 @@ def _get_text(url: str, attempts: int = 3) -> str:
 
 
 def _parse_sbs_daily_blocks() -> pd.DataFrame:
-    """Asocia cada 'Información al ...' con la tabla inmediata siguiente."""
+    """Lee cada tabla diaria SBS que contenga una sola fecha y la fila PROFUTURO."""
     response = requests.get(engine.SBS_DAILY, headers=engine.HEADERS, timeout=45)
     response.raise_for_status()
     soup = BeautifulSoup(response.content, "lxml")
     rows: list[dict[str, object]] = []
 
-    for node in soup.find_all(string=True):
-        text = " ".join(str(node).split())
-        if "informacion al" not in engine.norm(text):
-            continue
-        match = re.search(r"(\d{2}/\d{2}/\d{4})", text)
-        if not match:
+    for table in soup.find_all("table"):
+        table_text = " ".join(table.stripped_strings)
+        date_matches = list(dict.fromkeys(re.findall(r"\d{2}/\d{2}/\d{4}", table_text)))
+
+        # Ignorar tablas contenedoras que agrupan varios días.
+        if len(date_matches) != 1:
             continue
 
-        fecha = pd.to_datetime(match.group(1), format="%d/%m/%Y")
-        parent = getattr(node, "parent", None)
-        table = parent.find_next("table") if parent is not None else None
-        if table is None:
-            continue
-
+        fecha = pd.to_datetime(date_matches[0], format="%d/%m/%Y")
         valor = None
+
         for tr in table.find_all("tr"):
+            # Solo filas que pertenecen directamente a esta tabla, no a una tabla anidada.
+            if tr.find_parent("table") is not table:
+                continue
             cells = tr.find_all(["th", "td"], recursive=False)
             if not cells:
                 continue
@@ -76,7 +75,7 @@ def _parse_sbs_daily_blocks() -> pd.DataFrame:
             rows.append({"fecha": fecha, "valor_cuota": float(valor)})
 
     if not rows:
-        raise RuntimeError("No se pudieron extraer bloques diarios SBS de Profuturo Fondo 3")
+        raise RuntimeError("No se pudieron extraer tablas diarias SBS de Profuturo Fondo 3")
 
     daily = pd.DataFrame(rows)
     daily["fecha"] = pd.to_datetime(daily["fecha"], errors="coerce")
@@ -104,11 +103,12 @@ def download_sbs_resilient() -> tuple[pd.DataFrame, list[str]]:
         )
         print(
             "SBS diaria incorporada hasta "
-            f"{combined['fecha'].max():%Y-%m-%d}"
+            f"{combined['fecha'].max():%Y-%m-%d} · "
+            f"VC {combined.iloc[-1]['valor_cuota']:.7f}"
         )
         return combined, warnings
     except Exception as exc:
-        warnings.append(f"SBS diaria por bloques: {type(exc).__name__}: {exc}")
+        warnings.append(f"SBS diaria por tablas: {type(exc).__name__}: {exc}")
         return base, warnings
 
 
