@@ -1,0 +1,54 @@
+name: Publicar visor móvil Fondo 3
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - migracion-github-actions
+    paths:
+      - "public/**"
+      - ".github/workflows/deploy-pages-ui.yml"
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages-ui-fondo3
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Descargar repositorio
+        uses: actions/checkout@v4
+
+      - name: Validar visor
+        run: |
+          test -s public/index.html
+          test -s public/data/latest.json
+          test -s public/data/series.json
+          test -s public/data/signals.json
+          grep -q "7 días" public/index.html
+          grep -q "15 días" public/index.html
+          grep -q "30 días" public/index.html
+          grep -q "90 días" public/index.html
+          grep -q "Retorno estimado del VC" public/index.html
+          grep -q "calcNotebook" public/index.html
+
+      - name: Configurar GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Subir visor
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: public
+
+      - name: Publicar visor
+        id: deployment
+        uses: actions/deploy-pages@v4
