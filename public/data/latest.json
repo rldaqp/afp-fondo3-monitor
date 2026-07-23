@@ -1,5 +1,5 @@
 {
-  "generated_at_lima": "2026-07-23T06:37:51.895577-05:00",
+  "generated_at_lima": "2026-07-23T06:52:59.712549-05:00",
   "model": "OLS rolling 90",
   "window": 90,
   "threshold": 0.001,
@@ -10,25 +10,27 @@
   "latest_sbs_vc": 68.06385,
   "latest_market_date": "2026-07-22",
   "latest_estimate_date": "2026-07-22",
-  "latest_estimated_vc": 70.2925875547297,
-  "latest_return_estimated": 0.010071293357732164,
+  "latest_estimated_vc": 70.32356462633625,
+  "latest_return_estimated": 0.010516419250383139,
   "signal": "SUBE",
-  "estimate_type": "CIERRE DIARIO · MODELO OLS",
-  "sources": {
-    "sbs": "SBS EN LÍNEA",
-    "market": "Yahoo Finance; respaldo de cola reciente si Yahoo no responde",
-    "fx": "BCRP histórico; Yahoo PEN=X solo cola posterior a la última fecha BCRP"
-  },
-  "warnings": [],
+  "estimate_type": "CIERRE DIARIO · MODELO OLS · PARIDAD NOTEBOOK",
   "coefficients": {
-    "intercept": 6.985624901954178e-05,
-    "ret_SPY": 0.39047653253251335,
+    "intercept": 6.985624901960114e-05,
+    "ret_SPY": 0.3904765325325127,
     "ret_NEM": 0.134198164984834,
-    "ret_FCX": 0.06815616753885764,
-    "ret_EPU": 0.3208508220392521,
-    "ret_MCHI": 0.03525130795863973,
-    "ret_USD_PEN": 0.18929104950389405
+    "ret_FCX": 0.0681561675388574,
+    "ret_EPU": 0.32085082203925086,
+    "ret_MCHI": 0.035251307958640385,
+    "ret_USD_PEN": 0.18929104950389172
   },
-  "parity_rule": "Sin anticipación; 90 observaciones completas; BCRP histórico; sin imputación FX=0; VC pendiente encadenado",
+  "parity_rule": "MISMO NOTEBOOK: LinearRegression OLS; 90 observaciones; mismo día; BCRP exclusivo; si falta USD/PEN en fecha pendiente se usa 0 % provisional; VC encadenado",
+  "parity_verified": true,
+  "latest_fx_complete": false,
+  "sources": {
+    "sbs": "SBS oficial",
+    "market": "Yahoo Finance para SPY, NEM, FCX, EPU y MCHI",
+    "fx": "BCRP PD04646PD; PEN=X nunca sustituye USD/PEN dentro del modelo"
+  },
+  "market_note": "Yahoo Finance actualizado; respaldo guardado solo donde Yahoo no trae valor; BCRP exclusivo para USD/PEN hasta 2026-07-21",
   "vc_mode_rule": "INTRADÍA PROVISIONAL 09:30-16:10 NY; fuera de ese intervalo CIERRE DIARIO"
 }

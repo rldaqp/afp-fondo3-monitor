@@ -1,10 +1,10 @@
 {
-  "generated_at_lima": "2026-07-23T06:37:50.502738-05:00",
+  "generated_at_lima": "2026-07-23T06:52:59.712814-05:00",
   "mode": "CIERRE DIARIO",
   "market_open": false,
   "signal_date": "2026-07-22",
-  "vc_estimated": 70.2925875547297,
-  "return_estimated": 0.010071293357732164,
+  "vc_estimated": 70.32356462633625,
+  "return_estimated": 0.010516419250383139,
   "signal": "SUBE",
   "assets": [
     {
@@ -14,16 +14,20 @@
       "precio_anterior": 748.280029296875,
       "precio_actual": 747.4099731445312,
       "retorno": -0.0011627413779321527,
-      "estado": "CIERRE DIARIO"
+      "retorno_modelo": -0.0011627413779321527,
+      "estado": "CIERRE DIARIO YAHOO · USADO POR MODELO",
+      "usado_modelo": true
     },
     {
       "serie": "NEM",
       "ticker": "NEM",
       "timestamp": "2026-07-22",
-      "precio_anterior": 92.48999786376952,
+      "precio_anterior": 92.48999786376953,
       "precio_actual": 95.75,
       "retorno": 0.03524707764651702,
-      "estado": "CIERRE DIARIO"
+      "retorno_modelo": 0.03524707764651702,
+      "estado": "CIERRE DIARIO YAHOO · USADO POR MODELO",
+      "usado_modelo": true
     },
     {
       "serie": "FCX",
@@ -32,7 +36,9 @@
       "precio_anterior": 62.560001373291016,
       "precio_actual": 65.0,
       "retorno": 0.03900253473700688,
-      "estado": "CIERRE DIARIO"
+      "retorno_modelo": 0.03900253473700688,
+      "estado": "CIERRE DIARIO YAHOO · USADO POR MODELO",
+      "usado_modelo": true
     },
     {
       "serie": "EPU",
@@ -41,7 +47,9 @@
       "precio_anterior": 87.12999725341797,
       "precio_actual": 88.16000366210938,
       "retorno": 0.01182149020039125,
-      "estado": "CIERRE DIARIO"
+      "retorno_modelo": 0.01182149020039125,
+      "estado": "CIERRE DIARIO YAHOO · USADO POR MODELO",
+      "usado_modelo": true
     },
     {
       "serie": "MCHI",
@@ -50,8 +58,22 @@
       "precio_anterior": 54.0,
       "precio_actual": 53.56999969482422,
       "retorno": -0.007962968614366295,
-      "estado": "CIERRE DIARIO"
+      "retorno_modelo": -0.007962968614366295,
+      "estado": "CIERRE DIARIO YAHOO · USADO POR MODELO",
+      "usado_modelo": true
+    },
+    {
+      "serie": "USD_PEN",
+      "ticker": "BCRP PD04646PD",
+      "timestamp": "2026-07-21",
+      "precio_anterior": 3.402,
+      "precio_actual": 3.402,
+      "retorno": 0.0,
+      "retorno_modelo": 0.0,
+      "estado": "BCRP REZAGADO · MODELO USA 0 %",
+      "usado_modelo": true
     }
   ],
-  "action": "CIERRE"
+  "action": "CIERRE",
+  "fx_rule": "Paridad notebook: BCRP; si falta la fecha, retorno USD/PEN del modelo = 0 % provisional"
 }
