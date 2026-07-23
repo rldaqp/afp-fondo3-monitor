@@ -59,12 +59,17 @@ jobs:
           test -s public/index.html
           test -s public/data/latest.json
           test -s public/data/series.json
+          test -s public/data/signals.json
           grep -q "OLS Rolling 90" public/index.html
+          grep -q "Últimos 90 días" public/index.html
+          grep -q "vcAll" public/index.html
+          grep -q "Señal" public/index.html
           python - <<'PY'
           import json
           from pathlib import Path
 
           latest = json.loads(Path("public/data/latest.json").read_text(encoding="utf-8"))
+          signals = json.loads(Path("public/data/signals.json").read_text(encoding="utf-8"))
           assert latest["model"] == "OLS rolling 90"
           assert int(latest["window"]) == 90
           assert abs(float(latest["threshold"]) - 0.001) < 1e-12
@@ -73,7 +78,10 @@ jobs:
           assert latest["signal"] in {"SUBE", "NEUTRO", "BAJA"}
           assert float(latest["latest_sbs_vc"]) > 0
           assert float(latest["latest_estimated_vc"]) > 0
+          assert len(signals) > 1
+          assert all(x.get("senal") in {"SUBE", "NEUTRO", "BAJA"} for x in signals if x.get("ret_estimado") is not None)
           print(json.dumps(latest, ensure_ascii=False, indent=2))
+          print(f"Puntos de señal publicados: {len(signals)}")
           PY
 
       - name: Guardar datos y resultados actualizados
