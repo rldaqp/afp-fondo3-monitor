@@ -9,10 +9,12 @@ on:
       - ".github/workflows/update-monitor.yml"
       - "scripts/build_rolling90_pages.py"
       - "scripts/run_rolling90_live_v2.py"
+      - "scripts/apply_sbs_reference_corrections.py"
       - "scripts/finalize_notebook_parity_v4.py"
       - "scripts/build_operation_series.py"
       - "scripts/postprocess_mobile_ui_v3.py"
       - "scripts/postprocess_mobile_ui_v4.py"
+      - "data/rolling90/sbs_reference_corrections.csv"
       - "requirements.txt"
   schedule:
     # Sesión NY: snapshot Yahoo cada 5 minutos (puede haber retrasos propios de GitHub Actions).
@@ -57,9 +59,12 @@ jobs:
           PYTHONUTF8: "1"
           PYTHONIOENCODING: "utf-8"
         run: |
-          # La primera pasada mantiene el colector resiliente de SBS/Yahoo.
+          # Primera pasada: descarga SBS/mercados y conserva el histórico.
           python scripts/run_rolling90_live_v2.py
-          # Esta segunda pasada es la autoridad matemática: replica monitor_final.py.
+          # Corrige dos observaciones SBS detectadas al comparar con el HTML real
+          # del notebook: 07/07 faltante y 15/07 mal asociado.
+          python scripts/apply_sbs_reference_corrections.py
+          # Autoridad matemática: replica monitor_final.py sobre la base corregida.
           python scripts/finalize_notebook_parity_v4.py
           python scripts/build_operation_series.py
           sed -i "s/calc.onclick=calc;/document.getElementById('calc').onclick=calc;/" public/index.html
@@ -96,6 +101,7 @@ jobs:
           python - <<'PY'
           import json
           from pathlib import Path
+          import pandas as pd
 
           latest = json.loads(Path("public/data/latest.json").read_text(encoding="utf-8"))
           signals = json.loads(Path("public/data/signals.json").read_text(encoding="utf-8"))
@@ -124,6 +130,23 @@ jobs:
               assert live.get("action") == "ESPERAR"
           assert all(x.get("senal") in {"SUBE", "NEUTRO", "BAJA"} for x in signals if x.get("ret_estimado") is not None)
           assert all(float(x["vc"]) > 0 for x in operation)
+
+          # Prueba de regresión contra el HTML real del notebook aportado por el usuario.
+          # Solo se aplica mientras la última SBS siga siendo 20/07/2026; cuando SBS
+          # avance, el modelo debe recalcular desde la nueva base oficial.
+          if latest.get("latest_sbs_date") == "2026-07-20":
+              assert latest["training_start"] == "2026-02-27", latest
+              pending = pd.read_csv("data/rolling90/pending_predictions.csv")
+              pending["fecha"] = pd.to_datetime(pending["fecha"]).dt.strftime("%Y-%m-%d")
+              expected = {
+                  "2026-07-21": 69.65879107720521,
+                  "2026-07-22": 70.43398277251534,
+              }
+              for fecha, vc_ref in expected.items():
+                  row = pending.loc[pending["fecha"] == fecha]
+                  assert not row.empty, f"Falta predicción {fecha}"
+                  vc = float(row.iloc[-1]["valor_cuota_estimado"])
+                  assert abs(vc - vc_ref) < 1e-7, (fecha, vc, vc_ref)
 
           print(json.dumps(latest, ensure_ascii=False, indent=2))
           print(json.dumps(live, ensure_ascii=False, indent=2))
