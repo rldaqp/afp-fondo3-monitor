@@ -295,6 +295,7 @@ Promise.all([fetch('data/latest.json',{cache:'no-store'}).then(r=>r.json()),fetc
       $('tradeSaveBtn').onclick=saveCurrent;render();
     }catch(e){$('tradeMsg').textContent='No se pudo cargar la bitácora: '+e}
   }
+  window.addEventListener('fondo3-cloud-synced',()=>render());
   boot();
 })();
 </script>
