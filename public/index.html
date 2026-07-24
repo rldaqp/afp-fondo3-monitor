@@ -53,7 +53,25 @@ h1{font-size:1.45rem;margin:5px 0}.sub,.note{color:var(--muted);font-size:.82rem
     <button class="trade-save" id="tradeSaveBtn" type="button">✓ OK · Guardar operación actual</button>
     <div class="note" id="tradeCount">0 operaciones</div>
   </div>
-  <div id="tradeMsg" class="trade-msg">El histórico se guarda en este navegador del celular.</div>
+  <div id="tradeMsg" class="trade-msg">El histórico se guarda en este navegador del celular.</div><!-- TRADE_CLOUD_V1_START -->
+<style id="tradeCloudStyles">
+.cloud-box{margin-top:10px;padding:10px;border:1px solid #243244;border-radius:10px;background:#0b1728}
+.cloud-title{font-size:.78rem;font-weight:800;margin-bottom:7px;color:#e2e8f0}.cloud-grid{display:grid;grid-template-columns:2fr 1.3fr auto;gap:7px}
+.cloud-grid input{width:100%;background:#07111f;color:#fff;border:1px solid #334155;border-radius:8px;padding:9px;font-size:.75rem}.cloud-grid button{border:1px solid #1d4ed8;background:#2563eb;color:#fff;border-radius:8px;padding:9px 11px;font-weight:800}
+.cloud-status{margin-top:7px;color:#94a3b8;font-size:.72rem;line-height:1.35}.cloud-ok{color:#4ade80}.cloud-warn{color:#fbbf24}.cloud-bad{color:#f87171}
+@media(max-width:700px){.cloud-grid{grid-template-columns:1fr}.cloud-grid button{width:100%}}
+</style>
+
+<div class="cloud-box" id="tradeCloudBox">
+  <div class="cloud-title">Respaldo y sincronización en Google Drive</div>
+  <div class="cloud-grid">
+    <input id="tradeCloudUrl" type="url" inputmode="url" placeholder="URL de Apps Script que termina en /exec">
+    <input id="tradeCloudKey" type="password" autocomplete="off" placeholder="Clave de la pestaña Config">
+    <button id="tradeCloudConnect" type="button">Conectar Drive</button>
+  </div>
+  <div id="tradeCloudStatus" class="cloud-status">Aún trabaja en modo local. Cuando conectes Drive, la operación guardada en este celular se migrará automáticamente.</div>
+</div>
+
   <div class="trade-wrap">
     <table class="trade-table">
       <thead><tr>
@@ -281,4 +299,87 @@ Promise.all([fetch('data/latest.json',{cache:'no-store'}).then(r=>r.json()),fetc
 })();
 </script>
 <!-- TRADE_HISTORY_V1_END -->
+
+<script id="tradeCloudScript">
+(function(){
+  'use strict';
+  const TRADE_KEY='fondo3_trade_history_v1';
+  const URL_KEY='fondo3_drive_sync_url_v1';
+  const SECRET_KEY='fondo3_drive_sync_key_v1';
+  const SNAP_KEY='fondo3_drive_sync_snapshot_v1';
+  let syncing=false,timer=null;
+  const $=id=>document.getElementById(id);
+  const read=(k,fb)=>{try{const x=JSON.parse(localStorage.getItem(k)||'');return x??fb}catch(e){return fb}};
+  const rows=()=>read(TRADE_KEY,[]);
+  const snapshot=()=>read(SNAP_KEY,null);
+  const stable=x=>JSON.stringify(x,Object.keys(x||{}).sort());
+  const setStatus=(txt,cls='')=>{const el=$('tradeCloudStatus');if(el){el.textContent=txt;el.className='cloud-status '+cls}};
+  const cfg=()=>({url:(localStorage.getItem(URL_KEY)||'').trim(),key:(localStorage.getItem(SECRET_KEY)||'').trim()});
+
+  function jsonp(action,extra={}){
+    const c=cfg();
+    if(!c.url||!c.key)return Promise.reject(new Error('Falta URL o clave de Drive'));
+    return new Promise((resolve,reject)=>{
+      const cb='__f3cb_'+Date.now()+'_'+Math.random().toString(16).slice(2);
+      const s=document.createElement('script');
+      const timeout=setTimeout(()=>done(new Error('Tiempo de espera agotado')),15000);
+      function done(err,data){clearTimeout(timeout);delete window[cb];s.remove();err?reject(err):resolve(data)}
+      window[cb]=data=>{if(!data||data.ok!==true)done(new Error(data&&data.error?data.error:'Respuesta inválida'));else done(null,data)};
+      const u=new URL(c.url);
+      u.searchParams.set('action',action);u.searchParams.set('key',c.key);u.searchParams.set('callback',cb);u.searchParams.set('_',Date.now());
+      Object.entries(extra).forEach(([k,v])=>u.searchParams.set(k,String(v)));
+      s.onerror=()=>done(new Error('No se pudo contactar Apps Script'));
+      s.src=u.toString();document.head.appendChild(s);
+    });
+  }
+
+  function mapById(list){const m=new Map();(Array.isArray(list)?list:[]).forEach(x=>{if(x&&x.id)m.set(String(x.id),x)});return m}
+
+  async function syncNow(initial=false){
+    const c=cfg();if(!c.url||!c.key||syncing)return;
+    syncing=true;setStatus('Sincronizando con Drive…','cloud-warn');
+    try{
+      const current=rows(),old=snapshot();
+      if(old===null){
+        // Primera conexión: migrar todo lo que ya exista en este navegador.
+        for(const r of current){await jsonp('upsert',{payload:JSON.stringify(r)})}
+      }else{
+        const cm=mapById(current),sm=mapById(old);
+        // Cambios locales desde la última copia conocida.
+        for(const [id,r] of cm){const prev=sm.get(id);if(!prev||stable(prev)!==stable(r))await jsonp('upsert',{payload:JSON.stringify(r)})}
+        // Eliminaciones locales.
+        for(const id of sm.keys()){if(!cm.has(id))await jsonp('delete',{id})}
+      }
+      const out=await jsonp('list');
+      const remote=Array.isArray(out.rows)?out.rows:[];
+      localStorage.setItem(TRADE_KEY,JSON.stringify(remote));
+      localStorage.setItem(SNAP_KEY,JSON.stringify(remote));
+      setStatus(`Drive conectado · ${remote.length} ${remote.length===1?'operación':'operaciones'} sincronizadas.`,'cloud-ok');
+      window.dispatchEvent(new Event('fondo3-cloud-synced'));
+      if(!initial)setTimeout(()=>location.reload(),180);
+    }catch(e){setStatus('Drive no sincronizó: '+e.message,'cloud-bad')}
+    finally{syncing=false}
+  }
+
+  async function connect(){
+    const url=($('tradeCloudUrl')?.value||'').trim(),key=($('tradeCloudKey')?.value||'').trim();
+    if(!/^https:\/\/script\.google\.com\/macros\/s\/.+\/exec(?:\?.*)?$/.test(url)){setStatus('Pega la URL /exec de la aplicación web de Apps Script.','cloud-bad');return}
+    if(key.length<12){setStatus('La clave de sincronización no es válida.','cloud-bad');return}
+    localStorage.setItem(URL_KEY,url);localStorage.setItem(SECRET_KEY,key);
+    try{await jsonp('ping');await syncNow(true)}catch(e){setStatus('No se pudo conectar: '+e.message,'cloud-bad')}
+  }
+
+  function boot(){
+    const c=cfg();if($('tradeCloudUrl'))$('tradeCloudUrl').value=c.url;if($('tradeCloudKey'))$('tradeCloudKey').value=c.key;
+    if($('tradeCloudConnect'))$('tradeCloudConnect').onclick=connect;
+    if(c.url&&c.key){setStatus('Drive configurado. Verificando sincronización…','cloud-warn');setTimeout(()=>syncNow(true),900)}
+    // Después de cualquier botón de la bitácora, compara el estado local con Drive.
+    document.addEventListener('click',ev=>{if(ev.target.closest('#tradeHistoryPanel button')&&!ev.target.closest('#tradeCloudConnect'))setTimeout(()=>syncNow(true),350)},true);
+    // También recibe cambios hechos desde la laptop/celular contrario.
+    timer=setInterval(()=>syncNow(true),30000);
+  }
+  boot();
+})();
+</script>
+<!-- TRADE_CLOUD_V1_END -->
 </body></html>
