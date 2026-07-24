@@ -159,7 +159,7 @@ Promise.all([fetch('data/latest.json',{cache:'no-store'}).then(r=>r.json()),fetc
   const KEY='fondo3_trade_history_v1';
   let signals=[],ops=[],live=null;
   const $=id=>document.getElementById(id);
-  const finite=x=>Number.isFinite(Number(x));
+  const finite=x=>x!==null&&x!==undefined&&x!==''&&Number.isFinite(Number(x));
   const fmt=d=>{if(!d)return '—';const p=String(d).slice(0,10).split('-');return p.length===3?`${p[2]}/${p[1]}/${p[0]}`:String(d)};
   const vc=x=>finite(x)?Number(x).toFixed(7):'—';
   const pct=x=>finite(x)?`${Number(x)>=0?'+':''}${(Number(x)*100).toFixed(2)}%`:'—';
@@ -175,8 +175,14 @@ Promise.all([fetch('data/latest.json',{cache:'no-store'}).then(r=>r.json()),fetc
     if(live&&live.market_open&&live.signal_date===date&&finite(live.vc_estimated))return Number(live.vc_estimated);
     const s=signalAt(date);return s&&finite(s.vc_estimado)?Number(s.vc_estimado):null;
   }
-  function entryEffective(requested){return ops.find(x=>x.fecha>=requested)||null}
-  function exitEffective(requested){return [...ops].reverse().find(x=>x.fecha<=requested)||null}
+  function entryEffective(requested){
+    if(live&&live.market_open&&live.signal_date===requested)return {fecha:requested,vc:live.vc_estimated,fuente:'MODELO OLS · INTRADÍA PROVISIONAL'};
+    return ops.find(x=>x.fecha>=requested)||null;
+  }
+  function exitEffective(requested){
+    if(live&&live.market_open&&live.signal_date===requested)return {fecha:requested,vc:live.vc_estimated,fuente:'MODELO OLS · INTRADÍA PROVISIONAL'};
+    return [...ops].reverse().find(x=>x.fecha<=requested)||null;
+  }
 
   function reconcile(rows){
     let changed=false;
@@ -190,8 +196,8 @@ Promise.all([fetch('data/latest.json',{cache:'no-store'}).then(r=>r.json()),fetc
   }
 
   function metrics(r){
-    const re=finite(r.entry_est_vc)&&finite(r.exit_est_vc)?Number(r.exit_est_vc)/Number(r.entry_est_vc)-1:null;
-    const rr=finite(r.entry_sbs_vc)&&finite(r.exit_sbs_vc)?Number(r.exit_sbs_vc)/Number(r.entry_sbs_vc)-1:null;
+    const re=finite(r.entry_est_vc)&&finite(r.exit_est_vc)&&Number(r.entry_est_vc)!==0?Number(r.exit_est_vc)/Number(r.entry_est_vc)-1:null;
+    const rr=finite(r.entry_sbs_vc)&&finite(r.exit_sbs_vc)&&Number(r.entry_sbs_vc)!==0?Number(r.exit_sbs_vc)/Number(r.entry_sbs_vc)-1:null;
     return {re,rr,diff:re!==null&&rr!==null?rr-re:null};
   }
 
@@ -239,12 +245,14 @@ Promise.all([fetch('data/latest.json',{cache:'no-store'}).then(r=>r.json()),fetc
     if(!er||!finite(cap)||cap<=0){$('tradeMsg').textContent='Completa fecha de entrada y capital.';return}
     const ep=entryEffective(er);if(!ep){$('tradeMsg').textContent='No existe una fecha efectiva de entrada en la línea del monitor.';return}
     const entryEst=estimateAt(ep.fecha);
+    if(!finite(entryEst)){$('tradeMsg').textContent='Todavía no existe un VC estimado para la fecha efectiva de entrada.';return}
     let exitDate=null,exitRequested=null,exitEst=null;
     if(mode==='closed'){
       exitRequested=$('exit')?.value;
       if(!exitRequested){$('tradeMsg').textContent='Indica la fecha de salida.';return}
       const xp=exitEffective(exitRequested);if(!xp||xp.fecha<ep.fecha){$('tradeMsg').textContent='La fecha de salida no es válida.';return}
       exitDate=xp.fecha;exitEst=estimateAt(exitDate);
+      if(!finite(exitEst)){$('tradeMsg').textContent='Todavía no existe un VC estimado para la fecha efectiva de salida.';return}
     }
     const rows=loadRows();
     let row=rows.find(x=>!x.exit_date&&x.entry_date===ep.fecha);
