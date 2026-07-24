@@ -170,6 +170,7 @@ js = r'''
       $('tradeSaveBtn').onclick=saveCurrent;render();
     }catch(e){$('tradeMsg').textContent='No se pudo cargar la bitácora: '+e}
   }
+  window.addEventListener('fondo3-cloud-synced',()=>render());
   boot();
 })();
 </script>
@@ -182,4 +183,4 @@ html = html.replace(marker, START + css + panel + marker, 1)
 html = html.replace('</body>', js + END + '\n</body>', 1)
 
 HTML_PATH.write_text(html, encoding="utf-8")
-print("Histórico de entradas/salidas v1 inyectado: localStorage + conciliación SBS + OK/Eliminar + intradía actual.")
+print("Histórico de entradas/salidas v1 inyectado: localStorage + conciliación SBS + OK/Eliminar + intradía actual + refresco tras sincronización Drive.")
