@@ -36,19 +36,20 @@ h1{font-size:1.45rem;margin:5px 0}.sub,.note{color:var(--muted);font-size:.82rem
 <!-- TRADE_HISTORY_V1_START -->
 <style id="tradeHistoryStyles">
 .trade-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;margin-top:10px}
-.trade-table{width:100%;min-width:1180px;border-collapse:separate;border-spacing:0;font-size:.74rem}
+.trade-table{width:100%;min-width:1460px;border-collapse:separate;border-spacing:0;font-size:.74rem}
 .trade-table th,.trade-table td{padding:8px 7px;border-bottom:1px solid #243244;text-align:right;white-space:nowrap}
 .trade-table th{color:#94a3b8;font-weight:750;background:#0b1728;position:sticky;top:0;z-index:1}
 .trade-table th:first-child,.trade-table td:first-child,.trade-table th:nth-child(2),.trade-table td:nth-child(2){text-align:left}
 .trade-actions{display:flex;gap:5px;justify-content:flex-end}.trade-btn{border:1px solid #334155;background:#132238;color:#fff;border-radius:8px;padding:7px 9px;font-weight:750;font-size:.72rem}.trade-btn.ok{background:#166534}.trade-btn.del{background:#7f1d1d}.trade-btn.close{background:#1d4ed8}
-.trade-badge{display:inline-block;padding:3px 7px;border-radius:999px;font-size:.67rem;font-weight:800}.trade-open{background:#78350f;color:#fde68a}.trade-closed{background:#164e63;color:#a5f3fc}.trade-confirmed{background:#14532d;color:#bbf7d0}.trade-pending{color:#fbbf24}.trade-real{color:#4ade80}.trade-diff-pos{color:#4ade80}.trade-diff-neg{color:#f87171}
+.trade-badge{display:inline-block;padding:3px 7px;border-radius:999px;font-size:.67rem;font-weight:800}.trade-open{background:#78350f;color:#fde68a}.trade-closed{background:#164e63;color:#a5f3fc}.trade-confirmed{background:#14532d;color:#bbf7d0}.trade-pending{color:#fbbf24}.trade-real{color:#4ade80}.trade-diff-pos,.trade-pl-pos{color:#4ade80}.trade-diff-neg,.trade-pl-neg{color:#f87171}
 .trade-toolbar{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;margin-top:10px}.trade-save{width:100%;border:1px solid #1d4ed8;background:#2563eb;color:#fff;border-radius:10px;padding:11px;font-weight:800}.trade-msg{color:#94a3b8;font-size:.75rem;line-height:1.4;margin-top:7px}
+.trade-total td{font-weight:850;background:#0b1728;border-top:2px solid #475569;border-bottom:0}.trade-total td:first-child{color:#f8fafc}
 @media(max-width:700px){.trade-toolbar{grid-template-columns:1fr}.trade-table{font-size:.72rem}.trade-table th,.trade-table td{padding:7px 6px}}
 </style>
 
 <section class="panel" id="tradeHistoryPanel">
   <div class="chart-title">Histórico de entradas y salidas</div>
-  <div class="note">Cada vez que presiones <b>OK · Guardar</b>, el VC estimado queda congelado. Cuando la SBS publique el VC oficial de esa fecha, se completa automáticamente y se calcula el retorno real frente al estimado.</div>
+  <div class="note">Cada vez que presiones <b>OK · Guardar</b>, el VC estimado queda congelado. Cuando la SBS publique el VC oficial de esa fecha, se completa automáticamente. La última fila muestra el balance total.</div>
   <div class="trade-toolbar">
     <button class="trade-save" id="tradeSaveBtn" type="button">✓ OK · Guardar operación actual</button>
     <div class="note" id="tradeCount">0 operaciones</div>
@@ -77,9 +78,10 @@ h1{font-size:1.45rem;margin:5px 0}.sub,.note{color:var(--muted);font-size:.82rem
       <thead><tr>
         <th>Estado</th><th>Entrada</th><th>VC est. entrada</th><th>VC SBS entrada</th>
         <th>Salida</th><th>VC est. salida</th><th>VC SBS salida</th>
-        <th>Ret. estimado</th><th>Ret. SBS</th><th>Dif. retorno</th><th>Capital</th><th>Acciones</th>
+        <th>Ret. estimado</th><th>Ret. SBS</th><th>Dif. retorno</th>
+        <th>Gan./Pérd. est.</th><th>Gan./Pérd. SBS</th><th>Capital</th><th>Acciones</th>
       </tr></thead>
-      <tbody id="tradeHistoryBody"><tr><td colspan="12" style="text-align:center;color:#94a3b8">Sin operaciones guardadas.</td></tr></tbody>
+      <tbody id="tradeHistoryBody"><tr><td colspan="14" style="text-align:center;color:#94a3b8">Sin operaciones guardadas.</td></tr></tbody>
     </table>
   </div>
 </section>
@@ -216,15 +218,19 @@ Promise.all([fetch('data/latest.json',{cache:'no-store'}).then(r=>r.json()),fetc
   function metrics(r){
     const re=finite(r.entry_est_vc)&&finite(r.exit_est_vc)&&Number(r.entry_est_vc)!==0?Number(r.exit_est_vc)/Number(r.entry_est_vc)-1:null;
     const rr=finite(r.entry_sbs_vc)&&finite(r.exit_sbs_vc)&&Number(r.entry_sbs_vc)!==0?Number(r.exit_sbs_vc)/Number(r.entry_sbs_vc)-1:null;
-    return {re,rr,diff:re!==null&&rr!==null?rr-re:null};
+    const cap=finite(r.capital)?Number(r.capital):null;
+    const ge=re!==null&&cap!==null?cap*re:null;
+    const gr=rr!==null&&cap!==null?cap*rr:null;
+    return {re,rr,diff:re!==null&&rr!==null?rr-re:null,ge,gr};
   }
 
   function render(){
     const rows=reconcile(loadRows()).sort((a,b)=>String(b.created_at).localeCompare(String(a.created_at)));
     const body=$('tradeHistoryBody');if(!body)return;
     $('tradeCount').textContent=`${rows.length} ${rows.length===1?'operación':'operaciones'}`;
-    if(!rows.length){body.innerHTML='<tr><td colspan="12" style="text-align:center;color:#94a3b8">Sin operaciones guardadas.</td></tr>';return}
-    body.innerHTML=rows.map(r=>{
+    if(!rows.length){body.innerHTML='<tr><td colspan="14" style="text-align:center;color:#94a3b8">Sin operaciones guardadas.</td></tr>';return}
+
+    const rendered=rows.map(r=>{
       const m=metrics(r),closed=!!r.exit_date,confirmed=!!r.confirmed;
       const state=closed?'<span class="trade-badge trade-closed">CERRADA</span>':'<span class="trade-badge trade-open">ABIERTA</span>';
       const ok=confirmed?'<span class="trade-badge trade-confirmed">OK</span>':`<button class="trade-btn ok" data-trade-ok="${r.id}">✓ OK</button>`;
@@ -232,13 +238,36 @@ Promise.all([fetch('data/latest.json',{cache:'no-store'}).then(r=>r.json()),fetc
       const sbsE=finite(r.entry_sbs_vc)?`<span class="trade-real">${vc(r.entry_sbs_vc)}</span>`:'<span class="trade-pending">Pendiente</span>';
       const sbsX=closed?(finite(r.exit_sbs_vc)?`<span class="trade-real">${vc(r.exit_sbs_vc)}</span>`:'<span class="trade-pending">Pendiente</span>'):'—';
       const dc=m.diff===null?'':(m.diff>=0?'trade-diff-pos':'trade-diff-neg');
+      const gec=m.ge===null?'':(m.ge>=0?'trade-pl-pos':'trade-pl-neg');
+      const grc=m.gr===null?'':(m.gr>=0?'trade-pl-pos':'trade-pl-neg');
       return `<tr>
         <td>${state}${confirmed?' '+ok:''}</td><td>${fmt(r.entry_date)}</td><td>${vc(r.entry_est_vc)}</td><td>${sbsE}</td>
         <td>${closed?fmt(r.exit_date):'—'}</td><td>${closed?vc(r.exit_est_vc):'—'}</td><td>${sbsX}</td>
-        <td>${pct(m.re)}</td><td>${pct(m.rr)}</td><td class="${dc}">${pp(m.diff)}</td><td>${money(r.capital)}</td>
+        <td>${pct(m.re)}</td><td>${pct(m.rr)}</td><td class="${dc}">${pp(m.diff)}</td>
+        <td class="${gec}">${money(m.ge)}</td><td class="${grc}">${money(m.gr)}</td><td>${money(r.capital)}</td>
         <td><div class="trade-actions">${!confirmed?ok:''}${close}<button class="trade-btn del" data-trade-del="${r.id}">Eliminar</button></div></td>
       </tr>`
     }).join('');
+
+    const ms=rows.map(r=>({r,m:metrics(r)}));
+    const totalCapital=rows.reduce((s,r)=>s+(finite(r.capital)?Number(r.capital):0),0);
+    const estBase=ms.reduce((s,x)=>s+(x.m.ge!==null&&finite(x.r.capital)?Number(x.r.capital):0),0);
+    const realBase=ms.reduce((s,x)=>s+(x.m.gr!==null&&finite(x.r.capital)?Number(x.r.capital):0),0);
+    const totalGe=ms.reduce((s,x)=>s+(x.m.ge!==null?x.m.ge:0),0);
+    const totalGr=ms.reduce((s,x)=>s+(x.m.gr!==null?x.m.gr:0),0);
+    const totalRe=estBase>0?totalGe/estBase:null;
+    const totalRr=realBase>0?totalGr/realBase:null;
+    const totalDiff=totalRe!==null&&totalRr!==null?totalRr-totalRe:null;
+    const gec=totalGe>=0?'trade-pl-pos':'trade-pl-neg';
+    const grc=realBase>0?(totalGr>=0?'trade-pl-pos':'trade-pl-neg'):'';
+    const dc=totalDiff===null?'':(totalDiff>=0?'trade-diff-pos':'trade-diff-neg');
+    const totalRow=`<tr class="trade-total">
+      <td>TOTAL</td><td>${rows.length} ops.</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td>
+      <td>${pct(totalRe)}</td><td>${pct(totalRr)}</td><td class="${dc}">${pp(totalDiff)}</td>
+      <td class="${gec}">${money(totalGe)}</td><td class="${grc}">${realBase>0?money(totalGr):'Pendiente'}</td><td>${money(totalCapital)}</td><td>—</td>
+    </tr>`;
+
+    body.innerHTML=rendered+totalRow;
     body.querySelectorAll('[data-trade-ok]').forEach(b=>b.onclick=()=>confirmRow(b.dataset.tradeOk));
     body.querySelectorAll('[data-trade-del]').forEach(b=>b.onclick=()=>deleteRow(b.dataset.tradeDel));
     body.querySelectorAll('[data-trade-close]').forEach(b=>b.onclick=()=>prepareClose(b.dataset.tradeClose));
