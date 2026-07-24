@@ -39,6 +39,7 @@ js = r'''
   const URL_KEY='fondo3_drive_sync_url_v1';
   const SECRET_KEY='fondo3_drive_sync_key_v1';
   const SNAP_KEY='fondo3_drive_sync_snapshot_v1';
+  const DEFAULT_URL='https://script.google.com/macros/s/AKfycbxY9JqIeTnweKaEXAOs7hQ6KftlPgVsGOFPwOp7hqL5gJ47OuuHlAJBksTGdOQ2yc_Y0Q/exec';
   let syncing=false,timer=null;
   const $=id=>document.getElementById(id);
   const read=(k,fb)=>{try{const x=JSON.parse(localStorage.getItem(k)||'');return x??fb}catch(e){return fb}};
@@ -46,7 +47,7 @@ js = r'''
   const snapshot=()=>read(SNAP_KEY,null);
   const stable=x=>JSON.stringify(x,Object.keys(x||{}).sort());
   const setStatus=(txt,cls='')=>{const el=$('tradeCloudStatus');if(el){el.textContent=txt;el.className='cloud-status '+cls}};
-  const cfg=()=>({url:(localStorage.getItem(URL_KEY)||'').trim(),key:(localStorage.getItem(SECRET_KEY)||'').trim()});
+  const cfg=()=>({url:(localStorage.getItem(URL_KEY)||DEFAULT_URL).trim(),key:(localStorage.getItem(SECRET_KEY)||'').trim()});
 
   function jsonp(action,extra={}){
     const c=cfg();
@@ -73,13 +74,10 @@ js = r'''
     try{
       const current=rows(),old=snapshot();
       if(old===null){
-        // Primera conexión: migrar todo lo que ya exista en este navegador.
         for(const r of current){await jsonp('upsert',{payload:JSON.stringify(r)})}
       }else{
         const cm=mapById(current),sm=mapById(old);
-        // Cambios locales desde la última copia conocida.
         for(const [id,r] of cm){const prev=sm.get(id);if(!prev||stable(prev)!==stable(r))await jsonp('upsert',{payload:JSON.stringify(r)})}
-        // Eliminaciones locales.
         for(const id of sm.keys()){if(!cm.has(id))await jsonp('delete',{id})}
       }
       const out=await jsonp('list');
@@ -94,20 +92,19 @@ js = r'''
   }
 
   async function connect(){
-    const url=($('tradeCloudUrl')?.value||'').trim(),key=($('tradeCloudKey')?.value||'').trim();
-    if(!/^https:\/\/script\.google\.com\/macros\/s\/.+\/exec(?:\?.*)?$/.test(url)){setStatus('Pega la URL /exec de la aplicación web de Apps Script.','cloud-bad');return}
+    const url=($('tradeCloudUrl')?.value||DEFAULT_URL).trim(),key=($('tradeCloudKey')?.value||'').trim();
+    if(!/^https:\/\/script\.google\.com\/macros\/s\/.+\/exec(?:\?.*)?$/.test(url)){setStatus('La URL /exec de Apps Script no es válida.','cloud-bad');return}
     if(key.length<12){setStatus('La clave de sincronización no es válida.','cloud-bad');return}
     localStorage.setItem(URL_KEY,url);localStorage.setItem(SECRET_KEY,key);
     try{await jsonp('ping');await syncNow(true)}catch(e){setStatus('No se pudo conectar: '+e.message,'cloud-bad')}
   }
 
   function boot(){
+    if(!localStorage.getItem(URL_KEY))localStorage.setItem(URL_KEY,DEFAULT_URL);
     const c=cfg();if($('tradeCloudUrl'))$('tradeCloudUrl').value=c.url;if($('tradeCloudKey'))$('tradeCloudKey').value=c.key;
     if($('tradeCloudConnect'))$('tradeCloudConnect').onclick=connect;
     if(c.url&&c.key){setStatus('Drive configurado. Verificando sincronización…','cloud-warn');setTimeout(()=>syncNow(true),900)}
-    // Después de cualquier botón de la bitácora, compara el estado local con Drive.
     document.addEventListener('click',ev=>{if(ev.target.closest('#tradeHistoryPanel button')&&!ev.target.closest('#tradeCloudConnect'))setTimeout(()=>syncNow(true),350)},true);
-    // También recibe cambios hechos desde la laptop/celular contrario.
     timer=setInterval(()=>syncNow(true),30000);
   }
   boot();
@@ -124,4 +121,4 @@ html = html[:end_div+6] + START + css + box + html[end_div+6:]
 html = html.replace('</body>', js + END + '\n</body>', 1)
 
 HTML_PATH.write_text(html, encoding="utf-8")
-print("Sincronización Drive v1 inyectada: JSONP seguro por clave + migración local + sincronización bidireccional.")
+print("Sincronización Drive v1 inyectada: URL preconfigurada + JSONP por clave + migración local + sincronización bidireccional.")
