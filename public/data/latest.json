@@ -1,5 +1,5 @@
 {
-  "generated_at_lima": "2026-07-24T02:24:49.062663-05:00",
+  "generated_at_lima": "2026-07-24T05:04:10.690257-05:00",
   "model": "OLS rolling 90",
   "window": 90,
   "threshold": 0.001,
@@ -11,17 +11,17 @@
   "latest_market_date": "2026-07-23",
   "latest_estimate_date": "2026-07-23",
   "latest_estimated_vc": 69.22076816607421,
-  "latest_return_estimated": -0.017224847420023327,
+  "latest_return_estimated": -0.017224847420023323,
   "signal": "BAJA",
   "estimate_type": "CIERRE DIARIO · MODELO OLS · PARIDAD NOTEBOOK",
   "coefficients": {
-    "intercept": 0.0002869058789894398,
-    "ret_SPY": 0.3987655732662051,
-    "ret_NEM": 0.12705330437963164,
-    "ret_FCX": 0.07630213240514988,
+    "intercept": 0.0002869058789894416,
+    "ret_SPY": 0.398765573266204,
+    "ret_NEM": 0.12705330437963192,
+    "ret_FCX": 0.07630213240515006,
     "ret_EPU": 0.3344037081094975,
-    "ret_MCHI": 0.012836608144954513,
-    "ret_USD_PEN": 0.2271908001573732
+    "ret_MCHI": 0.012836608144954628,
+    "ret_USD_PEN": 0.22719080015737322
   },
   "parity_rule": "MISMO NOTEBOOK: LinearRegression OLS; 90 observaciones; mismo día; BCRP exclusivo; si falta USD/PEN en fecha pendiente se usa 0 % provisional; VC encadenado",
   "parity_verified": true,
