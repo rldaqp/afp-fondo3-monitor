@@ -55,11 +55,11 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
+          # Arranque manual reforzado 24/07: este mismo workflow sigue siendo independiente del OLS.
           for i in $(seq 1 48); do
             T0=$(date +%s)
             echo "Snapshot $i/48"
 
-            # Partir siempre de la versión remota más reciente para convivir con el workflow del modelo.
             git fetch origin migracion-github-actions
             git reset --hard origin/migracion-github-actions
 
@@ -83,18 +83,14 @@ jobs:
             git add public/data/live_market.json
             if ! git diff --cached --quiet; then
               git commit -m "Actualizar mercado intradía Fondo 3"
-              # Puede coincidir con una actualización horaria del modelo; reintentar sin perder el snapshot.
               if ! git push origin HEAD:migracion-github-actions; then
                 git pull --rebase origin migracion-github-actions
                 git push origin HEAD:migracion-github-actions
               fi
 
-              # Los commits creados con GITHUB_TOKEN no disparan automáticamente otros workflows.
-              # Por eso se ordena explícitamente la publicación de GitHub Pages en cada snapshot.
               gh workflow run deploy-pages-ui.yml --ref migracion-github-actions
             fi
 
-            # Cadencia aproximada de 300 s medida desde el inicio de cada ciclo.
             ELAPSED=$(( $(date +%s) - T0 ))
             WAIT=$(( 300 - ELAPSED ))
             if [ "$WAIT" -gt 0 ]; then
