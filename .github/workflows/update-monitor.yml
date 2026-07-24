@@ -15,6 +15,7 @@ on:
       - "scripts/build_operation_series.py"
       - "scripts/postprocess_mobile_ui_v3.py"
       - "scripts/postprocess_mobile_ui_v4.py"
+      - "scripts/postprocess_trade_history.py"
       - "data/rolling90/sbs_reference_corrections.csv"
       - "data/rolling90/notebook_training_reference.csv"
       - "requirements.txt"
@@ -70,6 +71,7 @@ jobs:
           sed -i "s/calc.onclick=calc;/document.getElementById('calc').onclick=calc;/" public/index.html
           python scripts/postprocess_mobile_ui_v3.py
           python scripts/postprocess_mobile_ui_v4.py
+          python scripts/postprocess_trade_history.py
 
       - name: Validar solamente modelo y visor estructural
         run: |
@@ -97,6 +99,10 @@ jobs:
           grep -q "calcNotebook" public/index.html
           grep -q "showlegend:false" public/index.html
           grep -q "USD/PEN del MODELO: BCRP" public/index.html
+          grep -q "Histórico de entradas y salidas" public/index.html
+          grep -q "tradeHistoryBody" public/index.html
+          grep -q "OK · Guardar operación actual" public/index.html
+          grep -q "fondo3_trade_history_v1" public/index.html
           python - <<'PY'
           import json
           from pathlib import Path
