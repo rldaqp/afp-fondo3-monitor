@@ -1,5 +1,5 @@
 {
-  "generated_at_lima": "2026-07-24T10:43:16.202819-05:00",
+  "generated_at_lima": "2026-07-24T11:21:54.813695-05:00",
   "model": "OLS rolling 90",
   "window": 90,
   "threshold": 0.001,
@@ -31,7 +31,7 @@
     "market": "Yahoo Finance para SPY, NEM, FCX, EPU y MCHI",
     "fx": "BCRP PD04646PD; PEN=X nunca sustituye USD/PEN dentro del modelo"
   },
-  "market_note": "Yahoo Finance actualizado; respaldo guardado solo donde Yahoo no trae valor; BCRP exclusivo para USD/PEN hasta 2026-07-21",
+  "market_note": "Yahoo Finance actualizado; respaldo guardado solo donde Yahoo no trae valor; BCRP exclusivo para USD/PEN hasta 2026-07-22",
   "vc_mode_rule": "INTRADÍA PROVISIONAL 09:30-16:10 NY; fuera de ese intervalo CIERRE DIARIO",
   "parity_reference": "Ventana canónica exacta del notebook al 20/07/2026; desde la siguiente observación oficial el rolling 90 continúa normalmente",
   "live_engine": "INDEPENDIENTE: update_live_market_only.py"
