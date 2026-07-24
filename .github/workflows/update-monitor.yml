@@ -17,6 +17,7 @@ on:
       - "scripts/postprocess_mobile_ui_v4.py"
       - "scripts/postprocess_trade_history.py"
       - "scripts/postprocess_trade_cloud_sync.py"
+      - "scripts/postprocess_trade_notebook_basis.py"
       - "data/rolling90/sbs_reference_corrections.csv"
       - "data/rolling90/notebook_training_reference.csv"
       - "requirements.txt"
@@ -74,6 +75,7 @@ jobs:
           python scripts/postprocess_mobile_ui_v4.py
           python scripts/postprocess_trade_history.py
           python scripts/postprocess_trade_cloud_sync.py
+          python scripts/postprocess_trade_notebook_basis.py
 
       - name: Validar solamente modelo y visor estructural
         run: |
@@ -108,6 +110,7 @@ jobs:
           grep -q "Respaldo y sincronización en Google Drive" public/index.html
           grep -q "tradeCloudConnect" public/index.html
           grep -q "fondo3_drive_sync_url_v1" public/index.html
+          grep -q "Rentabilidad de la OPERACION" public/index.html
           python - <<'PY'
           import json
           from pathlib import Path
