@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import importlib.util
+import json
 from pathlib import Path
 
 import numpy as np
@@ -124,3 +125,8 @@ v5.parity._write_outputs = _write_outputs_hybrid
 
 if __name__ == "__main__":
     v5.main()
+    # v5 conserva por compatibilidad el nombre del motor live anterior; actualizamos
+    # únicamente la etiqueta de auditoría después de que finaliza su validación interna.
+    latest = json.loads(v5.LATEST_PATH.read_text(encoding="utf-8"))
+    latest["live_engine"] = "INDEPENDIENTE: update_live_market_hybrid.py"
+    v5.LATEST_PATH.write_text(json.dumps(latest, ensure_ascii=False, indent=2), encoding="utf-8")
