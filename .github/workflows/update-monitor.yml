@@ -12,9 +12,11 @@ on:
       - "scripts/apply_sbs_reference_corrections.py"
       - "scripts/finalize_notebook_parity_v4.py"
       - "scripts/finalize_notebook_parity_v5.py"
+      - "scripts/finalize_fx_hybrid.py"
       - "scripts/build_operation_series.py"
       - "scripts/postprocess_mobile_ui_v3.py"
       - "scripts/postprocess_mobile_ui_v4.py"
+      - "scripts/postprocess_fx_hybrid_ui.py"
       - "scripts/postprocess_trade_history.py"
       - "scripts/postprocess_trade_cloud_sync.py"
       - "scripts/postprocess_trade_notebook_basis.py"
@@ -66,13 +68,15 @@ jobs:
           # heredado pueda producir se descarta; el mercado intradía tiene workflow propio.
           python scripts/run_rolling90_live_v2.py
           python scripts/apply_sbs_reference_corrections.py
-          python scripts/finalize_notebook_parity_v5.py
+          # Histórico/entrenamiento conserva BCRP; predicción usa PEN=X provisional si BCRP se rezaga.
+          python scripts/finalize_fx_hybrid.py
           # Mercado ahora es propiedad exclusiva de update-live-market.yml.
           git restore --source=HEAD -- public/data/live_market.json || true
           python scripts/build_operation_series.py
           sed -i "s/calc.onclick=calc;/document.getElementById('calc').onclick=calc;/" public/index.html
           python scripts/postprocess_mobile_ui_v3.py
           python scripts/postprocess_mobile_ui_v4.py
+          python scripts/postprocess_fx_hybrid_ui.py
           python scripts/postprocess_trade_history.py
           python scripts/postprocess_trade_cloud_sync.py
           python scripts/postprocess_trade_notebook_basis.py
@@ -102,7 +106,8 @@ jobs:
           grep -q "Retorno estimado del VC" public/index.html
           grep -q "calcNotebook" public/index.html
           grep -q "showlegend:false" public/index.html
-          grep -q "USD/PEN del MODELO: BCRP" public/index.html
+          grep -q "USD/PEN: BCRP para histórico y entrenamiento" public/index.html
+          grep -q "Yahoo PEN=X de forma provisional" public/index.html
           grep -q "Histórico de entradas y salidas" public/index.html
           grep -q "tradeHistoryBody" public/index.html
           grep -q "OK · Guardar operación actual" public/index.html
@@ -119,6 +124,7 @@ jobs:
           latest = json.loads(Path("public/data/latest.json").read_text(encoding="utf-8"))
           signals = json.loads(Path("public/data/signals.json").read_text(encoding="utf-8"))
           operation = json.loads(Path("public/data/operation_series.json").read_text(encoding="utf-8"))
+          pending = pd.read_csv("data/rolling90/pending_predictions.csv")
 
           assert latest["model"] == "OLS rolling 90"
           assert int(latest["window"]) == 90
@@ -129,9 +135,10 @@ jobs:
           assert float(latest["latest_sbs_vc"]) > 0
           assert float(latest["latest_estimated_vc"]) > 0
           assert latest.get("parity_verified") is True
-          assert "BCRP exclusivo" in latest["parity_rule"]
-          assert "0 % provisional" in latest["parity_rule"]
-          assert "PEN=X nunca sustituye" in latest["sources"]["fx"]
+          assert "BCRP exclusivo para histórico/entrenamiento" in latest["parity_rule"]
+          assert "Yahoo PEN=X provisional" in latest["parity_rule"]
+          assert "Yahoo PEN=X" in latest["sources"]["fx"]
+          assert latest.get("latest_fx_source")
           assert "Ventana canónica exacta" in latest.get("parity_reference", "")
           assert latest.get("live_engine") == "INDEPENDIENTE: update_live_market_only.py"
           assert len(signals) > 1
@@ -139,20 +146,13 @@ jobs:
           assert all(x.get("senal") in {"SUBE", "NEUTRO", "BAJA"} for x in signals if x.get("ret_estimado") is not None)
           assert all(float(x["vc"]) > 0 for x in operation)
 
-          if latest.get("latest_sbs_date") == "2026-07-20":
-              assert latest["training_start"] == "2026-02-27", latest
-              assert latest["training_end"] == "2026-07-20", latest
-              pending = pd.read_csv("data/rolling90/pending_predictions.csv")
-              pending["fecha"] = pd.to_datetime(pending["fecha"]).dt.strftime("%Y-%m-%d")
-              expected = {
-                  "2026-07-21": 69.65879107720521,
-                  "2026-07-22": 70.43398277251534,
-              }
-              for fecha, vc_ref in expected.items():
-                  row = pending.loc[pending["fecha"] == fecha]
-                  assert not row.empty, f"Falta predicción {fecha}"
-                  vc = float(row.iloc[-1]["valor_cuota_estimado"])
-                  assert abs(vc - vc_ref) < 1e-9, (fecha, vc, vc_ref)
+          if not pending.empty:
+              assert "usd_pen_fuente" in pending.columns
+              assert "usd_pen_provisional" in pending.columns
+              yahoo = pending[pending["usd_pen_fuente"].astype(str).str.startswith("YAHOO")]
+              if not yahoo.empty:
+                  assert yahoo["usd_pen_provisional"].astype(str).str.lower().eq("true").all()
+                  assert pd.to_numeric(yahoo["ret_USD_PEN"], errors="coerce").notna().all()
 
           print(json.dumps(latest, ensure_ascii=False, indent=2))
           print(f"Puntos de señal publicados: {len(signals)}")
