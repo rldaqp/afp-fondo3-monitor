@@ -1,5 +1,5 @@
 {
-  "generated_at_lima": "2026-07-27T17:40:36.080334-05:00",
+  "generated_at_lima": "2026-07-27T17:41:33.630385-05:00",
   "mode": "CIERRE DIARIO",
   "market_open": false,
   "signal_date": "2026-07-27",
@@ -70,11 +70,13 @@
       "precio_actual": 3.402,
       "retorno": 0.0,
       "retorno_modelo": 0.0,
-      "estado": "BCRP REZAGADO · MODELO USA 0 %",
+      "estado": "USD/PEN SIN DATO · MODELO USA 0 %",
       "usado_modelo": true
     }
   ],
   "action": "CIERRE",
   "engine": "LIVE INDEPENDIENTE",
-  "fx_rule": "Modelo: BCRP; si falta la fecha, USD/PEN = 0 % provisional. PEN=X es solo referencia visual."
+  "fx_rule": "Histórico/entrenamiento: BCRP. Predicción: BCRP si existe; si está rezagado, Yahoo PEN=X provisional; 0 % solo si ambas fuentes faltan.",
+  "fx_source": "SIN DATO · 0 %",
+  "fx_provisional": true
 }
