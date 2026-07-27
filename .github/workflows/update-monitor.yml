@@ -140,7 +140,7 @@ jobs:
           assert "Yahoo PEN=X" in latest["sources"]["fx"]
           assert latest.get("latest_fx_source")
           assert "Ventana canónica exacta" in latest.get("parity_reference", "")
-          assert latest.get("live_engine") == "INDEPENDIENTE: update_live_market_only.py"
+          assert latest.get("live_engine") == "INDEPENDIENTE: update_live_market_hybrid.py"
           assert len(signals) > 1
           assert len(operation) > 1
           assert all(x.get("senal") in {"SUBE", "NEUTRO", "BAJA"} for x in signals if x.get("ret_estimado") is not None)
