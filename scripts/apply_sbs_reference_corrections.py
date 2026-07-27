@@ -45,9 +45,16 @@ def main() -> None:
         .reset_index(drop=True)
     )
 
-    # Controles de regresión contra el HTML del notebook del 22/07/2026.
+    # Controles explícitos de las fechas recuperadas y de puntos posteriores.
     expected = {
+        pd.Timestamp("2026-07-01"): 70.9226332,
+        pd.Timestamp("2026-07-02"): 70.3358541,
+        pd.Timestamp("2026-07-03"): 70.3944744,
+        pd.Timestamp("2026-07-06"): 71.3369613,
         pd.Timestamp("2026-07-07"): 69.9352638,
+        pd.Timestamp("2026-07-08"): 69.8131004,
+        pd.Timestamp("2026-07-09"): 70.9792394,
+        pd.Timestamp("2026-07-10"): 71.0624925,
         pd.Timestamp("2026-07-15"): 69.9080824,
         pd.Timestamp("2026-07-20"): 68.0638500,
     }
@@ -64,7 +71,7 @@ def main() -> None:
     out = corrected.copy()
     out["fecha"] = out["fecha"].dt.strftime("%Y-%m-%d")
     out.to_csv(SBS_PATH, index=False, encoding="utf-8")
-    print("SBS corregida y validada contra referencia del notebook.")
+    print("SBS corregida y validada con controles de continuidad de julio.")
 
 
 if __name__ == "__main__":
