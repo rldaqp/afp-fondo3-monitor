@@ -24,12 +24,38 @@ h1{font-size:1.45rem;margin:5px 0}.sub,.note{color:var(--muted);font-size:.82rem
 .pos{color:#4ade80}.neg{color:#f87171}.zero{color:#fbbf24}
 @media(max-width:700px){.wrap{padding:10px}.card,.panel{padding:11px}.value{font-size:1.2rem}#ret{font-size:1.02rem}.chart{height:300px}.chart-controls button{padding:9px 5px;font-size:.79rem}.market-grid{grid-template-columns:repeat(2,1fr)}.market-head{display:block}.market-time{text-align:left;margin-top:5px}}
 </style>
+
+<!-- MODEL_INSIGHTS_UI_V1 -->
+<style id="modelInsightsStyles">
+.insight-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:9px}
+.insight-title{font-size:.96rem;font-weight:850}.insight-badge{padding:4px 8px;border-radius:999px;font-size:.7rem;font-weight:850;border:1px solid #334155}
+.insight-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.insight-card{background:#0b1728;border:1px solid #243244;border-radius:11px;padding:10px;min-width:0}.insight-label{font-size:.7rem;color:#94a3b8}.insight-value{font-size:1.02rem;font-weight:850;margin-top:4px;overflow-wrap:anywhere}.insight-sub{font-size:.68rem;color:#94a3b8;margin-top:3px;line-height:1.3}
+.insight-details{margin-top:10px;border-top:1px solid #243244;padding-top:8px}.insight-details summary{cursor:pointer;font-size:.78rem;font-weight:800;color:#cbd5e1;padding:5px 0}.factor-list{display:grid;gap:7px;margin-top:9px}.factor-row{display:grid;grid-template-columns:64px 1fr 58px;gap:7px;align-items:center;font-size:.72rem}.factor-track{height:7px;background:#172338;border-radius:999px;overflow:hidden}.factor-fill{height:100%;border-radius:999px;background:#64748b}.factor-fill.posbar{background:#22c55e}.factor-fill.negbar{background:#ef4444}.factor-value{text-align:right;font-variant-numeric:tabular-nums}.perf-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:7px;margin-top:10px}.perf-item{background:#0b1728;border:1px solid #243244;border-radius:9px;padding:8px}.perf-item b{display:block;font-size:.82rem}.perf-item span{font-size:.68rem;color:#94a3b8}.quality-ok{color:#4ade80}.quality-warn{color:#fbbf24}.quality-bad{color:#f87171}
+@media(max-width:700px){.insight-grid{grid-template-columns:repeat(2,1fr)}.insight-card{padding:9px}.insight-value{font-size:1.05rem}.factor-row{grid-template-columns:58px 1fr 55px}}
+@media(max-width:390px){.insight-grid{grid-template-columns:1fr 1fr;gap:6px}.insight-label{font-size:.66rem}.insight-sub{font-size:.64rem}.factor-row{grid-template-columns:54px 1fr 51px;gap:5px}}
+</style>
 </head><body><main class="wrap">
 <h1>Profuturo Fondo 3</h1><div class="sub">GitHub Actions · OLS Rolling 90 · umbral ±0.10% · datos independientes del notebook</div><div id="error"></div>
 <section class="grid"><div class="card"><div class="label">Último VC SBS</div><div class="value" id="sbsVc">—</div><div class="sub" id="sbsDate">—</div></div>
 <div class="card"><div class="label">VC más reciente</div><div class="value" id="estVc">—</div><div class="sub" id="estDate">—</div></div>
 <div class="card"><div class="label">Señal</div><div class="value signal" id="signal">—</div><div class="sub" id="ret">—</div></div>
 <div class="card"><div class="label">Ventana vigente</div><div class="value">90</div><div class="sub" id="window">—</div></div></section><div id="monitorHelp" class="monitor-help"><b>Retorno estimado del VC:</b> variación diaria estimada por el OLS. Cada punto se dibuja desde el eje 0. Durante mercado abierto es provisional; al cierre usa cierres diarios.</div>
+
+<section class="panel" id="modelInsightsPanel">
+  <div class="insight-head"><div class="insight-title">Confianza y calidad del modelo</div><div id="qualityBadge" class="insight-badge">Cargando…</div></div>
+  <div class="insight-grid">
+    <div class="insight-card"><div class="insight-label">Acierto de esta señal</div><div class="insight-value" id="confidenceValue">—</div><div class="insight-sub" id="confidenceSub">Histórico reciente</div></div>
+    <div class="insight-card"><div class="insight-label">Banda histórica 80%</div><div class="insight-value" id="bandValue">—</div><div class="insight-sub">Error empírico del VC</div></div>
+    <div class="insight-card"><div class="insight-label">Calidad de datos</div><div class="insight-value" id="qualityValue">—</div><div class="insight-sub" id="qualitySub">Ventana y fuentes</div></div>
+    <div class="insight-card"><div class="insight-label">OLS vs sin cambio</div><div class="insight-value" id="benchmarkValue">—</div><div class="insight-sub">Comparación por MAE</div></div>
+  </div>
+  <details class="insight-details"><summary>Ver qué mueve la señal y rendimiento</summary>
+    <div class="note">Aporte aproximado de cada factor al retorno estimado: coeficiente × retorno observado.</div>
+    <div id="factorList" class="factor-list"></div>
+    <div id="perfGrid" class="perf-grid"></div>
+    <div id="qualityNotes" class="note" style="margin-top:9px"></div>
+  </details>
+</section>
 <section class="panel"><div class="tabs"><button class="active" data-mode="monitor">Solo monitorear</button><button data-mode="inside">Sigo dentro</button><button data-mode="closed">Ya salí</button></div>
 <div id="operation" class="hidden"><div class="inputs"><div><label>Fecha de entrada</label><input type="date" id="entry"></div><div><label>Capital invertido (S/)</label><input type="number" id="capital" value="25000" min="1" step="100"></div><div id="exitBox" class="hidden"><label>Fecha de salida</label><input type="date" id="exit"></div></div>
 <button class="primary" id="calc" style="width:100%;margin-top:10px">Calcular</button><div class="metricrow"><div class="card"><div class="label">Capital</div><div class="value" id="mCapital">—</div></div><div class="card"><div class="label">Valor actual/final</div><div class="value" id="mFinal">—</div></div><div class="card"><div class="label">Ganancia/pérdida</div><div class="value" id="mGain">—</div></div><div class="card"><div class="label">Rentabilidad</div><div class="value" id="mRent">—</div></div></div><div class="note" id="detail"></div><div id="opChart" class="chart"></div></div></section>
@@ -101,7 +127,7 @@ Promise.all([fetch('data/latest.json',{cache:'no-store'}).then(r=>r.json()),fetc
 </script></main>
 <script>
 (function(){
-  let richSignals=[],allSeries=[],operationSeries=[],latestData=null,liveData=null,vcDays=90,retDays=90;
+  let richSignals=[],allSeries=[],operationSeries=[],latestData=null,liveData=null,modelInsights=null,vcDays=90,retDays=90;
   const $=id=>document.getElementById(id),money=x=>new Intl.NumberFormat('es-PE',{style:'currency',currency:'PEN'}).format(x),pct=x=>(Number(x)*100).toFixed(2)+'%';
   const fmt=x=>{if(!x)return'—';let[y,m,d]=String(x).slice(0,10).split('-');return d+'/'+m+'/'+y};
   const signalColor=s=>s==='SUBE'?'#4ade80':s==='BAJA'?'#f87171':'#fbbf24',cls=x=>Number(x)>0?'pos':Number(x)<0?'neg':'zero';
@@ -111,10 +137,19 @@ Promise.all([fetch('data/latest.json',{cache:'no-store'}).then(r=>r.json()),fetc
 
   function renderVC(){
     let off=cutoff(allSeries.filter(x=>x.fuente==='SBS OFICIAL'),vcDays),est=cutoff(richSignals.filter(x=>x.vc_estimado!=null),vcDays);
-    Plotly.react('vcChart',[
+    const q=modelInsights&&modelInsights.uncertainty?Number(modelInsights.uncertainty.relative_q80||0):0;
+    let pendingStep=0,lower=[],upper=[];
+    est.forEach(x=>{let scale=1;if(x.tipo==='PENDIENTE'){pendingStep+=1;scale=Math.sqrt(pendingStep)}const v=Number(x.vc_estimado);lower.push(v*(1-q*scale));upper.push(v*(1+q*scale))});
+    const traces=[];
+    if(q>0&&est.length){traces.push(
+      {x:est.map(x=>x.fecha),y:lower,mode:'lines',line:{width:0},hoverinfo:'skip',showlegend:false},
+      {x:est.map(x=>x.fecha),y:upper,mode:'lines',line:{width:0},fill:'tonexty',fillcolor:'rgba(96,165,250,.12)',name:'Banda histórica 80%',hoverinfo:'skip'}
+    )}
+    traces.push(
       {x:off.map(x=>x.fecha),y:off.map(x=>x.vc),mode:'lines+markers',name:'VC SBS real'},
       {x:est.map(x=>x.fecha),y:est.map(x=>x.vc_estimado),mode:'lines+markers',name:'VC estimado OLS',customdata:est.map(x=>x.senal),hovertemplate:'<b>%{x}</b><br>VC estimado: %{y:.7f}<br>Señal: %{customdata}<extra></extra>'}
-    ],{title:vcDays==='all'?'Todo el historial':`Últimos ${vcDays} días`,paper_bgcolor:'#0f1b2d',plot_bgcolor:'#0f1b2d',font:{color:'#fff',size:11},margin:{l:48,r:18,t:45,b:45},legend:{orientation:'h'}},{responsive:true});active('.vc-controls',vcDays)
+    );
+    Plotly.react('vcChart',traces,{title:vcDays==='all'?'Todo el historial':`Últimos ${vcDays} días`,paper_bgcolor:'#0f1b2d',plot_bgcolor:'#0f1b2d',font:{color:'#fff',size:11},margin:{l:48,r:18,t:45,b:45},legend:{orientation:'h',font:{size:10}}},{responsive:true});active('.vc-controls',vcDays)
   }
 
   function renderSignals(){
@@ -129,13 +164,50 @@ Promise.all([fetch('data/latest.json',{cache:'no-store'}).then(r=>r.json()),fetc
 
   function renderTop(){if(!latestData)return;const live=liveData&&liveData.market_open&&String(liveData.mode).startsWith('INTRADÍA')&&Number.isFinite(Number(liveData.vc_estimated)),vc=live?Number(liveData.vc_estimated):Number(latestData.latest_estimated_vc),r=live?Number(liveData.return_estimated):Number(latestData.latest_return_estimated),s=live?liveData.signal:latestData.signal,d=live?liveData.signal_date:latestData.latest_estimate_date;$('estVc').textContent=vc.toFixed(7);$('estDate').textContent=fmt(d)+' · '+(live?'INTRADÍA PROVISIONAL':'CIERRE DIARIO');$('signal').textContent=s;$('signal').className='value signal '+(s==='SUBE'?'up':s==='BAJA'?'down':'flat');$('ret').textContent=`Retorno estimado VC (día): ${(r*100).toFixed(3)}%`;const h=$('monitorHelp');if(h)h.innerHTML=`<b>${live?'INTRADÍA PROVISIONAL':'CIERRE DIARIO'} · Retorno estimado del VC: ${(r*100).toFixed(3)}% · Señal ${s}</b><br>${live?'Usa el último corte intradía disponible de Yahoo y puede cambiar hasta el cierre.':'Usa cierres diarios disponibles. No es la rentabilidad acumulada de tu inversión.'}`}
 
+
+  function insightPct(x,d=1){return x==null||!Number.isFinite(Number(x))?'—':(Number(x)*100).toFixed(d)+'%'}
+  function liveContributions(){
+    if(!(liveData&&liveData.market_open&&latestData&&latestData.coefficients))return null;
+    const beta=latestData.coefficients,map={SPY:'ret_SPY',NEM:'ret_NEM',FCX:'ret_FCX',EPU:'ret_EPU',MCHI:'ret_MCHI',USD_PEN:'ret_USD_PEN'},out=[];
+    out.push({label:'Base',contribution_pp:Number(beta.intercept||0)*100});
+    (liveData.assets||[]).forEach(a=>{const k=map[a.serie],r=Number(a.retorno_modelo);if(k&&Number.isFinite(r)&&Number.isFinite(Number(beta[k])))out.push({label:a.serie==='USD_PEN'?'USD/PEN':a.serie,contribution_pp:Number(beta[k])*r*100})});
+    return out.sort((a,b)=>Math.abs(b.contribution_pp)-Math.abs(a.contribution_pp));
+  }
+  function renderInsights(){
+    if(!modelInsights)return;
+    const c=modelInsights.confidence||{},u=modelInsights.uncertainty||{},q=modelInsights.quality||{},b=modelInsights.benchmarks||{},p=modelInsights.performance||{};
+    const acc=c.historical_accuracy;
+    $('confidenceValue').textContent=acc==null?'—':(Number(acc)*100).toFixed(0)+'% · '+(c.label||'');
+    $('confidenceSub').textContent=`${modelInsights.current_signal||'—'} · n=${c.n||0} · no es probabilidad garantizada`;
+    $('bandValue').textContent=u.relative_q80==null?'—':'±'+(Number(u.relative_q80)*100).toFixed(2)+'%';
+    $('qualityValue').textContent=q.status||'—';
+    $('qualitySub').textContent=`OLS ${q.training_n||0}/90 · FX ${q.fx_provisional?'provisional':'confirmado'}`;
+    const qc=q.status==='OK'?'quality-ok':q.status==='REVISAR'?'quality-bad':'quality-warn';
+    $('qualityValue').className='insight-value '+qc;$('qualityBadge').className='insight-badge '+qc;$('qualityBadge').textContent=q.status||'—';
+    const imp=b.ols_mae_improvement_vs_zero;
+    $('benchmarkValue').textContent=imp==null?'—':(imp>=0?'Mejor ':'Peor ')+(Math.abs(Number(imp))*100).toFixed(0)+'%';
+    const contrib=liveContributions()||(modelInsights.contributions||[]);
+    const max=Math.max(...contrib.map(x=>Math.abs(Number(x.contribution_pp)||0)),0.0001);
+    $('factorList').innerHTML=contrib.map(x=>{const v=Number(x.contribution_pp)||0,w=Math.max(2,Math.abs(v)/max*100),cl=v>0?'posbar':v<0?'negbar':'';return `<div class="factor-row"><b>${x.label}</b><div class="factor-track"><div class="factor-fill ${cl}" style="width:${w.toFixed(1)}%"></div></div><div class="factor-value ${v>0?'pos':v<0?'neg':'zero'}">${v>=0?'+':''}${v.toFixed(3)} pp</div></div>`}).join('')||'<div class="note">Sin contribuciones disponibles.</div>';
+    const items=[
+      ['Acierto global',insightPct(p.classification_accuracy,0)],
+      ['MAE retorno',p.mae_return_pp==null?'—':Number(p.mae_return_pp).toFixed(2)+' pp'],
+      ['Acierto SUBE',insightPct(p.sube_accuracy,0)+' · n='+Number(p.sube_n||0)],
+      ['Acierto BAJA',insightPct(p.baja_accuracy,0)+' · n='+Number(p.baja_n||0)],
+      ['Base sin cambio',b.zero_change_mae_pp==null?'—':Number(b.zero_change_mae_pp).toFixed(2)+' pp MAE'],
+      ['Dirección previa',insightPct(b.previous_direction_accuracy,0)]
+    ];
+    $('perfGrid').innerHTML=items.map(x=>`<div class="perf-item"><b>${x[1]}</b><span>${x[0]}</span></div>`).join('');
+    const notes=[...(q.critical||[]),...(q.warnings||[])];$('qualityNotes').textContent=notes.length?notes.join(' · '):'Controles de integridad sin alertas.';
+  }
+
   function renderMarket(){
     if(!liveData)return;
     $('marketMode').textContent=liveData.mode||'—';$('marketMode').className='market-mode '+(liveData.market_open?'pos':'zero');
     const stamps=(liveData.assets||[]).map(a=>a.timestamp).filter(x=>String(x||'').includes('T'));
     if(liveData.market_open&&stamps.length){const last=stamps.sort().at(-1);$('marketTime').innerHTML=`Corte Yahoo: ${clock(last,'America/New_York')} NY · ${clock(last,'America/Lima')} Lima<br>Visor actualizado: ${clock(liveData.generated_at_lima,'America/Lima')} Lima`}
     else{$('marketTime').innerHTML=`Cierre utilizado: ${fmt(liveData.signal_date)}<br>Visor actualizado: ${clock(liveData.generated_at_lima,'America/Lima')} Lima`}
-    $('marketGrid').innerHTML=(liveData.assets||[]).map(a=>`<div class="market-item"><div class="market-symbol">${a.serie}</div><div class="market-price">${a.precio_actual==null?'—':Number(a.precio_actual).toFixed(a.serie==='USD_PEN'?4:2)}</div><div class="market-ret ${cls(a.retorno)}">${Number(a.retorno)>=0?'+':''}${(Number(a.retorno)*100).toFixed(2)}%</div><div class="market-source">${a.estado||''}${a.retorno_modelo!=null&&Number(a.retorno_modelo)!==Number(a.retorno)?'<br>Modelo: '+(Number(a.retorno_modelo)*100).toFixed(2)+'%':''}</div></div>`).join('')||'<div class="note">Cotización intradía no disponible; se mantiene el último cierre.</div>';renderTop()
+    $('marketGrid').innerHTML=(liveData.assets||[]).map(a=>`<div class="market-item"><div class="market-symbol">${a.serie}</div><div class="market-price">${a.precio_actual==null?'—':Number(a.precio_actual).toFixed(a.serie==='USD_PEN'?4:2)}</div><div class="market-ret ${cls(a.retorno)}">${Number(a.retorno)>=0?'+':''}${(Number(a.retorno)*100).toFixed(2)}%</div><div class="market-source">${a.estado||''}${a.retorno_modelo!=null&&Number(a.retorno_modelo)!==Number(a.retorno)?'<br>Modelo: '+(Number(a.retorno_modelo)*100).toFixed(2)+'%':''}</div></div>`).join('')||'<div class="note">Cotización intradía no disponible; se mantiene el último cierre.</div>';renderTop();renderInsights()
   }
 
   // Réplica del notebook: el cálculo usa operationSeries, no toda la SBS.
@@ -160,10 +232,11 @@ Promise.all([fetch('data/latest.json',{cache:'no-store'}).then(r=>r.json()),fetc
     fetch('data/series.json',{cache:'no-store'}).then(r=>r.json()),
     fetch('data/operation_series.json',{cache:'no-store'}).then(r=>r.json()),
     fetch('data/latest.json',{cache:'no-store'}).then(r=>r.json()),
+    fetch('data/model_insights.json',{cache:'no-store'}).then(r=>r.json()),
     loadLive()
-  ]).then(([sig,ser,op,latest])=>{
-    richSignals=sig.sort((a,b)=>a.fecha.localeCompare(b.fecha));allSeries=ser.sort((a,b)=>a.fecha.localeCompare(b.fecha));operationSeries=op.sort((a,b)=>a.fecha.localeCompare(b.fecha));latestData=latest;
-    renderVC();renderSignals();renderTop();renderMarket();
+  ]).then(([sig,ser,op,latest,insights])=>{
+    richSignals=sig.sort((a,b)=>a.fecha.localeCompare(b.fecha));allSeries=ser.sort((a,b)=>a.fecha.localeCompare(b.fecha));operationSeries=op.sort((a,b)=>a.fecha.localeCompare(b.fecha));latestData=latest;modelInsights=insights;
+    renderVC();renderSignals();renderTop();renderMarket();renderInsights();
     document.querySelectorAll('.vc-controls button').forEach(b=>b.onclick=()=>{vcDays=b.dataset.days==='all'?'all':Number(b.dataset.days);renderVC()});
     document.querySelectorAll('.ret-controls button').forEach(b=>b.onclick=()=>{retDays=b.dataset.days==='all'?'all':Number(b.dataset.days);renderSignals()});
     $('calc').onclick=calcNotebook;

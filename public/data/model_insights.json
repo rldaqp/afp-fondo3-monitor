@@ -1,0 +1,95 @@
+{
+  "generated_for": "2026-07-27",
+  "current_signal": "SUBE",
+  "confidence": {
+    "label": "ALTA",
+    "historical_accuracy": 0.8297872340425532,
+    "n": 47,
+    "description": "Acierto histórico de la misma clase de señal en las últimas 90 observaciones OLS; no es una probabilidad garantizada."
+  },
+  "performance": {
+    "window_n": 90,
+    "classification_accuracy": 0.8111111111111111,
+    "mae_return_pp": 0.4178949994693199,
+    "sube_accuracy": 0.8297872340425532,
+    "sube_n": 47,
+    "baja_accuracy": 0.868421052631579,
+    "baja_n": 38,
+    "neutro_accuracy": 0.2,
+    "neutro_n": 5
+  },
+  "uncertainty": {
+    "relative_q80": 0.006347619874657662,
+    "relative_q90": 0.00959121872344133,
+    "label": "Banda empírica 80%",
+    "description": "Se deriva de los errores relativos históricos del VC estimado. Para días encadenados pendientes se amplía con la raíz del horizonte."
+  },
+  "benchmarks": {
+    "zero_change_mae_pp": 1.2580800561269616,
+    "ols_mae_pp": 0.4178949994693199,
+    "ols_mae_improvement_vs_zero": 0.6678311547551095,
+    "previous_direction_accuracy": 0.4044943820224719
+  },
+  "contributions": [
+    {
+      "feature": "ret_MCHI",
+      "label": "MCHI",
+      "value": 0.017438523505487,
+      "coefficient": 0.02990944215787815,
+      "contribution_pp": 0.05215765101061619
+    },
+    {
+      "feature": "ret_NEM",
+      "label": "NEM",
+      "value": 0.003004601051201,
+      "coefficient": 0.10264198488238255,
+      "contribution_pp": 0.030839821567496376
+    },
+    {
+      "feature": "ret_FCX",
+      "label": "FCX",
+      "value": 0.0019169768291869,
+      "coefficient": 0.09051509221693112,
+      "contribution_pp": 0.017351533447157248
+    },
+    {
+      "feature": "ret_USD_PEN",
+      "label": "USD/PEN",
+      "value": 0.0004834512221185,
+      "coefficient": 0.3030572600259491,
+      "contribution_pp": 0.014651340273142915
+    },
+    {
+      "feature": "ret_EPU",
+      "label": "EPU",
+      "value": -0.0003508629157529,
+      "coefficient": 0.316472653874144,
+      "contribution_pp": -0.011103851809434047
+    },
+    {
+      "feature": "ret_SPY",
+      "label": "SPY",
+      "value": 0.0002165755636849,
+      "coefficient": 0.45208658623256437,
+      "contribution_pp": 0.009791090724769977
+    },
+    {
+      "feature": "intercept",
+      "label": "Base",
+      "value": 1.0,
+      "coefficient": -8.033335857629022e-05,
+      "contribution_pp": -0.008033335857629022
+    }
+  ],
+  "quality": {
+    "status": "PROVISIONAL",
+    "critical": [],
+    "warnings": [
+      "FX provisional: YAHOO PEN=X PROVISIONAL"
+    ],
+    "training_n": 90,
+    "latest_sbs_date": "2026-07-21",
+    "fx_source": "YAHOO PEN=X PROVISIONAL",
+    "fx_provisional": true
+  }
+}
