@@ -19,6 +19,10 @@ if spec is None or spec.loader is None:
 parity = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(parity)
 
+# Las cuotas oficiales faltantes de 01, 02, 03 y 06/07/2026 ya fueron
+# recuperadas. El 06/07 deja de ser una fecha excluida del retorno histórico.
+parity.EXCLUDED_RETURN_DATES = set()
+
 _original_run = parity._run_notebook_model
 
 
