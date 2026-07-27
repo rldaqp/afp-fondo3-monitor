@@ -1,11 +1,11 @@
 {
-  "generated_at_lima": "2026-07-27T15:00:36.242814-05:00",
+  "generated_at_lima": "2026-07-27T15:05:36.113817-05:00",
   "mode": "INTRADÍA PROVISIONAL",
   "market_open": true,
   "signal_date": "2026-07-27",
   "vc_base": 69.37321939779346,
-  "vc_estimated": 69.42012427982449,
-  "return_estimated": 0.0006761237612754908,
+  "vc_estimated": 69.34992075399927,
+  "return_estimated": -0.00033584492685280557,
   "signal": "NEUTRO",
   "assets": [
     {
@@ -44,11 +44,11 @@
     {
       "serie": "EPU",
       "ticker": "EPU",
-      "timestamp": "2026-07-27T15:45:00-04:00",
+      "timestamp": "2026-07-27T15:55:00-04:00",
       "precio_anterior": 85.5,
-      "precio_actual": 85.42500305175781,
-      "retorno": -0.0008771572893823132,
-      "retorno_modelo": -0.0008771572893823132,
+      "precio_actual": 85.16999816894531,
+      "retorno": -0.0038596705386513275,
+      "retorno_modelo": -0.0038596705386513275,
       "estado": "INTRADÍA YAHOO · USADO POR MODELO",
       "usado_modelo": true
     },
@@ -66,10 +66,10 @@
     {
       "serie": "USD_PEN",
       "ticker": "PEN=X referencia",
-      "timestamp": "2026-07-27T15:55:00-04:00",
+      "timestamp": "2026-07-27T16:05:00-04:00",
       "precio_anterior": 3.402,
-      "precio_actual": 3.397900104522705,
-      "retorno": 0.0008542337592001292,
+      "precio_actual": 3.39739990234375,
+      "retorno": 0.0007068988013900768,
       "retorno_modelo": 0.0,
       "estado": "YAHOO PEN=X · SOLO REFERENCIA · MODELO USA 0 %",
       "usado_modelo": false
