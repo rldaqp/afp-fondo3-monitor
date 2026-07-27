@@ -20,7 +20,7 @@ h1{font-size:1.45rem;margin:5px 0}.sub,.note{color:var(--muted);font-size:.82rem
 .monitor-help{margin:8px 0 10px;padding:10px 12px;border:1px solid #243244;border-radius:10px;background:#0b1728;color:#cbd5e1;font-size:.84rem;line-height:1.4}
 #detail{margin-top:10px;line-height:1.5}
 .market-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;margin-bottom:10px}.market-mode{font-weight:850}.market-time{font-size:.74rem;color:#94a3b8;text-align:right;line-height:1.45}
-.market-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.market-item{background:#0b1728;border:1px solid #243244;border-radius:11px;padding:10px}.market-symbol{font-size:.82rem;color:#cbd5e1;font-weight:800}.market-price{font-size:1.05rem;font-weight:850;margin-top:3px}.market-ret{font-size:.9rem;font-weight:800;margin-top:3px}.market-source{font-size:.68rem;color:#94a3b8;margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.market-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.market-item{background:#0b1728;border:1px solid #243244;border-radius:11px;padding:10px}.market-symbol{font-size:.82rem;color:#cbd5e1;font-weight:800}.market-price{font-size:1.05rem;font-weight:850;margin-top:3px}.market-ret{font-size:.9rem;font-weight:800;margin-top:3px}.market-source{font-size:.68rem;color:#94a3b8;margin-top:4px;white-space:normal;line-height:1.28;overflow-wrap:anywhere}
 .pos{color:#4ade80}.neg{color:#f87171}.zero{color:#fbbf24}
 @media(max-width:700px){.wrap{padding:10px}.card,.panel{padding:11px}.value{font-size:1.2rem}#ret{font-size:1.02rem}.chart{height:300px}.chart-controls button{padding:9px 5px;font-size:.79rem}.market-grid{grid-template-columns:repeat(2,1fr)}.market-head{display:block}.market-time{text-align:left;margin-top:5px}}
 </style>
@@ -89,7 +89,7 @@ h1{font-size:1.45rem;margin:5px 0}.sub,.note{color:var(--muted);font-size:.82rem
 <section class="panel" id="marketPanel">
   <div class="market-head"><div><div class="chart-title">Mercado ahora</div><div id="marketMode" class="market-mode">Cargando…</div></div><div id="marketTime" class="market-time">—</div></div>
   <div id="marketGrid" class="market-grid"></div>
-  <div class="note" style="margin-top:9px">SPY, NEM, FCX, EPU y MCHI: Yahoo Finance. USD/PEN del MODELO: BCRP. Si BCRP aún no publicó la fecha, el modelo usa 0 % provisional, exactamente como el notebook. PEN=X puede mostrarse solo como referencia visual y nunca sustituye al BCRP en el cálculo.</div>
+  <div class="note" style="margin-top:9px">SPY, NEM, FCX, EPU y MCHI: Yahoo Finance. USD/PEN: BCRP para histórico y entrenamiento. Si BCRP aún no publicó la fecha, el modelo usa Yahoo PEN=X de forma provisional; solo usa 0 % cuando ninguna de las dos fuentes está disponible.</div>
 </section>
 <section class="panel"><b>Auditoría</b><div class="note" id="audit">Cargando…</div></section>
 <script>
@@ -135,7 +135,7 @@ Promise.all([fetch('data/latest.json',{cache:'no-store'}).then(r=>r.json()),fetc
     const stamps=(liveData.assets||[]).map(a=>a.timestamp).filter(x=>String(x||'').includes('T'));
     if(liveData.market_open&&stamps.length){const last=stamps.sort().at(-1);$('marketTime').innerHTML=`Corte Yahoo: ${clock(last,'America/New_York')} NY · ${clock(last,'America/Lima')} Lima<br>Visor actualizado: ${clock(liveData.generated_at_lima,'America/Lima')} Lima`}
     else{$('marketTime').innerHTML=`Cierre utilizado: ${fmt(liveData.signal_date)}<br>Visor actualizado: ${clock(liveData.generated_at_lima,'America/Lima')} Lima`}
-    $('marketGrid').innerHTML=(liveData.assets||[]).map(a=>`<div class="market-item"><div class="market-symbol">${a.serie}</div><div class="market-price">${Number(a.precio_actual).toFixed(a.serie==='USD_PEN'?4:2)}</div><div class="market-ret ${cls(a.retorno)}">${Number(a.retorno)>=0?'+':''}${(Number(a.retorno)*100).toFixed(2)}%</div><div class="market-source">${a.estado||''}${a.retorno_modelo!=null&&Number(a.retorno_modelo)!==Number(a.retorno)?'<br>Modelo: '+(Number(a.retorno_modelo)*100).toFixed(2)+'%':''}</div></div>`).join('')||'<div class="note">Cotización intradía no disponible; se mantiene el último cierre.</div>';renderTop()
+    $('marketGrid').innerHTML=(liveData.assets||[]).map(a=>`<div class="market-item"><div class="market-symbol">${a.serie}</div><div class="market-price">${a.precio_actual==null?'—':Number(a.precio_actual).toFixed(a.serie==='USD_PEN'?4:2)}</div><div class="market-ret ${cls(a.retorno)}">${Number(a.retorno)>=0?'+':''}${(Number(a.retorno)*100).toFixed(2)}%</div><div class="market-source">${a.estado||''}${a.retorno_modelo!=null&&Number(a.retorno_modelo)!==Number(a.retorno)?'<br>Modelo: '+(Number(a.retorno_modelo)*100).toFixed(2)+'%':''}</div></div>`).join('')||'<div class="note">Cotización intradía no disponible; se mantiene el último cierre.</div>';renderTop()
   }
 
   // Réplica del notebook: el cálculo usa operationSeries, no toda la SBS.
