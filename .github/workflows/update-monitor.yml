@@ -13,10 +13,12 @@ on:
       - "scripts/finalize_notebook_parity_v4.py"
       - "scripts/finalize_notebook_parity_v5.py"
       - "scripts/finalize_fx_hybrid.py"
+      - "scripts/build_model_insights.py"
       - "scripts/build_operation_series.py"
       - "scripts/postprocess_mobile_ui_v3.py"
       - "scripts/postprocess_mobile_ui_v4.py"
       - "scripts/postprocess_fx_hybrid_ui.py"
+      - "scripts/postprocess_model_insights_ui.py"
       - "scripts/postprocess_trade_history.py"
       - "scripts/postprocess_trade_cloud_sync.py"
       - "scripts/postprocess_trade_notebook_basis.py"
@@ -70,6 +72,8 @@ jobs:
           python scripts/apply_sbs_reference_corrections.py
           # Histórico/entrenamiento conserva BCRP; predicción usa PEN=X provisional si BCRP se rezaga.
           python scripts/finalize_fx_hybrid.py
+          # Métricas, banda empírica, benchmarks, contribuciones y controles de calidad.
+          python scripts/build_model_insights.py
           # Mercado ahora es propiedad exclusiva de update-live-market.yml.
           git restore --source=HEAD -- public/data/live_market.json || true
           python scripts/build_operation_series.py
@@ -77,6 +81,7 @@ jobs:
           python scripts/postprocess_mobile_ui_v3.py
           python scripts/postprocess_mobile_ui_v4.py
           python scripts/postprocess_fx_hybrid_ui.py
+          python scripts/postprocess_model_insights_ui.py
           python scripts/postprocess_trade_history.py
           python scripts/postprocess_trade_cloud_sync.py
           python scripts/postprocess_trade_notebook_basis.py
@@ -88,6 +93,7 @@ jobs:
           test -s public/data/series.json
           test -s public/data/signals.json
           test -s public/data/operation_series.json
+          test -s public/data/model_insights.json
           grep -q "OLS Rolling 90" public/index.html
           grep -q "7 días" public/index.html
           grep -q "15 días" public/index.html
@@ -108,6 +114,10 @@ jobs:
           grep -q "showlegend:false" public/index.html
           grep -q "USD/PEN: BCRP para histórico y entrenamiento" public/index.html
           grep -q "Yahoo PEN=X de forma provisional" public/index.html
+          grep -q "Confianza y calidad del modelo" public/index.html
+          grep -q "Banda histórica 80%" public/index.html
+          grep -q "Ver qué mueve la señal y rendimiento" public/index.html
+          grep -q "model_insights.json" public/index.html
           grep -q "Histórico de entradas y salidas" public/index.html
           grep -q "tradeHistoryBody" public/index.html
           grep -q "OK · Guardar operación actual" public/index.html
@@ -124,6 +134,7 @@ jobs:
           latest = json.loads(Path("public/data/latest.json").read_text(encoding="utf-8"))
           signals = json.loads(Path("public/data/signals.json").read_text(encoding="utf-8"))
           operation = json.loads(Path("public/data/operation_series.json").read_text(encoding="utf-8"))
+          insights = json.loads(Path("public/data/model_insights.json").read_text(encoding="utf-8"))
           pending = pd.read_csv("data/rolling90/pending_predictions.csv")
 
           assert latest["model"] == "OLS rolling 90"
@@ -146,6 +157,14 @@ jobs:
           assert all(x.get("senal") in {"SUBE", "NEUTRO", "BAJA"} for x in signals if x.get("ret_estimado") is not None)
           assert all(float(x["vc"]) > 0 for x in operation)
 
+          assert insights["quality"]["status"] in {"OK", "PROVISIONAL"}, insights["quality"]
+          assert int(insights["quality"]["training_n"]) == 90
+          assert insights["performance"]["window_n"] > 10
+          assert insights["uncertainty"]["relative_q80"] >= 0
+          assert insights["benchmarks"]["ols_mae_pp"] >= 0
+          assert insights["benchmarks"]["zero_change_mae_pp"] >= 0
+          assert isinstance(insights["contributions"], list)
+
           if not pending.empty:
               assert "usd_pen_fuente" in pending.columns
               assert "usd_pen_provisional" in pending.columns
@@ -155,6 +174,7 @@ jobs:
                   assert pd.to_numeric(yahoo["ret_USD_PEN"], errors="coerce").notna().all()
 
           print(json.dumps(latest, ensure_ascii=False, indent=2))
+          print(json.dumps(insights, ensure_ascii=False, indent=2))
           print(f"Puntos de señal publicados: {len(signals)}")
           print(f"Filas de operación tipo notebook: {len(operation)}")
           PY
