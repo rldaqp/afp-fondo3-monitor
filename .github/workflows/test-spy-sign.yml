@@ -1,0 +1,61 @@
+name: Probar estabilidad del signo SPY
+
+on:
+  pull_request:
+    branches:
+      - migracion-github-actions
+    paths:
+      - "research/test_spy_sign.py"
+      - ".github/workflows/test-spy-sign.yml"
+      - "data/rolling90/markets.csv"
+      - "data/rolling90/sbs_profuturo_f3.csv"
+      - "data/rolling90/pending_predictions.csv"
+      - "public/data/latest.json"
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Descargar repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Instalar dependencias
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Ejecutar prueba SPY
+        run: python research/test_spy_sign.py
+
+      - name: Validar salidas
+        run: |
+          test -s research_outputs/spy_sign/results.json
+          test -s research_outputs/spy_sign/paired_predictions.csv
+          test -s research_outputs/spy_sign/rolling_coefficients.csv
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          r = json.loads(Path('research_outputs/spy_sign/results.json').read_text(encoding='utf-8'))
+          assert r['latest90']['full7']['n'] == 90
+          assert r['latest90']['no_spy']['n'] == 90
+          assert r['current']['full7']['training_n'] == 90
+          assert r['current']['no_spy']['training_n'] == 90
+          assert r['spy_diagnostics']['rolling_coefficient_latest90']['n'] == 90
+          print(json.dumps(r, ensure_ascii=False, indent=2))
+          PY
+
+      - name: Guardar resultados
+        uses: actions/upload-artifact@v4
+        with:
+          name: spy-sign-stability-results
+          path: research_outputs/spy_sign
+          retention-days: 90
