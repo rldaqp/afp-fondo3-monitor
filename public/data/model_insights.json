@@ -18,6 +18,98 @@
     "neutro_accuracy": 0.0,
     "neutro_n": 6
   },
+  "challenger_huber": {
+    "status": "CHALLENGER ACTIVO",
+    "role": "Modelo paralelo; no reemplaza la señal oficial OLS.",
+    "parameters": {
+      "window": 90,
+      "epsilon": 1.1,
+      "alpha": 0.0001,
+      "selection": "Parámetros elegidos con validación temporal 60/20/20; prueba final independiente favorable."
+    },
+    "training": {
+      "n": 90,
+      "start": "2026-03-09",
+      "end": "2026-07-21"
+    },
+    "coefficients": {
+      "intercept": -0.0003409312190788131,
+      "ret_SPY": -0.12161144425905342,
+      "ret_NEM": 0.08204048422515546,
+      "ret_FCX": 0.0956014025706243,
+      "ret_EPU": 0.30950051615783736,
+      "ret_MCHI": -0.04833611913766198,
+      "ret_EEM": 0.3584232879252562,
+      "ret_USD_PEN": 0.3856853483924626
+    },
+    "current": {
+      "fecha": "2026-07-27",
+      "ret_estimado": 0.0009387238612597353,
+      "senal": "NEUTRO",
+      "vc_estimado": 68.55237004810145,
+      "agrees_with_ols": false,
+      "ols_signal": "SUBE",
+      "ols_return_estimated": 0.001218359474546832
+    },
+    "performance": {
+      "window_n": 90,
+      "correct": 79,
+      "classification_accuracy": 0.8777777777777778,
+      "mae_return_pp": 0.30135481246612644,
+      "sube_n": 45,
+      "sube_accuracy": 0.8888888888888888,
+      "baja_n": 38,
+      "baja_accuracy": 0.9736842105263158,
+      "neutro_n": 7,
+      "neutro_accuracy": 0.2857142857142857
+    },
+    "comparison_vs_ols": {
+      "paired_n": 90,
+      "ols_correct": 76,
+      "huber_correct": 79,
+      "net_correct": 3,
+      "ols_accuracy": 0.8444444444444444,
+      "huber_accuracy": 0.8777777777777778,
+      "accuracy_delta_pp": 3.3333333333333326,
+      "ols_mae_return_pp": 0.3126956000724559,
+      "huber_mae_return_pp": 0.3013548124661257,
+      "mae_delta_pp": -0.011340787606330172,
+      "corrected_errors": 3,
+      "new_errors": 0,
+      "corrected_dates": [
+        "2026-04-06",
+        "2026-06-17",
+        "2026-06-22"
+      ],
+      "new_error_dates": []
+    },
+    "pending_series": [
+      {
+        "fecha": "2026-07-22",
+        "ret_estimado": 0.008544591516893928,
+        "senal": "SUBE",
+        "vc_estimado": 70.62020127121575
+      },
+      {
+        "fecha": "2026-07-23",
+        "ret_estimado": -0.012018482457574689,
+        "senal": "BAJA",
+        "vc_estimado": 69.77145362108725
+      },
+      {
+        "fecha": "2026-07-24",
+        "ret_estimado": -0.01839398349933019,
+        "senal": "BAJA",
+        "vc_estimado": 68.48807865445669
+      },
+      {
+        "fecha": "2026-07-27",
+        "ret_estimado": 0.0009387238612597353,
+        "senal": "NEUTRO",
+        "vc_estimado": 68.55237004810145
+      }
+    ]
+  },
   "uncertainty": {
     "relative_q80": 0.004516498437562655,
     "relative_q90": 0.005729932249972526,

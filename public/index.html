@@ -34,6 +34,13 @@ h1{font-size:1.45rem;margin:5px 0}.sub,.note{color:var(--muted);font-size:.82rem
 @media(max-width:700px){.insight-grid{grid-template-columns:repeat(2,1fr)}.insight-card{padding:9px}.insight-value{font-size:1.05rem}.factor-row{grid-template-columns:58px 1fr 55px}}
 @media(max-width:390px){.insight-grid{grid-template-columns:1fr 1fr;gap:6px}.insight-label{font-size:.66rem}.insight-sub{font-size:.64rem}.factor-row{grid-template-columns:54px 1fr 51px;gap:5px}}
 </style>
+
+<!-- HUBER_CHALLENGER_UI_V1 -->
+<style id="huberChallengerStyles">
+.challenger-box{margin-top:9px;padding:10px 11px;border:1px solid #334155;border-radius:11px;background:#101d31;display:flex;justify-content:space-between;gap:12px;align-items:center}
+.challenger-kicker{font-size:.68rem;color:#94a3b8;font-weight:800;text-transform:uppercase;letter-spacing:.04em}.challenger-value{font-size:1.05rem;font-weight:900;margin-top:3px}.challenger-sub{font-size:.7rem;color:#cbd5e1;text-align:right;line-height:1.35;max-width:58%}.challenger-warn{color:#fbbf24}.challenger-ok{color:#4ade80}.challenger-diff{color:#f59e0b}
+@media(max-width:700px){.challenger-box{display:block}.challenger-sub{text-align:left;max-width:none;margin-top:5px}}
+</style>
 </head><body><main class="wrap">
 <h1>Profuturo Fondo 3</h1><div class="sub">GitHub Actions · OLS Rolling 90 · umbral ±0.10% · datos independientes del notebook</div><div id="error"></div>
 <section class="grid"><div class="card"><div class="label">Último VC SBS</div><div class="value" id="sbsVc">—</div><div class="sub" id="sbsDate">—</div></div>
@@ -48,6 +55,11 @@ h1{font-size:1.45rem;margin:5px 0}.sub,.note{color:var(--muted);font-size:.82rem
     <div class="insight-card"><div class="insight-label">Banda histórica 80%</div><div class="insight-value" id="bandValue">—</div><div class="insight-sub">Error empírico del VC</div></div>
     <div class="insight-card"><div class="insight-label">Calidad de datos</div><div class="insight-value" id="qualityValue">—</div><div class="insight-sub" id="qualitySub">Ventana y fuentes</div></div>
     <div class="insight-card"><div class="insight-label">OLS vs sin cambio</div><div class="insight-value" id="benchmarkValue">—</div><div class="insight-sub">Comparación por MAE</div></div>
+  </div>
+
+  <div class="challenger-box" id="huberChallengerBox">
+    <div><div class="challenger-kicker">Challenger Huber · paralelo</div><div class="challenger-value" id="huberValue">—</div></div>
+    <div class="challenger-sub" id="huberSub">OLS continúa como señal principal.</div>
   </div>
   <details class="insight-details"><summary>Ver qué mueve la señal y rendimiento</summary>
     <div class="note">Aporte aproximado de cada factor al retorno estimado: coeficiente × retorno observado.</div>
@@ -164,7 +176,6 @@ Promise.all([fetch('data/latest.json',{cache:'no-store'}).then(r=>r.json()),fetc
 
   function renderTop(){if(!latestData)return;const live=liveData&&liveData.market_open&&String(liveData.mode).startsWith('INTRADÍA')&&Number.isFinite(Number(liveData.vc_estimated)),vc=live?Number(liveData.vc_estimated):Number(latestData.latest_estimated_vc),r=live?Number(liveData.return_estimated):Number(latestData.latest_return_estimated),s=live?liveData.signal:latestData.signal,d=live?liveData.signal_date:latestData.latest_estimate_date;$('estVc').textContent=vc.toFixed(7);$('estDate').textContent=fmt(d)+' · '+(live?'INTRADÍA PROVISIONAL':'CIERRE DIARIO');$('signal').textContent=s;$('signal').className='value signal '+(s==='SUBE'?'up':s==='BAJA'?'down':'flat');$('ret').textContent=`Retorno estimado VC (día): ${(r*100).toFixed(3)}%`;const h=$('monitorHelp');if(h)h.innerHTML=`<b>${live?'INTRADÍA PROVISIONAL':'CIERRE DIARIO'} · Retorno estimado del VC: ${(r*100).toFixed(3)}% · Señal ${s}</b><br>${live?'Usa el último corte intradía disponible de Yahoo y puede cambiar hasta el cierre.':'Usa cierres diarios disponibles. No es la rentabilidad acumulada de tu inversión.'}`}
 
-
   function insightPct(x,d=1){return x==null||!Number.isFinite(Number(x))?'—':(Number(x)*100).toFixed(d)+'%'}
   function liveContributions(){
     if(!(liveData&&liveData.market_open&&latestData&&latestData.coefficients))return null;
@@ -173,32 +184,58 @@ Promise.all([fetch('data/latest.json',{cache:'no-store'}).then(r=>r.json()),fetc
     (liveData.assets||[]).forEach(a=>{const k=map[a.serie],r=Number(a.retorno_modelo);if(k&&Number.isFinite(r)&&Number.isFinite(Number(beta[k])))out.push({label:a.serie==='USD_PEN'?'USD/PEN':a.serie,contribution_pp:Number(beta[k])*r*100})});
     return out.sort((a,b)=>Math.abs(b.contribution_pp)-Math.abs(a.contribution_pp));
   }
+  function classifyModelReturn(r){return Number(r)>.001?'SUBE':Number(r)<-.001?'BAJA':'NEUTRO'}
+  function currentHuber(){
+    const h=modelInsights&&modelInsights.challenger_huber;if(!h||h.status!=='CHALLENGER ACTIVO')return null;
+    if(liveData&&liveData.market_open&&h.coefficients){
+      const beta=h.coefficients,map={SPY:'ret_SPY',NEM:'ret_NEM',FCX:'ret_FCX',EPU:'ret_EPU',MCHI:'ret_MCHI',EEM:'ret_EEM',USD_PEN:'ret_USD_PEN'};
+      let r=Number(beta.intercept||0),used=0;
+      (liveData.assets||[]).forEach(a=>{const k=map[a.serie],v=Number(a.retorno_modelo);if(k&&Number.isFinite(v)&&Number.isFinite(Number(beta[k]))){r+=Number(beta[k])*v;used+=1}});
+      if(used===7)return {fecha:liveData.signal_date,ret_estimado:r,senal:classifyModelReturn(r),live:true};
+    }
+    return h.current||null;
+  }
   function renderInsights(){
     if(!modelInsights)return;
-    const c=modelInsights.confidence||{},u=modelInsights.uncertainty||{},q=modelInsights.quality||{},b=modelInsights.benchmarks||{},p=modelInsights.performance||{};
+    const c=modelInsights.confidence||{},u=modelInsights.uncertainty||{},q=modelInsights.quality||{},b=modelInsights.benchmarks||{},p=modelInsights.performance||{},h=modelInsights.challenger_huber||{},hp=h.performance||{},hc=h.comparison_vs_ols||{};
     const acc=c.historical_accuracy;
     $('confidenceValue').textContent=acc==null?'—':(Number(acc)*100).toFixed(0)+'% · '+(c.label||'');
     $('confidenceSub').textContent=`${modelInsights.current_signal||'—'} · n=${c.n||0} · no es probabilidad garantizada`;
     $('bandValue').textContent=u.relative_q80==null?'—':'±'+(Number(u.relative_q80)*100).toFixed(2)+'%';
     $('qualityValue').textContent=q.status||'—';
-    $('qualitySub').textContent=`OLS ${q.training_n||0}/90 · FX ${q.fx_provisional?'provisional':'confirmado'}`;
+    $('qualitySub').textContent=`OLS ${q.training_n||0}/90 · Huber ${h.training&&h.training.n?h.training.n:0}/90 · FX ${q.fx_provisional?'provisional':'confirmado'}`;
     const qc=q.status==='OK'?'quality-ok':q.status==='REVISAR'?'quality-bad':'quality-warn';
     $('qualityValue').className='insight-value '+qc;$('qualityBadge').className='insight-badge '+qc;$('qualityBadge').textContent=q.status||'—';
     const imp=b.ols_mae_improvement_vs_zero;
     $('benchmarkValue').textContent=imp==null?'—':(imp>=0?'Mejor ':'Peor ')+(Math.abs(Number(imp))*100).toFixed(0)+'%';
+
+    const hub=currentHuber(),olsSignal=liveData&&liveData.market_open?liveData.signal:(latestData?latestData.signal:modelInsights.current_signal);
+    if(hub){
+      const same=String(hub.senal)===String(olsSignal),hv=$('huberValue'),hs=$('huberSub');
+      hv.textContent=`${hub.senal} · ${(Number(hub.ret_estimado)*100).toFixed(3)}%`;
+      hv.className='challenger-value '+(hub.senal==='SUBE'?'up':hub.senal==='BAJA'?'down':'flat');
+      const score=hp.classification_accuracy==null?'—':`${hp.correct||0}/${hp.window_n||0} · ${(Number(hp.classification_accuracy)*100).toFixed(1)}%`;
+      hs.textContent=`${same?'Coincide':'Difiere'} con OLS · ${score}${hub.live?' · intradía':''} · OLS sigue oficial`;
+      hs.className='challenger-sub '+(same?'challenger-ok':'challenger-diff');
+    }else{
+      $('huberValue').textContent=h.status||'NO DISPONIBLE';$('huberValue').className='challenger-value challenger-warn';$('huberSub').textContent=h.error||'OLS continúa como señal principal.';
+    }
+
     const contrib=liveContributions()||(modelInsights.contributions||[]);
     const max=Math.max(...contrib.map(x=>Math.abs(Number(x.contribution_pp)||0)),0.0001);
     $('factorList').innerHTML=contrib.map(x=>{const v=Number(x.contribution_pp)||0,w=Math.max(2,Math.abs(v)/max*100),cl=v>0?'posbar':v<0?'negbar':'';return `<div class="factor-row"><b>${x.label}</b><div class="factor-track"><div class="factor-fill ${cl}" style="width:${w.toFixed(1)}%"></div></div><div class="factor-value ${v>0?'pos':v<0?'neg':'zero'}">${v>=0?'+':''}${v.toFixed(3)} pp</div></div>`}).join('')||'<div class="note">Sin contribuciones disponibles.</div>';
     const items=[
-      ['Acierto global',insightPct(p.classification_accuracy,0)],
-      ['MAE retorno',p.mae_return_pp==null?'—':Number(p.mae_return_pp).toFixed(2)+' pp'],
-      ['Acierto SUBE',insightPct(p.sube_accuracy,0)+' · n='+Number(p.sube_n||0)],
-      ['Acierto BAJA',insightPct(p.baja_accuracy,0)+' · n='+Number(p.baja_n||0)],
-      ['Base sin cambio',b.zero_change_mae_pp==null?'—':Number(b.zero_change_mae_pp).toFixed(2)+' pp MAE'],
-      ['Dirección previa',insightPct(b.previous_direction_accuracy,0)]
+      ['Acierto OLS',insightPct(p.classification_accuracy,0)],
+      ['MAE OLS',p.mae_return_pp==null?'—':Number(p.mae_return_pp).toFixed(2)+' pp'],
+      ['Acierto Huber',hp.classification_accuracy==null?'—':insightPct(hp.classification_accuracy,0)],
+      ['MAE Huber',hp.mae_return_pp==null?'—':Number(hp.mae_return_pp).toFixed(2)+' pp'],
+      ['Mejora Huber',hc.net_correct==null?'—':`${Number(hc.net_correct)>=0?'+':''}${Number(hc.net_correct)} aciertos`],
+      ['Errores corregidos',hc.corrected_errors==null?'—':`${hc.corrected_errors} · nuevos ${hc.new_errors||0}`],
+      ['Acierto SUBE OLS',insightPct(p.sube_accuracy,0)+' · n='+Number(p.sube_n||0)],
+      ['Acierto BAJA OLS',insightPct(p.baja_accuracy,0)+' · n='+Number(p.baja_n||0)]
     ];
     $('perfGrid').innerHTML=items.map(x=>`<div class="perf-item"><b>${x[1]}</b><span>${x[0]}</span></div>`).join('');
-    const notes=[...(q.critical||[]),...(q.warnings||[])];$('qualityNotes').textContent=notes.length?notes.join(' · '):'Controles de integridad sin alertas.';
+    const notes=[...(q.critical||[]),...(q.warnings||[])];$('qualityNotes').textContent=notes.length?notes.join(' · '):'Controles de integridad sin alertas. Huber se registra como challenger y no reemplaza la señal OLS.';
   }
 
   function renderMarket(){
