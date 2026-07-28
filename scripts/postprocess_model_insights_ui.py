@@ -83,7 +83,7 @@ insights_js = r'''
   function insightPct(x,d=1){return x==null||!Number.isFinite(Number(x))?'—':(Number(x)*100).toFixed(d)+'%'}
   function liveContributions(){
     if(!(liveData&&liveData.market_open&&latestData&&latestData.coefficients))return null;
-    const beta=latestData.coefficients,map={SPY:'ret_SPY',NEM:'ret_NEM',FCX:'ret_FCX',EPU:'ret_EPU',MCHI:'ret_MCHI',USD_PEN:'ret_USD_PEN'},out=[];
+    const beta=latestData.coefficients,map={SPY:'ret_SPY',NEM:'ret_NEM',FCX:'ret_FCX',EPU:'ret_EPU',MCHI:'ret_MCHI',EEM:'ret_EEM',USD_PEN:'ret_USD_PEN'},out=[];
     out.push({label:'Base',contribution_pp:Number(beta.intercept||0)*100});
     (liveData.assets||[]).forEach(a=>{const k=map[a.serie],r=Number(a.retorno_modelo);if(k&&Number.isFinite(r)&&Number.isFinite(Number(beta[k])))out.push({label:a.serie==='USD_PEN'?'USD/PEN':a.serie,contribution_pp:Number(beta[k])*r*100})});
     return out.sort((a,b)=>Math.abs(b.contribution_pp)-Math.abs(a.contribution_pp));
