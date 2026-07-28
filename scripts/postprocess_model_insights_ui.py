@@ -43,15 +43,35 @@ if "MODEL_INSIGHTS_UI_V1" not in html:
         raise RuntimeError("No se encontró punto de inserción del panel móvil")
     html = html.replace(marker, panel + marker, 1)
 
-# Añadir el objeto de insights al estado del visor.
+if "HUBER_CHALLENGER_UI_V1" not in html:
+    challenger_css = r'''
+<!-- HUBER_CHALLENGER_UI_V1 -->
+<style id="huberChallengerStyles">
+.challenger-box{margin-top:9px;padding:10px 11px;border:1px solid #334155;border-radius:11px;background:#101d31;display:flex;justify-content:space-between;gap:12px;align-items:center}
+.challenger-kicker{font-size:.68rem;color:#94a3b8;font-weight:800;text-transform:uppercase;letter-spacing:.04em}.challenger-value{font-size:1.05rem;font-weight:900;margin-top:3px}.challenger-sub{font-size:.7rem;color:#cbd5e1;text-align:right;line-height:1.35;max-width:58%}.challenger-warn{color:#fbbf24}.challenger-ok{color:#4ade80}.challenger-diff{color:#f59e0b}
+@media(max-width:700px){.challenger-box{display:block}.challenger-sub{text-align:left;max-width:none;margin-top:5px}}
+</style>
+'''
+    html = html.replace("</head>", challenger_css + "</head>", 1)
+
+challenger_panel = r'''
+  <div class="challenger-box" id="huberChallengerBox">
+    <div><div class="challenger-kicker">Challenger Huber · paralelo</div><div class="challenger-value" id="huberValue">—</div></div>
+    <div class="challenger-sub" id="huberSub">OLS continúa como señal principal.</div>
+  </div>
+'''
+if 'id="huberChallengerBox"' not in html:
+    marker = '  <details class="insight-details">'
+    if marker not in html:
+        raise RuntimeError("No se encontró el panel de insights para insertar Huber")
+    html = html.replace(marker, challenger_panel + marker, 1)
+
 html = html.replace(
     "let richSignals=[],allSeries=[],operationSeries=[],latestData=null,liveData=null,vcDays=90,retDays=90;",
     "let richSignals=[],allSeries=[],operationSeries=[],latestData=null,liveData=null,modelInsights=null,vcDays=90,retDays=90;",
     1,
 )
 
-# Banda empírica alrededor de la estimación OLS. Se amplía con sqrt(horizonte)
-# para predicciones encadenadas pendientes; el histórico permanece a un paso.
 new_render_vc = r'''  function renderVC(){
     let off=cutoff(allSeries.filter(x=>x.fuente==='SBS OFICIAL'),vcDays),est=cutoff(richSignals.filter(x=>x.vc_estimado!=null),vcDays);
     const q=modelInsights&&modelInsights.uncertainty?Number(modelInsights.uncertainty.relative_q80||0):0;
@@ -78,9 +98,7 @@ html, n = re.subn(
 if n != 1:
     raise RuntimeError(f"No se pudo sustituir renderVC: {n}")
 
-# Render móvil compacto de confianza, calidad, benchmarks y contribuciones.
-insights_js = r'''
-  function insightPct(x,d=1){return x==null||!Number.isFinite(Number(x))?'—':(Number(x)*100).toFixed(d)+'%'}
+insights_js = r'''  function insightPct(x,d=1){return x==null||!Number.isFinite(Number(x))?'—':(Number(x)*100).toFixed(d)+'%'}
   function liveContributions(){
     if(!(liveData&&liveData.market_open&&latestData&&latestData.coefficients))return null;
     const beta=latestData.coefficients,map={SPY:'ret_SPY',NEM:'ret_NEM',FCX:'ret_FCX',EPU:'ret_EPU',MCHI:'ret_MCHI',EEM:'ret_EEM',USD_PEN:'ret_USD_PEN'},out=[];
@@ -88,49 +106,94 @@ insights_js = r'''
     (liveData.assets||[]).forEach(a=>{const k=map[a.serie],r=Number(a.retorno_modelo);if(k&&Number.isFinite(r)&&Number.isFinite(Number(beta[k])))out.push({label:a.serie==='USD_PEN'?'USD/PEN':a.serie,contribution_pp:Number(beta[k])*r*100})});
     return out.sort((a,b)=>Math.abs(b.contribution_pp)-Math.abs(a.contribution_pp));
   }
+  function classifyModelReturn(r){return Number(r)>.001?'SUBE':Number(r)<-.001?'BAJA':'NEUTRO'}
+  function currentHuber(){
+    const h=modelInsights&&modelInsights.challenger_huber;if(!h||h.status!=='CHALLENGER ACTIVO')return null;
+    if(liveData&&liveData.market_open&&h.coefficients){
+      const beta=h.coefficients,map={SPY:'ret_SPY',NEM:'ret_NEM',FCX:'ret_FCX',EPU:'ret_EPU',MCHI:'ret_MCHI',EEM:'ret_EEM',USD_PEN:'ret_USD_PEN'};
+      let r=Number(beta.intercept||0),used=0;
+      (liveData.assets||[]).forEach(a=>{const k=map[a.serie],v=Number(a.retorno_modelo);if(k&&Number.isFinite(v)&&Number.isFinite(Number(beta[k]))){r+=Number(beta[k])*v;used+=1}});
+      if(used===7)return {fecha:liveData.signal_date,ret_estimado:r,senal:classifyModelReturn(r),live:true};
+    }
+    return h.current||null;
+  }
   function renderInsights(){
     if(!modelInsights)return;
-    const c=modelInsights.confidence||{},u=modelInsights.uncertainty||{},q=modelInsights.quality||{},b=modelInsights.benchmarks||{},p=modelInsights.performance||{};
+    const c=modelInsights.confidence||{},u=modelInsights.uncertainty||{},q=modelInsights.quality||{},b=modelInsights.benchmarks||{},p=modelInsights.performance||{},h=modelInsights.challenger_huber||{},hp=h.performance||{},hc=h.comparison_vs_ols||{};
     const acc=c.historical_accuracy;
     $('confidenceValue').textContent=acc==null?'—':(Number(acc)*100).toFixed(0)+'% · '+(c.label||'');
     $('confidenceSub').textContent=`${modelInsights.current_signal||'—'} · n=${c.n||0} · no es probabilidad garantizada`;
     $('bandValue').textContent=u.relative_q80==null?'—':'±'+(Number(u.relative_q80)*100).toFixed(2)+'%';
     $('qualityValue').textContent=q.status||'—';
-    $('qualitySub').textContent=`OLS ${q.training_n||0}/90 · FX ${q.fx_provisional?'provisional':'confirmado'}`;
+    $('qualitySub').textContent=`OLS ${q.training_n||0}/90 · Huber ${h.training&&h.training.n?h.training.n:0}/90 · FX ${q.fx_provisional?'provisional':'confirmado'}`;
     const qc=q.status==='OK'?'quality-ok':q.status==='REVISAR'?'quality-bad':'quality-warn';
     $('qualityValue').className='insight-value '+qc;$('qualityBadge').className='insight-badge '+qc;$('qualityBadge').textContent=q.status||'—';
     const imp=b.ols_mae_improvement_vs_zero;
     $('benchmarkValue').textContent=imp==null?'—':(imp>=0?'Mejor ':'Peor ')+(Math.abs(Number(imp))*100).toFixed(0)+'%';
+
+    const hub=currentHuber(),olsSignal=liveData&&liveData.market_open?liveData.signal:(latestData?latestData.signal:modelInsights.current_signal);
+    if(hub){
+      const same=String(hub.senal)===String(olsSignal),hv=$('huberValue'),hs=$('huberSub');
+      hv.textContent=`${hub.senal} · ${(Number(hub.ret_estimado)*100).toFixed(3)}%`;
+      hv.className='challenger-value '+(hub.senal==='SUBE'?'up':hub.senal==='BAJA'?'down':'flat');
+      const score=hp.classification_accuracy==null?'—':`${hp.correct||0}/${hp.window_n||0} · ${(Number(hp.classification_accuracy)*100).toFixed(1)}%`;
+      hs.textContent=`${same?'Coincide':'Difiere'} con OLS · ${score}${hub.live?' · intradía':''} · OLS sigue oficial`;
+      hs.className='challenger-sub '+(same?'challenger-ok':'challenger-diff');
+    }else{
+      $('huberValue').textContent=h.status||'NO DISPONIBLE';$('huberValue').className='challenger-value challenger-warn';$('huberSub').textContent=h.error||'OLS continúa como señal principal.';
+    }
+
     const contrib=liveContributions()||(modelInsights.contributions||[]);
     const max=Math.max(...contrib.map(x=>Math.abs(Number(x.contribution_pp)||0)),0.0001);
     $('factorList').innerHTML=contrib.map(x=>{const v=Number(x.contribution_pp)||0,w=Math.max(2,Math.abs(v)/max*100),cl=v>0?'posbar':v<0?'negbar':'';return `<div class="factor-row"><b>${x.label}</b><div class="factor-track"><div class="factor-fill ${cl}" style="width:${w.toFixed(1)}%"></div></div><div class="factor-value ${v>0?'pos':v<0?'neg':'zero'}">${v>=0?'+':''}${v.toFixed(3)} pp</div></div>`}).join('')||'<div class="note">Sin contribuciones disponibles.</div>';
     const items=[
-      ['Acierto global',insightPct(p.classification_accuracy,0)],
-      ['MAE retorno',p.mae_return_pp==null?'—':Number(p.mae_return_pp).toFixed(2)+' pp'],
-      ['Acierto SUBE',insightPct(p.sube_accuracy,0)+' · n='+Number(p.sube_n||0)],
-      ['Acierto BAJA',insightPct(p.baja_accuracy,0)+' · n='+Number(p.baja_n||0)],
-      ['Base sin cambio',b.zero_change_mae_pp==null?'—':Number(b.zero_change_mae_pp).toFixed(2)+' pp MAE'],
-      ['Dirección previa',insightPct(b.previous_direction_accuracy,0)]
+      ['Acierto OLS',insightPct(p.classification_accuracy,0)],
+      ['MAE OLS',p.mae_return_pp==null?'—':Number(p.mae_return_pp).toFixed(2)+' pp'],
+      ['Acierto Huber',hp.classification_accuracy==null?'—':insightPct(hp.classification_accuracy,0)],
+      ['MAE Huber',hp.mae_return_pp==null?'—':Number(hp.mae_return_pp).toFixed(2)+' pp'],
+      ['Mejora Huber',hc.net_correct==null?'—':`${Number(hc.net_correct)>=0?'+':''}${Number(hc.net_correct)} aciertos`],
+      ['Errores corregidos',hc.corrected_errors==null?'—':`${hc.corrected_errors} · nuevos ${hc.new_errors||0}`],
+      ['Acierto SUBE OLS',insightPct(p.sube_accuracy,0)+' · n='+Number(p.sube_n||0)],
+      ['Acierto BAJA OLS',insightPct(p.baja_accuracy,0)+' · n='+Number(p.baja_n||0)]
     ];
     $('perfGrid').innerHTML=items.map(x=>`<div class="perf-item"><b>${x[1]}</b><span>${x[0]}</span></div>`).join('');
-    const notes=[...(q.critical||[]),...(q.warnings||[])];$('qualityNotes').textContent=notes.length?notes.join(' · '):'Controles de integridad sin alertas.';
+    const notes=[...(q.critical||[]),...(q.warnings||[])];$('qualityNotes').textContent=notes.length?notes.join(' · '):'Controles de integridad sin alertas. Huber se registra como challenger y no reemplaza la señal OLS.';
   }
 '''
-needle = "  function renderMarket(){"
-if insights_js.strip() not in html:
+html, n = re.subn(
+    r"  function insightPct\(.*?\n  function renderMarket\(\)\{",
+    insights_js + "\n  function renderMarket(){",
+    html,
+    count=1,
+    flags=re.S,
+)
+if n == 0:
+    needle = "  function renderMarket(){"
     if needle not in html:
         raise RuntimeError("No se encontró renderMarket")
     html = html.replace(needle, insights_js + "\n" + needle, 1)
 
-# Cada actualización live vuelve a calcular contribuciones si el mercado está abierto.
-html = html.replace("renderTop()\n  }", "renderTop();renderInsights()\n  }", 1)
+if "renderTop();renderInsights()" not in html:
+    html = html.replace("renderTop()\n  }", "renderTop();renderInsights()\n  }", 1)
 
-# Cargar model_insights.json junto con los otros datos del visor.
-old_promise = """    fetch('data/latest.json',{cache:'no-store'}).then(r=>r.json()),\n    loadLive()\n  ]).then(([sig,ser,op,latest])=>{\n    richSignals=sig.sort((a,b)=>a.fecha.localeCompare(b.fecha));allSeries=ser.sort((a,b)=>a.fecha.localeCompare(b.fecha));operationSeries=op.sort((a,b)=>a.fecha.localeCompare(b.fecha));latestData=latest;\n    renderVC();renderSignals();renderTop();renderMarket();"""
-new_promise = """    fetch('data/latest.json',{cache:'no-store'}).then(r=>r.json()),\n    fetch('data/model_insights.json',{cache:'no-store'}).then(r=>r.json()),\n    loadLive()\n  ]).then(([sig,ser,op,latest,insights])=>{\n    richSignals=sig.sort((a,b)=>a.fecha.localeCompare(b.fecha));allSeries=ser.sort((a,b)=>a.fecha.localeCompare(b.fecha));operationSeries=op.sort((a,b)=>a.fecha.localeCompare(b.fecha));latestData=latest;modelInsights=insights;\n    renderVC();renderSignals();renderTop();renderMarket();renderInsights();"""
-if old_promise not in html:
-    raise RuntimeError("No se encontró Promise principal para integrar insights")
-html = html.replace(old_promise, new_promise, 1)
+if "fetch('data/model_insights.json'" not in html:
+    old_promise = """    fetch('data/latest.json',{cache:'no-store'}).then(r=>r.json()),
+    loadLive()
+  ]).then(([sig,ser,op,latest])=>{
+    richSignals=sig.sort((a,b)=>a.fecha.localeCompare(b.fecha));allSeries=ser.sort((a,b)=>a.fecha.localeCompare(b.fecha));operationSeries=op.sort((a,b)=>a.fecha.localeCompare(b.fecha));latestData=latest;
+    renderVC();renderSignals();renderTop();renderMarket();"""
+    new_promise = """    fetch('data/latest.json',{cache:'no-store'}).then(r=>r.json()),
+    fetch('data/model_insights.json',{cache:'no-store'}).then(r=>r.json()),
+    loadLive()
+  ]).then(([sig,ser,op,latest,insights])=>{
+    richSignals=sig.sort((a,b)=>a.fecha.localeCompare(b.fecha));allSeries=ser.sort((a,b)=>a.fecha.localeCompare(b.fecha));operationSeries=op.sort((a,b)=>a.fecha.localeCompare(b.fecha));latestData=latest;modelInsights=insights;
+    renderVC();renderSignals();renderTop();renderMarket();renderInsights();"""
+    if old_promise not in html:
+        raise RuntimeError("No se encontró Promise principal para integrar insights")
+    html = html.replace(old_promise, new_promise, 1)
+
+if "Challenger Huber" not in html or "huberValue" not in html:
+    raise AssertionError("No se integró el challenger Huber en el HTML")
 
 HTML_PATH.write_text(html, encoding="utf-8")
-print("Visor móvil: confianza + banda 80% + factores + calidad + rendimiento.")
+print("Visor móvil: OLS principal + Huber challenger paralelo + métricas comparadas.")
