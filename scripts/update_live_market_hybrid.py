@@ -169,3 +169,5 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+
+# SYNC_TRIGGER_EEM_20260727: fuerza una ejecución posterior a la publicación del OLS de 7 factores.
