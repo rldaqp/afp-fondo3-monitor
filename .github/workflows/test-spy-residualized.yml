@@ -1,0 +1,62 @@
+name: Probar SPY residualizado en Huber
+
+on:
+  pull_request:
+    branches:
+      - migracion-github-actions
+    paths:
+      - "research/test_spy_residualized.py"
+      - ".github/workflows/test-spy-residualized.yml"
+      - "data/rolling90/**"
+      - "requirements.txt"
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Descargar repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Instalar dependencias
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Ejecutar prueba residualizada
+        run: python research/test_spy_residualized.py
+
+      - name: Validar salidas
+        run: |
+          test -s research_outputs/spy_residualized/results.json
+          test -s research_outputs/spy_residualized/paired_predictions.csv
+          test -s research_outputs/spy_residualized/coefficient_history.csv
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          result = json.loads(Path('research_outputs/spy_residualized/results.json').read_text(encoding='utf-8'))
+          assert result['latest90']['full7']['n'] == 90
+          assert result['latest90']['spy_residualized']['n'] == 90
+          assert result['sample']['rolling_predictions_n'] > 90
+          assert result['current']['training']['n'] == 90
+          assert result['current']['full7']['latest'] is not None
+          assert result['current']['spy_residualized']['latest'] is not None
+          print(json.dumps(result['latest90'], ensure_ascii=False, indent=2))
+          print(json.dumps(result['chronological_60_20_20'], ensure_ascii=False, indent=2))
+          print(json.dumps(result['current'], ensure_ascii=False, indent=2))
+          PY
+
+      - name: Guardar resultados
+        uses: actions/upload-artifact@v4
+        with:
+          name: spy-residualized-results
+          path: research_outputs/spy_residualized
+          retention-days: 90
