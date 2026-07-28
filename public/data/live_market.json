@@ -1,10 +1,10 @@
 {
-  "generated_at_lima": "2026-07-27T20:42:58.633071-05:00",
+  "generated_at_lima": "2026-07-27T20:43:04.644503-05:00",
   "mode": "CIERRE DIARIO",
   "market_open": false,
   "signal_date": "2026-07-27",
-  "vc_estimated": 68.92649908315029,
-  "return_estimated": 0.0010565424935612272,
+  "vc_estimated": 68.6583537056239,
+  "return_estimated": 0.001218359474546832,
   "signal": "SUBE",
   "assets": [
     {
@@ -22,10 +22,10 @@
       "serie": "NEM",
       "ticker": "NEM",
       "timestamp": "2026-07-27",
-      "precio_anterior": 93.19000244140624,
+      "precio_anterior": 93.19000244140625,
       "precio_actual": 93.47000122070312,
-      "retorno": 0.003004601051201261,
-      "retorno_modelo": 0.003004601051201261,
+      "retorno": 0.003004601051201039,
+      "retorno_modelo": 0.003004601051201039,
       "estado": "CIERRE DIARIO YAHOO · USADO POR MODELO",
       "usado_modelo": true
     },
@@ -33,10 +33,10 @@
       "serie": "FCX",
       "ticker": "FCX",
       "timestamp": "2026-07-27",
-      "precio_anterior": 62.59999847412109,
+      "precio_anterior": 62.599998474121094,
       "precio_actual": 62.720001220703125,
-      "retorno": 0.0019169768291871225,
-      "retorno_modelo": 0.0019169768291871225,
+      "retorno": 0.0019169768291869005,
+      "retorno_modelo": 0.0019169768291869005,
       "estado": "CIERRE DIARIO YAHOO · USADO POR MODELO",
       "usado_modelo": true
     },
@@ -59,6 +59,17 @@
       "precio_actual": 54.2599983215332,
       "retorno": 0.017438523505487025,
       "retorno_modelo": 0.017438523505487025,
+      "estado": "CIERRE DIARIO YAHOO · USADO POR MODELO",
+      "usado_modelo": true
+    },
+    {
+      "serie": "EEM",
+      "ticker": "EEM",
+      "timestamp": "2026-07-27",
+      "precio_anterior": 63.33000183105469,
+      "precio_actual": 63.619998931884766,
+      "retorno": 0.0045791424671628445,
+      "retorno_modelo": 0.0045791424671628445,
       "estado": "CIERRE DIARIO YAHOO · USADO POR MODELO",
       "usado_modelo": true
     },
