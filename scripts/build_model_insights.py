@@ -11,13 +11,14 @@ DATA = ROOT / "data" / "rolling90"
 PUBLIC = ROOT / "public" / "data"
 THRESHOLD = 0.001
 WINDOW = 90
-FEATURES = ["ret_SPY", "ret_NEM", "ret_FCX", "ret_EPU", "ret_MCHI", "ret_USD_PEN"]
+FEATURES = ["ret_SPY", "ret_NEM", "ret_FCX", "ret_EPU", "ret_MCHI", "ret_EEM", "ret_USD_PEN"]
 LABELS = {
     "ret_SPY": "SPY",
     "ret_NEM": "NEM",
     "ret_FCX": "FCX",
     "ret_EPU": "EPU",
     "ret_MCHI": "MCHI",
+    "ret_EEM": "EEM",
     "ret_USD_PEN": "USD/PEN",
 }
 
@@ -131,6 +132,9 @@ def main() -> None:
     if int(latest.get("training_n", 0)) != WINDOW:
         quality_critical.append(f"Ventana OLS {latest.get('training_n')} / {WINDOW}")
 
+    if "ret_EEM" not in beta:
+        quality_critical.append("El modelo publicado no contiene el factor EEM")
+
     if sbs_raw.empty:
         quality_critical.append("Serie SBS vacía")
         sbs = pd.DataFrame()
@@ -146,9 +150,11 @@ def main() -> None:
 
     if not markets.empty and not sbs.empty:
         markets["fecha"] = pd.to_datetime(markets["fecha"], errors="coerce")
-        equity_cols = ["SPY", "NEM", "FCX", "EPU", "MCHI"]
+        equity_cols = ["SPY", "NEM", "FCX", "EPU", "MCHI", "EEM"]
         available = [c for c in equity_cols if c in markets.columns]
-        if len(available) == len(equity_cols):
+        if len(available) != len(equity_cols):
+            quality_critical.append("Falta EEM o algún ETF del modelo en markets.csv")
+        else:
             last_sbs = pd.Timestamp(latest["latest_sbs_date"])
             start = last_sbs - pd.Timedelta(days=45)
             candidate = markets.loc[
