@@ -18,6 +18,18 @@ base = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(base)
 
 
+def _configure_assets_from_model(latest: dict) -> None:
+    """El intradía usa exactamente los factores publicados por el OLS vigente.
+
+    Durante la migración, un latest.json antiguo de 6 factores sigue funcionando.
+    En cuanto latest.json publica ret_EEM, EEM entra automáticamente en la misma
+    descarga Yahoo intradía que los demás ETF.
+    """
+    if "ret_EEM" in (latest.get("coefficients", {}) or {}) and "EEM" not in base.ASSETS:
+        base.ASSETS.append("EEM")
+    base.FEATURES = [f"ret_{x}" for x in base.ASSETS] + ["ret_USD_PEN"]
+
+
 def _fx_row(payload: dict) -> dict | None:
     for row in payload.get("assets", []):
         if row.get("serie") == "USD_PEN":
@@ -117,6 +129,7 @@ def main() -> None:
     if not base.LATEST_PATH.exists():
         raise RuntimeError("Falta public/data/latest.json")
     latest = json.loads(base.LATEST_PATH.read_text(encoding="utf-8"))
+    _configure_assets_from_model(latest)
     markets = base._read_csv(base.MARKETS_PATH)
     pending = base._read_csv(base.PENDING_PATH)
     if markets.empty:
