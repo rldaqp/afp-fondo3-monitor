@@ -1,0 +1,55 @@
+name: Probar factor global PCA en Huber
+
+on:
+  pull_request:
+    branches:
+      - migracion-github-actions
+    paths:
+      - "research/test_global_pca_factor.py"
+      - ".github/workflows/test-global-pca-factor.yml"
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Descargar repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Instalar dependencias
+        run: pip install -r requirements.txt
+
+      - name: Ejecutar prueba PCA
+        run: python research/test_global_pca_factor.py
+
+      - name: Validar salidas
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          out = Path("research_outputs/global_pca_factor")
+          required = [out / "results.json", out / "paired_predictions.csv", out / "pca_diagnostics.csv"]
+          for path in required:
+              assert path.exists() and path.stat().st_size > 0, path
+
+          result = json.loads((out / "results.json").read_text(encoding="utf-8"))
+          assert result["latest90"]["full7"]["n"] == 90
+          assert result["selected_on_validation"] in {"global4_pc1", "global4_pc2", "all6_pc1"}
+          assert result["chronological_60_20_20"]["test"]["full7"]["n"] > 0
+          assert result["current"]["full7"]["latest"] is not None
+          print("Validación correcta")
+          PY
+
+      - name: Guardar resultados
+        uses: actions/upload-artifact@v4
+        with:
+          name: global-pca-factor-results
+          path: research_outputs/global_pca_factor/
+          retention-days: 90
