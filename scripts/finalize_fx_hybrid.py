@@ -17,8 +17,34 @@ if spec is None or spec.loader is None:
 v5 = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(v5)
 
+# Modelo operativo de 7 factores. EEM se incorpora al mismo universo Yahoo que
+# SPY/NEM/FCX/EPU/MCHI y usa exactamente el mismo Close diario.
+if "EEM" not in v5.parity.engine.ASSETS:
+    v5.parity.engine.ASSETS.append("EEM")
+v5.parity.FEATURES = [f"ret_{x}" for x in v5.parity.engine.ASSETS] + ["ret_USD_PEN"]
+v5.parity.EQUITY_FEATURES = [f"ret_{x}" for x in v5.parity.engine.ASSETS]
+v5.parity.engine.FEATURES = list(v5.parity.FEATURES)
+
 _original_run = v5._run_with_canonical_history
 _original_write_outputs = v5.parity._write_outputs
+
+
+def _prepare_saved_markets_for_eem() -> None:
+    """Permite la primera migración 6 -> 7 factores sin inventar datos de EEM.
+
+    El archivo guardado histórico aún puede no tener la columna EEM. Se crea
+    vacía únicamente para que la rutina de combinación pueda ejecutarse; los
+    valores de EEM deben venir de la descarga Yahoo Finance del mismo proceso.
+    Si Yahoo no devuelve EEM, la validación de observaciones completas fallará
+    en vez de sustituirlo por otra fuente.
+    """
+    path = v5.parity.DATA / "markets.csv"
+    saved = v5.parity.engine.read_saved(path)
+    if saved.empty or "EEM" in saved.columns:
+        return
+    saved["EEM"] = np.nan
+    v5.parity.engine.save_csv(saved, path)
+    print("Migración EEM: columna creada; valores serán descargados desde Yahoo Finance.")
 
 
 def _penx_daily_returns() -> dict[pd.Timestamp, float]:
@@ -81,8 +107,8 @@ def _run_hybrid(sbs: pd.DataFrame, markets: pd.DataFrame):
             out.at[i, "estado_fuentes"] = "USD/PEN SIN DATO · 0 % PROVISIONAL"
             out.at[i, "estado"] = "PROVISIONAL / FX SIN DATO"
 
-    # El entrenamiento y sus coeficientes no cambian: siguen siendo BCRP histórico.
-    # Solo se recalculan las predicciones pendientes usando el FX provisional elegido.
+    # El entrenamiento y sus coeficientes no cambian por la regla híbrida de FX:
+    # usa BCRP histórico. EEM sí forma parte estructural del OLS de 7 factores.
     beta = meta["coefficients"]
     base = float(meta["latest_sbs_vc"])
     for i, row in out.iterrows():
@@ -109,6 +135,8 @@ def _write_outputs_hybrid(sbs, markets, historical, pending, meta, market_note):
         "BCRP PD04646PD para histórico y entrenamiento; Yahoo PEN=X solo como respaldo provisional "
         "de predicciones cuando BCRP aún no publicó la fecha"
     )
+    latest["sources"]["EEM"] = "Yahoo Finance · Close · auto_adjust=False · misma descarga que los demás ETF"
+    latest["model_factors"] = [*v5.parity.engine.ASSETS, "USD_PEN"]
     if not pending.empty:
         last = pending.sort_values("fecha").iloc[-1]
         latest["latest_fx_source"] = str(last.get("usd_pen_fuente", "BCRP"))
@@ -124,6 +152,7 @@ v5.parity._write_outputs = _write_outputs_hybrid
 
 
 if __name__ == "__main__":
+    _prepare_saved_markets_for_eem()
     v5.main()
     # v5 conserva por compatibilidad el nombre del motor live anterior; actualizamos
     # únicamente la etiqueta de auditoría después de que finaliza su validación interna.
