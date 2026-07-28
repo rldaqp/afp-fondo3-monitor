@@ -17,6 +17,7 @@ FACTORS = [
     "ret_EEM",
     "ret_USD_PEN",
 ]
+LAG_FACTORS = [f"{factor}_lag1" for factor in FACTORS]
 
 ROOT = Path(__file__).resolve().parents[1]
 MARKETS = ROOT / "data" / "rolling90" / "markets.csv"
@@ -92,8 +93,9 @@ def metrics(pred: pd.DataFrame) -> dict:
     return out
 
 
-def segment_metrics(pred: pd.DataFrame, start: int, end: int) -> dict:
-    return metrics(pred.iloc[start:end].reset_index(drop=True))
+def date_metrics(pred: pd.DataFrame, dates: set[pd.Timestamp]) -> dict:
+    subset = pred[pred["fecha"].isin(dates)].sort_values("fecha").reset_index(drop=True)
+    return metrics(subset)
 
 
 def main() -> None:
@@ -101,60 +103,67 @@ def main() -> None:
     sbs = pd.read_csv(SBS, parse_dates=["fecha"]).sort_values("fecha")
     sbs["ret_profuturo"] = sbs["valor_cuota"].pct_change(fill_method=None)
 
-    # t-1 es la sesión de mercado inmediatamente anterior disponible.
+    # t-1 es la sesión bursátil completa inmediatamente anterior, no la fila
+    # calendario anterior (que podría ser feriado y contener retornos vacíos).
+    complete_market = markets.dropna(subset=FACTORS).copy().sort_values("fecha").reset_index(drop=True)
     for factor in FACTORS:
-        markets[f"{factor}_lag1"] = markets[factor].shift(1)
+        complete_market[f"{factor}_lag1"] = complete_market[factor].shift(1)
 
-    data = sbs[["fecha", "valor_cuota", "ret_profuturo"]].merge(markets, on="fecha", how="inner")
+    data = sbs[["fecha", "valor_cuota", "ret_profuturo"]].merge(
+        complete_market[["fecha", *FACTORS, *LAG_FACTORS]],
+        on="fecha",
+        how="inner",
+    )
     feature_sets = {
         "t": FACTORS,
-        "t_minus_1": [f"{f}_lag1" for f in FACTORS],
-        "t_plus_t_minus_1": FACTORS + [f"{f}_lag1" for f in FACTORS],
+        "t_minus_1": LAG_FACTORS,
+        "t_plus_t_minus_1": FACTORS + LAG_FACTORS,
     }
-
     predictions = {name: rolling_predictions(data, feats) for name, feats in feature_sets.items()}
 
-    # Ventana comparable: fechas presentes en los tres modelos.
-    common_dates = set(predictions["t"]["fecha"])
-    for name in ["t_minus_1", "t_plus_t_minus_1"]:
-        common_dates &= set(predictions[name]["fecha"])
-    common_dates = sorted(common_dates)
-    comparable = {
-        name: frame[frame["fecha"].isin(common_dates)].sort_values("fecha").reset_index(drop=True)
-        for name, frame in predictions.items()
+    # Últimas 90 observaciones propias de cada modelo. En el tramo reciente las
+    # fechas deben coincidir; se registra el rango para verificarlo.
+    last90_frames = {name: frame.tail(90).reset_index(drop=True) for name, frame in predictions.items()}
+    last90 = {name: metrics(frame) for name, frame in last90_frames.items()}
+    last90_date_ranges = {
+        name: [str(frame["fecha"].min().date()), str(frame["fecha"].max().date())]
+        for name, frame in last90_frames.items()
     }
 
-    last90 = {name: metrics(frame.tail(90).reset_index(drop=True)) for name, frame in comparable.items()}
-
-    # Corte cronológico 60/20/20 sobre predicciones walk-forward comparables.
-    n = len(common_dates)
-    cut60 = int(np.floor(n * 0.60))
-    cut80 = int(np.floor(n * 0.80))
+    # Corte 60/20/20 sobre la muestra cruda común a los tres modelos. Las
+    # predicciones siguen siendo walk-forward rolling 90.
+    common_raw = data.dropna(subset=["ret_profuturo", *FACTORS, *LAG_FACTORS]).copy().reset_index(drop=True)
+    n_raw = len(common_raw)
+    cut60 = int(np.floor(n_raw * 0.60))
+    cut80 = int(np.floor(n_raw * 0.80))
+    train_dates = set(common_raw.iloc[:cut60]["fecha"])
+    validation_dates = set(common_raw.iloc[cut60:cut80]["fecha"])
+    test_dates = set(common_raw.iloc[cut80:]["fecha"])
     split = {
-        "n_common_predictions": n,
-        "train_like_60": [str(common_dates[0].date()), str(common_dates[cut60 - 1].date())] if cut60 else None,
-        "validation_20": [str(common_dates[cut60].date()), str(common_dates[cut80 - 1].date())],
-        "test_20": [str(common_dates[cut80].date()), str(common_dates[-1].date())],
-        "validation": {name: segment_metrics(frame, cut60, cut80) for name, frame in comparable.items()},
-        "test": {name: segment_metrics(frame, cut80, n) for name, frame in comparable.items()},
+        "n_common_raw": n_raw,
+        "train_60": [str(common_raw.iloc[0]["fecha"].date()), str(common_raw.iloc[cut60 - 1]["fecha"].date())],
+        "validation_20": [str(common_raw.iloc[cut60]["fecha"].date()), str(common_raw.iloc[cut80 - 1]["fecha"].date())],
+        "test_20": [str(common_raw.iloc[cut80]["fecha"].date()), str(common_raw.iloc[-1]["fecha"].date())],
+        "n_train": len(train_dates),
+        "n_validation": len(validation_dates),
+        "n_test": len(test_dates),
+        "validation": {name: date_metrics(frame, validation_dates) for name, frame in predictions.items()},
+        "test": {name: date_metrics(frame, test_dates) for name, frame in predictions.items()},
     }
 
-    # Auditoría de los 14 errores del modelo t en las últimas 90 fechas comparables.
-    base90 = comparable["t"].tail(90).reset_index(drop=True)
-    combo90 = comparable["t_plus_t_minus_1"].tail(90).reset_index(drop=True)
+    # Auditoría de los 14 errores del modelo operativo t en sus últimas 90.
+    base90 = last90_frames["t"]
+    combo = predictions["t_plus_t_minus_1"]
     audit = base90.merge(
-        combo90[["fecha", "ret_estimado", "senal_estimada"]],
+        combo[["fecha", "ret_estimado", "senal_estimada"]],
         on="fecha",
         suffixes=("_t", "_combo"),
+        how="left",
     )
     audit["acierto_t"] = audit["senal_estimada_t"] == audit["senal_real"]
     audit["acierto_combo"] = audit["senal_estimada_combo"] == audit["senal_real"]
     errors_t = audit[~audit["acierto_t"]].copy()
-    errors_t["estado_combo"] = np.select(
-        [errors_t["acierto_combo"], ~errors_t["acierto_combo"]],
-        ["CORREGIDO", "SIGUE_ERROR"],
-        default="",
-    )
+    errors_t["estado_combo"] = np.where(errors_t["acierto_combo"], "CORREGIDO", "SIGUE_ERROR")
     new_errors = audit[audit["acierto_t"] & ~audit["acierto_combo"]].copy()
 
     results = {
@@ -162,11 +171,12 @@ def main() -> None:
             "window": WINDOW,
             "threshold": THRESHOLD,
             "factors": FACTORS,
-            "t_minus_1_definition": "sesion de mercado inmediatamente anterior disponible",
-            "models": {k: v for k, v in feature_sets.items()},
+            "t_minus_1_definition": "sesion bursatil completa inmediatamente anterior",
+            "models": feature_sets,
         },
-        "last90_common": last90,
-        "split_60_20_20_on_walk_forward_predictions": split,
+        "last90": last90,
+        "last90_date_ranges": last90_date_ranges,
+        "split_60_20_20": split,
         "error_audit": {
             "baseline_errors": int((~audit["acierto_t"]).sum()),
             "baseline_correct": int(audit["acierto_t"].sum()),
