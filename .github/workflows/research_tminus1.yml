@@ -7,6 +7,12 @@ on:
     paths:
       - "research/**"
       - ".github/workflows/research_tminus1.yml"
+  pull_request:
+    branches:
+      - migracion-github-actions
+    paths:
+      - "research/**"
+      - ".github/workflows/research_tminus1.yml"
 
 permissions:
   contents: write
@@ -32,6 +38,7 @@ jobs:
         run: python research/test_tminus1.py
 
       - name: Guardar resultados en rama de investigación
+        if: github.event_name == 'push'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
