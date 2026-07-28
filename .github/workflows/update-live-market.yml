@@ -69,6 +69,7 @@ jobs:
           import json
           from pathlib import Path
           live = json.loads(Path("public/data/live_market.json").read_text(encoding="utf-8"))
+          latest = json.loads(Path("public/data/latest.json").read_text(encoding="utf-8"))
           assert live.get("engine") == "LIVE INDEPENDIENTE", live
           assert live.get("generated_at_lima"), live
           assert live.get("mode"), live
@@ -77,7 +78,10 @@ jobs:
           assert "Yahoo PEN=X provisional" in live.get("fx_rule", ""), live
           if live.get("market_open") and not live.get("warning"):
               names = {x.get("serie") for x in live.get("assets", [])}
-              assert names == {"SPY", "NEM", "FCX", "EPU", "MCHI", "USD_PEN"}, names
+              expected = {"SPY", "NEM", "FCX", "EPU", "MCHI", "USD_PEN"}
+              if "ret_EEM" in (latest.get("coefficients", {}) or {}):
+                  expected.add("EEM")
+              assert names == expected, (names, expected)
               assert live.get("mode") == "INTRADÍA PROVISIONAL", live
               fx = next(x for x in live["assets"] if x.get("serie") == "USD_PEN")
               if live.get("fx_source", "").startswith("YAHOO"):
