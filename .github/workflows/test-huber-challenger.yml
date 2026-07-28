@@ -1,0 +1,76 @@
+name: Validar challenger Huber
+
+on:
+  pull_request:
+    branches:
+      - migracion-github-actions
+    paths:
+      - "scripts/build_model_insights.py"
+      - "scripts/postprocess_model_insights_ui.py"
+      - ".github/workflows/test-huber-challenger.yml"
+  push:
+    branches:
+      - feature-huber-challenger
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Descargar repositorio
+        uses: actions/checkout@v4
+        with:
+          ref: feature-huber-challenger
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Instalar dependencias
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Construir challenger e interfaz
+        run: |
+          python scripts/build_model_insights.py
+          python scripts/postprocess_model_insights_ui.py
+
+      - name: Validar resultados
+        run: |
+          grep -q "Challenger Huber" public/index.html
+          grep -q "huberValue" public/index.html
+          test -s data/rolling90/huber_challenger_predictions.csv
+          test -s data/rolling90/huber_challenger_pending.csv
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          insights = json.loads(Path("public/data/model_insights.json").read_text(encoding="utf-8"))
+          huber = insights["challenger_huber"]
+          perf = huber["performance"]
+          comparison = huber["comparison_vs_ols"]
+          assert huber["status"] == "CHALLENGER ACTIVO", huber
+          assert int(huber["training"]["n"]) == 90
+          assert int(perf["window_n"]) == 90
+          assert huber["current"]["senal"] in {"SUBE", "NEUTRO", "BAJA"}
+          assert float(huber["current"]["vc_estimado"]) > 0
+          assert int(comparison["paired_n"]) == 90
+          assert int(comparison["huber_correct"]) >= int(comparison["ols_correct"])
+          assert float(comparison["huber_mae_return_pp"]) <= float(comparison["ols_mae_return_pp"])
+          print(json.dumps(huber, ensure_ascii=False, indent=2))
+          PY
+
+      - name: Publicar artefactos de validación
+        uses: actions/upload-artifact@v4
+        with:
+          name: huber-challenger-validation
+          path: |
+            public/data/model_insights.json
+            data/rolling90/huber_challenger_predictions.csv
+            data/rolling90/huber_challenger_pending.csv
+            public/index.html
