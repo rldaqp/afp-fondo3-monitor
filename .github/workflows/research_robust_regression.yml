@@ -1,6 +1,12 @@
 name: Prueba robusta OLS Ridge Huber
 
 on:
+  pull_request:
+    branches:
+      - migracion-github-actions
+    paths:
+      - "research/robust_regression.py"
+      - ".github/workflows/research_robust_regression.yml"
   push:
     branches:
       - research-robust-regression
@@ -48,5 +54,3 @@ jobs:
         with:
           name: resultados-robust-regression
           path: research_outputs_robust/
-
-# Ejecución auditable con PR abierto.
