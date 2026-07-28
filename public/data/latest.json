@@ -1,5 +1,5 @@
 {
-  "generated_at_lima": "2026-07-27T20:29:22.745508-05:00",
+  "generated_at_lima": "2026-07-27T20:43:04.644503-05:00",
   "model": "OLS rolling 90",
   "window": 90,
   "threshold": 0.001,
@@ -10,18 +10,19 @@
   "latest_sbs_vc": 70.0218928,
   "latest_market_date": "2026-07-27",
   "latest_estimate_date": "2026-07-27",
-  "latest_estimated_vc": 68.92649908315029,
-  "latest_return_estimated": 0.0010565424935612272,
+  "latest_estimated_vc": 68.6583537056239,
+  "latest_return_estimated": 0.001218359474546832,
   "signal": "SUBE",
   "estimate_type": "CIERRE DIARIO · MODELO OLS · PARIDAD NOTEBOOK",
   "coefficients": {
-    "intercept": -8.033335857629022e-05,
-    "ret_SPY": 0.45208658623256437,
-    "ret_NEM": 0.10264198488238255,
-    "ret_FCX": 0.09051509221693112,
-    "ret_EPU": 0.316472653874144,
-    "ret_MCHI": 0.02990944215787815,
-    "ret_USD_PEN": 0.3030572600259491
+    "intercept": -0.00015412068589620463,
+    "ret_SPY": 0.014476784717709102,
+    "ret_NEM": 0.10317214948451553,
+    "ret_FCX": 0.06538665492972415,
+    "ret_EPU": 0.2825930694819369,
+    "ret_MCHI": -0.03583169957353839,
+    "ret_EEM": 0.32670509721846824,
+    "ret_USD_PEN": 0.33505587050022084
   },
   "parity_rule": "BCRP exclusivo para histórico/entrenamiento; en predicción pendiente se usa BCRP si existe; si BCRP está rezagado se usa Yahoo PEN=X provisional; 0 % solo si ambas fuentes faltan; VC encadenado",
   "parity_verified": true,
@@ -29,10 +30,20 @@
   "sources": {
     "sbs": "SBS oficial",
     "market": "Yahoo Finance para SPY, NEM, FCX, EPU y MCHI",
-    "fx": "BCRP PD04646PD para histórico y entrenamiento; Yahoo PEN=X solo como respaldo provisional de predicciones cuando BCRP aún no publicó la fecha"
+    "fx": "BCRP PD04646PD para histórico y entrenamiento; Yahoo PEN=X solo como respaldo provisional de predicciones cuando BCRP aún no publicó la fecha",
+    "EEM": "Yahoo Finance · Close · auto_adjust=False · misma descarga que los demás ETF"
   },
   "market_note": "Yahoo Finance actualizado; respaldo guardado solo donde Yahoo no trae valor; BCRP exclusivo para USD/PEN hasta 2026-07-22",
   "vc_mode_rule": "INTRADÍA PROVISIONAL 09:30-16:10 NY; fuera de ese intervalo CIERRE DIARIO",
+  "model_factors": [
+    "SPY",
+    "NEM",
+    "FCX",
+    "EPU",
+    "MCHI",
+    "EEM",
+    "USD_PEN"
+  ],
   "latest_fx_source": "YAHOO PEN=X PROVISIONAL",
   "latest_fx_provisional": true,
   "parity_reference": "Ventana canónica exacta reconstruida con SBS corregida al 20/07/2026; desde la siguiente observación oficial el rolling 90 continúa normalmente",
