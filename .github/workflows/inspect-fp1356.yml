@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - research-portfolio-regime
+  pull_request:
+    branches:
+      - migracion-github-actions
   workflow_dispatch:
 
 jobs:
