@@ -44,12 +44,12 @@
     },
     "current": {
       "fecha": "2026-07-29",
-      "ret_estimado": -0.014581105159764282,
+      "ret_estimado": -0.014399603105012558,
       "senal": "BAJA",
-      "vc_estimado": 67.1572482329744,
+      "vc_estimado": 67.16961777308528,
       "agrees_with_ols": true,
       "ols_signal": "BAJA",
-      "ols_return_estimated": -0.014446692324610797
+      "ols_return_estimated": -0.014289016309159646
     },
     "performance": {
       "window_n": 90,
@@ -116,9 +116,9 @@
       },
       {
         "fecha": "2026-07-29",
-        "ret_estimado": -0.014581105159764282,
+        "ret_estimado": -0.014399603105012558,
         "senal": "BAJA",
-        "vc_estimado": 67.1572482329744
+        "vc_estimado": 67.16961777308528
       }
     ]
   },
@@ -178,18 +178,18 @@
       "contribution_pp": -0.020291760351872894
     },
     {
+      "feature": "ret_USD_PEN",
+      "label": "USD/PEN",
+      "value": 0.0005881926427675,
+      "coefficient": 0.33505587050022084,
+      "contribution_pp": 0.019707739794429014
+    },
+    {
       "feature": "intercept",
       "label": "Base",
       "value": 1.0,
       "coefficient": -0.00015412068589620463,
       "contribution_pp": -0.015412068589620463
-    },
-    {
-      "feature": "ret_USD_PEN",
-      "label": "USD/PEN",
-      "value": 0.0001175964546877,
-      "coefficient": 0.33505587050022084,
-      "contribution_pp": 0.00394013824931271
     }
   ],
   "quality": {
