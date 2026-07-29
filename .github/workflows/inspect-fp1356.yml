@@ -1,4 +1,4 @@
-name: Inspeccionar FP-1356
+name: Probar composición de cartera
 
 on:
   push:
@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  inspect:
+  test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -18,6 +18,18 @@ jobs:
         with:
           python-version: '3.11'
       - name: Instalar dependencias
-        run: pip install pandas requests xlrd
-      - name: Inspeccionar archivo
-        run: python research/inspect_fp1356.py
+        run: pip install pandas numpy requests xlrd yfinance scikit-learn
+      - name: Ejecutar prueba de cartera
+        run: python research/test_portfolio_regime.py
+      - name: Validar salidas
+        run: |
+          test -s research_outputs/portfolio_regime/results.json
+          test -s research_outputs/portfolio_regime/paired_predictions.csv
+          test -s research_outputs/portfolio_regime/monthly_weights.csv
+          test -s research_outputs/portfolio_regime/target_dates.csv
+      - name: Guardar resultados
+        uses: actions/upload-artifact@v4
+        with:
+          name: portfolio-regime-results
+          path: research_outputs/portfolio_regime/
+          retention-days: 90
