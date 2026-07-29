@@ -1,0 +1,48 @@
+name: Probar factores IA en Huber
+
+on:
+  pull_request:
+    branches: [migracion-github-actions]
+    paths:
+      - "research/test_ai_factors.py"
+      - ".github/workflows/test-ai-factors.yml"
+      - "data/rolling90/**"
+      - "requirements.txt"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Descargar repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Instalar dependencias
+        run: pip install -r requirements.txt
+
+      - name: Ejecutar prueba de IA
+        run: python research/test_ai_factors.py
+
+      - name: Validar salidas
+        run: |
+          test -s research_outputs/ai_factors/results.json
+          test -s research_outputs/ai_factors/paired_predictions.csv
+          test -s research_outputs/ai_factors/target_dates.csv
+          test -s research_outputs/ai_factors/ai_factor_data.csv
+
+      - name: Guardar resultados
+        uses: actions/upload-artifact@v4
+        with:
+          name: ai-factor-results
+          path: research_outputs/ai_factors/
+          retention-days: 90
