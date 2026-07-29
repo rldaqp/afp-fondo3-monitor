@@ -1,0 +1,26 @@
+name: Inspeccionar cartera específica
+
+on:
+  push:
+    branches:
+      - research-specific-portfolio
+  workflow_dispatch:
+
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Instalar dependencias
+        run: pip install pandas requests xlrd pdfplumber
+      - name: Inspeccionar fuentes
+        run: python research/inspect_specific_sources.py
+      - name: Guardar inspección
+        uses: actions/upload-artifact@v4
+        with:
+          name: specific-portfolio-inspection
+          path: research_outputs/specific_portfolio_inspect/
+          retention-days: 30
