@@ -18,7 +18,7 @@ SOURCES = {
     'FP-1306-jn2026.XLS': 'https://intranet2.sbs.gob.pe/estadistica/financiera/2026/Junio/FP-1306-jn2026.XLS',
     'FP-1358-jn2026.XLS': 'https://intranet2.sbs.gob.pe/estadistica/financiera/2026/Junio/FP-1358-jn2026.XLS',
 }
-for number in ['4','5','8','11','12','13']:
+for number in ['4','5','6','7','8','10','11','12','13']:
     SOURCES[f'profuturo-2026-02-{number}.pdf'] = (
         'https://cdn.aglty.io/scotiabank-peru/Profuturo/PDF/personas/'
         f'reporte-cartera-inversiones/2026/febrero/{number}.pdf'
@@ -33,22 +33,24 @@ for name, url in SOURCES.items():
         path.write_bytes(response.content)
         row = {'name': name, 'url': url, 'size': len(response.content), 'status': 'ok'}
         if name.lower().endswith('.xls'):
-            book = pd.ExcelFile(path, engine='xlrd')
+            engine = 'openpyxl' if response.content[:2] == b'PK' else 'xlrd'
+            book = pd.ExcelFile(path, engine=engine)
+            row['engine'] = engine
             row['sheets'] = book.sheet_names
             row['sheet_shapes'] = {}
-            for sheet in book.sheet_names[:8]:
-                frame = pd.read_excel(path, sheet_name=sheet, header=None, engine='xlrd')
+            for sheet in book.sheet_names[:12]:
+                frame = pd.read_excel(path, sheet_name=sheet, header=None, engine=engine)
                 row['sheet_shapes'][sheet] = list(frame.shape)
-                print(f'\n===== {name} :: {sheet} {frame.shape} =====')
-                print(frame.iloc[:25, :18].to_string(index=True, header=True))
+                print(f'\n===== {name} :: {sheet} {frame.shape} engine={engine} =====')
+                print(frame.iloc[:35, :22].to_string(index=True, header=True))
         else:
             with pdfplumber.open(path) as pdf:
                 row['pages'] = len(pdf.pages)
                 print(f'\n===== {name} pages={len(pdf.pages)} =====')
-                for i, page in enumerate(pdf.pages[:3]):
+                for i, page in enumerate(pdf.pages[:5]):
                     text = page.extract_text() or ''
                     print(f'--- page {i+1} ---')
-                    print(text[:12000])
+                    print(text[:18000])
         summary.append(row)
     except Exception as exc:
         summary.append({'name': name, 'url': url, 'status': 'error', 'error': repr(exc)})
