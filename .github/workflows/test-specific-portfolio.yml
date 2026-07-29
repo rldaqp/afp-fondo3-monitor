@@ -20,11 +20,13 @@ jobs:
       - name: Instalar dependencias
         run: pip install pandas numpy requests openpyxl xlrd yfinance scikit-learn
       - name: Ejecutar prueba
-        run: python research/test_specific_portfolio.py
+        run: python research/run_specific_portfolio_final.py
       - name: Validar resultados
         run: |
           test -s research_outputs/specific_portfolio/results.json
           test -s research_outputs/specific_portfolio/paired_predictions.csv
+          test -s research_outputs/specific_portfolio/common_predictions.csv
+          test -s research_outputs/specific_portfolio/oracle_common_predictions.csv
           test -s research_outputs/specific_portfolio/monthly_specific_exposures.csv
           test -s research_outputs/specific_portfolio/source_inventory.json
       - name: Guardar resultados y fuentes
