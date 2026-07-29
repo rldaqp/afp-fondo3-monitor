@@ -1,0 +1,29 @@
+name: Descargar SBS junio 2026
+
+on:
+  push:
+    branches:
+      - temp-download-sbs-june-2026
+  workflow_dispatch:
+
+jobs:
+  download:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Descargar archivo oficial SBS
+        shell: bash
+        run: |
+          set -euo pipefail
+          url='https://intranet2.sbs.gob.pe/estadistica/financiera/2026/Junio/FP-1356-jn2026.XLS'
+          curl --fail --location --retry 3 --retry-delay 2 --user-agent 'Mozilla/5.0' "$url" --output FP-1356-jn2026.XLS
+          test -s FP-1356-jn2026.XLS
+          file FP-1356-jn2026.XLS
+          sha256sum FP-1356-jn2026.XLS
+
+      - name: Guardar archivo descargado
+        uses: actions/upload-artifact@v4
+        with:
+          name: FP-1356-jn2026
+          path: FP-1356-jn2026.XLS
+          if-no-files-found: error
+          retention-days: 7
