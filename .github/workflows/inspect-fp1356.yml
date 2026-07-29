@@ -20,7 +20,7 @@ jobs:
       - name: Instalar dependencias
         run: pip install pandas numpy requests xlrd yfinance scikit-learn
       - name: Ejecutar prueba de cartera
-        run: python research/test_portfolio_regime.py
+        run: python research/run_portfolio_regime.py
       - name: Validar salidas
         run: |
           test -s research_outputs/portfolio_regime/results.json
