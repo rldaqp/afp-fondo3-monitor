@@ -1,0 +1,34 @@
+name: Auditar alerta extrema y USD PEN
+
+on:
+  pull_request:
+    branches: [migracion-github-actions]
+    paths:
+      - "research/audit_divergence_alert.py"
+      - ".github/workflows/test-divergence-alert.yml"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Descargar repositorio
+        uses: actions/checkout@v4
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Instalar dependencias
+        run: pip install pandas numpy scikit-learn
+      - name: Ejecutar auditoría
+        run: python research/audit_divergence_alert.py
+      - name: Validar salidas
+        run: |
+          test -s research_outputs/divergence_alert/results.json
+          test -s research_outputs/divergence_alert/target_dates.csv
+          test -s research_outputs/divergence_alert/error_dates.csv
+          test -s research_outputs/divergence_alert/daily_alert_audit.csv
+      - name: Guardar resultados
+        uses: actions/upload-artifact@v4
+        with:
+          name: divergence-alert-audit-results
+          path: research_outputs/divergence_alert/
