@@ -1,0 +1,18 @@
+name: Inspeccionar FP-1356 2025
+
+on:
+  pull_request:
+    branches:
+      - migracion-github-actions
+  workflow_dispatch:
+
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install pandas requests xlrd
+      - run: python research/inspect_fp1356_2025.py
