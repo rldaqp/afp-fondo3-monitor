@@ -1,0 +1,35 @@
+name: Probar cartera específica
+
+on:
+  push:
+    branches:
+      - research-specific-portfolio
+  pull_request:
+    branches:
+      - migracion-github-actions
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Instalar dependencias
+        run: pip install pandas numpy requests openpyxl xlrd yfinance scikit-learn
+      - name: Ejecutar prueba
+        run: python research/test_specific_portfolio.py
+      - name: Validar resultados
+        run: |
+          test -s research_outputs/specific_portfolio/results.json
+          test -s research_outputs/specific_portfolio/paired_predictions.csv
+          test -s research_outputs/specific_portfolio/monthly_specific_exposures.csv
+          test -s research_outputs/specific_portfolio/source_inventory.json
+      - name: Guardar resultados y fuentes
+        uses: actions/upload-artifact@v4
+        with:
+          name: specific-portfolio-results
+          path: research_outputs/specific_portfolio/
+          retention-days: 90
