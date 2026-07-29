@@ -18,7 +18,7 @@ jobs:
         with:
           python-version: '3.11'
       - name: Instalar dependencias
-        run: pip install pandas requests xlrd pdfplumber
+        run: pip install pandas requests xlrd openpyxl pdfplumber
       - name: Inspeccionar fuentes
         run: python research/inspect_specific_sources.py
       - name: Guardar inspección
