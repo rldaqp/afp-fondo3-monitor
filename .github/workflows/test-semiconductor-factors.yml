@@ -1,0 +1,49 @@
+name: Probar factores de semiconductores en Huber
+
+on:
+  pull_request:
+    branches:
+      - migracion-github-actions
+    paths:
+      - 'research/test_semiconductor_factors.py'
+      - '.github/workflows/test-semiconductor-factors.yml'
+      - 'requirements.txt'
+      - 'data/rolling90/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Descargar repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+
+      - name: Instalar dependencias
+        run: pip install -r requirements.txt
+
+      - name: Ejecutar prueba de semiconductores
+        run: python research/test_semiconductor_factors.py
+
+      - name: Validar salidas
+        run: |
+          test -s research_outputs/semiconductor_factors/results.json
+          test -s research_outputs/semiconductor_factors/paired_predictions.csv
+          test -s research_outputs/semiconductor_factors/target_dates.csv
+          test -s research_outputs/semiconductor_factors/semiconductor_data.csv
+
+      - name: Guardar resultados
+        uses: actions/upload-artifact@v4
+        with:
+          name: semiconductor-factor-results
+          path: research_outputs/semiconductor_factors/
+          retention-days: 90
