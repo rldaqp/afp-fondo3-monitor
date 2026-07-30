@@ -56,13 +56,23 @@ for name, rows in (("series.json", series), ("operation_series.json", operation)
             f"faltantes={missing[:10]}, extras={extra[:10]}, distintos={mismatched[:10]}"
         )
 
-# La calculadora generada debe usar exactamente la misma serie que el gráfico.
-html = (ROOT / "public" / "index.html").read_text(encoding="utf-8")
-if "operationSeries=allSeries.map(x=>({...x}))" not in html:
-    raise AssertionError("La simulación no está usando la misma serie que el gráfico")
+# El simulador conserva operation_series.json por compatibilidad con el panel de
+# métricas, pero el generador anterior garantiza que contiene los mismos VC SBS
+# que series.json. Ambos postprocesos deben reconocer la misma asignación.
+assignment = "operationSeries=op.sort((a,b)=>a.fecha.localeCompare(b.fecha))"
+mobile_source = (ROOT / "scripts" / "postprocess_mobile_ui_v3.py").read_text(
+    encoding="utf-8"
+)
+insights_source = (ROOT / "scripts" / "postprocess_model_insights_ui.py").read_text(
+    encoding="utf-8"
+)
+if assignment not in mobile_source:
+    raise AssertionError("El simulador cambió la asignación compatible de operationSeries")
+if assignment not in insights_source:
+    raise AssertionError("El postproceso de métricas no reconoce la serie del simulador")
 
-# La fuente de la bitácora debe consultar series.json para los VC oficiales y
-# permitir fechas SBS aunque no exista una predicción histórica del modelo.
+# La fuente de la bitácora consulta series.json para los VC oficiales y permite
+# fechas SBS aunque no exista una predicción histórica del modelo.
 trade_source = (ROOT / "scripts" / "postprocess_trade_history.py").read_text(
     encoding="utf-8"
 )
