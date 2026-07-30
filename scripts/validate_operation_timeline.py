@@ -56,16 +56,25 @@ for name, rows in (("series.json", series), ("operation_series.json", operation)
             f"faltantes={missing[:10]}, extras={extra[:10]}, distintos={mismatched[:10]}"
         )
 
-# El cálculo y el gráfico deben consumir la misma serie completa en el navegador.
+# La calculadora generada debe usar exactamente la misma serie que el gráfico.
 html = (ROOT / "public" / "index.html").read_text(encoding="utf-8")
-required_fragments = [
-    "operationSeries=allSeries.map(x=>({...x}))",
+if "operationSeries=allSeries.map(x=>({...x}))" not in html:
+    raise AssertionError("La simulación no está usando la misma serie que el gráfico")
+
+# La fuente de la bitácora debe consultar series.json para los VC oficiales y
+# permitir fechas SBS aunque no exista una predicción histórica del modelo.
+trade_source = (ROOT / "scripts" / "postprocess_trade_history.py").read_text(
+    encoding="utf-8"
+)
+required_trade_fragments = [
     "fetch('data/series.json?ts='+Date.now()",
     "function officialRow(date){return timeline.find",
+    "entryOfficial=officialAt(ep.fecha)",
+    "exitOfficial=officialAt(exitDate)",
 ]
-for fragment in required_fragments:
-    if fragment not in html:
-        raise AssertionError(f"El visor no contiene el control esperado: {fragment}")
+for fragment in required_trade_fragments:
+    if fragment not in trade_source:
+        raise AssertionError(f"La bitácora no contiene el control esperado: {fragment}")
 
 # Caso que originó la revisión: verificar que ambas fechas existen y se valoran distinto.
 case_dates = ("2026-07-22", "2026-07-23")
