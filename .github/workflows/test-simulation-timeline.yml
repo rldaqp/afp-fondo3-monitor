@@ -41,7 +41,7 @@ jobs:
       - name: Reconstruir línea temporal completa
         run: python scripts/build_operation_series.py
 
-      - name: Regenerar módulos del visor sobre el HTML publicado
+      - name: Aplicar al HTML publicado la asignación corregida
         run: |
           python - <<'PY'
           from pathlib import Path
@@ -55,8 +55,6 @@ jobs:
               raise RuntimeError("No se encontró la asignación de la serie de operación")
           path.write_text(html, encoding="utf-8")
           PY
-          python scripts/postprocess_trade_history.py
-          python scripts/postprocess_trade_notebook_basis.py
 
       - name: Validar gráfico, simulación y valores SBS
         run: python scripts/validate_operation_timeline.py
