@@ -247,7 +247,8 @@ Promise.all([fetch('data/latest.json',{cache:'no-store'}).then(r=>r.json()),fetc
     $('marketGrid').innerHTML=(liveData.assets||[]).map(a=>`<div class="market-item"><div class="market-symbol">${a.serie}</div><div class="market-price">${a.precio_actual==null?'—':Number(a.precio_actual).toFixed(a.serie==='USD_PEN'?4:2)}</div><div class="market-ret ${cls(a.retorno)}">${Number(a.retorno)>=0?'+':''}${(Number(a.retorno)*100).toFixed(2)}%</div><div class="market-source">${a.estado||''}${a.retorno_modelo!=null&&Number(a.retorno_modelo)!==Number(a.retorno)?'<br>Modelo: '+(Number(a.retorno_modelo)*100).toFixed(2)+'%':''}</div></div>`).join('')||'<div class="note">Cotización intradía no disponible; se mantiene el último cierre.</div>';renderTop();renderInsights()
   }
 
-  // Réplica del notebook: el cálculo usa operationSeries, no toda la SBS.
+  // El gráfico y la simulación comparten todos los VC oficiales SBS; la serie de
+  // operación añade después los VC pendientes del modelo y se valida contra series.json.
   function calcNotebook(){
     const bt=document.querySelector('.tabs button.active'),mode=bt?bt.dataset.mode:'monitor';if(mode==='monitor')return;
     const entryDate=$('entry').value,capital=Number($('capital').value);if(!entryDate||!capital||capital<=0){$('detail').textContent='Completa fecha y capital.';return}
@@ -287,7 +288,7 @@ Promise.all([fetch('data/latest.json',{cache:'no-store'}).then(r=>r.json()),fetc
 (function(){
   'use strict';
   const KEY='fondo3_trade_history_v1';
-  let signals=[],ops=[],live=null;
+  let signals=[],timeline=[],live=null;
   const $=id=>document.getElementById(id);
   const finite=x=>x!==null&&x!==undefined&&x!==''&&Number.isFinite(Number(x));
   const fmt=d=>{if(!d)return '—';const p=String(d).slice(0,10).split('-');return p.length===3?`${p[2]}/${p[1]}/${p[0]}`:String(d)};
@@ -300,18 +301,19 @@ Promise.all([fetch('data/latest.json',{cache:'no-store'}).then(r=>r.json()),fetc
   function loadRows(){try{const x=JSON.parse(localStorage.getItem(KEY)||'[]');return Array.isArray(x)?x:[]}catch(e){return []}}
   function saveRows(rows){localStorage.setItem(KEY,JSON.stringify(rows))}
   function signalAt(date){return signals.find(x=>x.fecha===date)||null}
-  function officialAt(date){const s=signalAt(date);return s&&finite(s.vc_real)?Number(s.vc_real):null}
+  function officialRow(date){return timeline.find(x=>x.fecha===date&&x.fuente==='SBS OFICIAL')||null}
+  function officialAt(date){const row=officialRow(date);return row&&finite(row.vc)?Number(row.vc):null}
   function estimateAt(date){
     if(live&&live.market_open&&live.signal_date===date&&finite(live.vc_estimated))return Number(live.vc_estimated);
     const s=signalAt(date);return s&&finite(s.vc_estimado)?Number(s.vc_estimado):null;
   }
   function entryEffective(requested){
     if(live&&live.market_open&&live.signal_date===requested)return {fecha:requested,vc:live.vc_estimated,fuente:'MODELO OLS · INTRADÍA PROVISIONAL'};
-    return ops.find(x=>x.fecha>=requested)||null;
+    return timeline.find(x=>x.fecha>=requested)||null;
   }
   function exitEffective(requested){
     if(live&&live.market_open&&live.signal_date===requested)return {fecha:requested,vc:live.vc_estimated,fuente:'MODELO OLS · INTRADÍA PROVISIONAL'};
-    return [...ops].reverse().find(x=>x.fecha<=requested)||null;
+    return [...timeline].reverse().find(x=>x.fecha<=requested)||null;
   }
 
   function reconcile(rows){
@@ -394,7 +396,7 @@ Promise.all([fetch('data/latest.json',{cache:'no-store'}).then(r=>r.json()),fetc
     const tab=document.querySelector('.tabs button[data-mode="closed"]');if(tab)tab.click();
     if($('entry'))$('entry').value=r.entry_requested||r.entry_date;
     if($('capital'))$('capital').value=r.capital||25000;
-    if($('exit'))$('exit').value=live&&live.signal_date?live.signal_date:(signals.at(-1)?.fecha||'');
+    if($('exit'))$('exit').value=live&&live.signal_date?live.signal_date:(timeline.at(-1)?.fecha||'');
     document.querySelector('.tabs')?.scrollIntoView({behavior:'smooth',block:'center'});
     $('tradeMsg').textContent='Operación abierta cargada. Indica la fecha de salida, calcula y presiona OK · Guardar.';
   }
@@ -405,36 +407,36 @@ Promise.all([fetch('data/latest.json',{cache:'no-store'}).then(r=>r.json()),fetc
     const er=$('entry')?.value,cap=Number($('capital')?.value||0);
     if(!er||!finite(cap)||cap<=0){$('tradeMsg').textContent='Completa fecha de entrada y capital.';return}
     const ep=entryEffective(er);if(!ep){$('tradeMsg').textContent='No existe una fecha efectiva de entrada en la línea del monitor.';return}
-    const entryEst=estimateAt(ep.fecha);
-    if(!finite(entryEst)){$('tradeMsg').textContent='Todavía no existe un VC estimado para la fecha efectiva de entrada.';return}
-    let exitDate=null,exitRequested=null,exitEst=null;
+    const entryEst=estimateAt(ep.fecha),entryOfficial=officialAt(ep.fecha);
+    if(!finite(entryEst)&&entryOfficial===null){$('tradeMsg').textContent='Todavía no existe un VC estimado u oficial para la fecha efectiva de entrada.';return}
+    let exitDate=null,exitRequested=null,exitEst=null,exitOfficial=null;
     if(mode==='closed'){
       exitRequested=$('exit')?.value;
       if(!exitRequested){$('tradeMsg').textContent='Indica la fecha de salida.';return}
       const xp=exitEffective(exitRequested);if(!xp||xp.fecha<ep.fecha){$('tradeMsg').textContent='La fecha de salida no es válida.';return}
-      exitDate=xp.fecha;exitEst=estimateAt(exitDate);
-      if(!finite(exitEst)){$('tradeMsg').textContent='Todavía no existe un VC estimado para la fecha efectiva de salida.';return}
+      exitDate=xp.fecha;exitEst=estimateAt(exitDate);exitOfficial=officialAt(exitDate);
+      if(!finite(exitEst)&&exitOfficial===null){$('tradeMsg').textContent='Todavía no existe un VC estimado u oficial para la fecha efectiva de salida.';return}
     }
     const rows=loadRows();
     let row=rows.find(x=>!x.exit_date&&x.entry_date===ep.fecha);
     if(row&&mode==='closed'){
-      row.exit_requested=exitRequested;row.exit_date=exitDate;row.exit_est_vc=exitEst;row.exit_sbs_vc=officialAt(exitDate);row.closed_at=new Date().toISOString();row.confirmed=false;
+      row.exit_requested=exitRequested;row.exit_date=exitDate;row.exit_est_vc=finite(exitEst)?Number(exitEst):null;row.exit_sbs_vc=exitOfficial;row.closed_at=new Date().toISOString();row.confirmed=false;
     }else{
-      row={id:uid(),created_at:new Date().toISOString(),confirmed:false,capital:cap,entry_requested:er,entry_date:ep.fecha,entry_est_vc:entryEst,entry_sbs_vc:officialAt(ep.fecha),exit_requested:exitRequested,exit_date:exitDate,exit_est_vc:exitEst,exit_sbs_vc:exitDate?officialAt(exitDate):null};
+      row={id:uid(),created_at:new Date().toISOString(),confirmed:false,capital:cap,entry_requested:er,entry_date:ep.fecha,entry_est_vc:finite(entryEst)?Number(entryEst):null,entry_sbs_vc:entryOfficial,exit_requested:exitRequested,exit_date:exitDate,exit_est_vc:finite(exitEst)?Number(exitEst):null,exit_sbs_vc:exitDate?exitOfficial:null};
       rows.push(row);
     }
     saveRows(rows);render();
-    $('tradeMsg').textContent=mode==='closed'?'Operación cerrada guardada. El estimado quedó congelado; la SBS se completará cuando esté disponible.':'Entrada guardada como operación abierta.';
+    $('tradeMsg').textContent=mode==='closed'?'Operación cerrada guardada. La SBS usa la serie oficial completa; el estimado solo aparece cuando el modelo lo generó.':'Entrada guardada como operación abierta.';
   }
 
   async function boot(){
     try{
-      const [s,o,l]=await Promise.all([
+      const [s,t,l]=await Promise.all([
         fetch('data/signals.json?ts='+Date.now(),{cache:'no-store'}).then(r=>r.json()),
-        fetch('data/operation_series.json?ts='+Date.now(),{cache:'no-store'}).then(r=>r.json()),
+        fetch('data/series.json?ts='+Date.now(),{cache:'no-store'}).then(r=>r.json()),
         fetch('data/live_market.json?ts='+Date.now(),{cache:'no-store'}).then(r=>r.json()).catch(()=>null)
       ]);
-      signals=(s||[]).sort((a,b)=>a.fecha.localeCompare(b.fecha));ops=(o||[]).sort((a,b)=>a.fecha.localeCompare(b.fecha));live=l;
+      signals=(s||[]).sort((a,b)=>a.fecha.localeCompare(b.fecha));timeline=(t||[]).sort((a,b)=>a.fecha.localeCompare(b.fecha));live=l;
       $('tradeSaveBtn').onclick=saveCurrent;render();
     }catch(e){$('tradeMsg').textContent='No se pudo cargar la bitácora: '+e}
   }
