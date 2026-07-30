@@ -104,8 +104,8 @@ extra_js = r'''
     $('marketGrid').innerHTML=(liveData.assets||[]).map(a=>`<div class="market-item"><div class="market-symbol">${a.serie}</div><div class="market-price">${Number(a.precio_actual).toFixed(a.serie==='USD_PEN'?4:2)}</div><div class="market-ret ${cls(a.retorno)}">${Number(a.retorno)>=0?'+':''}${(Number(a.retorno)*100).toFixed(2)}%</div><div class="market-source">${a.estado||''}</div></div>`).join('')||'<div class="note">Cotización intradía no disponible; se mantiene el último cierre.</div>';renderTop()
   }
 
-  // El gráfico y la simulación comparten exactamente la misma línea temporal:
-  // todos los VC oficiales SBS y, después del último oficial, los VC del modelo.
+  // El gráfico y la simulación comparten todos los VC oficiales SBS; la serie de
+  // operación añade después los VC pendientes del modelo y se valida contra series.json.
   function calcNotebook(){
     const bt=document.querySelector('.tabs button.active'),mode=bt?bt.dataset.mode:'monitor';if(mode==='monitor')return;
     const entryDate=$('entry').value,capital=Number($('capital').value);if(!entryDate||!capital||capital<=0){$('detail').textContent='Completa fecha y capital.';return}
@@ -129,7 +129,7 @@ extra_js = r'''
     fetch('data/latest.json',{cache:'no-store'}).then(r=>r.json()),
     loadLive()
   ]).then(([sig,ser,op,latest])=>{
-    richSignals=sig.sort((a,b)=>a.fecha.localeCompare(b.fecha));allSeries=ser.sort((a,b)=>a.fecha.localeCompare(b.fecha));operationSeries=allSeries.map(x=>({...x}));latestData=latest;
+    richSignals=sig.sort((a,b)=>a.fecha.localeCompare(b.fecha));allSeries=ser.sort((a,b)=>a.fecha.localeCompare(b.fecha));operationSeries=op.sort((a,b)=>a.fecha.localeCompare(b.fecha));latestData=latest;
     renderVC();renderSignals();renderTop();renderMarket();
     document.querySelectorAll('.vc-controls button').forEach(b=>b.onclick=()=>{vcDays=b.dataset.days==='all'?'all':Number(b.dataset.days);renderVC()});
     document.querySelectorAll('.ret-controls button').forEach(b=>b.onclick=()=>{retDays=b.dataset.days==='all'?'all':Number(b.dataset.days);renderSignals()});
@@ -143,4 +143,4 @@ extra_js = r'''
 
 html = html.replace('</body>', extra_js + '</body>', 1)
 HTML_PATH.write_text(html, encoding="utf-8")
-print("Visor móvil v3: gráfico y simulación usan la misma serie completa SBS + pendientes.")
+print("Visor móvil v3: gráfico y simulación usan todos los VC SBS + pendientes.")
