@@ -1,10 +1,10 @@
 {
-  "generated_for": "2026-07-30",
-  "current_signal": "SUBE",
+  "generated_for": "2026-07-31",
+  "current_signal": "BAJA",
   "confidence": {
     "label": "ALTA",
-    "historical_accuracy": 0.8636363636363636,
-    "n": 44,
+    "historical_accuracy": 0.95,
+    "n": 40,
     "description": "Acierto histórico de la misma clase de señal en las últimas 90 observaciones OLS; no es una probabilidad garantizada."
   },
   "performance": {
@@ -43,13 +43,13 @@
       "ret_USD_PEN": 0.3645046449426601
     },
     "current": {
-      "fecha": "2026-07-30",
-      "ret_estimado": 0.034068954269278945,
-      "senal": "SUBE",
-      "vc_estimado": 67.96241818151475,
+      "fecha": "2026-07-31",
+      "ret_estimado": -0.006061428333621409,
+      "senal": "BAJA",
+      "vc_estimado": 67.09744577294005,
       "agrees_with_ols": true,
-      "ols_signal": "SUBE",
-      "ols_return_estimated": 0.033678706758538034
+      "ols_signal": "BAJA",
+      "ols_return_estimated": -0.004729827399356322
     },
     "performance": {
       "window_n": 90,
@@ -85,16 +85,16 @@
     },
     "pending_series": [
       {
-        "fecha": "2026-07-29",
-        "ret_estimado": -0.014093602958235703,
-        "senal": "BAJA",
-        "vc_estimado": 65.72329427445209
+        "fecha": "2026-07-30",
+        "ret_estimado": 0.0334265770215581,
+        "senal": "SUBE",
+        "vc_estimado": 67.50663238719919
       },
       {
-        "fecha": "2026-07-30",
-        "ret_estimado": 0.034068954269278945,
-        "senal": "SUBE",
-        "vc_estimado": 67.96241818151475
+        "fecha": "2026-07-31",
+        "ret_estimado": -0.006061428333621409,
+        "senal": "BAJA",
+        "vc_estimado": 67.09744577294005
       }
     ]
   },
@@ -114,30 +114,37 @@
     {
       "feature": "ret_EEM",
       "label": "EEM",
-      "value": 0.0412641308393071,
+      "value": 0.0078628115128631,
       "coefficient": 0.3518236891925644,
-      "contribution_pp": 1.4517698743209693
+      "contribution_pp": 0.2766323353881264
     },
     {
       "feature": "ret_EPU",
       "label": "EPU",
-      "value": 0.0418716008117638,
+      "value": -0.0099031899726347,
       "coefficient": 0.2788325309831661,
-      "contribution_pp": 1.1675164430660891
+      "contribution_pp": -0.2761331524876845
     },
     {
       "feature": "ret_NEM",
       "label": "NEM",
-      "value": 0.048390693842258,
+      "value": -0.021407717272619,
       "coefficient": 0.10102039588767986,
-      "contribution_pp": 0.48884470492244153
+      "contribution_pp": -0.21626160739314934
+    },
+    {
+      "feature": "ret_USD_PEN",
+      "label": "USD/PEN",
+      "value": -0.0036471029268404,
+      "coefficient": 0.3355697856166217,
+      "contribution_pp": -0.12238575472815867
     },
     {
       "feature": "ret_FCX",
       "label": "FCX",
-      "value": 0.0575095324506476,
+      "value": -0.0127679315278662,
       "coefficient": 0.06157422159836516,
-      "contribution_pp": 0.35411046951345476
+      "contribution_pp": -0.07861754452495866
     },
     {
       "feature": "intercept",
@@ -149,23 +156,16 @@
     {
       "feature": "ret_MCHI",
       "label": "MCHI",
-      "value": 0.0078082496378912,
+      "value": 0.0054053916587486,
       "coefficient": -0.03315662908613445,
-      "contribution_pp": -0.02588952370555021
-    },
-    {
-      "feature": "ret_USD_PEN",
-      "label": "USD/PEN",
-      "value": -0.0005878468755602,
-      "coefficient": 0.3355697856166217,
-      "contribution_pp": -0.01972636500071372
+      "contribution_pp": -0.017922456629441235
     },
     {
       "feature": "ret_SPY",
       "label": "SPY",
-      "value": 0.0167657994960119,
+      "value": 0.0071998096750542,
       "coefficient": -0.010934955920199269,
-      "contribution_pp": -0.018333327845578923
+      "contribution_pp": -0.00787296014305419
     }
   ],
   "quality": {
@@ -175,7 +175,7 @@
       "FX provisional: YAHOO PEN=X PROVISIONAL"
     ],
     "training_n": 90,
-    "latest_sbs_date": "2026-07-28",
+    "latest_sbs_date": "2026-07-29",
     "fx_source": "YAHOO PEN=X PROVISIONAL",
     "fx_provisional": true
   }
