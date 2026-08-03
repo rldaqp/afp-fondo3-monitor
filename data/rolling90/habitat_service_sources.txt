@@ -1,6 +1,6 @@
 MAP_URL=https://www.afphabitat.com.pe/privado/admin/investments/home/static/js/main.eb72ebba.js.map
 SOURCE_COUNT=477
-SELECTED_COUNT=3
+SELECTED_COUNT=4
 
 ===== SOURCE=components/section/profitability/Profitability.js =====
 import React, { useState, useEffect, useCallback } from "react";
@@ -185,6 +185,80 @@ const SectionProfitability = ({ afps, funds, periods, chart, information, dateRa
 
 export default SectionProfitability;
 ===== END_SOURCE=components/section/profitability/Profitability.js =====
+
+===== SOURCE=services/handle-request.js =====
+import axios from 'axios';
+// import handleResponse from './handle-response';
+// import { api } from '../dummy/api';
+
+const ERROR_PAYLOAD = {
+  success: false,
+  data: { message: 'A server error occurred.' },
+  message: 'A server error occurred.',
+};
+
+const handleError = async (uri, error) => {
+  console.log(`${uri} =>`, error.message);
+  const hasResponse = error.response && typeof error.response.data === 'object';
+  if (hasResponse) {
+    const errorData = error.response.data.error;
+    return { ...ERROR_PAYLOAD, data: errorData, message: errorData.message };
+  }
+  return ERROR_PAYLOAD;
+};
+
+const sendGet = async (uri, data, config) => {
+  try {
+    const requestConfig = { ...config, params: { ...data } };
+    const response = await axios.get(uri, requestConfig);
+    // const payload = await handleResponse(response);
+    const payload = response.data;
+    console.log(payload);
+    return payload;
+  } catch (error) {
+    return handleError(uri, error);
+  }
+};
+
+const sendPost = async (uri, data, config) => {
+  try {
+    const response = await axios.post(uri, data, config);
+    console.log(response)
+    // const payload = await handleResponse(response);
+    const payload = response.data;
+    return payload;
+  } catch (error) {
+    console.log(error)
+    return handleError(uri, error);
+  }
+};
+
+// const sendDelete = async (uri, config) => {
+//   try {
+//     const response = await axios.delete(uri, config);
+//     const payload = await handleResponse(response);
+//     return payload;
+//   } catch (error) {
+//     return handleError(uri, error);
+//   }
+// };
+
+// const sendPut = async (uri, data, config) => {
+//   try {
+//     const response = await axios.put(uri, data, config);
+//     const payload = await handleResponse(response);
+//     return payload;
+//   } catch (error) {
+//     return handleError(uri, error);
+//   }
+// };
+
+export { sendGet, sendPost };
+// export {
+//   sendGet, sendPost, sendDelete, sendPut,
+// };
+
+===== END_SOURCE=services/handle-request.js =====
 
 ===== SOURCE=services/general-service.js =====
 import axios from "axios";
