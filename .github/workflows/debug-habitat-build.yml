@@ -1,4 +1,4 @@
-name: Probar histórico Variables SPP
+name: Recuperar snapshots SBS de julio
 
 on:
   workflow_dispatch:
@@ -7,13 +7,13 @@ on:
       - migracion-github-actions
     paths:
       - ".github/workflows/debug-habitat-build.yml"
-      - "scripts/probe_sbs_variables_history.py"
+      - "scripts/probe_wayback_sbs_variables.py"
 
 permissions:
   contents: write
 
 concurrency:
-  group: sbs-variables-history-probe
+  group: sbs-wayback-july-probe
   cancel-in-progress: true
 
 jobs:
@@ -31,17 +31,17 @@ jobs:
       - name: Instalar dependencias mínimas
         run: python -m pip install requests beautifulsoup4 lxml
 
-      - name: Inspeccionar formularios y navegación histórica
+      - name: Consultar capturas históricas del visor SBS
         env:
           PYTHONUTF8: "1"
           PYTHONIOENCODING: "utf-8"
-        run: python scripts/probe_sbs_variables_history.py
+        run: python scripts/probe_wayback_sbs_variables.py
 
       - name: Guardar resultados
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/rolling90/sbs_variables_history_probe.json
-          git commit -m "Registrar navegación histórica de Variables SPP" || exit 0
+          git add data/rolling90/sbs_wayback_july_probe.json
+          git commit -m "Registrar snapshots SBS de julio" || exit 0
           git pull --rebase origin migracion-github-actions
           git push origin HEAD:migracion-github-actions
