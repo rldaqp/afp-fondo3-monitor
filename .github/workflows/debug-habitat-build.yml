@@ -1,4 +1,4 @@
-name: Resumir endpoints Hábitat
+name: Extraer contrato del servicio Hábitat
 
 on:
   workflow_dispatch:
@@ -7,18 +7,18 @@ on:
       - migracion-github-actions
     paths:
       - ".github/workflows/debug-habitat-build.yml"
-      - "scripts/summarize_habitat_bundle_debug.py"
+      - "scripts/extract_habitat_service_contract.py"
       - "data/rolling90/habitat_bundle_debug.txt"
 
 permissions:
   contents: write
 
 concurrency:
-  group: habitat-endpoint-summary
+  group: habitat-service-contract
   cancel-in-progress: true
 
 jobs:
-  summarize:
+  extract:
     runs-on: ubuntu-latest
     steps:
       - name: Descargar repositorio
@@ -29,18 +29,18 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Reducir diagnóstico a endpoints y contratos
+      - name: Extraer servicio y componentes consumidores
         env:
           PYTHONUTF8: "1"
           PYTHONIOENCODING: "utf-8"
         run: |
-          python scripts/summarize_habitat_bundle_debug.py
+          python scripts/extract_habitat_service_contract.py
 
-      - name: Guardar resumen
+      - name: Guardar contrato
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/rolling90/habitat_endpoint_summary.txt
-          git commit -m "Resumir endpoints públicos de Hábitat" || exit 0
+          git add data/rolling90/habitat_service_contract.txt
+          git commit -m "Extraer contrato público de valor cuota Hábitat" || exit 0
           git pull --rebase origin migracion-github-actions
           git push origin HEAD:migracion-github-actions
