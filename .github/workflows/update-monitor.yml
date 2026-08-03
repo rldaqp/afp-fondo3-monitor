@@ -22,6 +22,8 @@ on:
       - "scripts/postprocess_trade_history.py"
       - "scripts/postprocess_trade_cloud_sync.py"
       - "scripts/postprocess_trade_notebook_basis.py"
+      - "scripts/build_habitat_monitor.py"
+      - "scripts/postprocess_afp_selector.py"
       - "data/rolling90/sbs_reference_corrections.csv"
       - "data/rolling90/notebook_training_reference.csv"
       - "requirements.txt"
@@ -61,7 +63,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Actualizar exclusivamente modelo OLS y fuentes oficiales
+      - name: Actualizar modelos OLS y fuentes oficiales
         env:
           PYTHONUTF8: "1"
           PYTHONIOENCODING: "utf-8"
@@ -85,8 +87,11 @@ jobs:
           python scripts/postprocess_trade_history.py
           python scripts/postprocess_trade_cloud_sync.py
           python scripts/postprocess_trade_notebook_basis.py
+          # Hábitat usa su propia serie SBS y recalibra coeficientes independientes.
+          python scripts/build_habitat_monitor.py
+          python scripts/postprocess_afp_selector.py
 
-      - name: Validar solamente modelo y visor estructural
+      - name: Validar modelos y visor estructural
         run: |
           test -s public/index.html
           test -s public/data/latest.json
@@ -94,6 +99,11 @@ jobs:
           test -s public/data/signals.json
           test -s public/data/operation_series.json
           test -s public/data/model_insights.json
+          test -s public/habitat/index.html
+          test -s public/habitat/data/latest.json
+          test -s public/habitat/data/series.json
+          test -s public/habitat/data/signals.json
+          test -s public/habitat/data/model_insights.json
           grep -q "OLS Rolling 90" public/index.html
           grep -q "7 días" public/index.html
           grep -q "15 días" public/index.html
@@ -126,6 +136,9 @@ jobs:
           grep -q "tradeCloudConnect" public/index.html
           grep -q "fondo3_drive_sync_url_v1" public/index.html
           grep -q "Rentabilidad de la OPERACION" public/index.html
+          grep -q "AFP_SELECTOR_V1" public/index.html
+          grep -q "Hábitat Fondo 3" public/habitat/index.html
+          grep -q "modelo de Hábitat se entrena por separado" public/habitat/index.html
           python - <<'PY'
           import json
           from pathlib import Path
@@ -165,6 +178,23 @@ jobs:
           assert insights["benchmarks"]["zero_change_mae_pp"] >= 0
           assert isinstance(insights["contributions"], list)
 
+          habitat_latest = json.loads(Path("public/habitat/data/latest.json").read_text(encoding="utf-8"))
+          habitat_series = json.loads(Path("public/habitat/data/series.json").read_text(encoding="utf-8"))
+          habitat_signals = json.loads(Path("public/habitat/data/signals.json").read_text(encoding="utf-8"))
+          habitat_insights = json.loads(Path("public/habitat/data/model_insights.json").read_text(encoding="utf-8"))
+          assert habitat_latest["afp"] == "Hábitat"
+          assert int(habitat_latest["fund"]) == 3
+          assert habitat_latest["model"] == "OLS rolling 90"
+          assert int(habitat_latest["training_n"]) == 90
+          assert habitat_latest["signal"] in {"SUBE", "NEUTRO", "BAJA"}
+          assert float(habitat_latest["latest_sbs_vc"]) > 0
+          assert float(habitat_latest["latest_estimated_vc"]) > 0
+          assert len(habitat_series) > 90
+          assert len(habitat_signals) > 1
+          assert habitat_insights["quality"]["status"] == "OK"
+          assert int(habitat_insights["quality"]["training_n"]) == 90
+          assert isinstance(habitat_insights["contributions"], list)
+
           if not pending.empty:
               assert "usd_pen_fuente" in pending.columns
               assert "usd_pen_provisional" in pending.columns
@@ -174,19 +204,20 @@ jobs:
                   assert pd.to_numeric(yahoo["ret_USD_PEN"], errors="coerce").notna().all()
 
           print(json.dumps(latest, ensure_ascii=False, indent=2))
-          print(json.dumps(insights, ensure_ascii=False, indent=2))
-          print(f"Puntos de señal publicados: {len(signals)}")
+          print(json.dumps(habitat_latest, ensure_ascii=False, indent=2))
+          print(f"Puntos de señal Profuturo: {len(signals)}")
+          print(f"Puntos de señal Hábitat: {len(habitat_signals)}")
           print(f"Filas de operación tipo notebook: {len(operation)}")
           PY
 
-      - name: Guardar datos del modelo sin tocar Mercado ahora
+      - name: Guardar datos de ambos modelos sin tocar Mercado ahora
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add data/rolling90 public
           git reset public/data/live_market.json || true
           if git diff --cached --quiet; then
-            echo "No hay cambios del modelo para confirmar."
+            echo "No hay cambios de los modelos para confirmar."
           else
             git commit -m "Actualizar OLS rolling 90 Fondo 3"
             git pull --rebase origin migracion-github-actions
