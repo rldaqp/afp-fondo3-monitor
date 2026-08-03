@@ -1,4 +1,5 @@
 from pathlib import Path
+import runpy
 
 ROOT = Path(__file__).resolve().parents[1]
 HTML_PATH = ROOT / "public" / "index.html"
@@ -39,4 +40,8 @@ html = html.replace(raw_live + "?ts='+Date.now()", "data/live_market.json?ts='+D
 html = html.replace(raw_live, "data/live_market.json")
 
 HTML_PATH.write_text(html, encoding="utf-8")
-print("Visor v4: gráfico limpio + USD/PEN notebook + lecturas de un solo origen.")
+
+# Última capa: el dato intradía solo puede reemplazar al cierre mientras esté
+# vigente; además se incorpora al mismo gráfico y se evita caché de los JSON.
+runpy.run_path(str(ROOT / "scripts" / "postprocess_live_consistency.py"), run_name="__main__")
+print("Visor v4: gráfico limpio + USD/PEN notebook + consistencia intradía/cierre.")
