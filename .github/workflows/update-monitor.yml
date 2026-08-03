@@ -23,7 +23,6 @@ on:
       - "scripts/postprocess_trade_cloud_sync.py"
       - "scripts/postprocess_trade_notebook_basis.py"
       - "scripts/build_habitat_monitor.py"
-      - "scripts/postprocess_afp_selector.py"
       - "data/rolling90/sbs_reference_corrections.csv"
       - "data/rolling90/notebook_training_reference.csv"
       - "requirements.txt"
@@ -68,15 +67,11 @@ jobs:
           PYTHONUTF8: "1"
           PYTHONIOENCODING: "utf-8"
         run: |
-          # Primera pasada: SBS y cierres diarios. El snapshot live que este script
-          # heredado pueda producir se descarta; el mercado intradía tiene workflow propio.
+          # Profuturo conserva exactamente su proceso y su visor actual.
           python scripts/run_rolling90_live_v2.py
           python scripts/apply_sbs_reference_corrections.py
-          # Histórico/entrenamiento conserva BCRP; predicción usa PEN=X provisional si BCRP se rezaga.
           python scripts/finalize_fx_hybrid.py
-          # Métricas, banda empírica, benchmarks, contribuciones y controles de calidad.
           python scripts/build_model_insights.py
-          # Mercado ahora es propiedad exclusiva de update-live-market.yml.
           git restore --source=HEAD -- public/data/live_market.json || true
           python scripts/build_operation_series.py
           sed -i "s/calc.onclick=calc;/document.getElementById('calc').onclick=calc;/" public/index.html
@@ -87,11 +82,11 @@ jobs:
           python scripts/postprocess_trade_history.py
           python scripts/postprocess_trade_cloud_sync.py
           python scripts/postprocess_trade_notebook_basis.py
-          # Hábitat usa su propia serie SBS y recalibra coeficientes independientes.
-          python scripts/build_habitat_monitor.py
-          python scripts/postprocess_afp_selector.py
 
-      - name: Validar modelos y visor estructural
+          # Hábitat se genera únicamente como visor independiente en public/habitat/.
+          python scripts/build_habitat_monitor.py
+
+      - name: Validar modelos y visores independientes
         run: |
           test -s public/index.html
           test -s public/data/latest.json
@@ -104,6 +99,7 @@ jobs:
           test -s public/habitat/data/series.json
           test -s public/habitat/data/signals.json
           test -s public/habitat/data/model_insights.json
+
           grep -q "OLS Rolling 90" public/index.html
           grep -q "7 días" public/index.html
           grep -q "15 días" public/index.html
@@ -136,9 +132,11 @@ jobs:
           grep -q "tradeCloudConnect" public/index.html
           grep -q "fondo3_drive_sync_url_v1" public/index.html
           grep -q "Rentabilidad de la OPERACION" public/index.html
-          grep -q "AFP_SELECTOR_V1" public/index.html
+          ! grep -q "AFP_SELECTOR_V1" public/index.html
+
           grep -q "Hábitat Fondo 3" public/habitat/index.html
           grep -q "modelo de Hábitat se entrena por separado" public/habitat/index.html
+
           python - <<'PY'
           import json
           from pathlib import Path
