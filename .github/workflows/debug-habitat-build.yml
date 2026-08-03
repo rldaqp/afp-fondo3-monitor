@@ -1,4 +1,4 @@
-name: Probar POST de valor cuota Hábitat
+name: Probar histórico Variables SPP
 
 on:
   workflow_dispatch:
@@ -7,13 +7,13 @@ on:
       - migracion-github-actions
     paths:
       - ".github/workflows/debug-habitat-build.yml"
-      - "scripts/probe_habitat_fee_post.py"
+      - "scripts/probe_sbs_variables_history.py"
 
 permissions:
   contents: write
 
 concurrency:
-  group: habitat-fee-post-probe
+  group: sbs-variables-history-probe
   cancel-in-progress: true
 
 jobs:
@@ -31,17 +31,17 @@ jobs:
       - name: Instalar dependencias mínimas
         run: python -m pip install requests beautifulsoup4 lxml
 
-      - name: Reproducir sesión, token y POST multipart
+      - name: Inspeccionar formularios y navegación histórica
         env:
           PYTHONUTF8: "1"
           PYTHONIOENCODING: "utf-8"
-        run: python scripts/probe_habitat_fee_post.py
+        run: python scripts/probe_sbs_variables_history.py
 
-      - name: Guardar respuesta
+      - name: Guardar resultados
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/rolling90/habitat_fee_post_probe.json
-          git commit -m "Registrar POST de valor cuota Hábitat" || exit 0
+          git add data/rolling90/sbs_variables_history_probe.json
+          git commit -m "Registrar navegación histórica de Variables SPP" || exit 0
           git pull --rebase origin migracion-github-actions
           git push origin HEAD:migracion-github-actions
