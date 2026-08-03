@@ -44,7 +44,8 @@ def ensure_latest_consistency() -> None:
             '<div class="note" style="margin:12px 0">'
             'Hábitat usa la misma metodología de Profuturo: OLS, siete factores, '
             'ventana móvil de 90 observaciones y las mismas reglas de fuentes. '
-            'Sus coeficientes se entrenan por separado con el VC de Hábitat.'</n            'div>'
+            'Sus coeficientes se entrenan por separado con el VC de Hábitat.'
+            '</div>'
         )
         html = html.replace("</main>", note + "</main>", 1)
         index_path.write_text(html, encoding="utf-8")
