@@ -1,8 +1,7 @@
-"""Descarga el source map público y extrae los archivos fuente del servicio Hábitat."""
+"""Descarga el source map público y extrae las fuentes del valor cuota Hábitat."""
 
 from __future__ import annotations
 
-import json
 from pathlib import Path
 
 import requests
@@ -18,6 +17,11 @@ HEADERS = {
 
 NAME_KEYS = (
     "general-service",
+    "handle-request",
+    "fee-value",
+    "feevalue",
+    "viewvalorcuota",
+    "valorcuota",
     "profitability",
     "sectionprofitability",
     "app.js",
@@ -27,9 +31,14 @@ CONTENT_KEYS = (
     "fee_values",
     "fee_inputs",
     "val_12",
-    "getHash",
-    "feeInputResponse",
-    "fetchData",
+    "gethash",
+    "getfeevalue",
+    "fetchfeevalue",
+    "csrf_habitat",
+    "feeinputresponse",
+    "fetchdata",
+    "sendget",
+    "sendpost",
 )
 
 
@@ -50,7 +59,7 @@ def main() -> None:
         low_name = str(name).lower()
         low_content = str(content).lower()
         if any(key in low_name for key in NAME_KEYS) or any(
-            key.lower() in low_content for key in CONTENT_KEYS
+            key in low_content for key in CONTENT_KEYS
         ):
             selected.append((str(name), str(content)))
 
