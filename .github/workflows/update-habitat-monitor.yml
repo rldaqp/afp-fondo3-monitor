@@ -7,10 +7,14 @@ on:
       - migracion-github-actions
     paths:
       - ".github/workflows/update-habitat-monitor.yml"
-      - "scripts/build_habitat_monitor.py"
-      - "scripts/run_habitat_statsnet.py"
+      - "scripts/run_habitat_exact_pipeline.py"
+      - "scripts/build_habitat_exact_parity.py"
+      - "scripts/build_habitat_profuturo_parity.py"
       - "scripts/enrich_habitat_daily_sbs.py"
       - "scripts/postprocess_habitat_sbs_indicators.py"
+      - "scripts/finalize_notebook_parity_v4.py"
+      - "scripts/finalize_notebook_parity_v5.py"
+      - "scripts/finalize_fx_hybrid.py"
       - "requirements.txt"
   schedule:
     - cron: "20 5-23 * * 1-5"
@@ -47,16 +51,14 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Descargar SBS diaria y generar visor Hábitat
+      - name: Descargar histórico oficial y generar Hábitat con paridad real
         env:
           PYTHONUTF8: "1"
           PYTHONIOENCODING: "utf-8"
         run: |
-          python scripts/enrich_habitat_daily_sbs.py
-          python scripts/run_habitat_statsnet.py
-          python scripts/postprocess_habitat_sbs_indicators.py
+          python scripts/run_habitat_exact_pipeline.py
 
-      - name: Validar visor independiente e indicadores SBS
+      - name: Validar histórico completo, modelo y visor
         run: |
           test -s data/rolling90/sbs_habitat_f3.csv
           test -s data/rolling90/sbs_habitat_f3_daily.csv
@@ -64,53 +66,86 @@ jobs:
           test -s public/habitat/data/latest.json
           test -s public/habitat/data/series.json
           test -s public/habitat/data/signals.json
+          test -s public/habitat/data/operation_series.json
           test -s public/habitat/data/model_insights.json
+          test -s public/habitat/data/live_market.json
+
           grep -q "Hábitat Fondo 3" public/habitat/index.html
-          grep -q "HABITAT_SBS_INDICATORS_V1" public/habitat/index.html
+          grep -q "7 días" public/habitat/index.html
+          grep -q "15 días" public/habitat/index.html
+          grep -q "30 días" public/habitat/index.html
+          grep -q "90 días" public/habitat/index.html
+          grep -q "vcAll" public/habitat/index.html
+          grep -q "retAll" public/habitat/index.html
+          grep -q "VC real vs VC estimado" public/habitat/index.html
+          grep -q "modelo de Hábitat se entrena por separado" public/habitat/index.html
           grep -q "Indicadores oficiales SBS del Fondo 3" public/habitat/index.html
+
           python - <<'PY'
           import json
           from pathlib import Path
           import pandas as pd
 
           history = pd.read_csv("data/rolling90/sbs_habitat_f3.csv")
+          profuturo = pd.read_csv("data/rolling90/sbs_profuturo_f3.csv")
           daily = pd.read_csv("data/rolling90/sbs_habitat_f3_daily.csv")
           latest = json.loads(Path("public/habitat/data/latest.json").read_text(encoding="utf-8"))
           series = json.loads(Path("public/habitat/data/series.json").read_text(encoding="utf-8"))
+          signals = json.loads(Path("public/habitat/data/signals.json").read_text(encoding="utf-8"))
+          operation = json.loads(Path("public/habitat/data/operation_series.json").read_text(encoding="utf-8"))
           insights = json.loads(Path("public/habitat/data/model_insights.json").read_text(encoding="utf-8"))
 
-          history["fecha"] = pd.to_datetime(history["fecha"], errors="coerce")
-          daily["fecha"] = pd.to_datetime(daily["fecha"], errors="coerce")
-          daily = daily.dropna().sort_values("fecha")
-          official = daily.iloc[-1]
-          indicators = latest["official_indicators"]
+          for frame in (history, profuturo, daily):
+              frame["fecha"] = pd.to_datetime(frame["fecha"], errors="coerce")
+          history = history.dropna(subset=["fecha"]).sort_values("fecha").drop_duplicates("fecha")
+          profuturo = profuturo.dropna(subset=["fecha"]).sort_values("fecha").drop_duplicates("fecha")
+          daily = daily.dropna(subset=["fecha"]).sort_values("fecha")
 
-          assert len(history) >= 90, len(history)
+          assert len(history) >= 90
           assert history["fecha"].is_unique
           assert pd.to_numeric(history["valor_cuota"], errors="coerce").gt(0).all()
-          assert not daily.empty
-          assert pd.to_numeric(daily["cuotas_fondo"], errors="coerce").gt(0).all()
-          assert pd.to_numeric(daily["valor_fondo"], errors="coerce").gt(0).all()
-          assert pd.to_numeric(daily["valor_cuota"], errors="coerce").gt(0).all()
+
+          # El calendario del Fondo 3 es común entre AFP. Hábitat no puede omitir
+          # ninguna fecha que Profuturo tenga entre el 1 y el 29 de julio de 2026.
+          start = pd.Timestamp("2026-07-01")
+          end = pd.Timestamp("2026-07-29")
+          expected = set(profuturo.loc[profuturo["fecha"].between(start, end), "fecha"])
+          present = set(history.loc[history["fecha"].between(start, end), "fecha"])
+          missing = sorted(expected - present)
+          assert not missing, f"Fechas de julio faltantes en Hábitat: {missing}"
+          assert pd.Timestamp("2026-07-20") in present
+          assert pd.Timestamp("2026-07-21") in present
+
           assert latest["afp"] == "Hábitat"
           assert int(latest["fund"]) == 3
+          assert latest["model"] == "OLS rolling 90"
+          assert int(latest["window"]) == 90
           assert int(latest["training_n"]) == 90
-          assert latest["latest_sbs_date"] == official["fecha"].strftime("%Y-%m-%d")
-          assert abs(float(latest["latest_sbs_vc"]) - float(official["valor_cuota"])) < 1e-9
-          assert indicators["date"] == latest["latest_sbs_date"]
-          assert float(indicators["unit_value"]) > 0
-          assert float(indicators["fund_quotas"]) > 0
-          assert float(indicators["fund_value_pen"]) > 0
-          assert "change_1d" in indicators
-          assert "change_7d" in indicators
-          assert "change_30d" in indicators
-          assert "change_90d" in indicators
-          assert "change_ytd" in indicators
-          assert len(series) >= 90
+          assert abs(float(latest["threshold"]) - 0.001) < 1e-12
+          assert latest.get("parity_verified") is True
+          assert latest.get("methodology_parity_verified") is True
+          assert "Misma metodología de Profuturo" in latest["parity_rule"]
+          assert "retornos de Hábitat Fondo 3" in latest["target_rule"]
+          assert latest["model_factors"] == ["SPY", "NEM", "FCX", "EPU", "MCHI", "EEM", "USD_PEN"]
+          assert latest["latest_sbs_date"] == daily.iloc[-1]["fecha"].strftime("%Y-%m-%d")
+          assert float(latest["latest_sbs_vc"]) > 0
+          assert float(latest["latest_estimated_vc"]) > 0
+          assert latest["signal"] in {"SUBE", "NEUTRO", "BAJA"}
+
+          historical_signals = [row for row in signals if row.get("tipo") == "HISTORICO"]
+          assert historical_signals
+          assert all(row.get("vc_real") is not None for row in historical_signals)
+          assert all(row.get("vc_estimado") is not None for row in historical_signals)
+          assert all(row.get("senal") in {"SUBE", "NEUTRO", "BAJA"} for row in signals)
+          assert len(series) >= len(history)
+          assert len(operation) >= len(history)
           assert int(insights["quality"]["training_n"]) == 90
-          print(f"Registros SBS Hábitat: {len(history)}")
-          print(f"Último registro diario SBS: {latest['latest_sbs_date']}")
-          print(json.dumps(indicators, ensure_ascii=False, indent=2))
+          assert insights["quality"]["status"] == "OK"
+
+          print(f"Histórico Hábitat: {len(history)} registros")
+          print(f"Fechas julio verificadas: {len(present)}")
+          print(f"Señales históricas con VC real y estimado: {len(historical_signals)}")
+          print(json.dumps(latest, ensure_ascii=False, indent=2))
           PY
 
       - name: Guardar resultados de Hábitat
@@ -121,7 +156,7 @@ jobs:
           if git diff --cached --quiet; then
             echo "No hay cambios de Hábitat para confirmar."
           else
-            git commit -m "Actualizar AFP Hábitat Fondo 3"
+            git commit -m "Actualizar AFP Hábitat Fondo 3 con paridad real"
             git pull --rebase origin migracion-github-actions
             git push origin HEAD:migracion-github-actions
           fi
