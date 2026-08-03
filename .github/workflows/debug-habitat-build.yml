@@ -7,6 +7,7 @@ on:
       - migracion-github-actions
     paths:
       - ".github/workflows/debug-habitat-build.yml"
+      - "scripts/discover_habitat_public_vc_source.py"
 
 permissions:
   contents: write
@@ -33,6 +34,17 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
+      - name: Descubrir fuente pública de AFP Hábitat
+        id: discover
+        continue-on-error: true
+        env:
+          PYTHONUTF8: "1"
+          PYTHONIOENCODING: "utf-8"
+        run: |
+          mkdir -p data/rolling90
+          set -o pipefail
+          python scripts/discover_habitat_public_vc_source.py 2>&1 | tee data/rolling90/habitat_source_debug.txt
+
       - name: Ejecutar y capturar registro
         id: build
         continue-on-error: true
@@ -44,16 +56,18 @@ jobs:
           set -o pipefail
           python scripts/run_habitat_exact_pipeline.py 2>&1 | tee data/rolling90/habitat_build_debug.txt
 
-      - name: Añadir resultado del paso
+      - name: Añadir resultados
         run: |
-          printf '\nWORKFLOW_OUTCOME=%s\n' "${{ steps.build.outcome }}" >> data/rolling90/habitat_build_debug.txt
+          printf '\nDISCOVERY_OUTCOME=%s\n' "${{ steps.discover.outcome }}" >> data/rolling90/habitat_source_debug.txt
+          printf 'BUILD_OUTCOME=%s\n' "${{ steps.build.outcome }}" >> data/rolling90/habitat_build_debug.txt
+          printf 'COMMIT_SHA=%s\n' "$GITHUB_SHA" >> data/rolling90/habitat_source_debug.txt
           printf 'COMMIT_SHA=%s\n' "$GITHUB_SHA" >> data/rolling90/habitat_build_debug.txt
 
       - name: Guardar diagnóstico
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/rolling90/habitat_build_debug.txt
-          git commit -m "Registrar diagnóstico de Hábitat" || exit 0
+          git add data/rolling90/habitat_source_debug.txt data/rolling90/habitat_build_debug.txt
+          git commit -m "Registrar fuente pública y diagnóstico de Hábitat" || exit 0
           git pull --rebase origin migracion-github-actions
           git push origin HEAD:migracion-github-actions
