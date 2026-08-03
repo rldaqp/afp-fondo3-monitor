@@ -1,0 +1,62 @@
+name: Publicar estado más reciente en GitHub Pages
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - migracion-github-actions
+    paths:
+      - "public/**"
+      - ".github/workflows/deploy-pages-latest.yml"
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages-latest-state
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Esperar otros procesos de actualización
+        run: sleep 45
+
+      - name: Descargar la rama más reciente
+        uses: actions/checkout@v4
+        with:
+          ref: migracion-github-actions
+          fetch-depth: 1
+
+      - name: Validar VC Profuturo publicado
+        run: |
+          test -s public/index.html
+          test -s public/data/latest.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          latest = json.loads(Path("public/data/latest.json").read_text(encoding="utf-8"))
+          assert latest["latest_sbs_date"] >= "2026-07-30", latest
+          assert abs(float(latest["latest_sbs_vc"]) - 68.2721906) < 1e-9, latest
+          print(latest["latest_sbs_date"], latest["latest_sbs_vc"])
+          PY
+
+      - name: Configurar GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Subir el sitio más reciente
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: public
+
+      - name: Publicar
+        id: deployment
+        uses: actions/deploy-pages@v4
