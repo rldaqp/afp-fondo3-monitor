@@ -1,4 +1,4 @@
-"""Ejecuta Hábitat con fuentes oficiales y estimación explícita de huecos SBS."""
+"""Ejecuta Hábitat con fuentes oficiales y estimación explícita del hueco de julio."""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ import requests
 from bs4 import BeautifulSoup
 
 import enrich_habitat_daily_sbs as source
-from build_habitat_gap_aware import main as build_gap_aware
+from build_habitat_july_gap import main as build_july_gap
 from postprocess_habitat_sbs_indicators import ensure_latest_consistency
 
 
@@ -44,12 +44,12 @@ def recent_monthly_urls() -> list[str]:
 
 
 def continuity_is_modelled(history: pd.DataFrame) -> None:
-    """Informa los huecos SBS; el generador gap-aware debe cubrirlos después."""
+    """Informa el hueco reciente; el motor de julio lo cubre como estimado."""
     profuturo = source.read_csv(source.PROFUTURO_PATH)
     if profuturo.empty or history.empty:
         return
     latest = pd.Timestamp(history["fecha"].max())
-    start = max(pd.Timestamp("2026-07-01"), latest - pd.Timedelta(days=45))
+    start = pd.Timestamp("2026-07-01")
     expected = set(
         profuturo.loc[
             profuturo["fecha"].between(start, latest, inclusive="both"), "fecha"
@@ -73,8 +73,8 @@ def main() -> None:
     source.validate_continuity = continuity_is_modelled
     source.main()
 
-    # Único motor operativo: paridad metodológica Profuturo + huecos identificados.
-    build_gap_aware()
+    # Mismo método que Profuturo; solo cubre el hueco actual desde julio de 2026.
+    build_july_gap()
     ensure_latest_consistency()
 
 
