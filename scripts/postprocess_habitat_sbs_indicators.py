@@ -1,9 +1,9 @@
-"""Alinea el visor Hábitat con la estructura visual y de datos de Profuturo."""
+"""Genera Hábitat con histórico completo y paridad metodológica de Profuturo."""
 
 import json
 from pathlib import Path
 
-from build_habitat_profuturo_parity import main
+from build_habitat_exact_parity import main
 
 ROOT = Path(__file__).resolve().parents[1]
 PUBLIC = ROOT / "public" / "habitat"
@@ -20,6 +20,7 @@ def ensure_latest_consistency() -> None:
     live = json.loads(live_path.read_text(encoding="utf-8"))
     if not signals:
         raise RuntimeError("Hábitat no generó señales históricas ni pendientes.")
+
     current = signals[-1]
     latest["latest_estimate_date"] = current["fecha"]
     latest["latest_estimated_vc"] = float(current["vc_estimado"])
@@ -29,16 +30,21 @@ def ensure_latest_consistency() -> None:
     live["vc_estimated"] = float(current["vc_estimado"])
     live["return_estimated"] = float(current["ret_estimado"])
     live["signal"] = current["senal"]
-    latest_path.write_text(json.dumps(latest, ensure_ascii=False, indent=2), encoding="utf-8")
-    live_path.write_text(json.dumps(live, ensure_ascii=False, indent=2), encoding="utf-8")
+    latest_path.write_text(
+        json.dumps(latest, ensure_ascii=False, indent=2), encoding="utf-8"
+    )
+    live_path.write_text(
+        json.dumps(live, ensure_ascii=False, indent=2), encoding="utf-8"
+    )
 
     html = index_path.read_text(encoding="utf-8")
-    phrase = "El modelo de Hábitat se entrena por separado"
+    phrase = "misma metodología de Profuturo"
     if phrase not in html:
         note = (
             '<div class="note" style="margin:12px 0">'
-            'El modelo de Hábitat se entrena por separado y no reutiliza '
-            'coeficientes de Profuturo.</div>'
+            'Hábitat usa la misma metodología de Profuturo: OLS, siete factores, '
+            'ventana móvil de 90 observaciones y las mismas reglas de fuentes. '
+            'Sus coeficientes se entrenan por separado con el VC de Hábitat.'</n            'div>'
         )
         html = html.replace("</main>", note + "</main>", 1)
         index_path.write_text(html, encoding="utf-8")
