@@ -1,4 +1,4 @@
-name: Extraer contrato del servicio Hábitat
+name: Probar API pública Hábitat
 
 on:
   workflow_dispatch:
@@ -7,18 +7,17 @@ on:
       - migracion-github-actions
     paths:
       - ".github/workflows/debug-habitat-build.yml"
-      - "scripts/extract_habitat_service_contract.py"
-      - "data/rolling90/habitat_bundle_debug.txt"
+      - "scripts/probe_habitat_public_api.py"
 
 permissions:
   contents: write
 
 concurrency:
-  group: habitat-service-contract
+  group: habitat-api-probe
   cancel-in-progress: true
 
 jobs:
-  extract:
+  probe:
     runs-on: ubuntu-latest
     steps:
       - name: Descargar repositorio
@@ -29,18 +28,20 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Extraer servicio y componentes consumidores
+      - name: Instalar requests
+        run: python -m pip install requests
+
+      - name: Consultar endpoints de lectura
         env:
           PYTHONUTF8: "1"
           PYTHONIOENCODING: "utf-8"
-        run: |
-          python scripts/extract_habitat_service_contract.py
+        run: python scripts/probe_habitat_public_api.py
 
-      - name: Guardar contrato
+      - name: Guardar resultados
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/rolling90/habitat_service_contract.txt
-          git commit -m "Extraer contrato público de valor cuota Hábitat" || exit 0
+          git add data/rolling90/habitat_api_probe.json
+          git commit -m "Registrar respuesta de API pública Hábitat" || exit 0
           git pull --rebase origin migracion-github-actions
           git push origin HEAD:migracion-github-actions
