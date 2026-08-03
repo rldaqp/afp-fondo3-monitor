@@ -23,6 +23,8 @@ on:
       - "scripts/postprocess_trade_cloud_sync.py"
       - "scripts/postprocess_trade_notebook_basis.py"
       - "scripts/build_habitat_monitor.py"
+      - "scripts/enrich_habitat_daily_sbs.py"
+      - "scripts/postprocess_habitat_sbs_indicators.py"
       - "data/rolling90/sbs_reference_corrections.csv"
       - "data/rolling90/notebook_training_reference.csv"
       - "requirements.txt"
@@ -83,8 +85,10 @@ jobs:
           python scripts/postprocess_trade_cloud_sync.py
           python scripts/postprocess_trade_notebook_basis.py
 
-          # Hábitat se genera únicamente como visor independiente en public/habitat/.
+          # Hábitat mantiene su visor independiente y usa la tabla diaria Variables SPP.
+          python scripts/enrich_habitat_daily_sbs.py
           python scripts/build_habitat_monitor.py
+          python scripts/postprocess_habitat_sbs_indicators.py
 
       - name: Validar modelos y visores independientes
         run: |
@@ -94,6 +98,7 @@ jobs:
           test -s public/data/signals.json
           test -s public/data/operation_series.json
           test -s public/data/model_insights.json
+          test -s data/rolling90/sbs_habitat_f3_daily.csv
           test -s public/habitat/index.html
           test -s public/habitat/data/latest.json
           test -s public/habitat/data/series.json
@@ -136,6 +141,8 @@ jobs:
 
           grep -q "Hábitat Fondo 3" public/habitat/index.html
           grep -q "modelo de Hábitat se entrena por separado" public/habitat/index.html
+          grep -q "HABITAT_SBS_INDICATORS_V1" public/habitat/index.html
+          grep -q "Indicadores oficiales SBS del Fondo 3" public/habitat/index.html
 
           python - <<'PY'
           import json
@@ -180,13 +187,22 @@ jobs:
           habitat_series = json.loads(Path("public/habitat/data/series.json").read_text(encoding="utf-8"))
           habitat_signals = json.loads(Path("public/habitat/data/signals.json").read_text(encoding="utf-8"))
           habitat_insights = json.loads(Path("public/habitat/data/model_insights.json").read_text(encoding="utf-8"))
+          habitat_daily = pd.read_csv("data/rolling90/sbs_habitat_f3_daily.csv")
+          habitat_daily["fecha"] = pd.to_datetime(habitat_daily["fecha"], errors="coerce")
+          habitat_daily = habitat_daily.dropna().sort_values("fecha")
+          official = habitat_daily.iloc[-1]
+          official_indicators = habitat_latest["official_indicators"]
+
           assert habitat_latest["afp"] == "Hábitat"
           assert int(habitat_latest["fund"]) == 3
           assert habitat_latest["model"] == "OLS rolling 90"
           assert int(habitat_latest["training_n"]) == 90
           assert habitat_latest["signal"] in {"SUBE", "NEUTRO", "BAJA"}
-          assert float(habitat_latest["latest_sbs_vc"]) > 0
+          assert habitat_latest["latest_sbs_date"] == official["fecha"].strftime("%Y-%m-%d")
+          assert abs(float(habitat_latest["latest_sbs_vc"]) - float(official["valor_cuota"])) < 1e-9
           assert float(habitat_latest["latest_estimated_vc"]) > 0
+          assert float(official_indicators["fund_quotas"]) > 0
+          assert float(official_indicators["fund_value_pen"]) > 0
           assert len(habitat_series) > 90
           assert len(habitat_signals) > 1
           assert habitat_insights["quality"]["status"] == "OK"
