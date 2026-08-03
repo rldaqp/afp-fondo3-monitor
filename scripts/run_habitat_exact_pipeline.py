@@ -1,4 +1,4 @@
-"""Ejecuta la cadena oficial y exacta de Hábitat sin recorrer archivos SBS innecesarios."""
+"""Ejecuta Hábitat con fuentes oficiales y estimación explícita de huecos SBS."""
 
 from __future__ import annotations
 
@@ -9,26 +9,19 @@ import requests
 from bs4 import BeautifulSoup
 
 import enrich_habitat_daily_sbs as source
+from build_habitat_gap_aware import main as build_gap_aware
 from postprocess_habitat_sbs_indicators import ensure_latest_consistency
-from build_habitat_exact_parity import main as build_exact
 
 
 def recent_monthly_urls() -> list[str]:
-    """Usa solo el año vigente y las rutas mensuales recientes.
-
-    El histórico ya está guardado en el repositorio. Para completar la cola diaria
-    solo se requieren el mes actual, julio y los meses inmediatamente anteriores.
-    Esto evita que GitHub Actions intente descargar todos los XLS desde 2015.
-    """
+    """Usa archivos SBS recientes y prueba la ruta mensual aún no enlazada."""
     today = pd.Timestamp.now(tz="America/Lima").tz_localize(None).normalize()
     urls: set[str] = set()
 
-    # Rutas oficiales predecibles: mes actual y cinco meses anteriores.
     for offset in range(0, 6):
         date = today - pd.DateOffset(months=offset)
         urls.add(source.month_url(int(date.year), int(date.month)))
 
-    # Enlaces publicados del año vigente; se ignoran años antiguos.
     try:
         response = requests.get(source.SBS_INDEX, headers=source.HEADERS, timeout=45)
         response.raise_for_status()
@@ -43,19 +36,45 @@ def recent_monthly_urls() -> list[str]:
             ):
                 urls.add(url)
     except Exception as exc:
-        print(f"Índice SBS no disponible; se usarán rutas predecibles: {type(exc).__name__}: {exc}")
-
+        print(
+            "Índice SBS no disponible; se usarán rutas predecibles: "
+            f"{type(exc).__name__}: {exc}"
+        )
     return sorted(urls)
 
 
+def continuity_is_modelled(history: pd.DataFrame) -> None:
+    """Informa los huecos SBS; el generador gap-aware debe cubrirlos después."""
+    profuturo = source.read_csv(source.PROFUTURO_PATH)
+    if profuturo.empty or history.empty:
+        return
+    latest = pd.Timestamp(history["fecha"].max())
+    start = max(pd.Timestamp("2026-07-01"), latest - pd.Timedelta(days=45))
+    expected = set(
+        profuturo.loc[
+            profuturo["fecha"].between(start, latest, inclusive="both"), "fecha"
+        ].dt.normalize()
+    )
+    present = set(
+        history.loc[
+            history["fecha"].between(start, latest, inclusive="both"), "fecha"
+        ].dt.normalize()
+    )
+    missing = sorted(expected - present)
+    if missing:
+        print(
+            "SBS mensual pendiente; el modelo cubrirá como ESTIMADO, no oficial: "
+            + ", ".join(date.strftime("%Y-%m-%d") for date in missing)
+        )
+
+
 def main() -> None:
-    # Sustituye únicamente el descubrimiento de archivos; conserva toda la
-    # extracción, consolidación y validación oficial del módulo base.
     source.discover_monthly_urls = recent_monthly_urls
+    source.validate_continuity = continuity_is_modelled
     source.main()
 
-    # Único motor de Hábitat: misma metodología de Profuturo, coeficientes propios.
-    build_exact()
+    # Único motor operativo: paridad metodológica Profuturo + huecos identificados.
+    build_gap_aware()
     ensure_latest_consistency()
 
 
