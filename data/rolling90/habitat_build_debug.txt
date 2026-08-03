@@ -1,0 +1,19 @@
+SBS mensual Hábitat descargada: https://intranet2.sbs.gob.pe/estadistica/financiera/2026/Abril/FP-1359-ab2026.XLS
+SBS mensual Hábitat descargada: https://intranet2.sbs.gob.pe/estadistica/financiera/2026/Enero/FP-1359-en2026.XLS
+SBS mensual Hábitat descargada: https://intranet2.sbs.gob.pe/estadistica/financiera/2026/Febrero/FP-1359-fe2026.XLS
+SBS mensual Hábitat descargada: https://intranet2.sbs.gob.pe/estadistica/financiera/2026/Junio/FP-1359-jn2026.XLS
+SBS mensual Hábitat descargada: https://intranet2.sbs.gob.pe/estadistica/financiera/2026/Marzo/FP-1359-ma2026.XLS
+SBS mensual Hábitat descargada: https://intranet2.sbs.gob.pe/estadistica/financiera/2026/Mayo/FP-1359-my2026.XLS
+Traceback (most recent call last):
+  File "/home/runner/work/afp-fondo3-monitor/afp-fondo3-monitor/scripts/run_habitat_exact_pipeline.py", line 63, in <module>
+    main()
+  File "/home/runner/work/afp-fondo3-monitor/afp-fondo3-monitor/scripts/run_habitat_exact_pipeline.py", line 55, in main
+    source.main()
+  File "/home/runner/work/afp-fondo3-monitor/afp-fondo3-monitor/scripts/enrich_habitat_daily_sbs.py", line 270, in main
+    validate_continuity(history)
+  File "/home/runner/work/afp-fondo3-monitor/afp-fondo3-monitor/scripts/enrich_habitat_daily_sbs.py", line 233, in validate_continuity
+    raise RuntimeError(
+RuntimeError: El histórico SBS de Hábitat continúa incompleto. Faltan fechas oficiales presentes en el calendario del Fondo 3: 2026-07-01, 2026-07-02, 2026-07-03, 2026-07-06, 2026-07-07, 2026-07-08, 2026-07-09, 2026-07-10, 2026-07-13, 2026-07-14, 2026-07-15, 2026-07-16, 2026-07-17, 2026-07-20
+
+WORKFLOW_OUTCOME=failure
+COMMIT_SHA=8a8551b20778ddccb9cc08329d09941a802db496
