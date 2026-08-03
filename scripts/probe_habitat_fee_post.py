@@ -1,4 +1,4 @@
-"""Reproduce la sesión, hash CSRF y POST multipart del valor cuota Hábitat."""
+"""Prueba el endpoint vigente de valor cuota de AFP Hábitat."""
 
 from __future__ import annotations
 
@@ -13,14 +13,20 @@ from bs4 import BeautifulSoup
 ROOT = Path(__file__).resolve().parents[1]
 OUTPUT = ROOT / "data" / "rolling90" / "habitat_fee_post_probe.json"
 BASE = "https://www.afphabitat.com.pe"
+SERVICE_BASE = "https://serviciosweb.afphabitat.com.pe"
 APP = f"{BASE}/privado/admin/investments/home/"
-FEE_URL = f"{BASE}/privado/admin/investments/home/api/fee_values"
+FEE_URLS = [
+    f"{BASE}/privado/investments/home/api/fee_values",
+    f"{BASE}/privado/admin/investments/home/api/fee_values",
+    f"{SERVICE_BASE}/privado/investments/home/api/fee_values",
+    f"{SERVICE_BASE}/privado/admin/investments/home/api/fee_values",
+]
 HASH_URLS = [
     f"{BASE}/privado/hash",
-    f"{BASE}/privado/hash/",
-    f"{BASE}/privado/admin/investments/home/hash",
-    f"{BASE}/privado/admin/investments/home/api/hash",
+    f"{BASE}/privado/investments/home/api/hash",
     f"{BASE}/privado/investments/home/hash",
+    f"{SERVICE_BASE}/privado/hash",
+    f"{SERVICE_BASE}/privado/investments/home/api/hash",
 ]
 DATES = [
     "2026-07",
@@ -34,7 +40,6 @@ DATES = [
     "Julio 2026",
 ]
 STATIC_HASH = "8c19b71855cd167e12b55115c961f5be"
-
 COMMON_HEADERS = {
     "User-Agent": "Mozilla/5.0 AFP-Habitat-Fondo3-Monitor",
     "Accept": "application/json, text/plain, */*",
@@ -51,17 +56,18 @@ def sample_response(response: requests.Response) -> dict[str, Any]:
         "final_url": response.url,
         "content_type": response.headers.get("content-type"),
         "content_length": len(response.content),
+        "allow": response.headers.get("allow"),
         "cookies": response.cookies.get_dict(),
-        "sample": response.text[:16000],
+        "sample": response.text[:20000],
     }
     try:
         payload = response.json()
         row["json_type"] = type(payload).__name__
+        row["json_payload"] = payload
         if isinstance(payload, dict):
             row["json_keys"] = list(payload.keys())[:100]
         elif isinstance(payload, list):
             row["json_length"] = len(payload)
-            row["json_first"] = payload[:5]
     except Exception:
         row["json_type"] = None
     return row
@@ -80,6 +86,16 @@ def collect_strings(value: Any) -> list[str]:
     elif isinstance(value, str):
         strings.extend(HEX_RE.findall(value))
     return strings
+
+
+def is_success(item: dict[str, Any]) -> bool:
+    if item.get("status") != 200 or item.get("json_type") not in {"dict", "list"}:
+        return False
+    payload = item.get("json_payload")
+    body_low = json.dumps(payload, ensure_ascii=False).lower()
+    if any(text in body_low for text in ("route", "not found", "csrf inválido", "csrf invalido")):
+        return False
+    return int(item.get("content_length") or 0) > 20
 
 
 def main() -> None:
@@ -115,60 +131,74 @@ def main() -> None:
         except Exception as exc:
             result["hash_attempts"].append({"url": url, "error": f"{type(exc).__name__}: {exc}"})
 
-    hashes.append(STATIC_HASH)
+    hashes.extend([STATIC_HASH, ""])
     cleaned_hashes: list[str] = []
     for value in hashes:
         value = str(value).strip()
-        if value and value not in cleaned_hashes and len(value) <= 256:
+        if value not in cleaned_hashes and len(value) <= 256:
             cleaned_hashes.append(value)
     result["candidate_hashes"] = cleaned_hashes
 
     stop = False
-    for hash_value in cleaned_hashes[:12]:
-        for date_value in DATES:
-            try:
-                response = session.post(
-                    FEE_URL,
-                    files={
-                        "csrf_habitat": (None, hash_value),
-                        "fecha": (None, date_value),
-                    },
-                    headers=COMMON_HEADERS,
-                    timeout=60,
-                    allow_redirects=True,
-                )
-                item = {
-                    "url": FEE_URL,
-                    "hash": hash_value,
-                    "fecha": date_value,
-                    **sample_response(response),
-                }
-                result["post_attempts"].append(item)
-                useful_json = item.get("json_type") in {"dict", "list"} and item.get("status") == 200
-                body_low = str(item.get("sample", "")).lower()
-                obvious_error = any(text in body_low for text in ("error", "inválido", "invalido", "csrf", "not found"))
-                if useful_json and not obvious_error and int(item.get("content_length") or 0) > 20:
-                    result["successful_attempt"] = item
-                    stop = True
+    for fee_url in FEE_URLS:
+        for hash_value in cleaned_hashes[:12]:
+            for date_value in DATES:
+                for encoding in ("multipart", "urlencoded"):
+                    try:
+                        values = {"csrf_habitat": hash_value, "fecha": date_value}
+                        if encoding == "multipart":
+                            response = session.post(
+                                fee_url,
+                                files={key: (None, value) for key, value in values.items()},
+                                headers=COMMON_HEADERS,
+                                timeout=60,
+                                allow_redirects=True,
+                            )
+                        else:
+                            response = session.post(
+                                fee_url,
+                                data=values,
+                                headers={**COMMON_HEADERS, "Content-Type": "application/x-www-form-urlencoded"},
+                                timeout=60,
+                                allow_redirects=True,
+                            )
+                        item = {
+                            "url": fee_url,
+                            "hash": hash_value,
+                            "fecha": date_value,
+                            "encoding": encoding,
+                            **sample_response(response),
+                        }
+                        result["post_attempts"].append(item)
+                        if is_success(item):
+                            result["successful_attempt"] = item
+                            stop = True
+                            break
+                    except Exception as exc:
+                        result["post_attempts"].append(
+                            {
+                                "url": fee_url,
+                                "hash": hash_value,
+                                "fecha": date_value,
+                                "encoding": encoding,
+                                "error": f"{type(exc).__name__}: {exc}",
+                            }
+                        )
+                if stop:
                     break
-            except Exception as exc:
-                result["post_attempts"].append(
-                    {
-                        "url": FEE_URL,
-                        "hash": hash_value,
-                        "fecha": date_value,
-                        "error": f"{type(exc).__name__}: {exc}",
-                    }
-                )
+            if stop:
+                break
         if stop:
             break
 
     OUTPUT.parent.mkdir(parents=True, exist_ok=True)
     OUTPUT.write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding="utf-8")
-    print(f"App status: {result['app'].get('status')} · cookies={result.get('session_cookies_after_app')}")
     print(f"Hashes candidatos: {len(cleaned_hashes)}")
     print(f"POST probados: {len(result['post_attempts'])}")
     print(f"Éxito: {bool(result.get('successful_attempt'))}")
+    if result.get("successful_attempt"):
+        item = result["successful_attempt"]
+        print(f"URL={item['url']} · fecha={item['fecha']} · encoding={item['encoding']}")
 
 
 if __name__ == "__main__":
