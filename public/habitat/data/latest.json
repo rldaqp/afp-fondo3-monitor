@@ -1,7 +1,7 @@
 {
   "afp": "Hábitat",
   "fund": 3,
-  "generated_at_lima": "2026-08-02T22:29:29.839286-05:00",
+  "generated_at_lima": "2026-08-02T23:12:15.506228-05:00",
   "model": "OLS rolling 90",
   "window": 90,
   "threshold": 0.001,
@@ -13,9 +13,9 @@
   "latest_market_date": "2026-08-01",
   "latest_estimate_date": "2026-07-31",
   "latest_estimated_vc": 31.83238440673258,
-  "latest_return_estimated": -0.0014762156598430059,
+  "latest_return_estimated": -0.001476215659842968,
   "signal": "BAJA",
-  "estimate_type": "CIERRE DISPONIBLE · MODELO OLS HÁBITAT",
+  "estimate_type": "CIERRE DIARIO · MODELO OLS HÁBITAT",
   "coefficients": {
     "intercept": 0.000622632562611806,
     "ret_SPY": 0.14934775003373177,
@@ -28,8 +28,7 @@
   },
   "sources": {
     "sbs": "SBS oficial · Fondo 3 · AFP Hábitat",
-    "market": "Serie de mercado compartida por el monitor principal",
-    "sbs_daily": "SBS · Variables SPP · Información diaria"
+    "market": "Yahoo Finance y USD/PEN de la serie compartida del monitor"
   },
   "sbs_download_status": "SBS EN LÍNEA",
   "warnings": [],
@@ -45,5 +44,17 @@
     "change_ytd": 0.15767912052337585,
     "source": "SBS · Variables SPP",
     "source_url": "https://www.sbs.gob.pe/sistema-privado-de-pensiones/variables-spp"
-  }
+  },
+  "parity_rule": "Modelo propio de Hábitat; cada VC histórico estimado parte del VC SBS anterior y aplica el retorno OLS de la fecha.",
+  "parity_verified": true,
+  "model_factors": [
+    "SPY",
+    "NEM",
+    "FCX",
+    "EPU",
+    "MCHI",
+    "EEM",
+    "USD_PEN"
+  ],
+  "live_engine": "CIERRE DIARIO HÁBITAT"
 }
