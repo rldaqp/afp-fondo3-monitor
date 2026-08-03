@@ -1,0 +1,73 @@
+name: Corregir consistencia intradía y gráficos Profuturo
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - migracion-github-actions
+    paths:
+      - ".github/workflows/fix-profuturo-ui-consistency.yml"
+      - "scripts/postprocess_live_consistency.py"
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: fix-profuturo-ui-consistency
+  cancel-in-progress: true
+
+jobs:
+  fix-and-deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Descargar rama más reciente
+        uses: actions/checkout@v4
+        with:
+          ref: migracion-github-actions
+
+      - name: Aplicar consistencia de datos en la interfaz
+        run: python scripts/postprocess_live_consistency.py
+
+      - name: Validar corrección
+        run: |
+          grep -q "function liveSnapshotActive" public/index.html
+          grep -q "Mismo valor del gráfico" public/index.html
+          grep -q "signals.json?ts=" public/index.html
+          grep -q "series.json?ts=" public/index.html
+          grep -q "latest.json?ts=" public/index.html
+
+      - name: Guardar HTML corregido
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/index.html
+          if git diff --cached --quiet; then
+            echo "El HTML ya contiene la corrección."
+          else
+            git commit -m "Alinear visor intradía y gráfico Profuturo"
+            git pull --rebase origin migracion-github-actions
+            git push origin HEAD:migracion-github-actions
+          fi
+
+      - name: Actualizar nuevamente la rama antes de publicar
+        run: |
+          git fetch origin migracion-github-actions
+          git reset --hard origin/migracion-github-actions
+
+      - name: Configurar GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Subir sitio completo
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: public
+
+      - name: Publicar
+        id: deployment
+        uses: actions/deploy-pages@v4
