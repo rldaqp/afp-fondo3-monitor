@@ -38,13 +38,13 @@ def ensure_latest_consistency() -> None:
     )
 
     html = index_path.read_text(encoding="utf-8")
-    phrase = "misma metodología de Profuturo"
+    phrase = "modelo de Hábitat se entrena por separado"
     if phrase not in html:
         note = (
             '<div class="note" style="margin:12px 0">'
-            'Hábitat usa la misma metodología de Profuturo: OLS, siete factores, '
-            'ventana móvil de 90 observaciones y las mismas reglas de fuentes. '
-            'Sus coeficientes se entrenan por separado con el VC de Hábitat.'
+            'El modelo de Hábitat se entrena por separado y no reutiliza coeficientes '
+            'de Profuturo. Usa la misma metodología de Profuturo: OLS, siete factores, '
+            'ventana móvil de 90 observaciones y las mismas reglas de fuentes.'
             '</div>'
         )
         html = html.replace("</main>", note + "</main>", 1)
