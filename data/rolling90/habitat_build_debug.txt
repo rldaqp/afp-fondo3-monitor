@@ -14,6 +14,5 @@ Traceback (most recent call last):
   File "/home/runner/work/afp-fondo3-monitor/afp-fondo3-monitor/scripts/enrich_habitat_daily_sbs.py", line 233, in validate_continuity
     raise RuntimeError(
 RuntimeError: El histórico SBS de Hábitat continúa incompleto. Faltan fechas oficiales presentes en el calendario del Fondo 3: 2026-07-01, 2026-07-02, 2026-07-03, 2026-07-06, 2026-07-07, 2026-07-08, 2026-07-09, 2026-07-10, 2026-07-13, 2026-07-14, 2026-07-15, 2026-07-16, 2026-07-17, 2026-07-20
-
-WORKFLOW_OUTCOME=failure
-COMMIT_SHA=8a8551b20778ddccb9cc08329d09941a802db496
+BUILD_OUTCOME=failure
+COMMIT_SHA=7cf5ecc4a94b2d721d3e58005642c346a642fa68

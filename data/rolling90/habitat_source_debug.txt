@@ -1,0 +1,105 @@
+PAGE_STATUS=200
+PAGE_FINAL_URL=https://www.afphabitat.com.pe/rentabilidad/
+INTERESTING_URLS_START
+https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js
+https://api.whatsapp.com/send?text=https://www.afphabitat.com.pe/rentabilidad
+https://cambiate.afphabitat.com.pe/?utm_source=seccion-rentabilidad&utm_medium=first-button&utm_campaign=web
+https://cambiate.afphabitat.com.pe/identidad?utm_source=seccion-rentabilidad&utm_medium=rentabilidad-button&utm_campaign=web
+https://www.afphabitat.com.pe/conoce-fondolibre
+https://www.afphabitat.com.pe/multifondos
+https://www.afphabitat.com.pe/multifondos/
+https://www.afphabitat.com.pe/rentabilidad
+https://www.afphabitat.com.pe/rentabilidad/
+https://www.afphabitat.com.pe/rentabilidad/#wpcf7-f3000-p222-o1
+https://www.afphabitat.com.pe/rentabilidad/feed/
+https://www.afphabitat.com.pe/wp-json/
+https://www.afphabitat.com.pe/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fwww.afphabitat.com.pe%2Frentabilidad%2F
+https://www.afphabitat.com.pe/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fwww.afphabitat.com.pe%2Frentabilidad%2F&format=xml
+https://www.afphabitat.com.pe/wp-json/wp/v2/pages/222
+https://www.google.com/recaptcha/api.js
+INTERESTING_URLS_END
+INLINE_PATTERN=https?://[^\s\"']+
+https://schema.org
+https://www.afphabitat.com.pe/rentabilidad/
+https://webprod04.afphabitat.com.pe/#website
+https://www.afphabitat.com.pe/rentabilidad/#breadcrumb
+https://webprod04.afphabitat.com.pe/
+https://webprod04.afphabitat.com.pe/?s={search_term_string}
+https://az416426.vo.msecnd.net/scripts/a/ai.0.js
+https://www.googletagmanager.com/gtm.js?id=
+INLINE_PATTERN=[\"']([^\"']*(?:valor|cuota|rentab|fondo|ajax|api|json)[^\"']*)[\"']
+https://www.afphabitat.com.pe/rentabilidad/
+Rentabilidad de AFP Habitat - Conoce Aquí Nuestros Resultados
+Conoce los resultados de rentabilidad por tipo de fondo y por AFP. Compara y elige lo mejor para tu futuro. ¡Cámbiate a AFP Habitat!
+https://www.afphabitat.com.pe/rentabilidad/#breadcrumb
+Rentabilidad
+}};
+/*! This file is auto-generated */
+!function(i,n){var o,s,e;function c(e){try{var t={supportTests:e,timestamp:(new Date).valueOf()};sessionStorage.setItem(o,JSON.stringify(t))}catch(e){}}function p(e,t,n){e.clearRect(0,0,e.canvas.width,e.canvas.height),e.fillText(t,0,0);var t=new Uint32Array(e.getImageData(0,0,e.canvas.width,e.canvas.height).data),r=(e.clearRect(0,0,e.canvas.width,e.canvas.height),e.fillText(n,0,0),new Uint32Array(e.getImageData(0,0,e.canvas.width,e.canvas.height).data));ret
+,e,{once:!0})}),new Promise(function(t){var n=function(){try{var e=JSON.parse(sessionStorage.getItem(o));if(
++[JSON.stringify(s),u.toString(),p.toString()].join(
+#valorcuota
+).hide();
+		});
+
+
+	});
+
+
+		function valorescuota_iFrameHeight() {
+			var h = jQuery(
+resultados-de-rentabilidad
+ranking-de-rentabilidad
+fondos-netos-captados
+distribucion-de-fondo
+valor-cuota
+api
+https:\/\/www.afphabitat.com.pe\/wp-json\/
+
+    }
+};
+/* ]]> */
+
+
+/* <![CDATA[ */
+var ajaxurl = 
+JS_SOURCE=https://www.afphabitat.com.pe/wp-includes/js/jquery/jquery.min.js?ver=3.7.1
+!function(e,t){"use strict";"object"==typeof module&&"object"==typeof module.exports?module.exports=e.document?t(e,!0):function(e){if(!e.document)throw new Error("jQuery requires a window with a document");return t(e)}:t(e)}("undefined"!=typeof window?window:this,function(ie,e){"use strict";var oe=[],r=Object.getPrototypeOf,ae=oe.slice,g=oe.flat?function(e){return oe.flat.call(e)}:function(e){return oe.concat.apply([],e)},s=oe.push,se=oe.indexOf,n={},i=n.toString,ue=n.hasOwnProperty,o=ue.toString,a=o.call(Object),le={},v=function(e){return"function"==typeof e&&"number"!=typeof e.nodeType&&"function"!=typeof e.item},y=function(e){return null!=e&&e===e.window},C=ie.document,u={type:!0,src:!0,nonce:!0,noModule:!0};function m(e,t,n){var r,i,o=(n=n||C).createElement("script");if(o.text=e,t)for(r in u)(i=t[r]||t.getAttribute&&t.getAttribute(r))&&o.setAttribute(r,i);n.head.appendChild(o).parentNode.removeChild(o)}function x(e){return null==e?e+"":"object"==typeof e||"function"==typeof e?n[i.c
+JS_SOURCE=https://www.afphabitat.com.pe/wp-includes/js/jquery/jquery-migrate.min.js?ver=3.4.1
+"undefined"==typeof jQuery.migrateMute&&(jQuery.migrateMute=!0),function(t){"use strict";"function"==typeof define&&define.amd?define(["jquery"],function(e){return t(e,window)}):"object"==typeof module&&module.exports?module.exports=t(require("jquery"),window):t(jQuery,window)}(function(s,n){"use strict";function e(e){return 0<=function(e,t){for(var r=/^(\d+)\.(\d+)\.(\d+)/,n=r.exec(e)||[],o=r.exec(t)||[],a=1;a<=3;a++){if(+o[a]<+n[a])return 1;if(+n[a]<+o[a])return-1}return 0}(s.fn.jquery,e)}s.migrateVersion="3.4.1";var t=Object.create(null);s.migrateDisablePatches=function(){for(var e=0;e<arguments.length;e++)t[arguments[e]]=!0},s.migrateEnablePatches=function(){for(var e=0;e<arguments.length;e++)delete t[arguments[e]]},s.migrateIsPatchEnabled=function(e){return!t[e]},n.console&&n.console.log&&(s&&e("3.0.0")&&!e("5.0.0")||n.console.log("JQMIGRATE: jQuery 3.x-4.x REQUIRED"),s.migrateWarnings&&n.console.log("JQMIGRATE: Migrate plugin loaded multiple times"),n.console.log("JQMIGRATE: Migr
+JS_SOURCE=https://www.afphabitat.com.pe/wp-content/themes/habitatpublico/js/jquery.js
+!function(e,t){"object"==typeof module&&"object"==typeof module.exports?module.exports=e.document?t(e,!0):function(e){if(!e.document)throw new Error("jQuery requires a window with a document");return t(e)}:t(e)}("undefined"!=typeof window?window:this,function(e,t){var n=[],r=n.slice,i=n.concat,o=n.push,a=n.indexOf,s={},l=s.toString,u=s.hasOwnProperty,c={},f=function(e,t){return new f.fn.init(e,t)},d=/^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g,p=/^-ms-/,h=/-([\da-z])/gi,m=function(e,t){return t.toUpperCase()};function g(e){var t="length"in e&&e.length,n=f.type(e);return"function"!==n&&!f.isWindow(e)&&(!(1!==e.nodeType||!t)||("array"===n||0===t||"number"==typeof t&&t>0&&t-1 in e))}f.fn=f.prototype={jquery:"1.11.3",constructor:f,selector:"",length:0,toArray:function(){return r.call(this)},get:function(e){return null!=e?e<0?this[e+this.length]:this[e]:r.call(this)},pushStack:function(e){var t=f.merge(this.constructor(),e);return t.prevObject=this,t.context=this.context,t},each:function(e,t){retur
+JS_SOURCE=https://www.afphabitat.com.pe/wp-content/themes/habitatpublico/js/folleteria.js
+$.ajax({
+url: "https://serviciosweb.afphabitat.com.pe/api/services/folleteria/correo",
+//   Accept: "application/json",
+dataType: "json",
+JS_SOURCE=https://www.afphabitat.com.pe/wp-content/themes/habitatpublico/js/jquery.fancybox.pack.js
+!function(e,t,i,n){var o=i("html"),a=i(e),r=i(t),l=i.fancybox=function(){l.open.apply(this,arguments)},s=navigator.userAgent.match(/msie/i),c=null,d=t.createTouch!==n,p=function(e){return e&&e.hasOwnProperty&&e instanceof i},h=function(e){return e&&"string"===i.type(e)},f=function(e){return h(e)&&0<e.indexOf("%")},u=function(e,t){var i=parseInt(e,10)||0;return t&&f(e)&&(i*=l.getViewport()[t]/100),Math.ceil(i)},g=function(e,t){return u(e,t)+"px"};i.extend(l,{version:"2.1.5",defaults:{padding:15,margin:20,width:800,height:600,minWidth:100,minHeight:100,maxWidth:9999,maxHeight:9999,pixelRatio:1,autoSize:!0,autoHeight:!1,autoWidth:!1,autoResize:!0,autoCenter:!d,fitToView:!0,aspectRatio:!1,topRatio:.5,leftRatio:.5,scrolling:"auto",wrapCSS:"",arrows:!0,closeBtn:!0,closeClick:!1,nextClick:!1,mouseWheel:!0,autoPlay:!1,playSpeed:3e3,preload:3,modal:!1,loop:!0,ajax:{dataType:"html",headers:{"X-fancyBox":!0}},iframe:{scrolling:"auto",preload:!0},swf:{wmode:"transparent",allowfullscreen:"true",all
+JS_SOURCE=https://www.afphabitat.com.pe/wp-content/themes/habitatpublico/js/jquery.matchHeight.js
+!function(t){"use strict";"function"==typeof define&&define.amd?define(["jquery"],t):"undefined"!=typeof module&&module.exports?module.exports=t(require("jquery")):t(jQuery)}(function(t){var e=-1,o=-1,a=function(t){return parseFloat(t)||0},i=function(e){var o=t(e),i=null,n=[];return o.each(function(){var e=t(this),o=e.offset().top-a(e.css("margin-top")),r=n.length>0?n[n.length-1]:null;null===r?n.push(e):Math.floor(Math.abs(i-o))<=1?n[n.length-1]=r.add(e):n.push(e),i=o}),n},n=function(e){var o={byRow:!0,property:"height",target:null,remove:!1};return"object"==typeof e?t.extend(o,e):("boolean"==typeof e?o.byRow=e:"remove"===e&&(o.remove=!0),o)},r=t.fn.matchHeight=function(e){var o=n(e);if(o.remove){var a=this;return this.css(o.property,""),t.each(r._groups,function(t,e){e.elements=e.elements.not(a)}),this}return this.length<=1&&!o.target?this:(r._groups.push({elements:this,options:o}),r._apply(this,o),this)};r.version="master",r._groups=[],r._throttle=80,r._maintainScroll=!1,r._beforeUpd
+JS_SOURCE=https://www.afphabitat.com.pe/wp-content/themes/habitatpublico/js/jquery.main.js?ver=1744404180
+function traeIDatencion(){$("#numero_atencion").html("");$.ajax({url:"/wp-admin/admin-ajax.php?action=ajax_call&funcion=getIdContacto",type:"POST",data:{id:"id"},success:function(e){var t=jQuery.parseJSON(e);console.log(t),$("#numero_atencion").append(t.id)}})}!function(e,t,n,a){"use strict";var i=n(e),o=n(t);e.handler=function(){},e.handler.prototype={onReadySetup:function(){var e=this;e.eventsHandler(n("[data-func]")),n(".numeros").keypress(function(t){return e.justNumbers(t)}),n(".textos").keypress(function(t){return e.justText(t)}),n(".numerosTexto").keypress(function(t){return e.numberText(t)}),n('input[name*="your-name"]').keypress(function(t){return console.log(event.keyCode),e.justText(t)})},onLoadSetup:function(){},onScrollSetup:function(){},onResizeSetup:function(){},eventsHandler:function(e){if(e.length){var t=this;n.each(e,function(e,a){var i=n(a),o=i.data("func"),s=i.data("event")?i.data("event"):"click.handler";o&&"function"==typeof t[o]&&(i.on(s,n.proxy(t[o],t)),i.data("
+JS_SOURCE=https://www.afphabitat.com.pe/chat/js/jquery.validate.min.js
+* Copyright (c) 2013 Jörn Zaefferer; Licensed MIT */(function(t){t.extend(t.fn,{validate:function(e){if(!this.length)return e&&e.debug&&window.console&&console.warn("Nothing selected, can't validate, returning nothing."),void 0;var i=t.data(this[0],"validator");return i?i:(this.attr("novalidate","novalidate"),i=new t.validator(e,this[0]),t.data(this[0],"validator",i),i.settings.onsubmit&&(this.validateDelegate(":submit","click",function(e){i.settings.submitHandler&&(i.submitButton=e.target),t(e.target).hasClass("cancel")&&(i.cancelSubmit=!0),void 0!==t(e.target).attr("formnovalidate")&&(i.cancelSubmit=!0)}),this.submit(function(e){function s(){var s;return i.settings.submitHandler?(i.submitButton&&(s=t("<input type='hidden'/>").attr("name",i.submitButton.name).val(t(i.submitButton).val()).appendTo(i.currentForm)),i.settings.submitHandler.call(i,i.currentForm,e),i.submitButton&&s.remove(),!1):!0}return i.settings.debug&&e.preventDefault(),i.cancelSubmit?(i.cancelSubmit=!1,s()):i.form()?
+JS_SOURCE=https://www.afphabitat.com.pe/chat/js/jquery.cookie.js
+!function(e){"function"==typeof define&&define.amd?define(["jquery"],e):"object"==typeof exports?e(require("jquery")):e(jQuery)}(function(e){var n=/\+/g;function o(e){return t.raw?e:encodeURIComponent(e)}function i(e){return o(t.json?JSON.stringify(e):String(e))}function r(o,i){var r=t.raw?o:function(e){0===e.indexOf('"')&&(e=e.slice(1,-1).replace(/\\"/g,'"').replace(/\\\\/g,"\\"));try{return e=decodeURIComponent(e.replace(n," ")),t.json?JSON.parse(e):e}catch(e){}}(o);return e.isFunction(i)?i(r):r}var t=e.cookie=function(n,c,u){if(void 0!==c&&!e.isFunction(c)){if("number"==typeof(u=e.extend({},t.defaults,u)).expires){var a=u.expires,d=u.expires=new Date;d.setTime(+d+864e5*a)}return document.cookie=[o(n),"=",i(c),u.expires?"; expires="+u.expires.toUTCString():"",u.path?"; path="+u.path:"",u.domain?"; domain="+u.domain:"",u.secure?"; secure":""].join("")}for(var f,p=n?void 0:{},s=document.cookie?document.cookie.split("; "):[],m=0,v=s.length;m<v;m++){var x=s[m].split("="),k=(f=x.shift(),t
+JS_SOURCE=https://www.afphabitat.com.pe/chat/js/atk-functions.js
+!function(){for(var a,t=function(){},e=["assert","clear","count","debug","dir","dirxml","error","exception","group","groupCollapsed","groupEnd","info","log","markTimeline","profile","profileEnd","table","time","timeEnd","timeStamp","trace","warn"],n=e.length,o=window.console=window.console||{};n--;)o[a=e[n]]||(o[a]=t)}();var _amtron=window.location.href,_ariP=[],_ariU=[];_ariP=_amtron.split("//");var _protocolo=_ariP[0];_ariU=_ariP[1].split("/");var _dominio=_ariU[0],_atkDomain=_protocolo+"//"+_dominio+"/chat/",_phpsession=_atkDomain+"atk-session.php",_atkBody=$(".atk-body-inner"),_InnerNow="atk-inner01",_atkValor="",_atkSeed=0,_atkidConv=0,_atkInterval=4e3,_ChatInit=!1,_atk_SendString=!1,_atkStatusChat="",_prolaintDead="",_Temporizador,_atkAtencion="NO",reglas={atkMsgBox:{required:!0}},mensajes={atkMsgBox:{required:""}},_ATKrestarChat='<div id="atk-iner-log-ch" ><article class="akt-gomita" id="atk-ch-w0" ></article></div>';function sendComunication(){if(console.log("ban21"),_atk_SendS
+JS_SOURCE=https://www.afphabitat.com.pe/wp-includes/js/dist/i18n.min.js?ver=5e580eb46a90c2b997e6
+(()=>{var t={2058:(t,e,r)=>{var n;!function(){"use strict";var i={not_string:/[^s]/,not_bool:/[^t]/,not_type:/[^T]/,not_primitive:/[^v]/,number:/[diefg]/,numeric_arg:/[bcdiefguxX]/,json:/[j]/,not_json:/[^j]/,text:/^[^\x25]+/,modulo:/^\x25{2}/,placeholder:/^\x25(?:([1-9]\d*)\$|\(([^)]+)\))?(\+)?(0|'[^$])?(-)?(\d+)?(?:\.(\d+))?([b-gijostTuvxX])/,key:/^([a-z_][a-z_\d]*)/i,key_access:/^\.([a-z_][a-z_\d]*)/i,index_access:/^\[(\d+)\]/,sign:/^[+-]/};function a(t){return function(t,e){var r,n,o,s,l,u,p,c,f,d=1,h=t.length,g="";for(n=0;n<h;n++)if("string"==typeof t[n])g+=t[n];else if("object"==typeof t[n]){if((s=t[n]).keys)for(r=e[d],o=0;o<s.keys.length;o++){if(null==r)throw new Error(a('[sprintf] Cannot access property "%s" of undefined value "%s"',s.keys[o],s.keys[o-1]));r=r[s.keys[o]]}else r=s.param_no?e[s.param_no]:e[d++];if(i.not_type.test(s.type)&&i.not_primitive.test(s.type)&&r instanceof Function&&(r=r()),i.numeric_arg.test(s.type)&&"number"!=typeof r&&isNaN(r))throw new TypeError(a("[sp
+JS_SOURCE=https://www.afphabitat.com.pe/wp-content/plugins/contact-form-7/includes/swv/js/index.js?ver=6.1.5
+(()=>{"use strict";var t={d:(e,i)=>{for(var s in i)t.o(i,s)&&!t.o(e,s)&&Object.defineProperty(e,s,{enumerable:!0,get:i[s]})},o:(t,e)=>Object.prototype.hasOwnProperty.call(t,e),r:t=>{"undefined"!=typeof Symbol&&Symbol.toStringTag&&Object.defineProperty(t,Symbol.toStringTag,{value:"Module"}),Object.defineProperty(t,"__esModule",{value:!0})}},e={};function i(t){if(this.formData={},this.tree={},!(t instanceof FormData))return this;this.formData=t;const e=()=>{const t=new Map;return t.largestIndex=0,t.set=function(e,i){""===e?e=t.largestIndex++:/^[0-9]+$/.test(e)&&(e=parseInt(e),t.largestIndex<=e&&(t.largestIndex=e+1)),Map.prototype.set.call(t,e,i)},t};this.tree=e();const i=/^(?<name>[a-z][-a-z0-9_:]*)(?<array>(?:\[(?:[a-z][-a-z0-9_:]*|[0-9]*)\])*)/i;for(const[t,s]of this.formData){const o=t.match(i);if(o)if(""===o.groups.array)this.tree.set(o.groups.name,s);else{const t=[...o.groups.array.matchAll(/\[([a-z][-a-z0-9_:]*|[0-9]*)\]/gi)].map((([t,e])=>e));t.unshift(o.groups.name);const i=t.pop
+JS_SOURCE=https://www.afphabitat.com.pe/wp-content/plugins/contact-form-7/includes/js/index.js?ver=6.1.5
+(()=>{"use strict";const e=window.wp.i18n,t=e=>Math.abs(parseInt(e,10)),a=(e,t,a)=>{const n=new CustomEvent(`wpcf7${t}`,{bubbles:!0,detail:a});"string"==typeof e&&(e=document.querySelector(e)),e.dispatchEvent(n)},n=(e,t)=>{const n=new Map([["init","init"],["validation_failed","invalid"],["acceptance_missing","unaccepted"],["spam","spam"],["aborted","aborted"],["mail_sent","sent"],["mail_failed","failed"],["submitting","submitting"],["resetting","resetting"],["validating","validating"],["payment_required","payment-required"]]);n.has(t)&&(t=n.get(t)),Array.from(n.values()).includes(t)||(t=`custom-${t=(t=t.replace(/[^0-9a-z]+/i," ").trim()).replace(/\s+/,"-")}`);const r=e.getAttribute("data-status");if(e.wpcf7.status=t,e.setAttribute("data-status",t),e.classList.add(t),r&&r!==t){e.classList.remove(r);const t={contactFormId:e.wpcf7.id,pluginVersion:e.wpcf7.pluginVersion,contactFormLocale:e.wpcf7.locale,unitTag:e.wpcf7.unitTag,containerPostId:e.wpcf7.containerPost,status:e.wpcf7.status,prev
+JS_SOURCE=https://www.afphabitat.com.pe/wp-content/plugins/revslider/public/assets/js/rbtools.min.js?ver=6.6.10
+var Lo,No,Ro,Xo,Yo,Io,zo,Ho=function(){return"undefined"!=typeof window},Wo=function(){return Lo||Ho()&&(Lo=window.gsap)&&Lo.registerPlugin&&Lo},Vo=function(t){return"string"==typeof t},jo=function(t){return"function"==typeof t},Uo=function(t,e){var n="x"===e?"Width":"Height",r="scroll"+n,i="client"+n;return t===Ro||t===Xo||t===Yo?Math.max(Xo[r],Yo[r])-(Ro["inner"+n]||Xo[i]||Yo[i]):t[r]-t["offset"+n]},qo=function(t,e){var n="scroll"+("x"===e?"Left":"Top");return t===Ro&&(null!=t.pageXOffset?n="page"+e.toUpperCase()+"Offset":t=null!=Xo[n]?Xo:Yo),function(){return t[n]}},Go=function(t,e){if(!(t=Io(t)[0])||!t.getBoundingClientRect)return console.warn("scrollTo target doesn't exist. Using 0")||{x:0,y:0};var n=t.getBoundingClientRect(),r=!e||e===Ro||e===Yo,i=r?{top:Xo.clientTop-(Ro.pageYOffset||Xo.scrollTop||Yo.scrollTop||0),left:Xo.clientLeft-(Ro.pageXOffset||Xo.scrollLeft||Yo.scrollLeft||0)}:e.getBoundingClientRect(),o={x:n.left-i.left,y:n.top-i.top};return!r&&e&&(o.x+=qo(e,"x")(),o.y+=qo
+JS_SOURCE=https://www.afphabitat.com.pe/wp-content/plugins/revslider/public/assets/js/rs6.min.js?ver=6.6.10
+!function(e,t){"use strict";var i="Slider Revolution 6.6.10";window.RSANYID=window.RSANYID===t?[]:window.RSANYID,window.RSANYID_sliderID=window.RSANYID_sliderID===t?[]:window.RSANYID_sliderID,e.fn.revolution=e.fn.revolution||{};var a=e.fn.revolution;e.fn.revolutionInit=function(i){return this.each(function(){a.ISM=a.ISM||a.is_mobile();for(var s=document.getElementsByClassName("rs-p-wp-fix");s[0];)s[0].parentNode.removeChild(s[0]);this.id!==t?(a[n]={anyid:[]},this.id=a.revCheckIDS(n,this,!0)):this.id="rs_module_"+Math.round(1e7*Math.random());var n=this.id,l=a.clone(i);a[n]=W(i),a[n].ignoreHeightChange=a.ISM&&"fullscreen"===a[n].sliderLayout&&a[n].ignoreHeightChange,a[n].option_export=l,a[n].anyid=[],a[n]._Lshortcuts={},a[n].computedStyle={},a[n].c=e(this),a[n].cpar=a[n].c.parent(),a[n].canvas=a[n].c.find("rs-slides"),a[n].caches={calcResponsiveLayersList:[],contWidthManager:{},middleHeights:{}},a[n].sbgs={},window.RSBrowser=window.RSBrowser===t?a.get_browser():window.RSBrowser,a.setIsI
+"IE"!==window.RSBrowser&&e.customEases!==t&&(!e.customEases.SFXBounceLite&&"true"!=e.customEases.SFXBounceLite||tpGS.SFXBounceLite!==t||(tpGS.SFXBounceLite=tpGS.CustomBounce.create("SFXBounceLite",{strength:.3,squash:1,squashID:"SFXBounceLite-squash"})),!e.customEases.SFXBounceSolid&&"true"!=e.customEases.SFXBounceSolid||tpGS.SFXBounceSolid!==t||(tpGS.SFXBounceSolid=tpGS.CustomBounce.create("SFXBounceSolid",{strength:.5,squash:2,squashID:"SFXBounceSolid-squash"})),!e.customEases.SFXBounceStrong&&"true"!=e.customEases.SFXBounceStrong||tpGS.SFXBounceStrong!==t||(tpGS.SFXBounceStrong=tpGS.CustomBounce.create("SFXBounceStrong",{strength:.7,squash:3,squashID:"SFXBounceStrong-squash"})),!e.customEases.SFXBounceExtrem&&"true"!=e.customEases.SFXBounceExtrem||tpGS.SFXBounceExtrem!==t||(tpGS.SFXBounceExtrem=tpGS.CustomBounce.create("SFXBounceExtrem",{strength:.9,squash:4,squashID:"SFXBounceExtrem-squash"})),!e.customEases.BounceLite&&"true"!=e.customEases.BounceLite||tpGS.BounceLite!==t||(tpGS.B
+JS_SOURCE=https://www.afphabitat.com.pe/wp-content/plugins/contactic/assets/js/get-the-page.js?ver=1.0
+jQuery.ajax({
+url: ajaxurl,
+
+DISCOVERY_OUTCOME=success
+COMMIT_SHA=7cf5ecc4a94b2d721d3e58005642c346a642fa68
