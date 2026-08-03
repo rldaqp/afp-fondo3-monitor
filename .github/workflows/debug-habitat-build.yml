@@ -1,4 +1,4 @@
-name: Recuperar snapshots SBS de julio
+name: Probar archivo SBS de julio
 
 on:
   workflow_dispatch:
@@ -7,13 +7,13 @@ on:
       - migracion-github-actions
     paths:
       - ".github/workflows/debug-habitat-build.yml"
-      - "scripts/probe_wayback_sbs_variables.py"
+      - "scripts/probe_sbs_july_excel.py"
 
 permissions:
   contents: write
 
 concurrency:
-  group: sbs-wayback-july-probe
+  group: sbs-july-excel-probe
   cancel-in-progress: true
 
 jobs:
@@ -28,20 +28,20 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Instalar dependencias mínimas
-        run: python -m pip install requests beautifulsoup4 lxml
+      - name: Instalar dependencias
+        run: python -m pip install requests beautifulsoup4 lxml pandas xlrd
 
-      - name: Consultar capturas históricas del visor SBS
+      - name: Identificar patrón y probar archivo 2026
         env:
           PYTHONUTF8: "1"
           PYTHONIOENCODING: "utf-8"
-        run: python scripts/probe_wayback_sbs_variables.py
+        run: python scripts/probe_sbs_july_excel.py
 
       - name: Guardar resultados
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/rolling90/sbs_wayback_july_probe.json
-          git commit -m "Registrar snapshots SBS de julio" || exit 0
+          git add data/rolling90/sbs_july_excel_probe.json
+          git commit -m "Registrar patrón del Excel SBS de julio" || exit 0
           git pull --rebase origin migracion-github-actions
           git push origin HEAD:migracion-github-actions
