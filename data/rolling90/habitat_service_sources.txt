@@ -1,0 +1,532 @@
+MAP_URL=https://www.afphabitat.com.pe/privado/admin/investments/home/static/js/main.eb72ebba.js.map
+SOURCE_COUNT=477
+SELECTED_COUNT=3
+
+===== SOURCE=components/section/profitability/Profitability.js =====
+import React, { useState, useEffect, useCallback } from "react";
+import "./Profitability.scss";
+import BarChart from "../../commons/bar-chart/BarChart";
+import Tooltip from "../../commons/tooltip/Tooltip";
+
+const SectionProfitability = ({ afps, funds, periods, chart, information, dateRange }) => {
+    const [openTooltipProfitability, setOpenTooltipProfitability] = useState(false);
+    const [openTooltipLegal, setOpenTooltipLegal] = useState(false);
+    const [currentFund, setCurrentFund] = useState("");
+    const [currentPeriod, setCurrentPeriod] = useState("");
+    const [currentDateRange, setCurrentDateRange] = useState("");
+
+    useEffect(() => {
+        if (!funds || !periods || !dateRange) return;
+
+        const activeFund = funds.list.find((item) => item.active === true);
+        const currentFund = funds.list.length > 0 ? activeFund?.id : "";
+
+        const activePeriod = periods.list.find((item) => item.active === true);
+        const currentPeriod = periods.list.length > 0 ? activePeriod?.period_id : "";
+
+        const currentDateRange = dateRange.length > 0 ? dateRange[0].text : "";
+        setCurrentFund(currentFund);
+        setCurrentPeriod(currentPeriod);
+        setCurrentDateRange(currentDateRange);
+    }, [funds, periods, dateRange]);
+
+    const toggleTooltipProfitability = useCallback((event) => {
+        event.preventDefault();
+        setOpenTooltipProfitability((prev) => !prev);
+    }, []);
+
+    const toggleTooltipLegal = useCallback((event) => {
+        event.preventDefault();
+        setOpenTooltipLegal((prev) => !prev);
+    }, []);
+
+    const onChangeValue = (name, value) => {
+        let range;
+        if (name === "currentFund") {
+            const found = dateRange.filter((item) => item.fund_id === value);
+            range = found.find((item) => item.period_id === currentPeriod);
+        } else {
+            const period = dateRange.filter((item) => item.period_id === value);
+            range = period.find((item) => item.fund_id === currentFund);
+        }
+        if (name === "currentFund") {
+            setCurrentFund(value);
+        } else {
+            setCurrentPeriod(value);
+        }
+        setCurrentDateRange(range?.text || "");
+    };
+
+    const getBars = () => {
+        const bars = [];
+        chart.bar.forEach((bar) => {
+            if (bar.fundId === currentFund && bar.periodId === currentPeriod) {
+                const afp = afps.find((afp) => afp.afp_id === bar.afpId);
+                if (afp) {
+                    bars.push({
+                        name: afp.name,
+                        value: Number(bar.value),
+                        label: bar.value,
+                        color: afp.color,
+                    });
+                }
+            }
+        });
+        return bars;
+    };
+
+    const toolTipDataProfitability = {
+        title: information.reference.popPup.title,
+        question: information.reference.popPup.question,
+        description: information.reference.popPup.description,
+    };
+
+    const toolTipDataLegal = {
+        title: information.btnInformation.reference.popPup.title,
+        description: information.btnInformation.reference.popPup.description,
+    };
+
+    const tagA = () => {
+        const reference = information.reference;
+        return (
+            <a href="#!" onClick={toggleTooltipProfitability}>
+                {reference.name}
+            </a>
+        );
+    };
+
+    const tagP = () => {
+        let subTitle = information.subTitle;
+        subTitle = subTitle.split("#");
+        return (
+            <p className={`hbi-text-profitability`}>
+                {subTitle[0]} {tagA()} {subTitle[2]} / <strong>{currentDateRange}</strong>
+            </p>
+        );
+    };
+
+    const tagBtnInformation = () => {
+        let title = information.btnInformation.title;
+        title = title.split("#");
+        return (
+            <a
+                href={"#!"}
+                className={`btn btn-legal-information`}
+                onClick={toggleTooltipLegal}
+            >
+                {title[0]} <strong>{information.btnInformation.reference.name}</strong>
+            </a>
+        );
+    };
+
+    const tagSplitStrong = () => {
+        let description = toolTipDataLegal.description;
+        let subString = description.split("#");
+        let cambioAnios = subString[2].split("AFP Abril 2019 / Abril 2014");
+        return (
+            <div>
+                <strong>{subString[1]}</strong> {cambioAnios[0]} {currentDateRange} {cambioAnios[1]}
+                <strong>{subString[3]}</strong>
+            </div>
+        );
+    };
+
+    return (
+        <section id={"resultados-de-rentabilidad"} className={`general-profitability grafico1`}>
+            <div className={`container hbi-section-profitability`}>
+                <div className={`text-center hbi-reference-topltip hbi-reference-topltip--custom`}>
+                    <h2 className={`title-profitability`}>{information.title}</h2>
+                    {tagP()}
+                    {openTooltipProfitability && <Tooltip {...toolTipDataProfitability} />}
+                </div>
+                <div className={`hbi-content-tabs-fondo`}>
+                    <ul className={`hbi-tabs-fondo`}>
+                        {funds.list.map((fund) => (
+                            <li
+                                key={fund.id}
+                                className={`hbi-item-fondo ${currentFund === fund.id ? "hbi-item-fondo--active" : ""}`}
+                                onClick={() => onChangeValue("currentFund", fund.id)}
+                            >
+                                {fund.name}
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+                <div className={`hbi-cardbox`}>
+                    <BarChart bars={getBars()} />
+                </div>
+                <div className={`hbi-content-years`}>
+                    <ul className={`hbi-years`} style={{ overflow: "auto" }}>
+                        {periods.list.map((period) => (
+                            <li key={period.period_id} className={`hbi-item-year`}>
+                                <button
+                                    className={`btn btn-year ${currentPeriod === period.period_id ? "btn-year--active" : ""}`}
+                                    onClick={() => onChangeValue("currentPeriod", period.period_id)}
+                                >
+                                    {period.name}
+                                </button>
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+            </div>
+            <div className={`hbi-content-legal hbi-reference-topltip d-none`}>
+                {tagBtnInformation()}
+                {openTooltipLegal && <Tooltip {...toolTipDataLegal} />}
+            </div>
+            <div className={`container`}>
+                <div className={`tooltip-reference`}>
+                    <div>{tagSplitStrong()}</div>
+                </div>
+            </div>
+        </section>
+    );
+};
+
+export default SectionProfitability;
+===== END_SOURCE=components/section/profitability/Profitability.js =====
+
+===== SOURCE=services/general-service.js =====
+import axios from "axios";
+import { sendGet, sendPost } from "./handle-request";
+
+const enviroment = "production"; // develop,production
+// const urlBase = "https://webqa03.afphabitat.com.pe/privado/admin/investments/home/api";
+// const urlBase = "https://webdesa03.afphabitat.com.pe/privado/admin/investments/home/api";
+const urlBase = "https://www.afphabitat.com.pe/privado/admin/investments/home/api";
+const urlBaseAzure = process.env.REACT_APP_API_URL;
+class GeneralService {
+    constructor() {
+        // this.apiUrl = `https://${window.location.hostname}`;
+        // this.apiUrl = "https://webqa03.afphabitat.com.pe";
+        // this.apiUrl = "https://webdesa03.afphabitat.com.pe";
+        this.apiUrl = "https://www.afphabitat.com.pe";
+        this.CancelToken = axios.CancelToken;
+        this.source = this.CancelToken.source();
+        this.config = {
+            headers: { "Access-Control-Allow-Origin": "*" },
+        };
+    }
+
+    getGeneralData = async () => {
+        let resultado;
+        if (enviroment !== "develop") {
+            // aquí la variable esta apuntando a producción entonces esta consumiendo el servicio de la nuve
+            resultado = await axios.get(`${urlBaseAzure}/privado/investments/home/api`);
+            resultado = resultado.data;
+        } else {
+            // en caso quieres consumir el dummy que cree cambia el enviromen a develop
+            resultado = await require("../dummy/dummy.json");
+        }
+        return resultado;
+    };
+
+    getHash = async () => {
+        const uri = `${this.apiUrl}/privado/hash`;
+        const data = {};
+        const { config } = this;
+        if (enviroment !== "develop") {
+            return sendGet(uri, data, config);
+        } else {
+            return { hash: "8c19b71855cd167e12b55115c961f5be" };
+        }
+    };
+
+    getFeeValue = async (hash, date) => {
+        const uri = `${this.apiUrl}/privado/admin/investments/home/api/fee_values`;
+        const formData = new FormData();
+        formData.set("csrf_habitat", hash);
+        formData.set("fecha", date);
+        const data = formData;
+        const config = {
+            headers: {
+                "Access-Control-Allow-Origin": "*",
+                "Content-Type": "multipart/form-data",
+            },
+        };
+        if (enviroment !== "develop") {
+            return sendPost(uri, data, config);
+        } else {
+            // const dummy = await require('../services/dummyRespuestaPeriodo.json');
+            // return dummy;
+        }
+    };
+
+    getTwelveMonth = async (hash) => {
+        const uri = `${this.apiUrl}/privado/admin/investments/home/api/val_12`;
+        const formData = new FormData();
+        formData.set("csrf_habitat", hash);
+        const data = formData;
+        const config = {
+            headers: {
+                "Access-Control-Allow-Origin": "*",
+                "Content-Type": "multipart/form-data",
+            },
+        };
+        if (enviroment !== "develop") {
+            return sendPost(uri, data, config);
+        } else {
+            // const dummy = await require('../services/dummydocemeses.json');
+            // return dummy;
+        }
+    };
+
+    getFeeInputs = async () => {
+        let resultado;
+        if (enviroment !== "develop") {
+            // aquí la variable esta apuntando a producción entonces esta consumiendo el servicio de la nuve
+            resultado = await axios.get(`${urlBaseAzure}/privado/investments/home/api/fee_inputs`);
+            resultado = resultado.data;
+        } else {
+            // en caso quieres consumir el dummy que cree cambia el enviromen a develop
+            resultado = await require("../dummy/fee_inputs.json");
+        }
+        return resultado;
+    };
+
+    cancelRequests = async () => {
+        this.source.cancel("component unmount");
+    };
+}
+
+export default GeneralService;
+
+===== END_SOURCE=services/general-service.js =====
+
+===== SOURCE=App.js =====
+import React, { useState, useEffect } from "react";
+import "./App.scss";
+import Button from "./components/commons/button/Button";
+import SectionFooter from "./components/section/footer/Footer";
+import SectionProfitability from "./components/section/profitability/Profitability";
+import SectionRanking from "./components/section/ranking/Ranking";
+import SectionFunds from "./components/section/funds/Funds";
+import SectionRent from "./components/section/rent/Rent";
+import SectionInverment from "./components/section/inverment/Inverment";
+import SectionPorfolio from "./components/section/porfolio/Porfolio";
+import GeneralService from "./services/general-service";
+
+const App = () => {
+    const generalService = new GeneralService();
+    const [data, setData] = useState({});
+    const [isLoading, setIsLoading] = useState(true);
+    const [years, setYears] = useState([]);
+    const [months, setMonths] = useState([]);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            const respuesta = await generalService.getGeneralData();
+            const feeInputResponse = await generalService.getFeeInputs();
+
+            if (respuesta && feeInputResponse) {
+                setData(respuesta);
+                setYears(feeInputResponse.years);
+                setMonths(feeInputResponse.months);
+                setIsLoading(false);
+
+                setTimeout(() => {
+                    if (window.parent && window.parent.document.getElementById("graficos")) {
+                        window.parent.valorescuota_iFrameHeight();
+                    }
+                  }, 1000); 
+            }
+        };
+
+        fetchData();
+
+        return () => {
+            generalService.cancelRequests();
+        };
+    }, []);
+
+    const publicity0 = {
+        text: "Revisa los valores cuota en el siguiente link:",
+        btnText: "Ir a la SBS",
+        btnLink: "https://www.sbs.gob.pe/app/stats_net/stats/EstadisticaSistemaFinancieroResultados.aspx?c=FP-1359",
+    };
+    const publicity1 = {
+        text: data.grafico1 ? data.grafico1.information.publicity.name : "",
+        btnText: data.grafico1 ? data.grafico1.information.publicity.btnChange.name : "",
+        btnLink: data.grafico1 ? data.grafico1.information.publicity.btnChange.link : "",
+    };
+
+    const publicity3 = {
+        text: data.grafico3 ? data.grafico3.information.publicity.desktop.name : "",
+        btnText: data.grafico3 ? data.grafico3.information.publicity.desktop.btnChange.name : "",
+        btnLink: data.grafico3 ? data.grafico3.information.publicity.desktop.btnChange.link : "",
+    };
+
+    const publicity32 = {
+        text: data.grafico3 ? data.grafico3.information.publicity.mobile.name : "",
+        btnText: data.grafico3 ? data.grafico3.information.publicity.mobile.btnChange.name : "",
+        btnLink: data.grafico3 ? data.grafico3.information.publicity.mobile.btnChange.link : "",
+    };
+
+    const publicity5 = {
+        text: data.grafico5 ? data.grafico5.information.publicity.name : "",
+        btnText: data.grafico5 ? data.grafico5.information.publicity.btnChange.name : "",
+        btnLink: data.grafico5 ? data.grafico5.information.publicity.btnChange.link : "",
+    };
+
+    const publicity6 = {
+        title: data.grafico6 ? data.grafico6.information.publicity.title : "",
+        text: data.grafico6 ? data.grafico6.information.publicity.name : "",
+        btnText: data.grafico6 ? data.grafico6.information.publicity.btnChange.name : "",
+        btnLink: data.grafico6 ? data.grafico6.information.publicity.btnChange.link : "",
+    };
+
+    if (isLoading) {
+        return (
+            <section className="loader">
+                <div id="ld3">
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                </div>
+                <p>cargando</p>
+            </section>
+        );
+    }
+
+    return (
+        <main className="bg-body">
+            <SectionProfitability {...data.grafico1} />
+            <SectionFooter
+                theme="light full-device light-1"
+                text={publicity0.text}
+                action={<Button text={publicity0.btnText} url={publicity0.btnLink} />}
+            />
+            <SectionFooter
+                theme="dark dark-1"
+                text={publicity1.text}
+                action={<Button text={publicity1.btnText} url={publicity1.btnLink} />}
+            />
+            {/* <ViewValorCuota years={years} months={months} periods={years}>
+                    {tagDescription()}
+                </ViewValorCuota> */}
+
+            <SectionRanking {...data.grafico2} />
+            <SectionFunds {...data.grafico3} />
+            <div className={"show-desktop"}>
+                <SectionFooter
+                    theme="dark dark-2"
+                    text={publicity3.text}
+                    action={<Button text={publicity3.btnText} url={publicity3.btnLink} />}
+                />
+            </div>
+            <div className={"show-mobile"}>
+                <SectionFooter
+                    theme="dark dark-2"
+                    text={publicity32.text}
+                    action={<Button text={publicity32.btnText} url={publicity32.btnLink} />}
+                />
+            </div>
+
+            <SectionRent {...data.grafico4} />
+            <SectionInverment {...data.grafico5} />
+
+            <SectionFooter
+                theme="light full-device light-1"
+                text={publicity5.text}
+                action={
+                    <Button
+                        text={publicity5.btnText}
+                        url={publicity5.btnLink}
+                        icon="icohbi-download"
+                    />
+                }
+            />
+            <SectionFooter
+                theme="light full-movil light-1"
+                text=""
+                action={
+                    <Button
+                        text="Descarga el informe de Instrumentos de Inversión de AFP Habitat"
+                        icon="icohbi-download"
+                    />
+                }
+            />
+            <SectionPorfolio {...data.grafico6} />
+            <SectionFooter
+                theme="light full-device-movile light-2"
+                title={publicity6.title}
+                text={publicity6.text}
+                action={
+                    <Button
+                        text={publicity6.btnText}
+                        url={publicity6.btnLink}
+                        icon="icohbi-download"
+                    />
+                }
+            />
+            <SectionFooter
+                theme="light full-movil light-1"
+                text=""
+                action={
+                    <Button
+                        text={publicity6.text}
+                        url={publicity6.btnLink}
+                        icon="icohbi-download"
+                    />
+                }
+            />
+            {/* <SectionMain>
+          <div className="row period align-items-center justify-content-center">
+            <div className="col hbi-right">{tagDescription()}</div>
+            <div className="col hbi-left">
+              <div className="hbi-row">
+                <h2 className="hbi-title">Periodo</h2>
+              </div>
+              <div className="hbi-row form-row">
+                <div className="col">
+                  <Select
+                    name="year"
+                    options={years}
+                    onChange={this.handleChange}
+                  />
+                </div>
+                <div className="col">
+                  <Select
+                    name="month"
+                    options={months}
+                    onChange={this.handleChange}
+                  />
+                </div>
+                <div className="col">
+                  <Button
+                    theme="btn-block"
+                    text="Aceptar"
+                    onClick={this.fetchFeeValue}
+                  />
+                </div>
+              </div>
+              <div className="hbi-row">
+                <p className="hbi-help-text">{periods.requireText}</p>
+              </div>
+            </div>
+          </div>
+        </SectionMain> */}
+            {/* <FeeValue
+          content={feeValue}
+          isLoading={isLoadingFeeValue}
+          month={this.state.month}
+          year={this.state.year}
+        /> */}
+            <SectionFooter
+                theme="dark dark-1"
+                text={data.periods?.publicity?.name}
+                action={
+                    <Button
+                        text={data.periods?.publicity?.btnChange?.name}
+                        url={data.periods?.publicity?.btnChange?.link}
+                    />
+                }
+            />
+        </main>
+    );
+}
+
+export default App;
+
+===== END_SOURCE=App.js =====
