@@ -48,18 +48,39 @@ html = html.replace(
     "if(mode==='inside'&&liveSnapshotActive())",
 )
 
-html = html.replace(
-    "  function renderMarket(){\n    if(!liveData)return;\n",
-    "  function renderMarket(){\n    if(!liveData)return;\n"
-    "    if(!liveSnapshotActive()){\n"
-    "      const vc=latestData?Number(latestData.latest_estimated_vc):NaN,r=latestData?Number(latestData.latest_return_estimated):NaN,s=latestData?latestData.signal:'—';\n"
-    "      $('marketMode').textContent='CIERRE DIARIO';$('marketMode').className='market-mode zero';\n"
-    "      $('marketTime').innerHTML=`Cierre OLS: ${fmt(latestData&&latestData.latest_estimate_date)}<br>Actualizado: ${clock(latestData&&latestData.generated_at_lima,'America/Lima')} Lima`;\n"
-    "      $('marketGrid').innerHTML=Number.isFinite(vc)?`<div class=\"market-item\"><div class=\"market-symbol\">VC estimado cierre</div><div class=\"market-price\">${vc.toFixed(7)}</div><div class=\"market-ret ${cls(r)}\">${r>=0?'+':''}${(r*100).toFixed(3)}%</div><div class=\"market-source\">Mismo valor del gráfico · Señal ${s}</div></div>`:'<div class=\"note\">Cierre todavía no disponible.</div>';\n"
-    "      renderTop();return;\n"
-    "    }\n",
-    1,
-)
+old_closed_block = r'''    if(!liveSnapshotActive()){
+      const vc=latestData?Number(latestData.latest_estimated_vc):NaN,r=latestData?Number(latestData.latest_return_estimated):NaN,s=latestData?latestData.signal:'—';
+      $('marketMode').textContent='CIERRE DIARIO';$('marketMode').className='market-mode zero';
+      $('marketTime').innerHTML=`Cierre OLS: ${fmt(latestData&&latestData.latest_estimate_date)}<br>Actualizado: ${clock(latestData&&latestData.generated_at_lima,'America/Lima')} Lima`;
+      $('marketGrid').innerHTML=Number.isFinite(vc)?`<div class="market-item"><div class="market-symbol">VC estimado cierre</div><div class="market-price">${vc.toFixed(7)}</div><div class="market-ret ${cls(r)}">${r>=0?'+':''}${(r*100).toFixed(3)}%</div><div class="market-source">Mismo valor del gráfico · Señal ${s}</div></div>`:'<div class="note">Cierre todavía no disponible.</div>';
+      renderTop();return;
+    }
+'''
+
+new_closed_block = r'''    if(!liveSnapshotActive()){
+      // MARKET_INDICATORS_PRESERVED_V2
+      const vc=latestData?Number(latestData.latest_estimated_vc):NaN,r=latestData?Number(latestData.latest_return_estimated):NaN,s=latestData?latestData.signal:'—';
+      const assets=(liveData&&Array.isArray(liveData.assets))?liveData.assets:[];
+      const stamps=assets.map(a=>a.timestamp).filter(Boolean).sort();
+      const lastStamp=stamps.length?stamps.at(-1):null;
+      $('marketMode').textContent=assets.length?'ÚLTIMO CORTE DE INDICADORES · CIERRE OLS VIGENTE':'CIERRE DIARIO';
+      $('marketMode').className='market-mode zero';
+      $('marketTime').innerHTML=`VC cierre OLS: ${fmt(latestData&&latestData.latest_estimate_date)}<br>${lastStamp?'Indicadores: '+(String(lastStamp).includes('T')?clock(lastStamp,'America/Lima')+' Lima':fmt(lastStamp)):'Indicadores sin corte disponible'}`;
+      const cards=assets.map(a=>{const p=Number(a.precio_actual),rr=Number(a.retorno);return `<div class="market-item"><div class="market-symbol">${a.serie}</div><div class="market-price">${Number.isFinite(p)?p.toFixed(a.serie==='USD_PEN'?4:2):'—'}</div><div class="market-ret ${cls(rr)}">${Number.isFinite(rr)?(rr>=0?'+':'')+(rr*100).toFixed(2)+'%':'—'}</div><div class="market-source">${a.estado||'Último dato disponible'} · corte informativo</div></div>`}).join('');
+      const closeCard=Number.isFinite(vc)?`<div class="market-item"><div class="market-symbol">VC estimado cierre</div><div class="market-price">${vc.toFixed(7)}</div><div class="market-ret ${cls(r)}">${r>=0?'+':''}${(r*100).toFixed(3)}%</div><div class="market-source">Mismo valor del gráfico · Señal ${s}</div></div>`:'<div class="note">Cierre todavía no disponible.</div>';
+      $('marketGrid').innerHTML=(cards||'<div class="note">No hay indicadores guardados.</div>')+closeCard;
+      renderTop();return;
+    }
+'''
+
+if old_closed_block in html:
+    html = html.replace(old_closed_block, new_closed_block, 1)
+elif "MARKET_INDICATORS_PRESERVED_V2" not in html:
+    html = html.replace(
+        "  function renderMarket(){\n    if(!liveData)return;\n",
+        "  function renderMarket(){\n    if(!liveData)return;\n" + new_closed_block,
+        1,
+    )
 
 for name in ("latest.json", "series.json", "signals.json", "operation_series.json", "model_insights.json"):
     html = html.replace(
@@ -68,4 +89,4 @@ for name in ("latest.json", "series.json", "signals.json", "operation_series.jso
     )
 
 HTML_PATH.write_text(html, encoding="utf-8")
-print("Visor: intradía vigente, cierre consistente y JSON sin caché.")
+print("Visor: indicadores preservados, intradía vigente y cierre consistente.")
