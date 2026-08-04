@@ -1,4 +1,7 @@
-"""Ejecuta Hábitat con fuentes oficiales y estimación explícita del hueco de julio."""
+"""Ejecuta Hábitat con fuentes oficiales y estimación explícita del hueco de julio.
+
+La presentación final separa estrictamente VC SBS real y VC estimado OLS.
+"""
 
 from __future__ import annotations
 
