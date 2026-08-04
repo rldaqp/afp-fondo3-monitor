@@ -77,13 +77,13 @@ jobs:
           python scripts/build_operation_series.py
           sed -i "s/calc.onclick=calc;/document.getElementById('calc').onclick=calc;/" public/index.html
           python scripts/postprocess_mobile_ui_v3.py
-          python scripts/postprocess_mobile_ui_v4.py
-          python scripts/postprocess_fx_hybrid_ui.py
           if grep -q "model_insights.json" public/index.html && grep -q "Confianza y calidad del modelo" public/index.html; then
             echo "El panel de indicadores del modelo ya está integrado; no se duplica."
           else
             python scripts/postprocess_model_insights_ui.py
           fi
+          python scripts/postprocess_mobile_ui_v4.py
+          python scripts/postprocess_fx_hybrid_ui.py
           python scripts/postprocess_trade_history.py
           python scripts/postprocess_trade_cloud_sync.py
           python scripts/postprocess_trade_notebook_basis.py
