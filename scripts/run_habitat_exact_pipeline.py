@@ -22,6 +22,7 @@ from pandas.tseries.holiday import (
 import build_habitat_gap_aware as gap
 import enrich_habitat_daily_sbs as source
 from build_habitat_july_gap import main as build_july_gap
+from postprocess_habitat_chart_clarity import main as clarify_habitat_chart
 from postprocess_habitat_sbs_indicators import ensure_latest_consistency
 
 
@@ -166,6 +167,7 @@ def main() -> None:
 
     # Mismo método que Profuturo; solo cubre el hueco actual desde julio de 2026.
     build_july_gap()
+    clarify_habitat_chart()
     ensure_latest_consistency()
 
 
