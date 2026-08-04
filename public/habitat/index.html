@@ -190,22 +190,84 @@ Promise.all([fetch('data/latest.json?ts='+Date.now(),{cache:'no-store'}).then(r=
   }
 
   function renderVC(){
-    let off=cutoff(allSeries.filter(x=>x.fuente==='SBS OFICIAL'),vcDays),estSource=richSignals.filter(x=>x.vc_estimado!=null);
-    if(liveSnapshotActive()){const point={fecha:liveData.signal_date,vc_estimado:Number(liveData.vc_estimated),ret_estimado:Number(liveData.return_estimated),senal:liveData.signal,tipo:'INTRADIA'};estSource=estSource.filter(x=>x.fecha!==point.fecha).concat([point]).sort((a,b)=>a.fecha.localeCompare(b.fecha))}
-    let est=cutoff(estSource,vcDays);
+    // HABITAT_CHART_CLARITY_V1
+    const timeline=cutoff(allSeries,vcDays);
+    let estSource=richSignals.filter(x=>x.vc_estimado!=null);
+    if(liveSnapshotActive()){
+      const point={fecha:liveData.signal_date,vc_estimado:Number(liveData.vc_estimated),ret_estimado:Number(liveData.return_estimated),senal:liveData.signal,tipo:'INTRADIA'};
+      estSource=estSource.filter(x=>x.fecha!==point.fecha).concat([point]).sort((a,b)=>a.fecha.localeCompare(b.fecha));
+    }
+    const est=cutoff(estSource,vcDays);
     const q=modelInsights&&modelInsights.uncertainty?Number(modelInsights.uncertainty.relative_q80||0):0;
     let pendingStep=0,lower=[],upper=[];
-    est.forEach(x=>{let scale=1;if(x.tipo==='PENDIENTE'){pendingStep+=1;scale=Math.sqrt(pendingStep)}const v=Number(x.vc_estimado);lower.push(v*(1-q*scale));upper.push(v*(1+q*scale))});
+    est.forEach(x=>{
+      let scale=1;
+      if(x.tipo==='PENDIENTE'){pendingStep+=1;scale=Math.sqrt(pendingStep)}
+      const v=Number(x.vc_estimado);
+      lower.push(v*(1-q*scale));
+      upper.push(v*(1+q*scale));
+    });
+
     const traces=[];
-    if(q>0&&est.length){traces.push(
-      {x:est.map(x=>x.fecha),y:lower,mode:'lines',line:{width:0},hoverinfo:'skip',showlegend:false},
-      {x:est.map(x=>x.fecha),y:upper,mode:'lines',line:{width:0},fill:'tonexty',fillcolor:'rgba(96,165,250,.12)',name:'Banda histórica 80%',hoverinfo:'skip'}
-    )}
-    traces.push(
-      {x:off.map(x=>x.fecha),y:off.map(x=>x.vc),mode:'lines+markers',name:'VC SBS real'},
-      {x:est.map(x=>x.fecha),y:est.map(x=>x.vc_estimado),mode:'lines+markers',name:'VC estimado OLS',marker:{color:est.map(x=>x.tipo==='SBS_PENDIENTE'?'#fbbf24':signalColor(x.senal)),size:est.map(x=>x.tipo==='SBS_PENDIENTE'?10:7)},customdata:est.map(x=>[x.senal,x.tipo]),hovertemplate:'<b>%{x}</b><br>VC estimado: %{y:.7f}<br>Señal: %{customdata[0]}<br>Estado: %{customdata[1]}<extra></extra>'}
-    );
-    Plotly.react('vcChart',traces,{title:vcDays==='all'?'Todo el historial':`Últimos ${vcDays} días`,paper_bgcolor:'#0f1b2d',plot_bgcolor:'#0f1b2d',font:{color:'#fff',size:11},margin:{l:48,r:18,t:45,b:45},legend:{orientation:'h',font:{size:10}}},{responsive:true});active('.vc-controls',vcDays)
+    if(q>0&&est.length){
+      traces.push(
+        {x:est.map(x=>x.fecha),y:lower,mode:'lines',line:{width:0},hoverinfo:'skip',showlegend:false},
+        {x:est.map(x=>x.fecha),y:upper,mode:'lines',line:{width:0},fill:'tonexty',fillcolor:'rgba(96,165,250,.12)',name:'Banda histórica 80%',hoverinfo:'skip'}
+      );
+    }
+
+    // Se utiliza toda la línea temporal. Los días no oficiales llevan y=null,
+    // por lo que Plotly no une 30/06 con 21/07 como si fueran consecutivos.
+    const officialX=timeline.map(x=>x.fecha);
+    const officialY=timeline.map(x=>x.fuente==='SBS OFICIAL'?Number(x.vc):null);
+    traces.push({
+      x:officialX,
+      y:officialY,
+      mode:'lines+markers',
+      connectgaps:false,
+      name:'VC SBS real',
+      line:{width:2},
+      marker:{size:5},
+      hovertemplate:'<b>%{x}</b><br>VC SBS oficial: %{y:.7f}<extra></extra>'
+    });
+
+    // La estimación ordinaria se muestra sin globos. Durante un hueco SBS se
+    // corta y el tramo provisional se dibuja aparte, punteado y sin marcadores.
+    const regularY=est.map(x=>x.tipo==='SBS_PENDIENTE'?null:Number(x.vc_estimado));
+    traces.push({
+      x:est.map(x=>x.fecha),
+      y:regularY,
+      mode:'lines',
+      connectgaps:false,
+      name:'VC estimado OLS',
+      line:{width:2},
+      customdata:est.map(x=>[x.senal,x.tipo]),
+      hovertemplate:'<b>%{x}</b><br>VC estimado: %{y:.7f}<br>Señal: %{customdata[0]}<br>Estado: %{customdata[1]}<extra></extra>'
+    });
+
+    const pendingIndexes=[];
+    est.forEach((x,i)=>{if(x.tipo==='SBS_PENDIENTE')pendingIndexes.push(i)});
+    if(pendingIndexes.length){
+      const start=Math.max(0,pendingIndexes[0]-1);
+      const end=Math.min(est.length,pendingIndexes.at(-1)+2);
+      const provisional=est.slice(start,end);
+      traces.push({
+        x:provisional.map(x=>x.fecha),
+        y:provisional.map(x=>Number(x.vc_estimado)),
+        mode:'lines',
+        name:'VC estimado · SBS pendiente',
+        line:{width:3,dash:'dot'},
+        customdata:provisional.map(x=>x.tipo==='SBS_PENDIENTE'?'ESTIMADO · SBS PENDIENTE':'LÍMITE DEL TRAMO'),
+        hovertemplate:'<b>%{x}</b><br>VC estimado: %{y:.7f}<br>%{customdata}<extra></extra>'
+      });
+    }
+
+    Plotly.react('vcChart',traces,{
+      title:vcDays==='all'?'Todo el historial':`Últimos ${vcDays} días`,
+      paper_bgcolor:'#0f1b2d',plot_bgcolor:'#0f1b2d',font:{color:'#fff',size:11},
+      margin:{l:48,r:18,t:45,b:45},legend:{orientation:'h',font:{size:10}}
+    },{responsive:true});
+    active('.vc-controls',vcDays);
   }
 
   function renderSignals(){
