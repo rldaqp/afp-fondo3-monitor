@@ -10,7 +10,7 @@
   "performance": {
     "window_n": 90,
     "classification_accuracy": 0.8444444444444444,
-    "mae_return_pp": 0.3351079113869172,
+    "mae_return_pp": 0.3363906205038479,
     "sube_accuracy": 0.8666666666666667,
     "sube_n": 45,
     "baja_accuracy": 0.9487179487179487,
@@ -29,33 +29,33 @@
     },
     "training": {
       "n": 90,
-      "start": "2026-03-12",
-      "end": "2026-07-30"
+      "start": "2026-03-13",
+      "end": "2026-07-31"
     },
     "coefficients": {
-      "intercept": -0.00038701981886841237,
-      "ret_SPY": -0.15070041534969694,
-      "ret_NEM": 0.0737587426942916,
-      "ret_FCX": 0.09920420803110107,
-      "ret_EPU": 0.31825736195850224,
-      "ret_MCHI": -0.035535748603291395,
-      "ret_EEM": 0.37191894330331493,
-      "ret_USD_PEN": 0.3923090708919649
+      "intercept": -0.0005663809507866095,
+      "ret_SPY": -0.16084936962169863,
+      "ret_NEM": 0.06656579348162009,
+      "ret_FCX": 0.10637967958183679,
+      "ret_EPU": 0.320674190787009,
+      "ret_MCHI": -0.03997021246666415,
+      "ret_EEM": 0.375647363544422,
+      "ret_USD_PEN": 0.382969339701541
     },
     "current": {
       "fecha": "2026-08-03",
-      "ret_estimado": 0.003938914538225683,
+      "ret_estimado": 0.003626159426931983,
       "senal": "SUBE",
-      "vc_estimado": 68.2401703165192,
+      "vc_estimado": 68.01431806941494,
       "agrees_with_ols": true,
       "ols_signal": "SUBE",
-      "ols_return_estimated": 0.005841496229727855
+      "ols_return_estimated": 0.005716601316655121
     },
     "performance": {
       "window_n": 90,
       "correct": 79,
       "classification_accuracy": 0.8777777777777778,
-      "mae_return_pp": 0.3252818614761047,
+      "mae_return_pp": 0.3246655918796477,
       "sube_n": 45,
       "sube_accuracy": 0.8888888888888888,
       "baja_n": 38,
@@ -71,9 +71,9 @@
       "ols_accuracy": 0.8444444444444444,
       "huber_accuracy": 0.8777777777777778,
       "accuracy_delta_pp": 3.3333333333333326,
-      "ols_mae_return_pp": 0.3351079113869172,
-      "huber_mae_return_pp": 0.3252818614761037,
-      "mae_delta_pp": -0.009826049910813484,
+      "ols_mae_return_pp": 0.3363906205038479,
+      "huber_mae_return_pp": 0.32466559187964644,
+      "mae_delta_pp": -0.011725028624201439,
       "corrected_errors": 3,
       "new_errors": 0,
       "corrected_dates": [
@@ -85,86 +85,80 @@
     },
     "pending_series": [
       {
-        "fecha": "2026-07-31",
-        "ret_estimado": -0.0043906293947599696,
-        "senal": "BAJA",
-        "vc_estimado": 67.97243271310698
-      },
-      {
         "fecha": "2026-08-03",
-        "ret_estimado": 0.003938914538225683,
+        "ret_estimado": 0.003626159426931983,
         "senal": "SUBE",
-        "vc_estimado": 68.2401703165192
+        "vc_estimado": 68.01431806941494
       }
     ]
   },
   "uncertainty": {
-    "relative_q80": 0.0046844875600168265,
-    "relative_q90": 0.00678507528829111,
+    "relative_q80": 0.004684487560016782,
+    "relative_q90": 0.006785075288291088,
     "label": "Banda empírica 80%",
     "description": "Se deriva de los errores relativos históricos del VC estimado. Para días encadenados pendientes se amplía con la raíz del horizonte."
   },
   "benchmarks": {
-    "zero_change_mae_pp": 1.3025302073209513,
-    "ols_mae_pp": 0.3351079113869172,
-    "ols_mae_improvement_vs_zero": 0.7427254204905018,
-    "previous_direction_accuracy": 0.39325842696629215
+    "zero_change_mae_pp": 1.2889359236261788,
+    "ols_mae_pp": 0.3363906205038479,
+    "ols_mae_improvement_vs_zero": 0.7390168011164774,
+    "previous_direction_accuracy": 0.38202247191011235
   },
   "contributions": [
     {
       "feature": "ret_EPU",
       "label": "EPU",
       "value": 0.0072109222258771,
-      "coefficient": 0.2956161621052553,
-      "contribution_pp": 0.21316651536532732
+      "coefficient": 0.2987307995537891,
+      "contribution_pp": 0.21541245620564548
     },
     {
       "feature": "ret_NEM",
       "label": "NEM",
       "value": 0.0177142639881258,
-      "coefficient": 0.10104053209463293,
-      "contribution_pp": 0.17898586590250254
+      "coefficient": 0.10130149279618517,
+      "contribution_pp": 0.17944813857828482
     },
     {
       "feature": "ret_EEM",
       "label": "EEM",
       "value": 0.0035887559693557,
-      "coefficient": 0.36048036895322516,
-      "contribution_pp": 0.1293676075916432
+      "coefficient": 0.36112284787503485,
+      "contribution_pp": 0.12959817759822617
     },
     {
       "feature": "ret_FCX",
       "label": "FCX",
       "value": 0.0161264298947521,
-      "coefficient": 0.06089816641832899,
-      "contribution_pp": 0.09820700114641291
+      "coefficient": 0.0616758515667824,
+      "contribution_pp": 0.0994611296490853
     },
     {
       "feature": "intercept",
       "label": "Base",
       "value": 1.0,
-      "coefficient": -0.0002445323351181071,
-      "contribution_pp": -0.02445323351181071
-    },
-    {
-      "feature": "ret_MCHI",
-      "label": "MCHI",
-      "value": 0.0017921557380944,
-      "coefficient": -0.044901623020235655,
-      "contribution_pp": -0.008047070134546693
+      "coefficient": -0.0003137346379848674,
+      "contribution_pp": -0.03137346379848674
     },
     {
       "feature": "ret_SPY",
       "label": "SPY",
       "value": 0.0142430065673475,
-      "coefficient": -0.0021604029824708977,
-      "contribution_pp": -0.0030770633867450116
+      "coefficient": -0.008622996168068662,
+      "contribution_pp": -0.012281739105201429
+    },
+    {
+      "feature": "ret_MCHI",
+      "label": "MCHI",
+      "value": 0.0017921557380944,
+      "coefficient": -0.048012386865398514,
+      "contribution_pp": -0.008604567462043215
     },
     {
       "feature": "ret_USD_PEN",
       "label": "USD/PEN",
       "value": 0.0,
-      "coefficient": 0.3963341192683731,
+      "coefficient": 0.39403808862357836,
       "contribution_pp": 0.0
     }
   ],
@@ -173,7 +167,7 @@
     "critical": [],
     "warnings": [],
     "training_n": 90,
-    "latest_sbs_date": "2026-07-30",
+    "latest_sbs_date": "2026-07-31",
     "fx_source": "BCRP",
     "fx_provisional": false
   }
