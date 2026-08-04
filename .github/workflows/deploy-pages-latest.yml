@@ -41,7 +41,10 @@ jobs:
           test -s public/data/latest.json
           test -s public/habitat/index.html
           test -s public/habitat/data/series.json
-          grep -q "HABITAT_CHART_RESTORE_GAP_DATES_V3" public/habitat/index.html
+          grep -q "HABITAT_CHART_SEPARATE_REAL_ESTIMATE_V4" public/habitat/index.html
+          grep -q "x.es_oficial===true?Number(x.vc):null" public/habitat/index.html
+          grep -q "VC SBS real (solo oficial)" public/habitat/index.html
+          grep -q "VC estimado OLS" public/habitat/index.html
           grep -q '"fecha": "2026-07-01"' public/habitat/data/series.json
           grep -q '"fecha": "2026-07-20"' public/habitat/data/series.json
 
