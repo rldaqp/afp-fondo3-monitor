@@ -1,9 +1,10 @@
 """Corrige únicamente la presentación del gráfico de AFP Hábitat Fondo 3.
 
-- La línea SBS oficial se interrumpe cuando faltan valores oficiales.
-- La línea OLS se mantiene continua en todo el periodo, incluso cuando la SBS
-  todavía no publicó algunos VC diarios.
-- Se eliminan los marcadores grandes y los tramos punteados.
+- Mantiene en la primera línea todas las fechas de la serie temporal: VC SBS
+  cuando existe y VC estimado cuando la SBS aún no publicó el dato.
+- Mantiene además la línea OLS completa para comparar VC temporal vs estimado.
+- Todos los tramos son líneas normales con marcadores pequeños; no hay líneas
+  punteadas ni círculos grandes.
 
 Este módulo solo modifica public/habitat/index.html.
 """
@@ -17,8 +18,8 @@ ROOT = Path(__file__).resolve().parents[1]
 HTML_PATH = ROOT / "public" / "habitat" / "index.html"
 
 NEW_RENDER_VC = r'''  function renderVC(){
-    // HABITAT_CHART_CONTINUOUS_ESTIMATE_V2
-    const timeline=cutoff(allSeries,vcDays);
+    // HABITAT_CHART_RESTORE_GAP_DATES_V3
+    const timeline=cutoff(allSeries,vcDays).filter(x=>Number.isFinite(Number(x.vc)));
     let estSource=richSignals.filter(x=>x.vc_estimado!=null);
     if(liveSnapshotActive()){
       const point={fecha:liveData.signal_date,vc_estimado:Number(liveData.vc_estimated),ret_estimado:Number(liveData.return_estimated),senal:liveData.signal,tipo:'INTRADIA'};
@@ -43,30 +44,30 @@ NEW_RENDER_VC = r'''  function renderVC(){
       );
     }
 
-    // La línea SBS solo contiene VC oficiales. Los días pendientes llevan null,
-    // por lo que no se presenta una estimación como si fuera información SBS.
-    const officialX=timeline.map(x=>x.fecha);
-    const officialY=timeline.map(x=>x.fuente==='SBS OFICIAL'?Number(x.vc):null);
+    // Se conservan todas las fechas. Cuando falta el VC SBS, se usa el VC ya
+    // estimado que existe en series.json, sin cambiar su fuente ni sus datos.
     traces.push({
-      x:officialX,
-      y:officialY,
+      x:timeline.map(x=>x.fecha),
+      y:timeline.map(x=>Number(x.vc)),
       mode:'lines+markers',
       connectgaps:false,
-      name:'VC SBS real',
+      name:'VC SBS real + fechas estimadas',
       line:{width:2},
       marker:{size:5},
-      hovertemplate:'<b>%{x}</b><br>VC SBS oficial: %{y:.7f}<extra></extra>'
+      customdata:timeline.map(x=>x.fuente),
+      hovertemplate:'<b>%{x}</b><br>VC: %{y:.7f}<br>Fuente: %{customdata}<extra></extra>'
     });
 
-    // Una sola línea OLS continua incluye también las fechas con SBS pendiente.
-    // No se separan ni se dibujan punteadas; el estado se conserva en el tooltip.
+    // La línea completa del VC estimado OLS se mantiene durante todo el periodo,
+    // incluidas las fechas del tramo 30/06–21/07.
     traces.push({
       x:est.map(x=>x.fecha),
       y:est.map(x=>Number(x.vc_estimado)),
-      mode:'lines',
+      mode:'lines+markers',
       connectgaps:false,
       name:'VC estimado OLS',
       line:{width:2},
+      marker:{size:5},
       customdata:est.map(x=>[x.senal,x.tipo]),
       hovertemplate:'<b>%{x}</b><br>VC estimado: %{y:.7f}<br>Señal: %{customdata[0]}<br>Estado: %{customdata[1]}<extra></extra>'
     });
@@ -96,7 +97,7 @@ def main() -> None:
         raise RuntimeError("No se encontró una única función renderVC de Hábitat.")
 
     HTML_PATH.write_text(updated, encoding="utf-8")
-    print("Hábitat: línea OLS continua y SBS oficial interrumpida en huecos.")
+    print("Hábitat: fechas 30/06–21/07 restauradas y ambas líneas completas.")
 
 
 if __name__ == "__main__":
