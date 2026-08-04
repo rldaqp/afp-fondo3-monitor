@@ -1,4 +1,8 @@
-"""Genera Hábitat con histórico completo y paridad metodológica de Profuturo."""
+"""Genera Hábitat con histórico completo y paridad metodológica de Profuturo.
+
+La regeneración conserva una línea OLS continua en todo el periodo, incluso en
+fechas cuyo VC oficial SBS todavía está pendiente de publicación.
+"""
 
 import json
 from pathlib import Path
