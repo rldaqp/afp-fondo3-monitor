@@ -22,12 +22,7 @@ on:
       - "scripts/postprocess_trade_history.py"
       - "scripts/postprocess_trade_cloud_sync.py"
       - "scripts/postprocess_trade_notebook_basis.py"
-      - "scripts/run_habitat_exact_pipeline.py"
-      - "scripts/build_habitat_gap_aware.py"
-      - "scripts/build_habitat_exact_parity.py"
-      - "scripts/build_habitat_profuturo_parity.py"
-      - "scripts/enrich_habitat_daily_sbs.py"
-      - "scripts/postprocess_habitat_sbs_indicators.py"
+      - "scripts/postprocess_live_consistency.py"
       - "data/rolling90/sbs_reference_corrections.csv"
       - "data/rolling90/notebook_training_reference.csv"
       - "requirements.txt"
@@ -41,7 +36,7 @@ permissions:
   id-token: write
 
 concurrency:
-  group: fondo3-rolling90-model
+  group: profuturo-rolling90-model
   cancel-in-progress: true
 
 jobs:
@@ -54,6 +49,9 @@ jobs:
     steps:
       - name: Descargar repositorio
         uses: actions/checkout@v4
+        with:
+          ref: migracion-github-actions
+          fetch-depth: 0
 
       - name: Configurar Python
         uses: actions/setup-python@v5
@@ -66,12 +64,11 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Actualizar modelos OLS y fuentes oficiales
+      - name: Actualizar únicamente Profuturo Fondo 3
         env:
           PYTHONUTF8: "1"
           PYTHONIOENCODING: "utf-8"
         run: |
-          # Profuturo conserva exactamente su proceso y su visor actual.
           python scripts/run_rolling90_live_v2.py
           python scripts/apply_sbs_reference_corrections.py
           python scripts/finalize_fx_hybrid.py
@@ -86,12 +83,9 @@ jobs:
           python scripts/postprocess_trade_history.py
           python scripts/postprocess_trade_cloud_sync.py
           python scripts/postprocess_trade_notebook_basis.py
+          python scripts/postprocess_live_consistency.py
 
-          # Hábitat usa la misma metodología, coeficientes propios y cubre
-          # huecos de publicación SBS únicamente como estimaciones identificadas.
-          python scripts/run_habitat_exact_pipeline.py
-
-      - name: Validar modelos y visores independientes
+      - name: Validar modelo y visor Profuturo
         run: |
           test -s public/index.html
           test -s public/data/latest.json
@@ -99,14 +93,6 @@ jobs:
           test -s public/data/signals.json
           test -s public/data/operation_series.json
           test -s public/data/model_insights.json
-          test -s data/rolling90/sbs_habitat_f3_daily.csv
-          test -s public/habitat/index.html
-          test -s public/habitat/data/latest.json
-          test -s public/habitat/data/series.json
-          test -s public/habitat/data/signals.json
-          test -s public/habitat/data/operation_series.json
-          test -s public/habitat/data/model_insights.json
-          test -s public/habitat/data/live_market.json
 
           grep -q "OLS Rolling 90" public/index.html
           grep -q "7 días" public/index.html
@@ -122,17 +108,8 @@ jobs:
           grep -q "Confianza y calidad del modelo" public/index.html
           grep -q "Histórico de entradas y salidas" public/index.html
           grep -q "Respaldo y sincronización en Google Drive" public/index.html
+          grep -q "MARKET_INDICATORS_PRESERVED_V2" public/index.html
           ! grep -q "AFP_SELECTOR_V1" public/index.html
-
-          grep -q "Hábitat Fondo 3" public/habitat/index.html
-          grep -q "7 días" public/habitat/index.html
-          grep -q "15 días" public/habitat/index.html
-          grep -q "30 días" public/habitat/index.html
-          grep -q "90 días" public/habitat/index.html
-          grep -q "VC real vs VC estimado" public/habitat/index.html
-          grep -q "Tramo SBS pendiente" public/habitat/index.html
-          grep -q "modelo de Hábitat se entrena por separado" public/habitat/index.html
-          grep -q "Indicadores oficiales SBS del Fondo 3" public/habitat/index.html
 
           python - <<'PY'
           import json
@@ -162,87 +139,50 @@ jobs:
           assert latest.get("live_engine") == "INDEPENDIENTE: update_live_market_hybrid.py"
           assert len(signals) > 1
           assert len(operation) > 1
-          assert all(x.get("senal") in {"SUBE", "NEUTRO", "BAJA"} for x in signals if x.get("ret_estimado") is not None)
-          assert all(float(x["vc"]) > 0 for x in operation)
+          assert all(
+              row.get("senal") in {"SUBE", "NEUTRO", "BAJA"}
+              for row in signals
+              if row.get("ret_estimado") is not None
+          )
+          assert all(float(row["vc"]) > 0 for row in operation)
           assert insights["quality"]["status"] in {"OK", "PROVISIONAL"}
           assert int(insights["quality"]["training_n"]) == 90
           assert insights["performance"]["window_n"] > 10
 
-          habitat_latest = json.loads(Path("public/habitat/data/latest.json").read_text(encoding="utf-8"))
-          habitat_series = json.loads(Path("public/habitat/data/series.json").read_text(encoding="utf-8"))
-          habitat_signals = json.loads(Path("public/habitat/data/signals.json").read_text(encoding="utf-8"))
-          habitat_operation = json.loads(Path("public/habitat/data/operation_series.json").read_text(encoding="utf-8"))
-          habitat_insights = json.loads(Path("public/habitat/data/model_insights.json").read_text(encoding="utf-8"))
-          habitat_daily = pd.read_csv("data/rolling90/sbs_habitat_f3_daily.csv")
-          habitat_history = pd.read_csv("data/rolling90/sbs_habitat_f3.csv")
-          profuturo_history = pd.read_csv("data/rolling90/sbs_profuturo_f3.csv")
-          for frame in (habitat_daily, habitat_history, profuturo_history):
-              frame["fecha"] = pd.to_datetime(frame["fecha"], errors="coerce")
-          habitat_daily = habitat_daily.dropna().sort_values("fecha")
-          habitat_history = habitat_history.dropna(subset=["fecha"]).sort_values("fecha")
-          profuturo_history = profuturo_history.dropna(subset=["fecha"]).sort_values("fecha")
-          official = habitat_daily.iloc[-1]
-
-          assert habitat_latest["afp"] == "Hábitat"
-          assert int(habitat_latest["fund"]) == 3
-          assert habitat_latest["model"] == "OLS rolling 90"
-          assert int(habitat_latest["window"]) == 90
-          assert int(habitat_latest["training_n"]) == 90
-          assert habitat_latest["signal"] in {"SUBE", "NEUTRO", "BAJA"}
-          assert habitat_latest.get("methodology_parity_verified") is True
-          assert habitat_latest["latest_sbs_date"] == official["fecha"].strftime("%Y-%m-%d")
-          assert abs(float(habitat_latest["latest_sbs_vc"]) - float(official["valor_cuota"])) < 1e-9
-          assert float(habitat_latest["latest_estimated_vc"]) > 0
-          assert habitat_latest["model_factors"] == ["SPY", "NEM", "FCX", "EPU", "MCHI", "EEM", "USD_PEN"]
-          assert "No se usan como variable objetivo" in habitat_latest["gap_policy"]
-
-          start = pd.Timestamp("2026-07-01")
-          end = pd.Timestamp("2026-07-29")
-          expected = set(profuturo_history.loc[profuturo_history["fecha"].between(start, end), "fecha"])
-          official_dates = set(habitat_history.loc[habitat_history["fecha"].between(start, end), "fecha"])
-          missing = sorted(expected - official_dates)
-          assert [pd.Timestamp(x) for x in habitat_latest["official_gap_dates"]] == missing
-          signal_by_date = {pd.Timestamp(x["fecha"]): x for x in habitat_signals}
-          series_by_date = {pd.Timestamp(x["fecha"]): x for x in habitat_series}
-          for date in missing:
-              assert signal_by_date[date]["tipo"] == "SBS_PENDIENTE"
-              assert signal_by_date[date]["vc_real"] is None
-              assert float(signal_by_date[date]["vc_estimado"]) > 0
-              assert series_by_date[date]["fuente"] == "MODELO OLS · SBS PENDIENTE"
-          assert signal_by_date[pd.Timestamp("2026-07-21")]["tipo"] == "HISTORICO_GAP"
-          assert len(habitat_series) == len(habitat_operation)
-          assert len(habitat_series) >= len(habitat_history) + len(missing)
-          assert habitat_insights["quality"]["status"] in {"OK", "PROVISIONAL"}
-          assert int(habitat_insights["quality"]["training_n"]) == 90
-
           if not pending.empty:
               assert "usd_pen_fuente" in pending.columns
               assert "usd_pen_provisional" in pending.columns
-              yahoo = pending[pending["usd_pen_fuente"].astype(str).str.startswith("YAHOO")]
+              yahoo = pending[
+                  pending["usd_pen_fuente"].astype(str).str.startswith("YAHOO")
+              ]
               if not yahoo.empty:
                   assert yahoo["usd_pen_provisional"].astype(str).str.lower().eq("true").all()
-                  assert pd.to_numeric(yahoo["ret_USD_PEN"], errors="coerce").notna().all()
+                  assert pd.to_numeric(
+                      yahoo["ret_USD_PEN"], errors="coerce"
+                  ).notna().all()
 
           print(json.dumps(latest, ensure_ascii=False, indent=2))
-          print(json.dumps(habitat_latest, ensure_ascii=False, indent=2))
           print(f"Puntos de señal Profuturo: {len(signals)}")
-          print(f"Puntos de señal Hábitat: {len(habitat_signals)}")
-          print(f"Fechas SBS pendientes estimadas: {len(missing)}")
           PY
 
-      - name: Guardar datos de ambos modelos sin tocar Mercado ahora
+      - name: Guardar únicamente resultados de Profuturo
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/rolling90 public
+          git add data/rolling90 public/index.html public/data
           git reset public/data/live_market.json || true
           if git diff --cached --quiet; then
-            echo "No hay cambios de los modelos para confirmar."
+            echo "No hay cambios de Profuturo para confirmar."
           else
-            git commit -m "Actualizar OLS rolling 90 Fondo 3"
+            git commit -m "Actualizar OLS rolling 90 Profuturo Fondo 3"
             git pull --rebase origin migracion-github-actions
             git push origin HEAD:migracion-github-actions
           fi
+
+      - name: Actualizar rama antes de publicar
+        run: |
+          git fetch origin migracion-github-actions
+          git reset --hard origin/migracion-github-actions
 
       - name: Configurar GitHub Pages
         uses: actions/configure-pages@v5
