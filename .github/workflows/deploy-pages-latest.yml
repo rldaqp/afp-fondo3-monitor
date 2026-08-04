@@ -35,19 +35,15 @@ jobs:
           ref: migracion-github-actions
           fetch-depth: 1
 
-      - name: Validar VC Profuturo publicado
+      - name: Validar archivos vigentes
         run: |
           test -s public/index.html
           test -s public/data/latest.json
-          python - <<'PY'
-          import json
-          from pathlib import Path
-
-          latest = json.loads(Path("public/data/latest.json").read_text(encoding="utf-8"))
-          assert latest["latest_sbs_date"] >= "2026-07-30", latest
-          assert abs(float(latest["latest_sbs_vc"]) - 68.2721906) < 1e-9, latest
-          print(latest["latest_sbs_date"], latest["latest_sbs_vc"])
-          PY
+          test -s public/habitat/index.html
+          test -s public/habitat/data/series.json
+          grep -q "HABITAT_CHART_RESTORE_GAP_DATES_V3" public/habitat/index.html
+          grep -q '"fecha": "2026-07-01"' public/habitat/data/series.json
+          grep -q '"fecha": "2026-07-20"' public/habitat/data/series.json
 
       - name: Configurar GitHub Pages
         uses: actions/configure-pages@v5
