@@ -1,8 +1,9 @@
 """Corrige únicamente la presentación del gráfico de AFP Hábitat Fondo 3.
 
 - La línea SBS oficial se interrumpe cuando faltan valores oficiales.
-- El tramo cubierto por OLS se dibuja punteado y claramente identificado.
-- Se eliminan los marcadores grandes que podían confundirse con datos adicionales.
+- La línea OLS se mantiene continua en todo el periodo, incluso cuando la SBS
+  todavía no publicó algunos VC diarios.
+- Se eliminan los marcadores grandes y los tramos punteados.
 
 Este módulo solo modifica public/habitat/index.html.
 """
@@ -16,7 +17,7 @@ ROOT = Path(__file__).resolve().parents[1]
 HTML_PATH = ROOT / "public" / "habitat" / "index.html"
 
 NEW_RENDER_VC = r'''  function renderVC(){
-    // HABITAT_CHART_CLARITY_V1
+    // HABITAT_CHART_CONTINUOUS_ESTIMATE_V2
     const timeline=cutoff(allSeries,vcDays);
     let estSource=richSignals.filter(x=>x.vc_estimado!=null);
     if(liveSnapshotActive()){
@@ -42,8 +43,8 @@ NEW_RENDER_VC = r'''  function renderVC(){
       );
     }
 
-    // Se utiliza toda la línea temporal. Los días no oficiales llevan y=null,
-    // por lo que Plotly no une 30/06 con 21/07 como si fueran consecutivos.
+    // La línea SBS solo contiene VC oficiales. Los días pendientes llevan null,
+    // por lo que no se presenta una estimación como si fuera información SBS.
     const officialX=timeline.map(x=>x.fecha);
     const officialY=timeline.map(x=>x.fuente==='SBS OFICIAL'?Number(x.vc):null);
     traces.push({
@@ -57,12 +58,11 @@ NEW_RENDER_VC = r'''  function renderVC(){
       hovertemplate:'<b>%{x}</b><br>VC SBS oficial: %{y:.7f}<extra></extra>'
     });
 
-    // La estimación ordinaria se muestra sin globos. Durante un hueco SBS se
-    // corta y el tramo provisional se dibuja aparte, punteado y sin marcadores.
-    const regularY=est.map(x=>x.tipo==='SBS_PENDIENTE'?null:Number(x.vc_estimado));
+    // Una sola línea OLS continua incluye también las fechas con SBS pendiente.
+    // No se separan ni se dibujan punteadas; el estado se conserva en el tooltip.
     traces.push({
       x:est.map(x=>x.fecha),
-      y:regularY,
+      y:est.map(x=>Number(x.vc_estimado)),
       mode:'lines',
       connectgaps:false,
       name:'VC estimado OLS',
@@ -70,23 +70,6 @@ NEW_RENDER_VC = r'''  function renderVC(){
       customdata:est.map(x=>[x.senal,x.tipo]),
       hovertemplate:'<b>%{x}</b><br>VC estimado: %{y:.7f}<br>Señal: %{customdata[0]}<br>Estado: %{customdata[1]}<extra></extra>'
     });
-
-    const pendingIndexes=[];
-    est.forEach((x,i)=>{if(x.tipo==='SBS_PENDIENTE')pendingIndexes.push(i)});
-    if(pendingIndexes.length){
-      const start=Math.max(0,pendingIndexes[0]-1);
-      const end=Math.min(est.length,pendingIndexes.at(-1)+2);
-      const provisional=est.slice(start,end);
-      traces.push({
-        x:provisional.map(x=>x.fecha),
-        y:provisional.map(x=>Number(x.vc_estimado)),
-        mode:'lines',
-        name:'VC estimado · SBS pendiente',
-        line:{width:3,dash:'dot'},
-        customdata:provisional.map(x=>x.tipo==='SBS_PENDIENTE'?'ESTIMADO · SBS PENDIENTE':'LÍMITE DEL TRAMO'),
-        hovertemplate:'<b>%{x}</b><br>VC estimado: %{y:.7f}<br>%{customdata}<extra></extra>'
-      });
-    }
 
     Plotly.react('vcChart',traces,{
       title:vcDays==='all'?'Todo el historial':`Últimos ${vcDays} días`,
@@ -113,7 +96,7 @@ def main() -> None:
         raise RuntimeError("No se encontró una única función renderVC de Hábitat.")
 
     HTML_PATH.write_text(updated, encoding="utf-8")
-    print("Hábitat: línea SBS cortada en huecos y estimaciones sin globos grandes.")
+    print("Hábitat: línea OLS continua y SBS oficial interrumpida en huecos.")
 
 
 if __name__ == "__main__":
