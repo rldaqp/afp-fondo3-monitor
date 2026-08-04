@@ -2,19 +2,19 @@
   "generated_for": "2026-08-03",
   "current_signal": "SUBE",
   "confidence": {
-    "historical_accuracy": 0.9361702127659575,
-    "n": 47,
+    "historical_accuracy": 0.9347826086956522,
+    "n": 46,
     "label": "SUBE",
     "description": "Aciertos históricos de la misma clase de señal; no es garantía futura."
   },
   "performance": {
     "window_n": 90,
     "classification_accuracy": 0.8555555555555555,
-    "mae_return_pp": 0.31933342671681675,
-    "sube_n": 47,
-    "sube_accuracy": 0.9361702127659575,
-    "baja_n": 34,
-    "baja_accuracy": 0.8823529411764706,
+    "mae_return_pp": 0.3168427823097884,
+    "sube_n": 46,
+    "sube_accuracy": 0.9347826086956522,
+    "baja_n": 35,
+    "baja_accuracy": 0.8857142857142857,
     "neutro_n": 9,
     "neutro_accuracy": 0.3333333333333333
   },
@@ -23,65 +23,65 @@
     "label": "Banda empírica 80%"
   },
   "benchmarks": {
-    "zero_change_mae_pp": 1.0811736185327725,
-    "ols_mae_pp": 0.31933342671681675,
-    "ols_mae_improvement_vs_zero": 0.7046418620996558
+    "zero_change_mae_pp": 1.0709550044418332,
+    "ols_mae_pp": 0.3168427823097884,
+    "ols_mae_improvement_vs_zero": 0.704149305063547
   },
   "contributions": [
     {
       "feature": "ret_EPU",
       "label": "EPU",
       "value": 0.007210922225877159,
-      "coefficient": 0.2494106740686487,
-      "contribution_pp": 0.17984809730126228
+      "coefficient": 0.248870777278237,
+      "contribution_pp": 0.17945878192469636
     },
     {
       "feature": "ret_NEM",
       "label": "NEM",
       "value": 0.01771426398812581,
-      "coefficient": 0.0862296085848302,
-      "contribution_pp": 0.15274940500644418
+      "coefficient": 0.08708034773399587,
+      "contribution_pp": 0.1542564267937796
     },
     {
       "feature": "ret_EEM",
       "label": "EEM",
       "value": 0.003588755969355706,
-      "coefficient": 0.29896067042074526,
-      "contribution_pp": 0.10728968905750333
+      "coefficient": 0.29843484290995315,
+      "contribution_pp": 0.10710098239568268
     },
     {
       "feature": "intercept",
       "label": "Base",
       "value": 1.0,
-      "coefficient": 0.0008344588926395475,
-      "contribution_pp": 0.08344588926395476
+      "coefficient": 0.000824715277732269,
+      "contribution_pp": 0.0824715277732269
     },
     {
       "feature": "ret_SPY",
       "label": "SPY",
       "value": 0.01424300656734756,
-      "coefficient": 0.05311746206974748,
-      "contribution_pp": 0.07565523611002482
+      "coefficient": 0.05215032624198485,
+      "contribution_pp": 0.0742777439153908
     },
     {
       "feature": "ret_FCX",
       "label": "FCX",
       "value": 0.016126429894752103,
-      "coefficient": 0.023119300995073297,
-      "contribution_pp": 0.037283178671272205
+      "coefficient": 0.02314383886163482,
+      "contribution_pp": 0.037322749489759326
     },
     {
       "feature": "ret_MCHI",
       "label": "MCHI",
       "value": 0.0017921557380944364,
-      "coefficient": -0.048148839364440164,
-      "contribution_pp": -0.008629021874956871
+      "coefficient": -0.04856474426458948,
+      "contribution_pp": -0.008703558510287292
     },
     {
       "feature": "ret_USD_PEN",
       "label": "USD/PEN",
       "value": 0.0,
-      "coefficient": 0.27856231599186504,
+      "coefficient": 0.2765160698884829,
       "contribution_pp": 0.0
     }
   ],
