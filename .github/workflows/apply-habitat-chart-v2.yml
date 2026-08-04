@@ -1,0 +1,48 @@
+name: Aplicar línea continua Hábitat
+
+on:
+  push:
+    branches:
+      - migracion-github-actions
+    paths:
+      - ".github/workflows/apply-habitat-chart-v2.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: apply-habitat-chart-v2
+  cancel-in-progress: true
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Descargar rama
+        uses: actions/checkout@v4
+        with:
+          ref: migracion-github-actions
+          fetch-depth: 0
+
+      - name: Aplicar corrección solo a Hábitat
+        run: python scripts/postprocess_habitat_chart_clarity.py
+
+      - name: Validar línea estimada continua
+        run: |
+          grep -q "HABITAT_CHART_CONTINUOUS_ESTIMATE_V2" public/habitat/index.html
+          grep -q "y:est.map(x=>Number(x.vc_estimado))" public/habitat/index.html
+          ! grep -q "name:'VC estimado · SBS pendiente'" public/habitat/index.html
+
+      - name: Guardar visor Hábitat
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/habitat/index.html
+          if git diff --cached --quiet; then
+            echo "El visor Hábitat ya estaba corregido."
+          else
+            git commit -m "Mostrar línea OLS continua en Hábitat"
+            git pull --rebase origin migracion-github-actions
+            git push origin HEAD:migracion-github-actions
+          fi
