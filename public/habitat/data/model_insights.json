@@ -1,100 +1,102 @@
 {
-  "generated_for": "2026-07-31",
-  "current_signal": "BAJA",
+  "generated_for": "2026-08-03",
+  "current_signal": "SUBE",
   "confidence": {
-    "historical_accuracy": 0.8823529411764706,
-    "n": 34,
-    "description": "Aciertos históricos de la misma clase de señal; no es una garantía futura.",
-    "label": "BAJA"
+    "historical_accuracy": 0.9361702127659575,
+    "n": 47,
+    "label": "SUBE",
+    "description": "Aciertos históricos de la misma clase de señal; no es garantía futura."
   },
   "performance": {
     "window_n": 90,
-    "classification_accuracy": 0.8444444444444444,
-    "mae_return_pp": 0.37634801514628896,
-    "sube_n": 140,
-    "sube_accuracy": 0.8857142857142857,
-    "baja_n": 91,
-    "baja_accuracy": 0.7692307692307693,
-    "neutro_n": 40,
-    "neutro_accuracy": 0.25
+    "classification_accuracy": 0.8555555555555555,
+    "mae_return_pp": 0.31933342671681686,
+    "sube_n": 47,
+    "sube_accuracy": 0.9361702127659575,
+    "baja_n": 34,
+    "baja_accuracy": 0.8823529411764706,
+    "neutro_n": 9,
+    "neutro_accuracy": 0.3333333333333333
   },
   "uncertainty": {
-    "relative_q80": 0.005295683458624792,
+    "relative_q80": 0.005210260266086629,
     "label": "Banda empírica 80%"
   },
   "benchmarks": {
-    "zero_change_mae_pp": 1.0792585043076426,
-    "ols_mae_pp": 0.37634801514628896,
-    "ols_mae_improvement_vs_zero": 0.6512902018893789
+    "zero_change_mae_pp": 1.0811736185327725,
+    "ols_mae_pp": 0.31933342671681686,
+    "ols_mae_improvement_vs_zero": 0.7046418620996557
   },
   "contributions": [
     {
       "feature": "ret_EPU",
       "label": "EPU",
-      "value": -0.0099031899726347,
-      "coefficient": 0.208920546572114,
-      "contribution_pp": -0.20689798618903202
+      "value": 0.007210922225877159,
+      "coefficient": 0.2494106740686488,
+      "contribution_pp": 0.17984809730126236
     },
     {
       "feature": "ret_NEM",
       "label": "NEM",
-      "value": -0.021407717272619,
-      "coefficient": 0.08636791838791263,
-      "contribution_pp": -0.18489399782730653
+      "value": 0.01771426398812581,
+      "coefficient": 0.08622960858483042,
+      "contribution_pp": 0.15274940500644457
     },
     {
       "feature": "ret_EEM",
       "label": "EEM",
-      "value": 0.0078628115128631,
-      "coefficient": 0.23444117989708013,
-      "contribution_pp": 0.18433668083839708
-    },
-    {
-      "feature": "ret_USD_PEN",
-      "label": "USD/PEN",
-      "value": -0.0237229985707507,
-      "coefficient": 0.062472787630026685,
-      "contribution_pp": -0.1482041851657935
-    },
-    {
-      "feature": "ret_SPY",
-      "label": "SPY",
-      "value": 0.0071998096750542,
-      "coefficient": 0.14934775003373177,
-      "contribution_pp": 0.10752753756404382
+      "value": 0.003588755969355706,
+      "coefficient": 0.2989606704207453,
+      "contribution_pp": 0.10728968905750334
     },
     {
       "feature": "intercept",
       "label": "Base",
       "value": 1.0,
-      "coefficient": 0.000622632562611806,
-      "contribution_pp": 0.0622632562611806
+      "coefficient": 0.0008344588926395475,
+      "contribution_pp": 0.08344588926395476
     },
     {
-      "feature": "ret_MCHI",
-      "label": "MCHI",
-      "value": 0.0054053916587486,
-      "coefficient": 0.039857010144859706,
-      "contribution_pp": 0.0215442750179683
+      "feature": "ret_USD_PEN",
+      "label": "USD/PEN",
+      "value": -0.0029662422142157086,
+      "coefficient": 0.2785623159918651,
+      "contribution_pp": -0.08262833009847657
+    },
+    {
+      "feature": "ret_SPY",
+      "label": "SPY",
+      "value": 0.01424300656734756,
+      "coefficient": 0.05311746206974766,
+      "contribution_pp": 0.07565523611002509
     },
     {
       "feature": "ret_FCX",
       "label": "FCX",
-      "value": -0.0127679315278662,
-      "coefficient": -0.01308187898704459,
-      "contribution_pp": 0.016702853516241695
+      "value": 0.016126429894752103,
+      "coefficient": 0.023119300995073228,
+      "contribution_pp": 0.037283178671272094
+    },
+    {
+      "feature": "ret_MCHI",
+      "label": "MCHI",
+      "value": 0.0017921557380944364,
+      "coefficient": -0.04814883936444021,
+      "contribution_pp": -0.00862902187495688
     }
   ],
   "quality": {
-    "status": "OK",
-    "warnings": [],
-    "training_n": 90,
-    "latest_sbs_date": "2026-07-29",
+    "status": "PROVISIONAL",
+    "warnings": [
+      "14 fechas internas están estimadas por publicación SBS pendiente."
+    ],
     "critical": [],
-    "fx_provisional": false
+    "training_n": 90,
+    "latest_sbs_date": "2026-07-30",
+    "fx_provisional": true
   },
   "challenger_huber": {
     "status": "NO APLICA EN HÁBITAT",
-    "error": "El visor Hábitat mantiene únicamente su modelo OLS propio."
+    "error": "La comparación solicitada mantiene OLS como modelo único."
   }
 }
