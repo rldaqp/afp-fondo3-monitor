@@ -1,10 +1,9 @@
 """Corrige únicamente la presentación del gráfico de AFP Hábitat Fondo 3.
 
-- Mantiene en la primera línea todas las fechas de la serie temporal: VC SBS
-  cuando existe y VC estimado cuando la SBS aún no publicó el dato.
-- Mantiene además la línea OLS completa para comparar VC temporal vs estimado.
-- Todos los tramos son líneas normales con marcadores pequeños; no hay líneas
-  punteadas ni círculos grandes.
+- Verde: solo VC reales publicados por la SBS.
+- Rojo: VC estimado OLS continuo, incluidas las fechas con SBS pendiente.
+- Las fechas pendientes permanecen visibles, pero nunca se muestran como SBS real.
+- No se usan líneas punteadas ni marcadores grandes.
 
 Este módulo solo modifica public/habitat/index.html.
 """
@@ -18,8 +17,8 @@ ROOT = Path(__file__).resolve().parents[1]
 HTML_PATH = ROOT / "public" / "habitat" / "index.html"
 
 NEW_RENDER_VC = r'''  function renderVC(){
-    // HABITAT_CHART_RESTORE_GAP_DATES_V3
-    const timeline=cutoff(allSeries,vcDays).filter(x=>Number.isFinite(Number(x.vc)));
+    // HABITAT_CHART_SEPARATE_REAL_ESTIMATE_V4
+    const timeline=cutoff(allSeries,vcDays);
     let estSource=richSignals.filter(x=>x.vc_estimado!=null);
     if(liveSnapshotActive()){
       const point={fecha:liveData.signal_date,vc_estimado:Number(liveData.vc_estimated),ret_estimado:Number(liveData.return_estimated),senal:liveData.signal,tipo:'INTRADIA'};
@@ -30,7 +29,7 @@ NEW_RENDER_VC = r'''  function renderVC(){
     let pendingStep=0,lower=[],upper=[];
     est.forEach(x=>{
       let scale=1;
-      if(x.tipo==='PENDIENTE'){pendingStep+=1;scale=Math.sqrt(pendingStep)}
+      if(x.tipo==='PENDIENTE'||x.tipo==='SBS_PENDIENTE'){pendingStep+=1;scale=Math.sqrt(pendingStep)}
       const v=Number(x.vc_estimado);
       lower.push(v*(1-q*scale));
       upper.push(v*(1+q*scale));
@@ -44,22 +43,21 @@ NEW_RENDER_VC = r'''  function renderVC(){
       );
     }
 
-    // Se conservan todas las fechas. Cuando falta el VC SBS, se usa el VC ya
-    // estimado que existe en series.json, sin cambiar su fuente ni sus datos.
+    // Verde: solo datos oficiales. Los días con SBS pendiente permanecen como null
+    // para que jamás se confundan con un VC real publicado por la SBS.
     traces.push({
       x:timeline.map(x=>x.fecha),
-      y:timeline.map(x=>Number(x.vc)),
+      y:timeline.map(x=>x.es_oficial===true?Number(x.vc):null),
       mode:'lines+markers',
       connectgaps:false,
-      name:'VC SBS real + fechas estimadas',
+      name:'VC SBS real (solo oficial)',
       line:{width:2},
       marker:{size:5},
-      customdata:timeline.map(x=>x.fuente),
-      hovertemplate:'<b>%{x}</b><br>VC: %{y:.7f}<br>Fuente: %{customdata}<extra></extra>'
+      hovertemplate:'<b>%{x}</b><br>VC SBS oficial: %{y:.7f}<extra></extra>'
     });
 
-    // La línea completa del VC estimado OLS se mantiene durante todo el periodo,
-    // incluidas las fechas del tramo 30/06–21/07.
+    // Rojo: estimación OLS completa. En el hueco de julio es la única serie visible,
+    // y el tooltip deja explícito que la SBS todavía está pendiente.
     traces.push({
       x:est.map(x=>x.fecha),
       y:est.map(x=>Number(x.vc_estimado)),
@@ -68,8 +66,8 @@ NEW_RENDER_VC = r'''  function renderVC(){
       name:'VC estimado OLS',
       line:{width:2},
       marker:{size:5},
-      customdata:est.map(x=>[x.senal,x.tipo]),
-      hovertemplate:'<b>%{x}</b><br>VC estimado: %{y:.7f}<br>Señal: %{customdata[0]}<br>Estado: %{customdata[1]}<extra></extra>'
+      customdata:est.map(x=>[x.senal,x.tipo,x.tipo==='SBS_PENDIENTE'?'SBS pendiente':'Estimación sobre fecha con VC oficial']),
+      hovertemplate:'<b>%{x}</b><br>VC estimado OLS: %{y:.7f}<br>Señal: %{customdata[0]}<br>%{customdata[2]}<extra></extra>'
     });
 
     Plotly.react('vcChart',traces,{
@@ -97,7 +95,7 @@ def main() -> None:
         raise RuntimeError("No se encontró una única función renderVC de Hábitat.")
 
     HTML_PATH.write_text(updated, encoding="utf-8")
-    print("Hábitat: fechas 30/06–21/07 restauradas y ambas líneas completas.")
+    print("Hábitat: VC SBS real y VC estimado OLS separados correctamente.")
 
 
 if __name__ == "__main__":
