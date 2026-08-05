@@ -41,13 +41,23 @@ jobs:
           test -s public/data/latest.json
           test -s public/habitat/index.html
           test -s public/habitat/data/series.json
-          grep -q "HABITAT_CHART_REAL_PROVISIONAL_OLS_V5" public/habitat/index.html
+          grep -q "HABITAT_CHART_OFFICIAL_VS_OLS_V6" public/habitat/index.html
           grep -q "VC SBS real (oficial)" public/habitat/index.html
-          grep -q "VC provisional · SBS pendiente" public/habitat/index.html
           grep -q "VC estimado OLS" public/habitat/index.html
-          grep -q "previousPending" public/habitat/index.html
-          grep -q '"fecha": "2026-07-01"' public/habitat/data/series.json
-          grep -q '"fecha": "2026-07-20"' public/habitat/data/series.json
+          ! grep -q "VC provisional · SBS pendiente" public/habitat/index.html
+          ! grep -q "Tramo SBS pendiente" public/habitat/index.html
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          series = json.loads(Path("public/habitat/data/series.json").read_text(encoding="utf-8"))
+          by_date = {row["fecha"]: row for row in series}
+          for date in ("2026-07-01", "2026-07-20"):
+              row = by_date.get(date)
+              assert row, f"Falta {date} en Hábitat"
+              assert row.get("es_oficial") is True, row
+              assert row.get("fuente") == "SBS OFICIAL", row
+          PY
 
       - name: Configurar GitHub Pages
         uses: actions/configure-pages@v5
