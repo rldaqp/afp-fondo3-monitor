@@ -7,6 +7,7 @@ estimación ni se publica como "SBS pendiente".
 
 from __future__ import annotations
 
+from pathlib import Path
 from urllib.parse import urljoin
 
 import pandas as pd
@@ -17,6 +18,54 @@ import enrich_habitat_daily_sbs as source
 from build_habitat_exact_parity import main as build_habitat_ols
 from postprocess_habitat_chart_clarity import main as clarify_habitat_chart
 from postprocess_habitat_sbs_indicators import ensure_latest_consistency
+
+ROOT = Path(__file__).resolve().parents[1]
+OFFICIAL_CORRECTIONS = (
+    ROOT / "data" / "rolling90" / "sbs_habitat_f3_official_corrections.csv"
+)
+
+
+def install_official_corrections() -> None:
+    """Incorpora VC oficiales SBS recuperados del historial del propio proyecto.
+
+    El archivo contiene publicaciones de la página diaria Variables SPP que ya
+    habían sido descargadas por las ejecuciones históricas del monitor. No son
+    valores estimados y solo se aplican a la serie de Hábitat.
+    """
+    if not OFFICIAL_CORRECTIONS.exists() or OFFICIAL_CORRECTIONS.stat().st_size == 0:
+        raise RuntimeError("No existe el respaldo oficial SBS de Hábitat para julio.")
+
+    corrections = pd.read_csv(OFFICIAL_CORRECTIONS)
+    corrections["fecha"] = pd.to_datetime(corrections["fecha"], errors="coerce")
+    corrections["valor_cuota"] = pd.to_numeric(
+        corrections["valor_cuota"], errors="coerce"
+    )
+    corrections = (
+        corrections.dropna(subset=["fecha", "valor_cuota"])
+        .loc[lambda frame: frame["valor_cuota"].gt(0), ["fecha", "valor_cuota"]]
+        .sort_values("fecha")
+        .drop_duplicates("fecha", keep="last")
+    )
+    if len(corrections) != 14:
+        raise RuntimeError(
+            f"El respaldo oficial de julio tiene {len(corrections)} fechas; se esperan 14."
+        )
+
+    saved = source.read_csv(source.HISTORY_PATH)
+    frames = [frame for frame in (saved, corrections) if not frame.empty]
+    merged = pd.concat(frames, ignore_index=True, sort=False)
+    merged["valor_cuota"] = pd.to_numeric(merged["valor_cuota"], errors="coerce")
+    merged = (
+        merged.dropna(subset=["fecha", "valor_cuota"])
+        .sort_values("fecha")
+        .drop_duplicates("fecha", keep="last")
+        .reset_index(drop=True)
+    )
+    source.save_csv(merged, source.HISTORY_PATH)
+    print(
+        "VC oficiales SBS de Hábitat restaurados: "
+        + ", ".join(corrections["fecha"].dt.strftime("%Y-%m-%d"))
+    )
 
 
 def recent_monthly_urls() -> list[str]:
@@ -50,6 +99,8 @@ def recent_monthly_urls() -> list[str]:
 
 
 def main() -> None:
+    install_official_corrections()
+
     # Se conserva la validación estricta original de enrich_habitat_daily_sbs:
     # Hábitat debe contener todas las fechas oficiales del calendario Fondo 3.
     source.discover_monthly_urls = recent_monthly_urls
