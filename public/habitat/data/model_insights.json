@@ -2,87 +2,87 @@
   "generated_for": "2026-08-04",
   "current_signal": "SUBE",
   "confidence": {
-    "historical_accuracy": 0.8636363636363636,
-    "n": 44,
+    "historical_accuracy": 0.8666666666666667,
+    "n": 45,
     "label": "SUBE",
     "description": "Aciertos históricos de la misma clase de señal; no es garantía futura."
   },
   "performance": {
     "window_n": 90,
     "classification_accuracy": 0.7777777777777778,
-    "mae_return_pp": 0.31847193230576487,
-    "sube_n": 44,
-    "sube_accuracy": 0.8636363636363636,
-    "baja_n": 35,
-    "baja_accuracy": 0.8571428571428571,
+    "mae_return_pp": 0.31811542886965044,
+    "sube_n": 45,
+    "sube_accuracy": 0.8666666666666667,
+    "baja_n": 34,
+    "baja_accuracy": 0.8529411764705882,
     "neutro_n": 11,
     "neutro_accuracy": 0.18181818181818182
   },
   "uncertainty": {
-    "relative_q80": 0.0051757833946602,
+    "relative_q80": 0.005175783394660197,
     "label": "Banda empírica 80%"
   },
   "benchmarks": {
-    "zero_change_mae_pp": 1.0145090018921026,
-    "ols_mae_pp": 0.31847193230576487,
-    "ols_mae_improvement_vs_zero": 0.6860826944740746
+    "zero_change_mae_pp": 1.0155310239702795,
+    "ols_mae_pp": 0.31811542886965044,
+    "ols_mae_improvement_vs_zero": 0.6867496695217059
   },
   "contributions": [
     {
       "feature": "ret_EEM",
       "label": "EEM",
       "value": 0.02611940785365041,
-      "coefficient": 0.3698393604967629,
-      "contribution_pp": 0.9659985097148195
+      "coefficient": 0.37009607525478555,
+      "contribution_pp": 0.9666690334615039
     },
     {
       "feature": "ret_EPU",
       "label": "EPU",
       "value": 0.02170906369443304,
-      "coefficient": 0.19032960819747885,
-      "contribution_pp": 0.4131877587295553
+      "coefficient": 0.19038054358868345,
+      "contribution_pp": 0.41329833469475147
     },
     {
       "feature": "ret_NEM",
       "label": "NEM",
       "value": 0.024745732855042224,
-      "coefficient": 0.06629775038697838,
-      "contribution_pp": 0.16405864199664394
+      "coefficient": 0.06651077473126299,
+      "contribution_pp": 0.16458578634817267
     },
     {
       "feature": "ret_FCX",
       "label": "FCX",
       "value": 0.05751105746717999,
-      "coefficient": 0.017783909582485397,
-      "contribution_pp": 0.10227714459894507
+      "coefficient": 0.017572072041604825,
+      "contribution_pp": 0.10105884450021621
     },
     {
       "feature": "ret_SPY",
       "label": "SPY",
       "value": 0.018029002715958642,
-      "coefficient": 0.04275060580176916,
-      "contribution_pp": 0.07707507881089735
+      "coefficient": 0.04163660112018489,
+      "contribution_pp": 0.07506663946791
     },
     {
       "feature": "intercept",
       "label": "Base",
       "value": 1.0,
-      "coefficient": 0.0005359301398742131,
-      "contribution_pp": 0.05359301398742131
+      "coefficient": 0.0005402567568947726,
+      "contribution_pp": 0.054025675689477255
     },
     {
       "feature": "ret_MCHI",
       "label": "MCHI",
       "value": 0.0033989019950388943,
-      "coefficient": -0.06548705983122188,
-      "contribution_pp": -0.02225840983095715
+      "coefficient": -0.06521556216680413,
+      "contribution_pp": -0.02216613043563336
     },
     {
       "feature": "ret_USD_PEN",
       "label": "USD/PEN",
-      "value": 0.0007526817890772808,
-      "coefficient": 0.03571681278123996,
-      "contribution_pp": 0.0026883394544321986
+      "value": -0.0023536334215945587,
+      "coefficient": 0.03605763469811644,
+      "contribution_pp": -0.008486645412913447
     }
   ],
   "quality": {
@@ -90,8 +90,8 @@
     "warnings": [],
     "critical": [],
     "training_n": 90,
-    "latest_sbs_date": "2026-07-31",
-    "fx_provisional": true
+    "latest_sbs_date": "2026-08-03",
+    "fx_provisional": false
   },
   "challenger_huber": {
     "status": "NO APLICA EN HÁBITAT",

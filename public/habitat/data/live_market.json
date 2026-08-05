@@ -1,10 +1,10 @@
 {
-  "generated_at_lima": "2026-08-05T10:30:23.244998-05:00",
+  "generated_at_lima": "2026-08-05T12:57:24.502038-05:00",
   "mode": "CIERRE DIARIO",
   "market_open": false,
   "signal_date": "2026-08-04",
-  "vc_estimated": 32.671417969618574,
-  "return_estimated": 0.017566200774617576,
+  "vc_estimated": 32.66213660180969,
+  "return_estimated": 0.017440515383134847,
   "signal": "SUBE",
   "assets": [
     {
@@ -76,18 +76,18 @@
     {
       "serie": "USD_PEN",
       "ticker": "PEN=X",
-      "timestamp": "2026-08-03",
+      "timestamp": "2026-08-04",
       "precio_anterior": 3.399,
-      "precio_actual": 3.399,
-      "retorno": null,
-      "retorno_modelo": null,
+      "precio_actual": 3.391,
+      "retorno": -0.0023536334215945587,
+      "retorno_modelo": -0.0023536334215945587,
       "estado": "CIERRE DIARIO · MISMA FUENTE DEL MODELO PROFUTURO",
-      "usado_modelo": false
+      "usado_modelo": true
     }
   ],
   "action": "CIERRE",
   "engine": "OLS HÁBITAT · PARIDAD METODOLÓGICA PROFUTURO",
   "fx_rule": "Misma metodología de Profuturo: LinearRegression OLS, ventana móvil de 90 observaciones completas, siete factores, Yahoo Close, BCRP para USD/PEN histórico, PEN=X solo como respaldo pendiente y VC encadenado.",
-  "fx_source": "YAHOO PEN=X PROVISIONAL",
-  "fx_provisional": true
+  "fx_source": "BCRP",
+  "fx_provisional": false
 }
