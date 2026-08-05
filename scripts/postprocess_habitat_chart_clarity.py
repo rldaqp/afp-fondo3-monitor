@@ -1,10 +1,8 @@
-"""Corrige únicamente la presentación del gráfico de AFP Hábitat Fondo 3.
+"""Presenta el gráfico de AFP Hábitat Fondo 3 con dos series distintas.
 
 - Verde: VC reales publicados por la SBS.
-- Ámbar sólido: VC provisional para fechas con SBS pendiente, enlazado con los
-  puntos oficiales inmediatamente anterior y posterior.
-- Rojo: VC estimado OLS continuo durante todo el periodo.
-- No se usan líneas punteadas ni marcadores grandes.
+- Rojo: VC estimado por el único modelo OLS rolling 90.
+- No existe una tercera línea provisional ni se reemplazan VC SBS por estimaciones.
 
 Este módulo solo modifica public/habitat/index.html.
 """
@@ -18,9 +16,10 @@ ROOT = Path(__file__).resolve().parents[1]
 HTML_PATH = ROOT / "public" / "habitat" / "index.html"
 
 NEW_RENDER_VC = r'''  function renderVC(){
-    // HABITAT_CHART_REAL_PROVISIONAL_OLS_V5
-    const timeline=cutoff(allSeries,vcDays);
-    let estSource=richSignals.filter(x=>x.vc_estimado!=null);
+    // HABITAT_CHART_OFFICIAL_VS_OLS_V6
+    const officialSource=allSeries.filter(x=>x.es_oficial===true&&Number.isFinite(Number(x.vc)));
+    const official=cutoff(officialSource,vcDays);
+    let estSource=richSignals.filter(x=>x.vc_estimado!=null&&Number.isFinite(Number(x.vc_estimado)));
     if(liveSnapshotActive()){
       const point={fecha:liveData.signal_date,vc_estimado:Number(liveData.vc_estimated),ret_estimado:Number(liveData.return_estimated),senal:liveData.signal,tipo:'INTRADIA'};
       estSource=estSource.filter(x=>x.fecha!==point.fecha).concat([point]).sort((a,b)=>a.fecha.localeCompare(b.fecha));
@@ -30,7 +29,7 @@ NEW_RENDER_VC = r'''  function renderVC(){
     let pendingStep=0,lower=[],upper=[];
     est.forEach(x=>{
       let scale=1;
-      if(x.tipo==='PENDIENTE'||x.tipo==='SBS_PENDIENTE'){pendingStep+=1;scale=Math.sqrt(pendingStep)}
+      if(x.tipo==='PENDIENTE'||x.tipo==='INTRADIA'){pendingStep+=1;scale=Math.sqrt(pendingStep)}
       const v=Number(x.vc_estimado);
       lower.push(v*(1-q*scale));
       upper.push(v*(1+q*scale));
@@ -44,10 +43,9 @@ NEW_RENDER_VC = r'''  function renderVC(){
       );
     }
 
-    // Verde: únicamente valores efectivamente publicados por la SBS.
     traces.push({
-      x:timeline.map(x=>x.fecha),
-      y:timeline.map(x=>x.es_oficial===true?Number(x.vc):null),
+      x:official.map(x=>x.fecha),
+      y:official.map(x=>Number(x.vc)),
       mode:'lines+markers',
       connectgaps:false,
       name:'VC SBS real (oficial)',
@@ -56,27 +54,6 @@ NEW_RENDER_VC = r'''  function renderVC(){
       hovertemplate:'<b>%{x}</b><br>VC SBS oficial: %{y:.7f}<extra></extra>'
     });
 
-    // Ámbar: muestra el VC provisional ya calculado para las fechas en que la
-    // SBS aún no publicó. Los dos puntos de borde mantienen continuidad visual.
-    const provisionalY=timeline.map((x,i)=>{
-      const pending=x.es_oficial!==true;
-      const previousPending=i>0&&timeline[i-1].es_oficial!==true;
-      const nextPending=i<timeline.length-1&&timeline[i+1].es_oficial!==true;
-      return pending||previousPending||nextPending?Number(x.vc):null;
-    });
-    traces.push({
-      x:timeline.map(x=>x.fecha),
-      y:provisionalY,
-      mode:'lines+markers',
-      connectgaps:false,
-      name:'VC provisional · SBS pendiente',
-      line:{width:2,color:'#f59e0b'},
-      marker:{size:5,color:'#f59e0b'},
-      customdata:timeline.map(x=>x.es_oficial===true?'Punto oficial de enlace':'Estimación provisional; SBS pendiente'),
-      hovertemplate:'<b>%{x}</b><br>VC provisional: %{y:.7f}<br>%{customdata}<extra></extra>'
-    });
-
-    // Rojo: estimación OLS completa para comparar en todas las fechas.
     traces.push({
       x:est.map(x=>x.fecha),
       y:est.map(x=>Number(x.vc_estimado)),
@@ -85,8 +62,8 @@ NEW_RENDER_VC = r'''  function renderVC(){
       name:'VC estimado OLS',
       line:{width:2,color:'#ef4444'},
       marker:{size:5,color:'#ef4444'},
-      customdata:est.map(x=>[x.senal,x.tipo,x.tipo==='SBS_PENDIENTE'?'SBS pendiente':'Fecha con VC oficial disponible']),
-      hovertemplate:'<b>%{x}</b><br>VC estimado OLS: %{y:.7f}<br>Señal: %{customdata[0]}<br>%{customdata[2]}<extra></extra>'
+      customdata:est.map(x=>[x.senal,x.tipo]),
+      hovertemplate:'<b>%{x}</b><br>VC estimado OLS: %{y:.7f}<br>Señal: %{customdata[0]}<br>Tipo: %{customdata[1]}<extra></extra>'
     });
 
     Plotly.react('vcChart',traces,{
@@ -114,7 +91,7 @@ def main() -> None:
         raise RuntimeError("No se encontró una única función renderVC de Hábitat.")
 
     HTML_PATH.write_text(updated, encoding="utf-8")
-    print("Hábitat: VC oficial, provisional y OLS separados con continuidad.")
+    print("Hábitat: dos líneas, VC SBS oficial y VC estimado OLS.")
 
 
 if __name__ == "__main__":
