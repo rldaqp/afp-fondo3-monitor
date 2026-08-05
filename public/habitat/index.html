@@ -190,7 +190,7 @@ Promise.all([fetch('data/latest.json?ts='+Date.now(),{cache:'no-store'}).then(r=
   }
 
   function renderVC(){
-    // HABITAT_CHART_SEPARATE_REAL_ESTIMATE_V4
+    // HABITAT_CHART_REAL_PROVISIONAL_OLS_V5
     const timeline=cutoff(allSeries,vcDays);
     let estSource=richSignals.filter(x=>x.vc_estimado!=null);
     if(liveSnapshotActive()){
@@ -216,30 +216,48 @@ Promise.all([fetch('data/latest.json?ts='+Date.now(),{cache:'no-store'}).then(r=
       );
     }
 
-    // Verde: solo datos oficiales. Los días con SBS pendiente permanecen como null
-    // para que jamás se confundan con un VC real publicado por la SBS.
+    // Verde: únicamente valores efectivamente publicados por la SBS.
     traces.push({
       x:timeline.map(x=>x.fecha),
       y:timeline.map(x=>x.es_oficial===true?Number(x.vc):null),
       mode:'lines+markers',
       connectgaps:false,
-      name:'VC SBS real (solo oficial)',
-      line:{width:2},
-      marker:{size:5},
+      name:'VC SBS real (oficial)',
+      line:{width:2,color:'#22c55e'},
+      marker:{size:5,color:'#22c55e'},
       hovertemplate:'<b>%{x}</b><br>VC SBS oficial: %{y:.7f}<extra></extra>'
     });
 
-    // Rojo: estimación OLS completa. En el hueco de julio es la única serie visible,
-    // y el tooltip deja explícito que la SBS todavía está pendiente.
+    // Ámbar: muestra el VC provisional ya calculado para las fechas en que la
+    // SBS aún no publicó. Los dos puntos de borde mantienen continuidad visual.
+    const provisionalY=timeline.map((x,i)=>{
+      const pending=x.es_oficial!==true;
+      const previousPending=i>0&&timeline[i-1].es_oficial!==true;
+      const nextPending=i<timeline.length-1&&timeline[i+1].es_oficial!==true;
+      return pending||previousPending||nextPending?Number(x.vc):null;
+    });
+    traces.push({
+      x:timeline.map(x=>x.fecha),
+      y:provisionalY,
+      mode:'lines+markers',
+      connectgaps:false,
+      name:'VC provisional · SBS pendiente',
+      line:{width:2,color:'#f59e0b'},
+      marker:{size:5,color:'#f59e0b'},
+      customdata:timeline.map(x=>x.es_oficial===true?'Punto oficial de enlace':'Estimación provisional; SBS pendiente'),
+      hovertemplate:'<b>%{x}</b><br>VC provisional: %{y:.7f}<br>%{customdata}<extra></extra>'
+    });
+
+    // Rojo: estimación OLS completa para comparar en todas las fechas.
     traces.push({
       x:est.map(x=>x.fecha),
       y:est.map(x=>Number(x.vc_estimado)),
       mode:'lines+markers',
       connectgaps:false,
       name:'VC estimado OLS',
-      line:{width:2},
-      marker:{size:5},
-      customdata:est.map(x=>[x.senal,x.tipo,x.tipo==='SBS_PENDIENTE'?'SBS pendiente':'Estimación sobre fecha con VC oficial']),
+      line:{width:2,color:'#ef4444'},
+      marker:{size:5,color:'#ef4444'},
+      customdata:est.map(x=>[x.senal,x.tipo,x.tipo==='SBS_PENDIENTE'?'SBS pendiente':'Fecha con VC oficial disponible']),
       hovertemplate:'<b>%{x}</b><br>VC estimado OLS: %{y:.7f}<br>Señal: %{customdata[0]}<br>%{customdata[2]}<extra></extra>'
     });
 
