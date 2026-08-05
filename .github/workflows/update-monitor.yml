@@ -13,6 +13,7 @@ on:
       - "scripts/finalize_notebook_parity_v4.py"
       - "scripts/finalize_notebook_parity_v5.py"
       - "scripts/finalize_fx_hybrid.py"
+      - "scripts/complete_profuturo_signal_calendar.py"
       - "scripts/build_model_insights.py"
       - "scripts/build_operation_series.py"
       - "scripts/postprocess_mobile_ui_v3.py"
@@ -72,6 +73,7 @@ jobs:
           python scripts/run_rolling90_live_v2.py
           python scripts/apply_sbs_reference_corrections.py
           python scripts/finalize_fx_hybrid.py
+          python scripts/complete_profuturo_signal_calendar.py
           python scripts/build_model_insights.py
           git restore --source=HEAD -- public/data/live_market.json || true
           python scripts/build_operation_series.py
@@ -97,6 +99,7 @@ jobs:
           test -s public/data/signals.json
           test -s public/data/operation_series.json
           test -s public/data/model_insights.json
+          test -s data/rolling90/historical_calendar_predictions.csv
 
           grep -q "OLS Rolling 90" public/index.html
           grep -q "7 días" public/index.html
@@ -126,6 +129,7 @@ jobs:
           operation = json.loads(Path("public/data/operation_series.json").read_text(encoding="utf-8"))
           insights = json.loads(Path("public/data/model_insights.json").read_text(encoding="utf-8"))
           pending = pd.read_csv("data/rolling90/pending_predictions.csv")
+          sbs = pd.read_csv("data/rolling90/sbs_profuturo_f3.csv")
 
           assert latest["model"] == "OLS rolling 90"
           assert int(latest["window"]) == 90
@@ -157,6 +161,36 @@ jobs:
           assert int(insights["quality"]["training_n"]) == 90
           assert insights["performance"]["window_n"] > 10
 
+          sbs["fecha"] = pd.to_datetime(sbs["fecha"], errors="coerce")
+          historical_signals = {
+              pd.Timestamp(row["fecha"])
+              for row in signals
+              if row.get("tipo") == "HISTORICO"
+              and row.get("ret_estimado") is not None
+              and row.get("vc_estimado") is not None
+          }
+          assert historical_signals
+          first_model_date = min(historical_signals)
+          official_dates = set(
+              sbs.loc[sbs["fecha"] >= first_model_date, "fecha"].dropna()
+          )
+          missing_signal_dates = sorted(official_dates - historical_signals)
+          assert not missing_signal_dates, missing_signal_dates
+
+          operation_by_date = {
+              pd.Timestamp(row["fecha"]): row
+              for row in operation
+              if row.get("es_oficial") is True
+          }
+          missing_operation_dates = sorted(official_dates - set(operation_by_date))
+          assert not missing_operation_dates, missing_operation_dates
+          null_operation_dates = sorted(
+              date_value
+              for date_value in official_dates
+              if operation_by_date[date_value].get("ret_estimado") is None
+          )
+          assert not null_operation_dates, null_operation_dates
+
           if not pending.empty:
               assert "usd_pen_fuente" in pending.columns
               assert "usd_pen_provisional" in pending.columns
@@ -171,6 +205,7 @@ jobs:
 
           print(json.dumps(latest, ensure_ascii=False, indent=2))
           print(f"Puntos de señal Profuturo: {len(signals)}")
+          print(f"Fechas oficiales con OLS completo: {len(official_dates)}")
           PY
 
       - name: Guardar únicamente resultados de Profuturo
@@ -182,7 +217,7 @@ jobs:
           if git diff --cached --quiet; then
             echo "No hay cambios de Profuturo para confirmar."
           else
-            git commit -m "Actualizar OLS rolling 90 Profuturo Fondo 3"
+            git commit -m "Completar calendario OLS Profuturo Fondo 3"
             git pull --rebase origin migracion-github-actions
             git push origin HEAD:migracion-github-actions
           fi
