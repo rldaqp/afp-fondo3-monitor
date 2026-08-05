@@ -14,8 +14,12 @@ import pandas as pd
 import requests
 from bs4 import BeautifulSoup
 
+import build_habitat_exact_parity as habitat_ols
 import enrich_habitat_daily_sbs as source
-from build_habitat_exact_parity import main as build_habitat_ols
+from habitat_complete_official_calendar import (
+    install as install_official_calendar,
+    validate_official_estimate_calendar,
+)
 from postprocess_habitat_chart_clarity import main as clarify_habitat_chart
 from postprocess_habitat_sbs_indicators import ensure_latest_consistency
 
@@ -106,10 +110,13 @@ def main() -> None:
     source.discover_monthly_urls = recent_monthly_urls
     source.main()
 
-    # OLS único, ventana móvil de 90 observaciones y coeficientes propios de Hábitat.
-    build_habitat_ols()
+    # Regla exclusiva de Hábitat: todo VC oficial debe tener VC estimado OLS,
+    # incluso cuando algún mercado esté cerrado o no publique por feriado.
+    install_official_calendar()
+    habitat_ols.main()
     clarify_habitat_chart()
     ensure_latest_consistency()
+    validate_official_estimate_calendar()
 
 
 if __name__ == "__main__":
