@@ -1,30 +1,30 @@
 {
   "afp": "Hábitat",
   "fund": 3,
-  "generated_at_lima": "2026-08-04T22:41:36.739862-05:00",
+  "generated_at_lima": "2026-08-05T00:25:35.078738-05:00",
   "model": "OLS rolling 90",
   "window": 90,
   "threshold": 0.001,
-  "training_start": "2026-02-23",
+  "training_start": "2026-03-13",
   "training_end": "2026-07-31",
   "training_n": 90,
   "latest_sbs_date": "2026-07-31",
   "latest_sbs_vc": 31.9416869,
   "latest_market_date": "2026-08-04",
   "latest_estimate_date": "2026-08-04",
-  "latest_estimated_vc": 32.73605174016238,
-  "latest_return_estimated": 0.018491582059263694,
+  "latest_estimated_vc": 32.733984622763785,
+  "latest_return_estimated": 0.018837616384243257,
   "signal": "SUBE",
   "estimate_type": "CIERRE DIARIO · OLS ROLLING 90 · MISMA METODOLOGÍA PROFUTURO",
   "coefficients": {
-    "intercept": 0.000824715277732269,
-    "ret_SPY": 0.05215032624198485,
-    "ret_NEM": 0.08708034773399587,
-    "ret_FCX": 0.02314383886163482,
-    "ret_EPU": 0.248870777278237,
-    "ret_MCHI": -0.04856474426458948,
-    "ret_EEM": 0.29843484290995315,
-    "ret_USD_PEN": 0.2765160698884829
+    "intercept": 0.00039990532047920056,
+    "ret_SPY": 0.06378578603338478,
+    "ret_NEM": 0.0703943305962001,
+    "ret_FCX": 0.024772777306330318,
+    "ret_EPU": 0.25110508760803674,
+    "ret_MCHI": -0.04799832702200301,
+    "ret_EEM": 0.32796850062138005,
+    "ret_USD_PEN": 0.35418855216471695
   },
   "parity_rule": "Misma metodología de Profuturo: LinearRegression OLS, ventana móvil de 90 observaciones completas, siete factores, Yahoo Close, BCRP para USD/PEN histórico, PEN=X solo como respaldo pendiente y VC encadenado.",
   "parity_verified": true,
@@ -48,9 +48,7 @@
     "EEM": "Yahoo Finance · Close · auto_adjust=False"
   },
   "sbs_download_status": "SBS EN LÍNEA Y CONSOLIDADA",
-  "warnings": [
-    "La SBS aún no publicó 14 VC diarios de julio; el visor los identifica como estimados."
-  ],
+  "warnings": [],
   "official_indicators": {
     "date": "2026-07-31",
     "unit_value": 31.9416869,
@@ -58,30 +56,11 @@
     "fund_value_pen": 5930024984.15,
     "change_1d": -0.001665826691276795,
     "change_7d": -0.009104640673816,
-    "change_30d": -0.04757053427001212,
+    "change_30d": -0.035052273659900046,
     "change_90d": 0.03916746859004028,
     "change_ytd": 0.1891001128096359,
     "source": "SBS · Variables SPP y Valor Cuota por AFP",
     "source_url": "https://www.sbs.gob.pe/sistema-privado-de-pensiones/variables-spp"
   },
-  "live_engine": "CIERRE DIARIO HÁBITAT · MISMAS REGLAS DE FUENTES",
-  "official_gap_dates": [
-    "2026-07-01",
-    "2026-07-02",
-    "2026-07-03",
-    "2026-07-06",
-    "2026-07-07",
-    "2026-07-08",
-    "2026-07-09",
-    "2026-07-10",
-    "2026-07-13",
-    "2026-07-14",
-    "2026-07-15",
-    "2026-07-16",
-    "2026-07-17",
-    "2026-07-20"
-  ],
-  "estimated_gap_count": 14,
-  "sbs_gap_status": "SBS JULIO PENDIENTE · CUBIERTO POR MODELO OLS",
-  "gap_policy": "Las fechas sin VC SBS se estiman en cadena desde el último VC oficial. No se usan como variable objetivo ni como retornos reales de entrenamiento."
+  "live_engine": "CIERRE DIARIO HÁBITAT · MISMAS REGLAS DE FUENTES"
 }
