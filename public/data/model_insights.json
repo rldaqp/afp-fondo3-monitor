@@ -1,5 +1,5 @@
 {
-  "generated_for": "2026-08-04",
+  "generated_for": "2026-08-05",
   "current_signal": "SUBE",
   "confidence": {
     "label": "ALTA",
@@ -43,13 +43,13 @@
       "ret_USD_PEN": 0.3909354671538904
     },
     "current": {
-      "fecha": "2026-08-04",
-      "ret_estimado": 0.020106344167412124,
+      "fecha": "2026-08-05",
+      "ret_estimado": 0.020147999619735985,
       "senal": "SUBE",
-      "vc_estimado": 69.50316649036112,
+      "vc_estimado": 70.90351626237937,
       "agrees_with_ols": true,
       "ols_signal": "SUBE",
-      "ols_return_estimated": 0.020350073640082275
+      "ols_return_estimated": 0.020393539249225982
     },
     "performance": {
       "window_n": 90,
@@ -89,6 +89,12 @@
         "ret_estimado": 0.020106344167412124,
         "senal": "SUBE",
         "vc_estimado": 69.50316649036112
+      },
+      {
+        "fecha": "2026-08-05",
+        "ret_estimado": 0.020147999619735985,
+        "senal": "SUBE",
+        "vc_estimado": 70.90351626237937
       }
     ]
   },
@@ -106,39 +112,39 @@
   },
   "contributions": [
     {
-      "feature": "ret_EEM",
-      "label": "EEM",
-      "value": 0.0261194078536504,
-      "coefficient": 0.36349904027071145,
-      "contribution_pp": 0.9494379687241203
-    },
-    {
-      "feature": "ret_EPU",
-      "label": "EPU",
-      "value": 0.021709063694433,
-      "coefficient": 0.29806738996171533,
-      "contribution_pp": 0.6470763953912279
-    },
-    {
-      "feature": "ret_FCX",
-      "label": "FCX",
-      "value": 0.0575110574671799,
-      "coefficient": 0.06080992896483925,
-      "contribution_pp": 0.34972433192719976
+      "feature": "ret_USD_PEN",
+      "label": "USD/PEN",
+      "value": 0.0222564478370914,
+      "coefficient": 0.390773901366512,
+      "contribution_pp": 0.8697238951860473
     },
     {
       "feature": "ret_NEM",
       "label": "NEM",
-      "value": 0.0247457328550422,
+      "value": 0.0671236808888162,
       "coefficient": 0.10085016441770328,
-      "contribution_pp": 0.2495611227067568
+      "contribution_pp": 0.6769434253958562
     },
     {
-      "feature": "ret_USD_PEN",
-      "label": "USD/PEN",
-      "value": -0.0023536334215945,
-      "coefficient": 0.390773901366512,
-      "contribution_pp": -0.09197385145430954
+      "feature": "ret_EPU",
+      "label": "EPU",
+      "value": 0.0160488032896761,
+      "coefficient": 0.29806738996171533,
+      "contribution_pp": 0.4783624908562746
+    },
+    {
+      "feature": "ret_FCX",
+      "label": "FCX",
+      "value": 0.0310549218888338,
+      "coefficient": 0.06080992896483925,
+      "contribution_pp": 0.1888447594068615
+    },
+    {
+      "feature": "ret_EEM",
+      "label": "EEM",
+      "value": -0.0042424057469223,
+      "coefficient": 0.36349904027071145,
+      "contribution_pp": -0.1542110417445207
     },
     {
       "feature": "intercept",
@@ -148,27 +154,29 @@
       "contribution_pp": -0.02953887421315955
     },
     {
-      "feature": "ret_SPY",
-      "label": "SPY",
-      "value": 0.0180290027159586,
-      "coefficient": -0.013025577586781521,
-      "contribution_pp": -0.02348381736890135
-    },
-    {
       "feature": "ret_MCHI",
       "label": "MCHI",
-      "value": 0.0033989019950388,
+      "value": -0.0014263118352121,
       "coefficient": -0.046473572135245104,
-      "contribution_pp": -0.015795911704706414
+      "contribution_pp": 0.006628580596108336
+    },
+    {
+      "feature": "ret_SPY",
+      "label": "SPY",
+      "value": -0.0019966020100066,
+      "coefficient": -0.013025577586781521,
+      "contribution_pp": 0.00260068943912649
     }
   ],
   "quality": {
-    "status": "OK",
+    "status": "PROVISIONAL",
     "critical": [],
-    "warnings": [],
+    "warnings": [
+      "FX provisional: YAHOO PEN=X PROVISIONAL"
+    ],
     "training_n": 90,
     "latest_sbs_date": "2026-08-03",
-    "fx_source": "BCRP",
-    "fx_provisional": false
+    "fx_source": "YAHOO PEN=X PROVISIONAL",
+    "fx_provisional": true
   }
 }
