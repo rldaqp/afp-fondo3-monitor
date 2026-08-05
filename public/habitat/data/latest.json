@@ -1,7 +1,7 @@
 {
   "afp": "Hábitat",
   "fund": 3,
-  "generated_at_lima": "2026-08-05T14:57:48.308476-05:00",
+  "generated_at_lima": "2026-08-05T16:35:12.703347-05:00",
   "model": "OLS rolling 90",
   "window": 90,
   "threshold": 0.001,
@@ -10,10 +10,10 @@
   "training_n": 90,
   "latest_sbs_date": "2026-08-03",
   "latest_sbs_vc": 32.1022567,
-  "latest_market_date": "2026-08-04",
-  "latest_estimate_date": "2026-08-04",
-  "latest_estimated_vc": 32.66213660180969,
-  "latest_return_estimated": 0.017440515383134847,
+  "latest_market_date": "2026-08-05",
+  "latest_estimate_date": "2026-08-05",
+  "latest_estimated_vc": 32.91758289351435,
+  "latest_return_estimated": 0.007820869002504428,
   "signal": "SUBE",
   "estimate_type": "CIERRE DIARIO · OLS ROLLING 90 · MISMA METODOLOGÍA PROFUTURO",
   "coefficients": {
@@ -39,8 +39,8 @@
     "EEM",
     "USD_PEN"
   ],
-  "latest_fx_source": "BCRP",
-  "latest_fx_provisional": false,
+  "latest_fx_source": "YAHOO PEN=X PROVISIONAL",
+  "latest_fx_provisional": true,
   "sources": {
     "sbs": "SBS oficial · Hábitat Fondo 3",
     "market": "Yahoo Finance actualizado; respaldo guardado solo donde Yahoo no trae valor; BCRP exclusivo para USD/PEN hasta 2026-08-04",
