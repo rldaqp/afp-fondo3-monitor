@@ -1,6 +1,7 @@
 """Ejecuta Hábitat con fuentes oficiales y estimación explícita del hueco de julio.
 
-La presentación final separa estrictamente VC SBS real y VC estimado OLS.
+La presentación final separa VC SBS real, VC provisional de fechas pendientes y
+VC estimado OLS, manteniendo continuidad visual sin confundir las fuentes.
 """
 
 from __future__ import annotations
