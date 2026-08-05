@@ -1,5 +1,5 @@
 {
-  "generated_at_lima": "2026-08-05T02:30:23.085395-05:00",
+  "generated_at_lima": "2026-08-05T05:21:06.704236-05:00",
   "model": "OLS rolling 90",
   "window": 90,
   "threshold": 0.001,
@@ -15,13 +15,13 @@
   "signal": "SUBE",
   "estimate_type": "CIERRE DIARIO · MODELO OLS · PARIDAD NOTEBOOK",
   "coefficients": {
-    "intercept": -0.0003137346379848674,
-    "ret_SPY": -0.008622996168068662,
-    "ret_NEM": 0.10130149279618517,
-    "ret_FCX": 0.0616758515667824,
-    "ret_EPU": 0.2987307995537891,
-    "ret_MCHI": -0.048012386865398514,
-    "ret_EEM": 0.36112284787503485,
+    "intercept": -0.00031373463798486717,
+    "ret_SPY": -0.008622996168068546,
+    "ret_NEM": 0.10130149279618522,
+    "ret_FCX": 0.06167585156678223,
+    "ret_EPU": 0.298730799553789,
+    "ret_MCHI": -0.04801238686539847,
+    "ret_EEM": 0.361122847875035,
     "ret_USD_PEN": 0.39403808862357836
   },
   "parity_rule": "BCRP exclusivo para histórico/entrenamiento; en predicción pendiente se usa BCRP si existe; si BCRP está rezagado se usa Yahoo PEN=X provisional; 0 % solo si ambas fuentes faltan; VC encadenado",
