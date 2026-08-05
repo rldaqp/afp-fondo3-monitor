@@ -8,6 +8,7 @@ on:
     paths:
       - ".github/workflows/update-habitat-monitor.yml"
       - "scripts/run_habitat_exact_pipeline.py"
+      - "scripts/habitat_complete_official_calendar.py"
       - "scripts/build_habitat_exact_parity.py"
       - "scripts/build_habitat_profuturo_parity.py"
       - "scripts/enrich_habitat_daily_sbs.py"
@@ -63,6 +64,7 @@ jobs:
       - name: Validar histórico oficial, OLS y visor
         run: |
           python scripts/validate_habitat_official.py
+          PYTHONPATH=scripts python -c "from habitat_complete_official_calendar import validate_official_estimate_calendar; validate_official_estimate_calendar()"
 
       - name: Guardar resultados de Hábitat
         run: |
