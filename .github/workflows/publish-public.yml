@@ -1,11 +1,6 @@
 name: Publicar visor existente
 
 on:
-  push:
-    branches:
-      - migracion-github-actions
-    paths:
-      - "public/**"
   workflow_dispatch:
 
 permissions:
@@ -14,7 +9,7 @@ permissions:
   id-token: write
 
 concurrency:
-  group: fondo3-monitor
+  group: fondo3-monitor-publicacion-manual
   cancel-in-progress: false
 
 jobs:
@@ -27,6 +22,8 @@ jobs:
     steps:
       - name: Descargar repositorio
         uses: actions/checkout@v4
+        with:
+          ref: migracion-github-actions
 
       - name: Validar visor existente
         run: |
