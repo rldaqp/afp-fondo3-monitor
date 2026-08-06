@@ -90,8 +90,21 @@ def main() -> None:
     if count != 1:
         raise RuntimeError("No se encontró una única función renderVC de Hábitat.")
 
+    raw_live = (
+        "https://raw.githubusercontent.com/rldaqp/afp-fondo3-monitor/"
+        "migracion-github-actions/public/habitat/data/live_market.json"
+    )
+    updated = updated.replace(
+        "fetch('data/live_market.json?ts='+Date.now()",
+        f"fetch('{raw_live}?ts='+Date.now()",
+    )
+    updated = updated.replace(
+        "fetch('data/live_market.json'",
+        f"fetch('{raw_live}'",
+    )
+
     HTML_PATH.write_text(updated, encoding="utf-8")
-    print("Hábitat: dos líneas, VC SBS oficial y VC estimado OLS.")
+    print("Hábitat: VC SBS, OLS y mercado intradía directo desde la rama.")
 
 
 if __name__ == "__main__":
