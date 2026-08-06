@@ -2,12 +2,6 @@ name: Publicar visor móvil Fondo 3
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - migracion-github-actions
-    paths:
-      - "public/**"
-      - ".github/workflows/deploy-pages-ui.yml"
 
 permissions:
   contents: read
@@ -16,7 +10,7 @@ permissions:
 
 concurrency:
   group: pages-ui-fondo3
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   deploy:
@@ -27,6 +21,8 @@ jobs:
     steps:
       - name: Descargar repositorio
         uses: actions/checkout@v4
+        with:
+          ref: migracion-github-actions
 
       - name: Preparar visor estable de un solo origen
         run: |
@@ -36,6 +32,8 @@ jobs:
           test -s public/data/signals.json
           test -s public/data/operation_series.json
           test -s public/data/live_market.json
+          test -s public/habitat/index.html
+          test -s public/habitat/data/live_market.json
           python - <<'PY'
           from pathlib import Path
           p = Path('public/index.html')
