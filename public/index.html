@@ -148,6 +148,8 @@ Promise.all([fetch('data/latest.json?ts='+Date.now(),{cache:'no-store'}).then(r=
   function clock(iso,tz){try{return new Intl.DateTimeFormat('es-PE',{timeZone:tz,hour:'2-digit',minute:'2-digit',hour12:false}).format(new Date(iso))}catch(e){return'—'}}
 
 
+  function renderAudit(){if(!latestData)return;const el=$('audit');if(!el)return;const olsStamp=latestData.generated_at_lima?clock(latestData.generated_at_lima,'America/Lima')+' Lima':'--';const liveStamp=liveData&&liveData.generated_at_lima?clock(liveData.generated_at_lima,'America/Lima')+' Lima':'no disponible';const age=liveData&&liveData.generated_at_lima?(Date.now()-new Date(liveData.generated_at_lima).getTime())/60000:null;const freshness=Number.isFinite(age)?(age<=15?'vigente':'desactualizado '+Math.round(age)+' min'):'sin edad';const src=latestData.sources||{};el.innerHTML=`OLS diario: ${olsStamp}<br>Snapshot intrad&iacute;a: ${liveStamp} &middot; ${(liveData&&liveData.mode)||'sin dato'} &middot; ${freshness}<br>&Uacute;ltimo mercado completo: ${fmt(latestData.latest_market_date)}<br>Fuentes: ${src.market||'--'} &middot; ${src.sbs||'--'}<br>El OLS diario se recalibra con las ultimas 90 observaciones completas; el snapshot intrad&iacute;a se refresca aparte.`}
+
   function liveSnapshotActive(){
     if(!liveData||!liveData.market_open||!String(liveData.mode||'').startsWith('INTRADÍA')||!Number.isFinite(Number(liveData.vc_estimated)))return false;
     const generated=new Date(liveData.generated_at_lima);
@@ -295,7 +297,7 @@ Promise.all([fetch('data/latest.json?ts='+Date.now(),{cache:'no-store'}).then(r=
     let g=interval.slice();if(liveUsed)g=[...g,b];Plotly.react('opChart',[{x:g.map(x=>x.fecha),y:g.map(x=>Number(x.vc)),mode:'lines+markers',name:'VC'},{x:g.map(x=>x.fecha),y:g.map(x=>units*Number(x.vc)-capital),mode:'lines+markers',name:'Ganancia',yaxis:'y2'}],{title:'Valor cuota y ganancia/pérdida',paper_bgcolor:'#0f1b2d',plot_bgcolor:'#0f1b2d',font:{color:'#fff',size:11},margin:{l:48,r:48,t:55,b:45},yaxis2:{overlaying:'y',side:'right'},legend:{orientation:'h'}},{responsive:true})
   }
 
-  function loadLive(){return fetch('https://raw.githubusercontent.com/rldaqp/afp-fondo3-monitor/migracion-github-actions/public/data/live_market.json?ts='+Date.now(),{cache:'no-store'}).then(r=>r.json()).then(x=>{liveData=x;renderMarket();return x}).catch(()=>null)}
+  function loadLive(){return fetch('https://raw.githubusercontent.com/rldaqp/afp-fondo3-monitor/migracion-github-actions/public/data/live_market.json?ts='+Date.now(),{cache:'no-store'}).then(r=>r.json()).then(x=>{liveData=x;renderMarket();renderAudit();return x}).catch(()=>null)}
   Promise.all([
     fetch('data/signals.json?ts='+Date.now(),{cache:'no-store'}).then(r=>r.json()),
     fetch('data/series.json?ts='+Date.now(),{cache:'no-store'}).then(r=>r.json()),
@@ -304,7 +306,7 @@ Promise.all([fetch('data/latest.json?ts='+Date.now(),{cache:'no-store'}).then(r=
     fetch('data/model_insights.json?ts='+Date.now(),{cache:'no-store'}).then(r=>r.json()),
     loadLive()
   ]).then(([sig,ser,op,latest,insights])=>{
-    richSignals=sig.sort((a,b)=>a.fecha.localeCompare(b.fecha));allSeries=ser.sort((a,b)=>a.fecha.localeCompare(b.fecha));operationSeries=op.sort((a,b)=>a.fecha.localeCompare(b.fecha));latestData=latest;modelInsights=insights;
+    richSignals=sig.sort((a,b)=>a.fecha.localeCompare(b.fecha));allSeries=ser.sort((a,b)=>a.fecha.localeCompare(b.fecha));operationSeries=op.sort((a,b)=>a.fecha.localeCompare(b.fecha));latestData=latest;modelInsights=insights;renderAudit();
     renderVC();renderSignals();renderTop();renderMarket();renderInsights();
     document.querySelectorAll('.vc-controls button').forEach(b=>b.onclick=()=>{vcDays=b.dataset.days==='all'?'all':Number(b.dataset.days);renderVC()});
     document.querySelectorAll('.ret-controls button').forEach(b=>b.onclick=()=>{retDays=b.dataset.days==='all'?'all':Number(b.dataset.days);renderSignals()});
