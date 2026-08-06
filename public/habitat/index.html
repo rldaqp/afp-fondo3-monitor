@@ -121,13 +121,13 @@ h1{font-size:1.45rem;margin:5px 0}.sub,.note{color:var(--muted);font-size:.82rem
 </style>
 
 <div class="cloud-box" id="tradeCloudBox">
-  <div class="cloud-title">Respaldo y sincronización en Google Drive</div>
+  <div class="cloud-title">Respaldo y sincronización en Google Drive · Hábitat</div>
   <div class="cloud-grid">
     <input id="tradeCloudUrl" type="url" inputmode="url" placeholder="URL de Apps Script que termina en /exec">
     <input id="tradeCloudKey" type="password" autocomplete="off" placeholder="Clave de la pestaña Config">
     <button id="tradeCloudConnect" type="button">Conectar Drive</button>
   </div>
-  <div id="tradeCloudStatus" class="cloud-status">Aún trabaja en modo local. Cuando conectes Drive, la operación guardada en este celular se migrará automáticamente.</div>
+  <div id="tradeCloudStatus" class="cloud-status">Las operaciones de Hábitat se guardan únicamente en la hoja Hábitat.</div>
 </div>
 
   <div class="trade-wrap">
@@ -576,7 +576,7 @@ Promise.all([fetch('data/latest.json?ts='+Date.now(),{cache:'no-store'}).then(r=
 
   async function syncNow(initial=false){
     const c=cfg();if(!c.url||!c.key||syncing)return;
-    syncing=true;setStatus('Sincronizando con Drive…','cloud-warn');
+    syncing=true;setStatus('Sincronizando Hábitat con Drive…','cloud-warn');
     try{
       // TRADE_CLOUD_FUND_ROUTING_V2
       const probe=await jsonp('ping');
@@ -585,17 +585,17 @@ Promise.all([fetch('data/latest.json?ts='+Date.now(),{cache:'no-store'}).then(r=
       }
       const current=rows(),old=snapshot();
       if(old===null){
-        for(const r of current){await jsonp('upsert',{payload:JSON.stringify(r)})}
+        for(const r of current){await jsonp('upsert',{payload:JSON.stringify({...r,fund:FUND})})}
       }else{
         const cm=mapById(current),sm=mapById(old);
-        for(const [id,r] of cm){const prev=sm.get(id);if(!prev||stable(prev)!==stable(r))await jsonp('upsert',{payload:JSON.stringify(r)})}
+        for(const [id,r] of cm){const prev=sm.get(id);if(!prev||stable(prev)!==stable(r))await jsonp('upsert',{payload:JSON.stringify({...r,fund:FUND})})}
         for(const id of sm.keys()){if(!cm.has(id))await jsonp('delete',{id})}
       }
       const out=await jsonp('list');
       const remote=Array.isArray(out.rows)?out.rows:[];
       localStorage.setItem(TRADE_KEY,JSON.stringify(remote));
       localStorage.setItem(SNAP_KEY,JSON.stringify(remote));
-      setStatus(`Drive ${DRIVE_SHEET} conectado · ${remote.length} ${remote.length===1?'operación':'operaciones'} sincronizadas.`,'cloud-ok');
+      setStatus(`Drive Hábitat conectado · ${remote.length} ${remote.length===1?'operación':'operaciones'} sincronizadas.`,'cloud-ok');
       window.dispatchEvent(new Event('fondo3-cloud-synced'));
       if(!initial)setTimeout(()=>location.reload(),180);
     }catch(e){setStatus('Drive no sincronizó: '+e.message,'cloud-bad')}
@@ -607,14 +607,14 @@ Promise.all([fetch('data/latest.json?ts='+Date.now(),{cache:'no-store'}).then(r=
     if(!/^https:\/\/script\.google\.com\/macros\/s\/.+\/exec(?:\?.*)?$/.test(url)){setStatus('La URL /exec de Apps Script no es válida.','cloud-bad');return}
     if(key.length<12){setStatus('La clave de sincronización no es válida.','cloud-bad');return}
     localStorage.setItem(URL_KEY,url);localStorage.setItem(SECRET_KEY,key);
-    try{await jsonp('ping');await syncNow(true)}catch(e){setStatus('No se pudo conectar: '+e.message,'cloud-bad')}
+    try{await syncNow(true)}catch(e){setStatus('No se pudo conectar: '+e.message,'cloud-bad')}
   }
 
   function boot(){
     if(!localStorage.getItem(URL_KEY))localStorage.setItem(URL_KEY,DEFAULT_URL);
     const c=cfg();if($('tradeCloudUrl'))$('tradeCloudUrl').value=c.url;if($('tradeCloudKey'))$('tradeCloudKey').value=c.key;
     if($('tradeCloudConnect'))$('tradeCloudConnect').onclick=connect;
-    if(c.url&&c.key){setStatus('Drive configurado. Verificando sincronización…','cloud-warn');setTimeout(()=>syncNow(true),900)}
+    if(c.url&&c.key){setStatus('Drive Hábitat configurado. Verificando…','cloud-warn');setTimeout(()=>syncNow(true),900)}
     document.addEventListener('click',ev=>{if(ev.target.closest('#tradeHistoryPanel button')&&!ev.target.closest('#tradeCloudConnect'))setTimeout(()=>syncNow(true),350)},true);
     timer=setInterval(()=>syncNow(true),30000);
   }
