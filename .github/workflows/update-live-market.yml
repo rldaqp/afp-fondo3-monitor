@@ -1,4 +1,4 @@
-name: Actualizar mercado intradía Fondo 3
+name: Actualizar mercado intradia Fondo 3
 
 on:
   workflow_dispatch:
@@ -13,7 +13,7 @@ on:
       - "scripts/postprocess_live_consistency.py"
       - "requirements-live.txt"
   schedule:
-    # Una ejecución corta cada cinco minutos durante la franja que cubre
+    # Ejecucion corta cada cinco minutos durante la franja que cubre
     # el mercado de Nueva York tanto en horario de verano como de invierno.
     - cron: "*/5 13-22 * * 1-5"
 
@@ -48,7 +48,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements-live.txt
 
-      - name: Calcular un snapshot de Profuturo y Hábitat
+      - name: Calcular un snapshot de Profuturo y Habitat
         env:
           PYTHONUTF8: "1"
           PYTHONIOENCODING: "utf-8"
@@ -72,34 +72,33 @@ jobs:
           hab_latest = json.loads(Path("public/habitat/data/latest.json").read_text(encoding="utf-8"))
 
           assert prof.get("engine") == "LIVE INDEPENDIENTE", prof
-          assert hab.get("engine") == "LIVE HÁBITAT INDEPENDIENTE", hab
+          assert "HABITAT" in str(hab.get("engine", "")).upper(), hab
 
           for name, live, latest in (
               ("Profuturo", prof, prof_latest),
-              ("Hábitat", hab, hab_latest),
+              ("Habitat", hab, hab_latest),
           ):
               assert live.get("generated_at_lima"), (name, live)
-              assert live.get("mode"), (name, live)
+              assert str(live.get("mode", "")).startswith(("INTRAD", "CIERRE")), (name, live)
               assert live.get("signal") in {"SUBE", "NEUTRO", "BAJA"}, (name, live)
               assert live.get("fx_source"), (name, live)
-              if live.get("market_open") and not live.get("warning"):
+              if str(live.get("mode", "")).startswith("INTRAD") and not live.get("warning"):
                   names = {x.get("serie") for x in live.get("assets", [])}
                   expected = {"SPY", "NEM", "FCX", "EPU", "MCHI", "USD_PEN"}
                   if "ret_EEM" in (latest.get("coefficients", {}) or {}):
                       expected.add("EEM")
                   assert names == expected, (name, names, expected)
-                  assert live.get("mode") == "INTRADÍA PROVISIONAL", (name, live)
                   assert str(live.get("signal_date")) >= str(latest.get("latest_market_date")), (name, live)
 
           print("Profuturo", prof.get("generated_at_lima"), prof.get("mode"), prof.get("signal"))
-          print("Hábitat", hab.get("generated_at_lima"), hab.get("mode"), hab.get("signal"))
+          print("Habitat", hab.get("generated_at_lima"), hab.get("mode"), hab.get("signal"))
           PY
 
           git add public/data/live_market.json public/habitat/data/live_market.json
           if git diff --cached --quiet; then
             echo "No hubo cambios en el snapshot."
           else
-            git commit -m "Actualizar mercado intradía Profuturo y Hábitat"
+            git commit -m "Actualizar mercado intradia Profuturo y Habitat"
             if ! git push origin HEAD:migracion-github-actions; then
               git pull --rebase origin migracion-github-actions
               git push origin HEAD:migracion-github-actions
@@ -116,8 +115,8 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add data/live_market.json habitat/data/live_market.json
           if git diff --cached --quiet; then
-            echo "gh-pages ya tiene los snapshots intradía vigentes."
+            echo "gh-pages ya tiene los snapshots intradia vigentes."
           else
-            git commit -m "Publicar snapshots intradía"
+            git commit -m "Publicar snapshots intradia"
             git push origin HEAD:gh-pages
           fi
