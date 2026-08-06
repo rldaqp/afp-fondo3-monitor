@@ -167,18 +167,15 @@ Promise.all([fetch('data/latest.json?ts='+Date.now(),{cache:'no-store'}).then(r=
   function clock(iso,tz){try{return new Intl.DateTimeFormat('es-PE',{timeZone:tz,hour:'2-digit',minute:'2-digit',hour12:false}).format(new Date(iso))}catch(e){return'—'}}
 
 
-  function renderAudit(){if(!latestData)return;const el=$('audit');if(!el)return;const olsStamp=latestData.generated_at_lima?clock(latestData.generated_at_lima,'America/Lima')+' Lima':'--';const liveStamp=liveData&&liveData.generated_at_lima?clock(liveData.generated_at_lima,'America/Lima')+' Lima':'no disponible';const age=liveData&&liveData.generated_at_lima?(Date.now()-new Date(liveData.generated_at_lima).getTime())/60000:null;const freshness=Number.isFinite(age)?(age<=15?'vigente':'desactualizado '+Math.round(age)+' min'):'sin edad';const src=latestData.sources||{};el.innerHTML=`OLS diario: ${olsStamp}<br>Snapshot intrad&iacute;a: ${liveStamp} &middot; ${(liveData&&liveData.mode)||'sin dato'} &middot; ${freshness}<br>&Uacute;ltimo mercado completo: ${fmt(latestData.latest_market_date)}<br>Fuentes: ${src.market||'--'} &middot; ${src.sbs||'--'}<br>El OLS diario se recalibra con las ultimas 90 observaciones completas; el snapshot intrad&iacute;a se refresca aparte.`}
+  function renderAudit(){if(!latestData)return;const el=$('audit');if(!el)return;const olsStamp=latestData.generated_at_lima?clock(latestData.generated_at_lima,'America/Lima')+' Lima':'--';const liveStamp=liveData&&liveData.generated_at_lima?clock(liveData.generated_at_lima,'America/Lima')+' Lima':'no disponible';const age=liveData&&liveData.generated_at_lima?(Date.now()-new Date(liveData.generated_at_lima).getTime())/60000:null;const freshness=Number.isFinite(age)?(age<=15?'vigente':'ultimo corte de hoy · hace '+Math.round(age)+' min'):'sin edad';const src=latestData.sources||{};el.innerHTML=`OLS diario: ${olsStamp}<br>Snapshot intrad&iacute;a: ${liveStamp} &middot; ${(liveData&&liveData.mode)||'sin dato'} &middot; ${freshness}<br>&Uacute;ltimo mercado completo: ${fmt(latestData.latest_market_date)}<br>Fuentes: ${src.market||'--'} &middot; ${src.sbs||'--'}<br>El OLS diario se recalibra con las ultimas 90 observaciones completas; el snapshot intrad&iacute;a se refresca aparte.`}
 
   function liveSnapshotActive(){
-    if(!liveData||!liveData.market_open||!String(liveData.mode||'').startsWith('INTRADÍA')||!Number.isFinite(Number(liveData.vc_estimated)))return false;
-    const generated=new Date(liveData.generated_at_lima);
-    const ageMinutes=(Date.now()-generated.getTime())/60000;
-    if(!Number.isFinite(ageMinutes)||ageMinutes < -2||ageMinutes > 15)return false;
+    if(!liveData||!String(liveData.mode||'').startsWith('INTRADÍA')||!Number.isFinite(Number(liveData.vc_estimated)))return false;
+    const d=String(liveData.signal_date||'').slice(0,10);
     try{
-      const parts=Object.fromEntries(new Intl.DateTimeFormat('en-US',{timeZone:'America/New_York',weekday:'short',hour:'2-digit',minute:'2-digit',hour12:false}).formatToParts(new Date()).filter(x=>x.type!=='literal').map(x=>[x.type,x.value]));
-      const minute=Number(parts.hour)*60+Number(parts.minute);
-      return !['Sat','Sun'].includes(parts.weekday)&&minute>=570&&minute<970;
-    }catch(e){return false}
+      const parts=Object.fromEntries(new Intl.DateTimeFormat('en-US',{timeZone:'America/Lima',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date()).filter(x=>x.type!=='literal').map(x=>[x.type,x.value]));
+      return d===`${parts.year}-${parts.month}-${parts.day}`;
+    }catch(e){return d===new Date().toISOString().slice(0,10)}
   }
 
   function renderVC(){
