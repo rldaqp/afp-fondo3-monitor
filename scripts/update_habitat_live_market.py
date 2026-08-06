@@ -85,6 +85,7 @@ def main() -> None:
             "fx_source": market.get("fx_source", "SIN DATO"),
             "fx_provisional": bool(market.get("fx_provisional", True)),
             "fx_rule": market.get("fx_rule", ""),
+            "checked_at_lima": market.get("checked_at_lima"),
             "note": (
                 "Snapshot intradia calculado con los coeficientes propios de Habitat "
                 "y los mismos retornos de mercado del motor en vivo."
