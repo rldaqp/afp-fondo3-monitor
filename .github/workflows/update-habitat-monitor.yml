@@ -14,6 +14,7 @@ on:
       - "scripts/enrich_habitat_daily_sbs.py"
       - "scripts/postprocess_habitat_chart_clarity.py"
       - "scripts/postprocess_habitat_sbs_indicators.py"
+      - "scripts/postprocess_trade_cloud_fund_routing.py"
       - "scripts/validate_habitat_official.py"
       - "scripts/finalize_notebook_parity_v4.py"
       - "scripts/finalize_notebook_parity_v5.py"
@@ -42,6 +43,9 @@ jobs:
     steps:
       - name: Descargar repositorio
         uses: actions/checkout@v4
+        with:
+          ref: migracion-github-actions
+          fetch-depth: 0
 
       - name: Configurar Python
         uses: actions/setup-python@v5
@@ -61,10 +65,18 @@ jobs:
         run: |
           python scripts/run_habitat_exact_pipeline.py
 
-      - name: Validar histórico oficial, OLS y visor
+      - name: Validar histórico oficial, OLS, visor y Drive
         run: |
           python scripts/validate_habitat_official.py
           PYTHONPATH=scripts python -c "from habitat_complete_official_calendar import validate_official_estimate_calendar; validate_official_estimate_calendar()"
+          grep -q "HABITAT_CHART_RESTORE_GAP_DATES_V3" public/habitat/index.html
+          grep -q "const FUND='HABITAT';" public/habitat/index.html
+          grep -q "const DRIVE_SHEET='Habitat';" public/habitat/index.html
+          grep -q "const KEY='habitat_fondo3_trade_history_v2';" public/habitat/index.html
+          grep -q "const TRADE_KEY='habitat_fondo3_trade_history_v2';" public/habitat/index.html
+          grep -q "const SNAP_KEY='habitat_fondo3_drive_sync_snapshot_v2';" public/habitat/index.html
+          grep -q "u.searchParams.set('fund',FUND);" public/habitat/index.html
+          grep -q "TRADE_CLOUD_FUND_ROUTING_V2" public/habitat/index.html
 
       - name: Guardar resultados de Hábitat
         run: |
@@ -78,6 +90,11 @@ jobs:
             git pull --rebase origin migracion-github-actions
             git push origin HEAD:migracion-github-actions
           fi
+
+      - name: Actualizar rama antes de publicar
+        run: |
+          git fetch origin migracion-github-actions
+          git reset --hard origin/migracion-github-actions
 
       - name: Configurar GitHub Pages
         uses: actions/configure-pages@v5
