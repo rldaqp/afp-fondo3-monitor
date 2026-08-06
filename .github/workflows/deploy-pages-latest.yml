@@ -2,12 +2,6 @@ name: Publicar estado más reciente en GitHub Pages
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - migracion-github-actions
-    paths:
-      - "public/**"
-      - ".github/workflows/deploy-pages-latest.yml"
 
 permissions:
   contents: read
@@ -15,8 +9,8 @@ permissions:
   id-token: write
 
 concurrency:
-  group: pages-latest-state
-  cancel-in-progress: true
+  group: pages-latest-state-manual
+  cancel-in-progress: false
 
 jobs:
   deploy:
@@ -26,9 +20,6 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
 
     steps:
-      - name: Esperar otros procesos de actualización
-        run: sleep 45
-
       - name: Descargar la rama más reciente
         uses: actions/checkout@v4
         with:
