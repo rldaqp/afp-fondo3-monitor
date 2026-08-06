@@ -170,7 +170,7 @@ Promise.all([fetch('data/latest.json?ts='+Date.now(),{cache:'no-store'}).then(r=
   function renderAudit(){if(!latestData)return;const el=$('audit');if(!el)return;const olsStamp=latestData.generated_at_lima?clock(latestData.generated_at_lima,'America/Lima')+' Lima':'--';const liveStamp=liveData&&liveData.generated_at_lima?clock(liveData.generated_at_lima,'America/Lima')+' Lima':'no disponible';const age=liveData&&liveData.generated_at_lima?(Date.now()-new Date(liveData.generated_at_lima).getTime())/60000:null;const freshness=Number.isFinite(age)?(age<=15?'vigente':'ultimo corte de hoy · hace '+Math.round(age)+' min'):'sin edad';const src=latestData.sources||{};el.innerHTML=`OLS diario: ${olsStamp}<br>Snapshot intrad&iacute;a: ${liveStamp} &middot; ${(liveData&&liveData.mode)||'sin dato'} &middot; ${freshness}<br>&Uacute;ltimo mercado completo: ${fmt(latestData.latest_market_date)}<br>Fuentes: ${src.market||'--'} &middot; ${src.sbs||'--'}<br>El OLS diario se recalibra con las ultimas 90 observaciones completas; el snapshot intrad&iacute;a se refresca aparte.`}
 
   function liveSnapshotActive(){
-    if(!liveData||!String(liveData.mode||'').startsWith('INTRADÍA')||!Number.isFinite(Number(liveData.vc_estimated)))return false;
+    if(!liveData||!String(liveData.mode||'').startsWith('INTRAD')||!Number.isFinite(Number(liveData.vc_estimated)))return false;
     const d=String(liveData.signal_date||'').slice(0,10);
     try{
       const parts=Object.fromEntries(new Intl.DateTimeFormat('en-US',{timeZone:'America/Lima',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date()).filter(x=>x.type!=='literal').map(x=>[x.type,x.value]));
@@ -353,7 +353,8 @@ Promise.all([fetch('data/latest.json?ts='+Date.now(),{cache:'no-store'}).then(r=
     let g=interval.slice();if(liveUsed)g=[...g,b];Plotly.react('opChart',[{x:g.map(x=>x.fecha),y:g.map(x=>Number(x.vc)),mode:'lines+markers',name:'VC'},{x:g.map(x=>x.fecha),y:g.map(x=>units*Number(x.vc)-capital),mode:'lines+markers',name:'Ganancia',yaxis:'y2'}],{title:'Valor cuota y ganancia/pérdida',paper_bgcolor:'#0f1b2d',plot_bgcolor:'#0f1b2d',font:{color:'#fff',size:11},margin:{l:48,r:48,t:55,b:45},yaxis2:{overlaying:'y',side:'right'},legend:{orientation:'h'}},{responsive:true})
   }
 
-  function loadLive(){return fetch('https://raw.githubusercontent.com/rldaqp/afp-fondo3-monitor/migracion-github-actions/public/habitat/data/live_market.json?ts='+Date.now(),{cache:'no-store'}).then(r=>r.json()).then(x=>{liveData=x;renderMarket();renderAudit();return x}).catch(()=>null)}
+  function fetchLiveJson(primary,fallback){return fetch(primary,{cache:'no-store'}).catch(()=>fetch(fallback,{cache:'no-store'})).then(r=>r.json())}
+  function loadLive(){const ts=Date.now();return fetchLiveJson('https://raw.githubusercontent.com/rldaqp/afp-fondo3-monitor/migracion-github-actions/public/habitat/data/live_market.json?ts='+ts,'data/live_market.json?ts='+ts).then(x=>{liveData=x;renderMarket();renderAudit();return x}).catch(()=>null)}
   Promise.all([
     fetch('data/signals.json?ts='+Date.now(),{cache:'no-store'}).then(r=>r.json()),
     fetch('data/series.json?ts='+Date.now(),{cache:'no-store'}).then(r=>r.json()),
@@ -523,7 +524,7 @@ Promise.all([fetch('data/latest.json?ts='+Date.now(),{cache:'no-store'}).then(r=
       const [s,t,l]=await Promise.all([
         fetch('data/signals.json?ts='+Date.now(),{cache:'no-store'}).then(r=>r.json()),
         fetch('data/series.json?ts='+Date.now(),{cache:'no-store'}).then(r=>r.json()),
-        fetch('https://raw.githubusercontent.com/rldaqp/afp-fondo3-monitor/migracion-github-actions/public/habitat/data/live_market.json?ts='+Date.now(),{cache:'no-store'}).then(r=>r.json()).catch(()=>null)
+        fetchLiveJson('https://raw.githubusercontent.com/rldaqp/afp-fondo3-monitor/migracion-github-actions/public/habitat/data/live_market.json?ts='+Date.now(),'data/live_market.json?ts='+Date.now()).catch(()=>null)
       ]);
       signals=(s||[]).sort((a,b)=>a.fecha.localeCompare(b.fecha));timeline=(t||[]).sort((a,b)=>a.fecha.localeCompare(b.fecha));live=l;
       $('tradeSaveBtn').onclick=saveCurrent;render();
