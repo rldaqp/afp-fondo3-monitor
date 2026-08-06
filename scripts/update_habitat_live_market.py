@@ -56,9 +56,16 @@ def main() -> None:
     latest = json.loads(HABITAT_LATEST.read_text(encoding="utf-8"))
     assets = copy.deepcopy(market.get("assets", []))
     is_open = bool(market.get("market_open"))
-    is_intraday = str(market.get("mode", "")).startswith("INTRAD")
+    mode = str(market.get("mode", ""))
+    is_intraday = mode.startswith("INTRAD")
+    is_market_snapshot = mode.startswith(("INTRAD", "CIERRE"))
+    market_signal_date = str(market.get("signal_date") or "")
+    latest_estimate_date = str(latest.get("latest_estimate_date") or "")
+    needs_new_projection = bool(market_signal_date) and (
+        not latest_estimate_date or market_signal_date > latest_estimate_date
+    )
 
-    if is_intraday and not market.get("warning"):
+    if is_market_snapshot and needs_new_projection and not market.get("warning"):
         coefficients = latest.get("coefficients", {}) or {}
         estimated_return = finite_number(coefficients.get("intercept"))
         for key, value in factor_returns(assets).items():
@@ -73,13 +80,13 @@ def main() -> None:
             or datetime.now(LIMA).isoformat(),
             "mode": market.get("mode") or "INTRADIA PROVISIONAL",
             "market_open": is_open,
-            "signal_date": market.get("signal_date"),
+            "signal_date": market_signal_date,
             "vc_base": base_vc,
             "vc_estimated": base_vc * (1.0 + estimated_return),
             "return_estimated": estimated_return,
             "signal": classify(estimated_return),
             "assets": assets,
-            "action": "ESPERAR" if is_open else "ULTIMO_CORTE",
+            "action": "ESPERAR" if is_open else ("ULTIMO_CORTE" if is_intraday else "CIERRE"),
             "engine": "LIVE HABITAT INDEPENDIENTE",
             "fx_fresh": market.get("fx_fresh"),
             "fx_source": market.get("fx_source", "SIN DATO"),
@@ -87,7 +94,7 @@ def main() -> None:
             "fx_rule": market.get("fx_rule", ""),
             "checked_at_lima": market.get("checked_at_lima"),
             "note": (
-                "Snapshot intradia calculado con los coeficientes propios de Habitat "
+                "Snapshot calculado con los coeficientes propios de Habitat "
                 "y los mismos retornos de mercado del motor en vivo."
             ),
         }

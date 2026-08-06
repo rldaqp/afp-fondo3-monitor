@@ -90,6 +90,13 @@ jobs:
                   assert names == expected, (name, names, expected)
                   assert str(live.get("signal_date")) >= str(latest.get("latest_market_date")), (name, live)
 
+          if (
+              str(prof.get("mode", "")).startswith(("INTRAD", "CIERRE"))
+              and not prof.get("warning")
+              and str(prof.get("signal_date", "")) > str(hab_latest.get("latest_estimate_date", ""))
+          ):
+              assert hab.get("signal_date") == prof.get("signal_date"), (prof, hab, hab_latest)
+
           print("Profuturo", prof.get("generated_at_lima"), prof.get("mode"), prof.get("signal"))
           print("Habitat", hab.get("generated_at_lima"), hab.get("mode"), hab.get("signal"))
           PY

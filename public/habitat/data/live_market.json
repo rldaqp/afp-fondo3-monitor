@@ -1,12 +1,12 @@
 {
-  "generated_at_lima": "2026-08-06T18:18:40.101641-05:00",
+  "generated_at_lima": "2026-08-06T18:18:39.780946-05:00",
   "mode": "CIERRE DIARIO",
   "market_open": false,
-  "signal_date": "2026-08-05",
-  "vc_base": 32.1022567,
-  "vc_estimated": 32.92071212255882,
-  "return_estimated": 0.007916675014297804,
-  "signal": "SUBE",
+  "signal_date": "2026-08-06",
+  "vc_base": 32.92071212255882,
+  "vc_estimated": 32.78719205284102,
+  "return_estimated": -0.004055807457041695,
+  "signal": "BAJA",
   "assets": [
     {
       "serie": "SPY",
@@ -88,9 +88,10 @@
   ],
   "action": "CIERRE",
   "engine": "LIVE HABITAT INDEPENDIENTE",
-  "warning": null,
+  "fx_fresh": null,
   "fx_source": "YAHOO PEN=X PROVISIONAL",
   "fx_provisional": true,
   "fx_rule": "Histórico/entrenamiento: BCRP. Predicción: BCRP si existe; si está rezagado, Yahoo PEN=X provisional; 0 % solo si ambas fuentes faltan.",
-  "note": "Cierre diario de Habitat con actualizacion del motor de mercado."
+  "checked_at_lima": null,
+  "note": "Snapshot calculado con los coeficientes propios de Habitat y los mismos retornos de mercado del motor en vivo."
 }
