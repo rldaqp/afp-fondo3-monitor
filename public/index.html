@@ -149,17 +149,21 @@ Promise.all([fetch('data/latest.json?ts='+Date.now(),{cache:'no-store'}).then(r=
 
 
   function liveSnapshotActive(){
-    if(!liveData||!String(liveData.mode||'').startsWith('INTRAD')||!Number.isFinite(Number(liveData.vc_estimated)))return false;
+    if(!liveData||!Number.isFinite(Number(liveData.vc_estimated)))return false;
+    const mode=String(liveData.mode||'');
+    if(!mode.startsWith('INTRAD')&&!mode.startsWith('CIERRE'))return false;
     const d=String(liveData.signal_date||'').slice(0,10);
+    if(mode.startsWith('CIERRE')){const latest=String((latestData&&latestData.latest_estimate_date)||'').slice(0,10);return !latest||d>=latest}
     try{
       const parts=Object.fromEntries(new Intl.DateTimeFormat('en-US',{timeZone:'America/Lima',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date()).filter(x=>x.type!=='literal').map(x=>[x.type,x.value]));
       return d===`${parts.year}-${parts.month}-${parts.day}`;
     }catch(e){return d===new Date().toISOString().slice(0,10)}
   }
+  function liveSnapshotLabel(){return String((liveData&&liveData.mode)||'').startsWith('INTRAD')?'INTRADÍA PROVISIONAL':'CIERRE DIARIO'}
 
   function renderVC(){
     let off=cutoff(allSeries.filter(x=>x.fuente==='SBS OFICIAL'),vcDays),estSource=richSignals.filter(x=>x.vc_estimado!=null);
-    if(liveSnapshotActive()){const point={fecha:liveData.signal_date,vc_estimado:Number(liveData.vc_estimated),ret_estimado:Number(liveData.return_estimated),senal:liveData.signal,tipo:'INTRADIA'};estSource=estSource.filter(x=>x.fecha!==point.fecha).concat([point]).sort((a,b)=>a.fecha.localeCompare(b.fecha))}
+    if(liveSnapshotActive()){const point={fecha:liveData.signal_date,vc_estimado:Number(liveData.vc_estimated),ret_estimado:Number(liveData.return_estimated),senal:liveData.signal,tipo:liveSnapshotLabel()};estSource=estSource.filter(x=>x.fecha!==point.fecha).concat([point]).sort((a,b)=>a.fecha.localeCompare(b.fecha))}
     let est=cutoff(estSource,vcDays);
     const q=modelInsights&&modelInsights.uncertainty?Number(modelInsights.uncertainty.relative_q80||0):0;
     let pendingStep=0,lower=[],upper=[];
@@ -178,7 +182,7 @@ Promise.all([fetch('data/latest.json?ts='+Date.now(),{cache:'no-store'}).then(r=
 
   function renderSignals(){
     let signalSource=richSignals.filter(x=>x.ret_estimado!=null);
-    if(liveSnapshotActive()){const point={fecha:liveData.signal_date,vc_estimado:Number(liveData.vc_estimated),ret_estimado:Number(liveData.return_estimated),senal:liveData.signal,tipo:'INTRADIA'};signalSource=signalSource.filter(x=>x.fecha!==point.fecha).concat([point]).sort((a,b)=>a.fecha.localeCompare(b.fecha))}
+    if(liveSnapshotActive()){const point={fecha:liveData.signal_date,vc_estimado:Number(liveData.vc_estimated),ret_estimado:Number(liveData.return_estimated),senal:liveData.signal,tipo:liveSnapshotLabel()};signalSource=signalSource.filter(x=>x.fecha!==point.fecha).concat([point]).sort((a,b)=>a.fecha.localeCompare(b.fecha))}
     const p=cutoff(signalSource,retDays);
     const sx=[],sy=[];
     p.forEach(x=>{sx.push(x.fecha,x.fecha,null);sy.push(0,Number(x.ret_estimado)*100,null)});
@@ -188,7 +192,7 @@ Promise.all([fetch('data/latest.json?ts='+Date.now(),{cache:'no-store'}).then(r=
     ],{title:retDays==='all'?'Todo el historial':`Últimos ${retDays} días`,paper_bgcolor:'#0f1b2d',plot_bgcolor:'#0f1b2d',font:{color:'#fff',size:11},margin:{l:48,r:18,t:45,b:45},showlegend:false,shapes:[{type:'line',xref:'paper',x0:0,x1:1,y0:0,y1:0,line:{width:1}},{type:'line',xref:'paper',x0:0,x1:1,y0:.1,y1:.1,line:{dash:'dot'}},{type:'line',xref:'paper',x0:0,x1:1,y0:-.1,y1:-.1,line:{dash:'dot'}}]},{responsive:true});active('.ret-controls',retDays)
   }
 
-  function renderTop(){if(!latestData)return;const live=liveData&&liveSnapshotActive(),vc=live?Number(liveData.vc_estimated):Number(latestData.latest_estimated_vc),r=live?Number(liveData.return_estimated):Number(latestData.latest_return_estimated),s=live?liveData.signal:latestData.signal,d=live?liveData.signal_date:latestData.latest_estimate_date;$('estVc').textContent=vc.toFixed(7);$('estDate').textContent=fmt(d)+' · '+(live?'INTRADÍA PROVISIONAL':'CIERRE DIARIO');$('signal').textContent=s;$('signal').className='value signal '+(s==='SUBE'?'up':s==='BAJA'?'down':'flat');$('ret').textContent=`Retorno estimado VC (día): ${(r*100).toFixed(3)}%`;const h=$('monitorHelp');if(h)h.innerHTML=`<b>${live?'INTRADÍA PROVISIONAL':'CIERRE DIARIO'} · Retorno estimado del VC: ${(r*100).toFixed(3)}% · Señal ${s}</b><br>${live?'Usa el último corte intradía disponible de Yahoo y puede cambiar hasta el cierre.':'Usa cierres diarios disponibles. No es la rentabilidad acumulada de tu inversión.'}`}
+  function renderTop(){if(!latestData)return;const live=liveData&&liveSnapshotActive(),label=live?liveSnapshotLabel():'CIERRE DIARIO',vc=live?Number(liveData.vc_estimated):Number(latestData.latest_estimated_vc),r=live?Number(liveData.return_estimated):Number(latestData.latest_return_estimated),s=live?liveData.signal:latestData.signal,d=live?liveData.signal_date:latestData.latest_estimate_date;$('estVc').textContent=vc.toFixed(7);$('estDate').textContent=fmt(d)+' · '+label;$('signal').textContent=s;$('signal').className='value signal '+(s==='SUBE'?'up':s==='BAJA'?'down':'flat');$('ret').textContent=`Retorno estimado VC (día): ${(r*100).toFixed(3)}%`;const h=$('monitorHelp');if(h)h.innerHTML=`<b>${label} · Retorno estimado del VC: ${(r*100).toFixed(3)}% · Señal ${s}</b><br>${label.startsWith('INTRAD')?'Usa el último corte intradía disponible de Yahoo y puede cambiar hasta el cierre.':'Usa cierres diarios disponibles. No es la rentabilidad acumulada de tu inversión.'}`}
 
   function insightPct(x,d=1){return x==null||!Number.isFinite(Number(x))?'—':(Number(x)*100).toFixed(d)+'%'}
   function liveContributions(){
@@ -285,7 +289,7 @@ Promise.all([fetch('data/latest.json?ts='+Date.now(),{cache:'no-store'}).then(r=
     let interval=operationSeries.filter(x=>x.fecha>=entryDate&&x.fecha<=exitDate&&Number.isFinite(Number(x.vc)));
     if(!interval.length){$('detail').textContent='No existe un valor cuota disponible en la línea temporal del monitor entre las fechas seleccionadas.';return}
     const a=interval[0];let b=interval.at(-1),liveUsed=false;
-    if(mode==='inside'&&liveData&&liveSnapshotActive()){b={fecha:liveData.signal_date,vc:Number(liveData.vc_estimated),fuente:'MODELO OLS · INTRADÍA PROVISIONAL'};liveUsed=true}
+    if(mode==='inside'&&liveData&&liveSnapshotActive()){b={fecha:liveData.signal_date,vc:Number(liveData.vc_estimated),fuente:'MODELO OLS · '+liveSnapshotLabel()};liveUsed=true}
     const vi=Number(a.vc),vo=Number(b.vc),units=capital/vi,final=units*vo,gain=final-capital,rent=final/capital-1;
     $('mCapital').textContent=money(capital);$('mFinal').textContent=money(final);$('mGain').textContent=money(gain);$('mRent').textContent=pct(rent);
     const provisional=liveUsed||b.fuente!=='SBS OFICIAL',tag=provisional?'RESULTADO PROVISIONAL · VC MODELO':'RESULTADO CON VC OFICIAL SBS',adjusted=(a.fecha!==entryDate||(mode==='closed'&&b.fecha!==$('exit').value))?' · Fechas ajustadas a las observaciones disponibles del monitor.':'';
@@ -334,15 +338,15 @@ Promise.all([fetch('data/latest.json?ts='+Date.now(),{cache:'no-store'}).then(r=
   function officialRow(date){return timeline.find(x=>x.fecha===date&&x.fuente==='SBS OFICIAL')||null}
   function officialAt(date){const row=officialRow(date);return row&&finite(row.vc)?Number(row.vc):null}
   function estimateAt(date){
-    if(live&&live.market_open&&live.signal_date===date&&finite(live.vc_estimated))return Number(live.vc_estimated);
+    if(live&&live.signal_date===date&&finite(live.vc_estimated))return Number(live.vc_estimated);
     const s=signalAt(date);return s&&finite(s.vc_estimado)?Number(s.vc_estimado):null;
   }
   function entryEffective(requested){
-    if(live&&live.market_open&&live.signal_date===requested)return {fecha:requested,vc:live.vc_estimated,fuente:'MODELO OLS · INTRADÍA PROVISIONAL'};
+    if(live&&live.signal_date===requested&&finite(live.vc_estimated))return {fecha:requested,vc:live.vc_estimated,fuente:String(live.mode||'').startsWith('INTRAD')?'MODELO OLS · INTRADÍA PROVISIONAL':'MODELO OLS · CIERRE DIARIO'};
     return timeline.find(x=>x.fecha>=requested)||null;
   }
   function exitEffective(requested){
-    if(live&&live.market_open&&live.signal_date===requested)return {fecha:requested,vc:live.vc_estimated,fuente:'MODELO OLS · INTRADÍA PROVISIONAL'};
+    if(live&&live.signal_date===requested&&finite(live.vc_estimated))return {fecha:requested,vc:live.vc_estimated,fuente:String(live.mode||'').startsWith('INTRAD')?'MODELO OLS · INTRADÍA PROVISIONAL':'MODELO OLS · CIERRE DIARIO'};
     return [...timeline].reverse().find(x=>x.fecha<=requested)||null;
   }
 
