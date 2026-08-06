@@ -24,7 +24,7 @@ jobs:
         with:
           ref: migracion-github-actions
 
-      - name: Preparar visor estable de un solo origen
+      - name: Validar visores y datos
         run: |
           test -s public/index.html
           test -s public/data/latest.json
@@ -34,17 +34,9 @@ jobs:
           test -s public/data/live_market.json
           test -s public/habitat/index.html
           test -s public/habitat/data/live_market.json
-          python - <<'PY'
-          from pathlib import Path
-          p = Path('public/index.html')
-          html = p.read_text(encoding='utf-8')
-          raw = 'https://raw.githubusercontent.com/rldaqp/afp-fondo3-monitor/migracion-github-actions/public/data/live_market.json'
-          html = html.replace(raw + "?ts='+Date.now()", "data/live_market.json?ts='+Date.now()")
-          html = html.replace(raw, 'data/live_market.json')
-          p.write_text(html, encoding='utf-8')
-          PY
           grep -q "Mercado ahora" public/index.html
-          grep -q "data/live_market.json" public/index.html
+          grep -q "raw.githubusercontent.com/rldaqp/afp-fondo3-monitor" public/index.html
+          grep -q "raw.githubusercontent.com/rldaqp/afp-fondo3-monitor" public/habitat/index.html
 
       - name: Configurar GitHub Pages
         uses: actions/configure-pages@v5
