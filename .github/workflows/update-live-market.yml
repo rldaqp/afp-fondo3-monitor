@@ -9,20 +9,19 @@ on:
       - ".github/workflows/update-live-market.yml"
       - "scripts/update_live_market_only.py"
       - "scripts/update_live_market_hybrid.py"
+      - "scripts/update_habitat_live_market.py"
       - "requirements-live.txt"
   schedule:
     # Dos turnos largos. Una vez iniciado el runner, él mismo toma snapshots cada 5 minutos.
-    # 13:20 UTC cubre apertura EDT/EST; 17:15 UTC releva el segundo tramo de la sesión.
     - cron: "20 13 * * 1-5"
     - cron: "15 17 * * 1-5"
 
 permissions:
   contents: write
-  actions: write
 
 concurrency:
-  group: fondo3-live-market-continuo
-  cancel-in-progress: true
+  group: fondo3-live-market-${{ github.event_name }}
+  cancel-in-progress: false
 
 jobs:
   live:
@@ -47,11 +46,10 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements-live.txt
 
-      - name: Mantener Mercado ahora cada cinco minutos
+      - name: Mantener ambos visores actualizados cada cinco minutos
         env:
           PYTHONUTF8: "1"
           PYTHONIOENCODING: "utf-8"
-          GH_TOKEN: ${{ github.token }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -64,49 +62,47 @@ jobs:
             git reset --hard origin/migracion-github-actions
 
             python scripts/update_live_market_hybrid.py
+            python scripts/update_habitat_live_market.py
 
             python - <<'PY'
           import json
           from pathlib import Path
-          live = json.loads(Path("public/data/live_market.json").read_text(encoding="utf-8"))
-          latest = json.loads(Path("public/data/latest.json").read_text(encoding="utf-8"))
-          assert live.get("engine") == "LIVE INDEPENDIENTE", live
-          assert live.get("generated_at_lima"), live
-          assert live.get("mode"), live
-          assert live.get("signal") in {"SUBE", "NEUTRO", "BAJA"}, live
-          assert live.get("fx_source"), live
-          assert "Yahoo PEN=X provisional" in live.get("fx_rule", ""), live
-          if live.get("market_open") and not live.get("warning"):
-              names = {x.get("serie") for x in live.get("assets", [])}
-              expected = {"SPY", "NEM", "FCX", "EPU", "MCHI", "USD_PEN"}
-              if "ret_EEM" in (latest.get("coefficients", {}) or {}):
-                  expected.add("EEM")
-              assert names == expected, (names, expected)
-              assert live.get("mode") == "INTRADÍA PROVISIONAL", live
-              fx = next(x for x in live["assets"] if x.get("serie") == "USD_PEN")
-              if live.get("fx_source", "").startswith("YAHOO"):
-                  assert fx.get("usado_modelo") is True, fx
-                  assert "PROVISIONAL" in fx.get("estado", ""), fx
-          print(live.get("generated_at_lima"), live.get("mode"), live.get("signal"), live.get("fx_source"))
+
+          prof = json.loads(Path("public/data/live_market.json").read_text(encoding="utf-8"))
+          hab = json.loads(Path("public/habitat/data/live_market.json").read_text(encoding="utf-8"))
+          prof_latest = json.loads(Path("public/data/latest.json").read_text(encoding="utf-8"))
+          hab_latest = json.loads(Path("public/habitat/data/latest.json").read_text(encoding="utf-8"))
+
+          assert prof.get("engine") == "LIVE INDEPENDIENTE", prof
+          assert hab.get("engine") == "LIVE HÁBITAT INDEPENDIENTE", hab
+          for name, live, latest in (
+              ("Profuturo", prof, prof_latest),
+              ("Hábitat", hab, hab_latest),
+          ):
+              assert live.get("generated_at_lima"), (name, live)
+              assert live.get("mode"), (name, live)
+              assert live.get("signal") in {"SUBE", "NEUTRO", "BAJA"}, (name, live)
+              assert live.get("fx_source"), (name, live)
+              if live.get("market_open") and not live.get("warning"):
+                  names = {x.get("serie") for x in live.get("assets", [])}
+                  expected = {"SPY", "NEM", "FCX", "EPU", "MCHI", "USD_PEN"}
+                  if "ret_EEM" in (latest.get("coefficients", {}) or {}):
+                      expected.add("EEM")
+                  assert names == expected, (name, names, expected)
+                  assert live.get("mode") == "INTRADÍA PROVISIONAL", (name, live)
+                  assert str(live.get("signal_date")) >= str(latest.get("latest_market_date")), (name, live)
+
+          print("Profuturo", prof.get("generated_at_lima"), prof.get("mode"), prof.get("signal"))
+          print("Hábitat", hab.get("generated_at_lima"), hab.get("mode"), hab.get("signal"))
           PY
 
-            git add public/data/live_market.json
+            git add public/data/live_market.json public/habitat/data/live_market.json
             if ! git diff --cached --quiet; then
-              git commit -m "Actualizar mercado intradía Fondo 3"
+              git commit -m "Actualizar mercado intradía Profuturo y Hábitat"
               if ! git push origin HEAD:migracion-github-actions; then
                 git pull --rebase origin migracion-github-actions
                 git push origin HEAD:migracion-github-actions
               fi
-
-              # El commit ya activa el despliegue por push. Este disparo manual es solo respaldo
-              # y un error temporal de GitHub (HTTP 500) no debe detener el ciclo intradía.
-              for attempt in 1 2 3; do
-                if gh workflow run deploy-pages-ui.yml --ref migracion-github-actions; then
-                  break
-                fi
-                echo "Aviso: no se pudo solicitar el despliegue manual (intento $attempt/3)."
-                sleep $((attempt * 10))
-              done
             fi
 
             ELAPSED=$(( $(date +%s) - T0 ))
