@@ -128,6 +128,16 @@ def ensure_market_fallback(html: str) -> str:
 
 
 def ensure_live_fetch_fallback(html: str, raw_live: str) -> str:
+    raw_prof = (
+        "https://raw.githubusercontent.com/rldaqp/afp-fondo3-monitor/"
+        "migracion-github-actions/public/data/live_market.json"
+    )
+    raw_hab = (
+        "https://raw.githubusercontent.com/rldaqp/afp-fondo3-monitor/"
+        "migracion-github-actions/public/habitat/data/live_market.json"
+    )
+    html = html.replace(raw_prof, raw_live).replace(raw_hab, raw_live)
+
     html = html.replace(
         "fetch('data/live_market.json?ts='+Date.now()",
         f"fetch('{raw_live}?ts='+Date.now()",
@@ -150,6 +160,11 @@ def ensure_live_fetch_fallback(html: str, raw_live: str) -> str:
     html = html.replace(raw_fetch, fallback_fetch)
     html = html.replace(
         f"function loadLive(){{return fetch('{raw_live}?ts='+Date.now(),{{cache:'no-store'}}).then(r=>r.json()).then(x=>{{liveData=x;renderMarket();return x}}).catch(()=>null)}}",
+        f"function loadLive(){{const ts=Date.now();return fetchLiveJson('data/live_market.json?ts='+ts,'{raw_live}?ts='+ts).then(x=>{{liveData=x;renderMarket();return x}}).catch(()=>null)}}",
+    )
+    html = html.replace(
+        "function loadLive(){return fetchLiveJson('data/live_market.json?ts='+Date.now(),"
+        f"'{raw_live}?ts='+Date.now()).then(x=>{{liveData=x;renderMarket();return x}}).catch(()=>null)}}",
         f"function loadLive(){{const ts=Date.now();return fetchLiveJson('data/live_market.json?ts='+ts,'{raw_live}?ts='+ts).then(x=>{{liveData=x;renderMarket();return x}}).catch(()=>null)}}",
     )
     return html

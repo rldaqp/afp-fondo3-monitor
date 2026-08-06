@@ -297,7 +297,7 @@ Promise.all([fetch('data/latest.json?ts='+Date.now(),{cache:'no-store'}).then(r=
   }
 
   function fetchLiveJson(primary,fallback){return fetch(primary,{cache:'no-store'}).catch(()=>fetch(fallback,{cache:'no-store'})).then(r=>r.json())}
-  function loadLive(){return fetchLiveJson('data/live_market.json?ts='+Date.now(),'https://raw.githubusercontent.com/rldaqp/afp-fondo3-monitor/migracion-github-actions/public/data/live_market.json?ts='+Date.now()).then(x=>{liveData=x;renderMarket();return x}).catch(()=>null)}
+  function loadLive(){const ts=Date.now();return fetchLiveJson('data/live_market.json?ts='+ts,'https://raw.githubusercontent.com/rldaqp/afp-fondo3-monitor/migracion-github-actions/public/data/live_market.json?ts='+ts).then(x=>{liveData=x;renderMarket();return x}).catch(()=>null)}
   Promise.all([
     fetch('data/signals.json?ts='+Date.now(),{cache:'no-store'}).then(r=>r.json()),
     fetch('data/series.json?ts='+Date.now(),{cache:'no-store'}).then(r=>r.json()),
