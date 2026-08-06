@@ -69,7 +69,7 @@ jobs:
         run: |
           python scripts/validate_habitat_official.py
           PYTHONPATH=scripts python -c "from habitat_complete_official_calendar import validate_official_estimate_calendar; validate_official_estimate_calendar()"
-          grep -q "HABITAT_CHART_RESTORE_GAP_DATES_V3" public/habitat/index.html
+          grep -q "HABITAT_CHART_OFFICIAL_VS_OLS_V6" public/habitat/index.html
           grep -q "const FUND='HABITAT';" public/habitat/index.html
           grep -q "const DRIVE_SHEET='Habitat';" public/habitat/index.html
           grep -q "const KEY='habitat_fondo3_trade_history_v2';" public/habitat/index.html
