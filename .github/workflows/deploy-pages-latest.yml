@@ -10,14 +10,11 @@ permissions:
 
 concurrency:
   group: pages-latest-state-manual
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
 
     steps:
       - name: Descargar la rama más reciente
