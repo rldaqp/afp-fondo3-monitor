@@ -98,7 +98,15 @@ jobs:
                 git push origin HEAD:migracion-github-actions
               fi
 
-              gh workflow run deploy-pages-ui.yml --ref migracion-github-actions
+              # El commit ya activa el despliegue por push. Este disparo manual es solo respaldo
+              # y un error temporal de GitHub (HTTP 500) no debe detener el ciclo intradía.
+              for attempt in 1 2 3; do
+                if gh workflow run deploy-pages-ui.yml --ref migracion-github-actions; then
+                  break
+                fi
+                echo "Aviso: no se pudo solicitar el despliegue manual (intento $attempt/3)."
+                sleep $((attempt * 10))
+              done
             fi
 
             ELAPSED=$(( $(date +%s) - T0 ))
