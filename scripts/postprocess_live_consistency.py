@@ -88,5 +88,20 @@ for name in ("latest.json", "series.json", "signals.json", "operation_series.jso
         f"fetch('data/{name}?ts='+Date.now(),{{cache:'no-store'}})",
     )
 
+# El archivo intradía cambia cada cinco minutos en la rama. Se consulta directamente
+# desde raw.githubusercontent.com para no exigir un despliegue de Pages por snapshot.
+raw_live = (
+    "https://raw.githubusercontent.com/rldaqp/afp-fondo3-monitor/"
+    "migracion-github-actions/public/data/live_market.json"
+)
+html = html.replace(
+    "fetch('data/live_market.json?ts='+Date.now()",
+    f"fetch('{raw_live}?ts='+Date.now()",
+)
+html = html.replace(
+    "fetch('data/live_market.json'",
+    f"fetch('{raw_live}'",
+)
+
 HTML_PATH.write_text(html, encoding="utf-8")
-print("Visor: indicadores preservados, intradía vigente y cierre consistente.")
+print("Visor: indicadores preservados, intradía directo y cierre consistente.")
