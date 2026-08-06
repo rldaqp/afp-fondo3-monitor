@@ -12,6 +12,12 @@ ROOT = Path(__file__).resolve().parents[1]
 PROFUTURO_LIVE = ROOT / "public" / "data" / "live_market.json"
 HABITAT_LATEST = ROOT / "public" / "habitat" / "data" / "latest.json"
 HABITAT_LIVE = ROOT / "public" / "habitat" / "data" / "live_market.json"
+HABITAT_SIGNALS = ROOT / "public" / "habitat" / "data" / "signals.json"
+HABITAT_SERIES = ROOT / "public" / "habitat" / "data" / "series.json"
+HABITAT_OPERATION_SERIES = (
+    ROOT / "public" / "habitat" / "data" / "operation_series.json"
+)
+HABITAT_INSIGHTS = ROOT / "public" / "habitat" / "data" / "model_insights.json"
 LIMA = ZoneInfo("America/Lima")
 THRESHOLD = 0.001
 
@@ -44,6 +50,85 @@ def factor_returns(assets: list[dict]) -> dict[str, float]:
             value = asset.get("retorno")
         returns[key] = finite_number(value)
     return returns
+
+
+def read_json(path: Path, default: object) -> object:
+    if not path.exists() or path.stat().st_size == 0:
+        return default
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
+def write_json(path: Path, payload: object) -> None:
+    path.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
+
+
+def upsert_by_date(rows: list[dict], row: dict, date_key: str = "fecha") -> list[dict]:
+    date = str(row.get(date_key, ""))
+    filtered = [item for item in rows if str(item.get(date_key, "")) != date]
+    filtered.append(row)
+    return sorted(filtered, key=lambda item: str(item.get(date_key, "")))
+
+
+def sync_fallback_outputs(payload: dict, latest: dict) -> None:
+    """Mantiene los JSON base al día cuando el motor live ya tiene cierre nuevo."""
+    mode = str(payload.get("mode", ""))
+    signal_date = str(payload.get("signal_date") or "")
+    latest_date = str(latest.get("latest_estimate_date") or "")
+    if not mode.startswith("CIERRE") or not signal_date or signal_date <= latest_date:
+        return
+    if not np.isfinite(float(payload.get("vc_estimated", np.nan))):
+        return
+
+    estimated_vc = float(payload["vc_estimated"])
+    estimated_return = finite_number(payload.get("return_estimated"))
+    signal = str(payload.get("signal") or classify(estimated_return))
+
+    latest["generated_at_lima"] = payload.get("generated_at_lima") or datetime.now(LIMA).isoformat()
+    latest["latest_market_date"] = signal_date
+    latest["latest_estimate_date"] = signal_date
+    latest["latest_estimated_vc"] = estimated_vc
+    latest["latest_return_estimated"] = estimated_return
+    latest["signal"] = signal
+    latest["latest_fx_source"] = payload.get("fx_source", latest.get("latest_fx_source", "SIN DATO"))
+    latest["latest_fx_provisional"] = bool(
+        payload.get("fx_provisional", latest.get("latest_fx_provisional", True))
+    )
+    write_json(HABITAT_LATEST, latest)
+
+    signal_row = {
+        "fecha": signal_date,
+        "ret_estimado": estimated_return,
+        "senal": signal,
+        "vc_real": None,
+        "vc_estimado": estimated_vc,
+        "tipo": "CIERRE DIARIO",
+    }
+    series_row = {
+        "fecha": signal_date,
+        "vc": estimated_vc,
+        "fuente": "MODELO OLS",
+        "es_oficial": False,
+        "senal": signal,
+        "ret_estimado": estimated_return,
+    }
+
+    for path, row in (
+        (HABITAT_SIGNALS, signal_row),
+        (HABITAT_SERIES, series_row),
+        (HABITAT_OPERATION_SERIES, series_row),
+    ):
+        rows = read_json(path, [])
+        if isinstance(rows, list):
+            write_json(path, upsert_by_date(rows, row))
+
+    insights = read_json(HABITAT_INSIGHTS, {})
+    if isinstance(insights, dict):
+        insights["generated_for"] = signal_date
+        insights["current_signal"] = signal
+        quality = insights.get("quality")
+        if isinstance(quality, dict):
+            quality["fx_provisional"] = latest.get("latest_fx_provisional", True)
+        write_json(HABITAT_INSIGHTS, insights)
 
 
 def main() -> None:
@@ -121,9 +206,8 @@ def main() -> None:
         }
 
     HABITAT_LIVE.parent.mkdir(parents=True, exist_ok=True)
-    HABITAT_LIVE.write_text(
-        json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8"
-    )
+    write_json(HABITAT_LIVE, payload)
+    sync_fallback_outputs(payload, latest)
     print(json.dumps(payload, ensure_ascii=False, indent=2))
 
 

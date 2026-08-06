@@ -101,7 +101,7 @@ jobs:
           print("Habitat", hab.get("generated_at_lima"), hab.get("mode"), hab.get("signal"))
           PY
 
-          git add public/data/live_market.json public/habitat/data/live_market.json
+          git add public/data/live_market.json public/habitat/data/live_market.json public/habitat/data/latest.json public/habitat/data/signals.json public/habitat/data/series.json public/habitat/data/operation_series.json public/habitat/data/model_insights.json
           if git diff --cached --quiet; then
             echo "No hubo cambios en el snapshot."
           else
@@ -117,6 +117,11 @@ jobs:
           mkdir -p "$tmp/gh-pages/data" "$tmp/gh-pages/habitat/data"
           cp public/data/live_market.json "$tmp/gh-pages/data/live_market.json"
           cp public/habitat/data/live_market.json "$tmp/gh-pages/habitat/data/live_market.json"
+          cp public/habitat/data/latest.json "$tmp/gh-pages/habitat/data/latest.json"
+          cp public/habitat/data/signals.json "$tmp/gh-pages/habitat/data/signals.json"
+          cp public/habitat/data/series.json "$tmp/gh-pages/habitat/data/series.json"
+          cp public/habitat/data/operation_series.json "$tmp/gh-pages/habitat/data/operation_series.json"
+          cp public/habitat/data/model_insights.json "$tmp/gh-pages/habitat/data/model_insights.json"
           cd "$tmp/gh-pages"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"

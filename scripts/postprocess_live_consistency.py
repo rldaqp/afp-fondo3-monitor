@@ -8,13 +8,17 @@ ROOT = Path(__file__).resolve().parents[1]
 
 LIVE_GUARD = r'''
   function liveSnapshotActive(){
-    if(!liveData||!String(liveData.mode||'').startsWith('INTRAD')||!Number.isFinite(Number(liveData.vc_estimated)))return false;
+    if(!liveData||!Number.isFinite(Number(liveData.vc_estimated)))return false;
+    const mode=String(liveData.mode||'');
+    if(!mode.startsWith('INTRAD')&&!mode.startsWith('CIERRE'))return false;
     const d=String(liveData.signal_date||'').slice(0,10);
+    if(mode.startsWith('CIERRE')){const latest=String((latestData&&latestData.latest_estimate_date)||'').slice(0,10);return !latest||d>=latest}
     try{
       const parts=Object.fromEntries(new Intl.DateTimeFormat('en-US',{timeZone:'America/Lima',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date()).filter(x=>x.type!=='literal').map(x=>[x.type,x.value]));
       return d===`${parts.year}-${parts.month}-${parts.day}`;
     }catch(e){return d===new Date().toISOString().slice(0,10)}
   }
+  function liveSnapshotLabel(){return String((liveData&&liveData.mode)||'').startsWith('INTRAD')?'INTRADÍA PROVISIONAL':'CIERRE DIARIO'}
 '''
 
 
@@ -36,6 +40,12 @@ def ensure_cache_busting(html: str) -> str:
 def ensure_live_guard(html: str) -> str:
     if "function liveSnapshotActive()" not in html:
         html = html.replace("  function renderVC(){", LIVE_GUARD + "\n  function renderVC(){", 1)
+    elif "function liveSnapshotLabel()" not in html:
+        html = html.replace(
+            "  function renderVC(){",
+            "  function liveSnapshotLabel(){return String((liveData&&liveData.mode)||'').startsWith('INTRAD')?'INTRADÍA PROVISIONAL':'CIERRE DIARIO'}\n\n  function renderVC(){",
+            1,
+        )
 
     html = html.replace(
         "liveData.market_open&&String(liveData.mode).startsWith('INTRADÍA')&&Number.isFinite(Number(liveData.vc_estimated))",
@@ -45,6 +55,14 @@ def ensure_live_guard(html: str) -> str:
         "liveData.market_open&&String(liveData.mode).startsWith('INTRADÃA')&&Number.isFinite(Number(liveData.vc_estimated))",
         "liveSnapshotActive()",
     )
+    html = html.replace(
+        "if(!liveData||!String(liveData.mode||'').startsWith('INTRAD')||!Number.isFinite(Number(liveData.vc_estimated)))return false;",
+        "if(!liveData||!Number.isFinite(Number(liveData.vc_estimated)))return false;\n    const mode=String(liveData.mode||'');\n    if(!mode.startsWith('INTRAD')&&!mode.startsWith('CIERRE'))return false;",
+    )
+    html = html.replace(
+        "    const d=String(liveData.signal_date||'').slice(0,10);\n    try{",
+        "    const d=String(liveData.signal_date||'').slice(0,10);\n    if(mode.startsWith('CIERRE')){const latest=String((latestData&&latestData.latest_estimate_date)||'').slice(0,10);return !latest||d>=latest}\n    try{",
+    )
     return html
 
 
@@ -52,14 +70,14 @@ def ensure_intraday_series_points(html: str) -> str:
     html = html.replace(
         "    let off=cutoff(allSeries.filter(x=>x.fuente==='SBS OFICIAL'),vcDays),est=cutoff(richSignals.filter(x=>x.vc_estimado!=null),vcDays);",
         "    let off=cutoff(allSeries.filter(x=>x.fuente==='SBS OFICIAL'),vcDays),estSource=richSignals.filter(x=>x.vc_estimado!=null);\n"
-        "    if(liveSnapshotActive()){const point={fecha:liveData.signal_date,vc_estimado:Number(liveData.vc_estimated),ret_estimado:Number(liveData.return_estimated),senal:liveData.signal,tipo:'INTRADIA'};estSource=estSource.filter(x=>x.fecha!==point.fecha).concat([point]).sort((a,b)=>a.fecha.localeCompare(b.fecha))}\n"
+        "    if(liveSnapshotActive()){const point={fecha:liveData.signal_date,vc_estimado:Number(liveData.vc_estimated),ret_estimado:Number(liveData.return_estimated),senal:liveData.signal,tipo:liveSnapshotLabel()};estSource=estSource.filter(x=>x.fecha!==point.fecha).concat([point]).sort((a,b)=>a.fecha.localeCompare(b.fecha))}\n"
         "    let est=cutoff(estSource,vcDays);",
         1,
     )
     html = html.replace(
         "    const p=cutoff(richSignals.filter(x=>x.ret_estimado!=null),retDays);",
         "    let signalSource=richSignals.filter(x=>x.ret_estimado!=null);\n"
-        "    if(liveSnapshotActive()){const point={fecha:liveData.signal_date,vc_estimado:Number(liveData.vc_estimated),ret_estimado:Number(liveData.return_estimated),senal:liveData.signal,tipo:'INTRADIA'};signalSource=signalSource.filter(x=>x.fecha!==point.fecha).concat([point]).sort((a,b)=>a.fecha.localeCompare(b.fecha))}\n"
+        "    if(liveSnapshotActive()){const point={fecha:liveData.signal_date,vc_estimado:Number(liveData.vc_estimated),ret_estimado:Number(liveData.return_estimated),senal:liveData.signal,tipo:liveSnapshotLabel()};signalSource=signalSource.filter(x=>x.fecha!==point.fecha).concat([point]).sort((a,b)=>a.fecha.localeCompare(b.fecha))}\n"
         "    const p=cutoff(signalSource,retDays);",
         1,
     )
