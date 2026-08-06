@@ -295,7 +295,7 @@ Promise.all([fetch('data/latest.json?ts='+Date.now(),{cache:'no-store'}).then(r=
   }
 
   function fetchLiveJson(primary,fallback){return fetch(primary,{cache:'no-store'}).catch(()=>fetch(fallback,{cache:'no-store'})).then(r=>r.json())}
-  function loadLive(){const ts=Date.now();return fetchLiveJson('https://raw.githubusercontent.com/rldaqp/afp-fondo3-monitor/migracion-github-actions/public/data/live_market.json?ts='+ts,'data/live_market.json?ts='+ts).then(x=>{liveData=x;renderMarket();renderAudit();return x}).catch(()=>null)}
+  function loadLive(){const ts=Date.now();return fetchLiveJson('data/live_market.json?ts='+ts,'https://raw.githubusercontent.com/rldaqp/afp-fondo3-monitor/migracion-github-actions/public/data/live_market.json?ts='+ts).then(x=>{liveData=x;renderMarket();renderAudit();return x}).catch(()=>null)}
   Promise.all([
     fetch('data/signals.json?ts='+Date.now(),{cache:'no-store'}).then(r=>r.json()),
     fetch('data/series.json?ts='+Date.now(),{cache:'no-store'}).then(r=>r.json()),
@@ -465,7 +465,7 @@ Promise.all([fetch('data/latest.json?ts='+Date.now(),{cache:'no-store'}).then(r=
       const [s,t,l]=await Promise.all([
         fetch('data/signals.json?ts='+Date.now(),{cache:'no-store'}).then(r=>r.json()),
         fetch('data/series.json?ts='+Date.now(),{cache:'no-store'}).then(r=>r.json()),
-        fetchLiveJson('https://raw.githubusercontent.com/rldaqp/afp-fondo3-monitor/migracion-github-actions/public/data/live_market.json?ts='+Date.now(),'data/live_market.json?ts='+Date.now()).catch(()=>null)
+        fetchLiveJson('data/live_market.json?ts='+Date.now(),'https://raw.githubusercontent.com/rldaqp/afp-fondo3-monitor/migracion-github-actions/public/data/live_market.json?ts='+Date.now()).catch(()=>null)
       ]);
       signals=(s||[]).sort((a,b)=>a.fecha.localeCompare(b.fecha));timeline=(t||[]).sort((a,b)=>a.fecha.localeCompare(b.fecha));live=l;
       $('tradeSaveBtn').onclick=saveCurrent;render();

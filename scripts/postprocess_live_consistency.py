@@ -126,13 +126,13 @@ def ensure_live_fetch_fallback(html: str, raw_live: str) -> str:
 
     raw_fetch = f"fetch('{raw_live}?ts='+Date.now(),{{cache:'no-store'}}).then(r=>r.json())"
     fallback_fetch = (
-        f"fetchLiveJson('{raw_live}?ts='+Date.now(),"
-        "'data/live_market.json?ts='+Date.now())"
+        "fetchLiveJson('data/live_market.json?ts='+Date.now(),"
+        f"'{raw_live}?ts='+Date.now())"
     )
     html = html.replace(raw_fetch, fallback_fetch)
     html = html.replace(
         f"function loadLive(){{return fetch('{raw_live}?ts='+Date.now(),{{cache:'no-store'}}).then(r=>r.json()).then(x=>{{liveData=x;renderMarket();return x}}).catch(()=>null)}}",
-        f"function loadLive(){{const ts=Date.now();return fetchLiveJson('{raw_live}?ts='+ts,'data/live_market.json?ts='+ts).then(x=>{{liveData=x;renderMarket();return x}}).catch(()=>null)}}",
+        f"function loadLive(){{const ts=Date.now();return fetchLiveJson('data/live_market.json?ts='+ts,'{raw_live}?ts='+ts).then(x=>{{liveData=x;renderMarket();return x}}).catch(()=>null)}}",
     )
     return html
 
