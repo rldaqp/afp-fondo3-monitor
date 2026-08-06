@@ -12,27 +12,28 @@ on:
       - "scripts/update_habitat_live_market.py"
       - "requirements-live.txt"
   schedule:
-    # Dos turnos largos. Una vez iniciado el runner, él mismo toma snapshots cada 5 minutos.
-    - cron: "20 13 * * 1-5"
-    - cron: "15 17 * * 1-5"
+    # Una ejecución corta cada cinco minutos durante la franja que cubre
+    # el mercado de Nueva York tanto en horario de verano como de invierno.
+    - cron: "*/5 13-22 * * 1-5"
 
 permissions:
   contents: write
 
 concurrency:
-  group: fondo3-live-market-${{ github.event_name }}
-  cancel-in-progress: false
+  group: fondo3-live-snapshot
+  cancel-in-progress: true
 
 jobs:
   live:
     runs-on: ubuntu-latest
-    timeout-minutes: 255
+    timeout-minutes: 12
 
     steps:
       - name: Descargar repositorio
         uses: actions/checkout@v4
         with:
           ref: migracion-github-actions
+          fetch-depth: 0
 
       - name: Configurar Python liviano
         uses: actions/setup-python@v5
@@ -46,25 +47,20 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements-live.txt
 
-      - name: Mantener ambos visores actualizados cada cinco minutos
+      - name: Calcular un snapshot de Profuturo y Hábitat
         env:
           PYTHONUTF8: "1"
           PYTHONIOENCODING: "utf-8"
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git fetch origin migracion-github-actions
+          git reset --hard origin/migracion-github-actions
 
-          for i in $(seq 1 48); do
-            T0=$(date +%s)
-            echo "Snapshot $i/48"
+          python scripts/update_live_market_hybrid.py
+          python scripts/update_habitat_live_market.py
 
-            git fetch origin migracion-github-actions
-            git reset --hard origin/migracion-github-actions
-
-            python scripts/update_live_market_hybrid.py
-            python scripts/update_habitat_live_market.py
-
-            python - <<'PY'
+          python - <<'PY'
           import json
           from pathlib import Path
 
@@ -75,6 +71,7 @@ jobs:
 
           assert prof.get("engine") == "LIVE INDEPENDIENTE", prof
           assert hab.get("engine") == "LIVE HÁBITAT INDEPENDIENTE", hab
+
           for name, live, latest in (
               ("Profuturo", prof, prof_latest),
               ("Hábitat", hab, hab_latest),
@@ -96,18 +93,13 @@ jobs:
           print("Hábitat", hab.get("generated_at_lima"), hab.get("mode"), hab.get("signal"))
           PY
 
-            git add public/data/live_market.json public/habitat/data/live_market.json
-            if ! git diff --cached --quiet; then
-              git commit -m "Actualizar mercado intradía Profuturo y Hábitat"
-              if ! git push origin HEAD:migracion-github-actions; then
-                git pull --rebase origin migracion-github-actions
-                git push origin HEAD:migracion-github-actions
-              fi
+          git add public/data/live_market.json public/habitat/data/live_market.json
+          if git diff --cached --quiet; then
+            echo "No hubo cambios en el snapshot."
+          else
+            git commit -m "Actualizar mercado intradía Profuturo y Hábitat"
+            if ! git push origin HEAD:migracion-github-actions; then
+              git pull --rebase origin migracion-github-actions
+              git push origin HEAD:migracion-github-actions
             fi
-
-            ELAPSED=$(( $(date +%s) - T0 ))
-            WAIT=$(( 300 - ELAPSED ))
-            if [ "$WAIT" -gt 0 ]; then
-              sleep "$WAIT"
-            fi
-          done
+          fi
