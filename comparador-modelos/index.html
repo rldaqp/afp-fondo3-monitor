@@ -1,0 +1,300 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Comparador de modelos AFP Fondo 3</title>
+  <style>
+    :root {
+      --bg:#f4f7fb; --panel:#ffffff; --ink:#06234b; --muted:#536b8c;
+      --line:#dbe5f2; --blue:#1f5fbf; --orange:#d46a1f;
+      --green:#107c41; --red:#b42318;
+      font-family:Arial,Helvetica,sans-serif;
+    }
+    * { box-sizing:border-box; }
+    body { margin:0; background:var(--bg); color:var(--ink); }
+    main { max-width:1180px; margin:0 auto; padding:24px 14px 40px; }
+    header, section { background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:18px; }
+    section { margin-top:16px; }
+    h1 { margin:0 0 8px; font-size:28px; }
+    h2 { margin:0 0 10px; font-size:20px; }
+    p { margin:0; color:var(--muted); line-height:1.45; }
+    a { color:var(--blue); font-weight:700; }
+    .controls { display:grid; grid-template-columns:1.2fr 1fr 1fr auto; gap:12px; align-items:end; margin-top:14px; }
+    label { display:block; font-size:13px; font-weight:700; color:var(--muted); margin-bottom:5px; }
+    input, select, button { width:100%; border:1px solid #bfd0e5; border-radius:8px; padding:11px; font-size:16px; background:#fff; }
+    button { width:auto; min-width:130px; border-color:var(--blue); background:var(--blue); color:#fff; font-weight:700; cursor:pointer; }
+    button:disabled { opacity:.55; cursor:not-allowed; }
+    .summary { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; margin-top:14px; }
+    .card { background:#f8fbff; border:1px solid var(--line); border-radius:8px; padding:12px; }
+    .card span { display:block; color:var(--muted); font-size:12px; }
+    .card strong { display:block; margin-top:6px; font-size:20px; }
+    .table-wrap { overflow-x:auto; margin-top:12px; }
+    table { width:100%; border-collapse:collapse; min-width:1060px; }
+    th, td { padding:10px 8px; border-bottom:1px solid var(--line); text-align:right; white-space:nowrap; }
+    th { background:#f4f7fb; color:#123863; font-size:13px; }
+    th:first-child, td:first-child { text-align:left; font-weight:700; }
+    .gh { color:var(--blue); }
+    .dr { color:var(--orange); }
+    .pos { color:var(--green); font-weight:700; }
+    .neg { color:var(--red); font-weight:700; }
+    .missing { color:var(--muted); }
+    .note { font-size:13px; margin-top:10px; }
+    .status { margin-top:10px; padding:10px 12px; border-radius:8px; background:#eef5ff; color:#123863; font-size:13px; }
+    .error { background:#fdebea; color:var(--red); font-weight:700; }
+    @media(max-width:760px) {
+      main { padding:12px 8px 28px; }
+      header, section { padding:14px; }
+      h1 { font-size:23px; }
+      .controls, .summary { grid-template-columns:1fr; }
+      button { width:100%; }
+    }
+  </style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>Comparador de modelos AFP Fondo 3</h1>
+    <p>Simula el mismo monto y las mismas fechas con el modelo GitHub y el modelo Drive. La cuota inicial se toma de la SBS.</p>
+    <p style="margin-top:8px"><a href="../cartera-replicante/">Volver al tablero operativo</a></p>
+    <div id="estadoCarga" class="status">Cargando los dos modelos…</div>
+  </header>
+
+  <section>
+    <h2>Datos de la simulación</h2>
+    <div class="controls">
+      <div>
+        <label for="monto">Monto inicial (S/)</label>
+        <input id="monto" type="number" min="1" step="100" value="25000">
+      </div>
+      <div>
+        <label for="fechaInicio">Fecha de entrada SBS</label>
+        <input id="fechaInicio" type="date">
+      </div>
+      <div>
+        <label for="fechaFinal">Fecha de salida estimada</label>
+        <select id="fechaFinal"></select>
+      </div>
+      <button id="calcular" type="button" disabled>Calcular</button>
+    </div>
+    <div id="error" class="status error" hidden></div>
+    <div class="summary">
+      <div class="card"><span>Monto evaluado</span><strong id="resMonto">-</strong></div>
+      <div class="card"><span>Periodo</span><strong id="resPeriodo">-</strong></div>
+      <div class="card"><span>Comparación disponible</span><strong id="resEstado">-</strong></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Resultado por AFP</h2>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>AFP</th>
+            <th>Cuota SBS inicial</th>
+            <th class="gh">Cuota GitHub final</th>
+            <th class="gh">Saldo GitHub</th>
+            <th class="gh">Gan./pérd. GitHub</th>
+            <th class="dr">Cuota Drive final</th>
+            <th class="dr">Saldo Drive</th>
+            <th class="dr">Gan./pérd. Drive</th>
+            <th>Diferencia de saldos</th>
+          </tr>
+        </thead>
+        <tbody id="resultados">
+          <tr><td colspan="9" class="missing">Esperando la carga de datos.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="note">Cálculo: monto inicial × cuota estimada final ÷ cuota SBS inicial. Sirve para comparar ambos modelos; no es una recomendación de compra o venta.</p>
+  </section>
+</main>
+<script>
+const AFPS = ["Habitat", "Integra", "Prima", "Profuturo"];
+const money = new Intl.NumberFormat('es-PE', { style:'currency', currency:'PEN', minimumFractionDigits:2 });
+const number6 = new Intl.NumberFormat('es-PE', { minimumFractionDigits:6, maximumFractionDigits:6 });
+let DATA = null;
+
+const montoEl = document.getElementById('monto');
+const inicioEl = document.getElementById('fechaInicio');
+const finalEl = document.getElementById('fechaFinal');
+const resultadosEl = document.getElementById('resultados');
+const errorEl = document.getElementById('error');
+const estadoCargaEl = document.getElementById('estadoCarga');
+const calcularEl = document.getElementById('calcular');
+
+function extraerJson(texto, regex, nombre) {
+  const match = texto.match(regex);
+  if (!match) throw new Error(`No se pudo leer ${nombre}.`);
+  return JSON.parse(match[1]);
+}
+
+function mapaDrive(datosDrive) {
+  const oficiales = {};
+  const pronosticos = {};
+  AFPS.forEach(afp => {
+    oficiales[afp] = {};
+    pronosticos[afp] = {};
+    const bloque = datosDrive.afps?.[afp] || {};
+    (bloque.oficial || []).forEach(fila => {
+      const cuota = Number(fila.cuota);
+      if (fila.fecha && Number.isFinite(cuota)) oficiales[afp][fila.fecha] = cuota;
+    });
+    (bloque.pronosticos || []).forEach(fila => {
+      const cuota = Number(fila.cuota);
+      if (fila.fecha && Number.isFinite(cuota)) pronosticos[afp][fila.fecha] = cuota;
+    });
+    const actual = bloque.actual || {};
+    const cuotaActual = Number(actual.cuota_estimada);
+    if (actual.fecha_objetivo && Number.isFinite(cuotaActual)) {
+      pronosticos[afp][actual.fecha_objetivo] = cuotaActual;
+    }
+  });
+  return { oficiales, pronosticos };
+}
+
+function mapaGitHub(chartData) {
+  const pronosticos = {};
+  AFPS.forEach(afp => {
+    pronosticos[afp] = {};
+    (chartData[afp] || []).forEach(fila => {
+      const cuota = Number(fila.modelo_overlay_estimado);
+      if (fila.fecha && Number.isFinite(cuota)) pronosticos[afp][fila.fecha] = cuota;
+    });
+  });
+  return pronosticos;
+}
+
+function interseccionConjuntos(conjuntos) {
+  if (!conjuntos.length) return [];
+  return [...conjuntos.reduce((acc, actual) => new Set([...acc].filter(x => actual.has(x))))].sort();
+}
+
+function cargarFechasFinales(fechas, valorDefault) {
+  finalEl.replaceChildren();
+  fechas.forEach(fecha => {
+    const option = document.createElement('option');
+    option.value = fecha;
+    option.textContent = fecha.split('-').reverse().join('/');
+    option.selected = fecha === valorDefault;
+    finalEl.appendChild(option);
+  });
+}
+
+function claseGanancia(valor) {
+  if (!Number.isFinite(valor)) return 'missing';
+  return valor >= 0 ? 'pos' : 'neg';
+}
+
+function td(valor, clase='') {
+  return `<td class="${clase}">${valor}</td>`;
+}
+
+function mostrarError(mensaje) {
+  errorEl.textContent = mensaje;
+  errorEl.hidden = false;
+}
+
+function calcular() {
+  errorEl.hidden = true;
+  if (!DATA) return;
+
+  const monto = Number(montoEl.value);
+  const inicio = inicioEl.value;
+  const fin = finalEl.value;
+  if (!Number.isFinite(monto) || monto <= 0) {
+    mostrarError('Ingresa un monto mayor que cero.');
+    return;
+  }
+  if (!inicio || !fin || inicio >= fin) {
+    mostrarError('La fecha de entrada debe ser anterior a la fecha de salida.');
+    return;
+  }
+
+  resultadosEl.replaceChildren();
+  let comparables = 0;
+
+  AFPS.forEach(afp => {
+    const cuotaInicial = DATA.oficiales[afp]?.[inicio];
+    const cuotaGitHub = DATA.github[afp]?.[fin];
+    const cuotaDrive = DATA.drive[afp]?.[fin];
+    const tr = document.createElement('tr');
+
+    if (![cuotaInicial, cuotaGitHub, cuotaDrive].every(Number.isFinite)) {
+      tr.innerHTML = `<td>${afp}</td>${td(Number.isFinite(cuotaInicial) ? number6.format(cuotaInicial) : '-', 'missing')}${td(Number.isFinite(cuotaGitHub) ? number6.format(cuotaGitHub) : '-', 'missing')}${td('-', 'missing')}${td('-', 'missing')}${td(Number.isFinite(cuotaDrive) ? number6.format(cuotaDrive) : '-', 'missing')}${td('-', 'missing')}${td('-', 'missing')}${td('-', 'missing')}`;
+      resultadosEl.appendChild(tr);
+      return;
+    }
+
+    comparables += 1;
+    const saldoGitHub = monto * cuotaGitHub / cuotaInicial;
+    const saldoDrive = monto * cuotaDrive / cuotaInicial;
+    const ganGitHub = saldoGitHub - monto;
+    const ganDrive = saldoDrive - monto;
+    const diferencia = saldoGitHub - saldoDrive;
+
+    tr.innerHTML = `
+      <td>${afp}</td>
+      ${td(number6.format(cuotaInicial))}
+      ${td(number6.format(cuotaGitHub), 'gh')}
+      ${td(money.format(saldoGitHub), 'gh')}
+      ${td(money.format(ganGitHub), claseGanancia(ganGitHub))}
+      ${td(number6.format(cuotaDrive), 'dr')}
+      ${td(money.format(saldoDrive), 'dr')}
+      ${td(money.format(ganDrive), claseGanancia(ganDrive))}
+      ${td(money.format(diferencia), claseGanancia(diferencia))}
+    `;
+    resultadosEl.appendChild(tr);
+  });
+
+  document.getElementById('resMonto').textContent = money.format(monto);
+  document.getElementById('resPeriodo').textContent = `${inicio.split('-').reverse().join('/')} → ${fin.split('-').reverse().join('/')}`;
+  document.getElementById('resEstado').textContent = `${comparables} de 4 AFP`;
+}
+
+async function cargarDatos() {
+  try {
+    const [respuestaGitHub, respuestaDrive] = await Promise.all([
+      fetch('../cartera-replicante/', { cache:'no-store' }),
+      fetch('../', { cache:'no-store' })
+    ]);
+    if (!respuestaGitHub.ok || !respuestaDrive.ok) throw new Error('No se pudieron descargar los monitores.');
+
+    const [htmlGitHub, htmlDrive] = await Promise.all([respuestaGitHub.text(), respuestaDrive.text()]);
+    const chartData = extraerJson(htmlGitHub, /const CHART_DATA = (\{[\s\S]*?\});\s*const AFPS/, 'el modelo GitHub');
+    const datosDrive = extraerJson(htmlDrive, /const DATOS = (\{[\s\S]*?\});\s*let afpEvolucion/, 'el modelo Drive');
+
+    const driveMap = mapaDrive(datosDrive);
+    const githubMap = mapaGitHub(chartData);
+    const fechasComunes = interseccionConjuntos(
+      AFPS.map(afp => new Set(Object.keys(githubMap[afp]).filter(fecha => fecha in driveMap.pronosticos[afp])))
+    );
+    if (!fechasComunes.length) throw new Error('Los modelos no tienen todavía fechas comunes para comparar.');
+
+    DATA = { oficiales:driveMap.oficiales, github:githubMap, drive:driveMap.pronosticos };
+    const finDefault = fechasComunes.includes('2026-07-13') ? '2026-07-13' : fechasComunes[fechasComunes.length - 1];
+    const fechasOficialesComunes = interseccionConjuntos(AFPS.map(afp => new Set(Object.keys(driveMap.oficiales[afp]))));
+    const inicioPreferido = fechasOficialesComunes.includes('2026-07-08') && '2026-07-08' < finDefault
+      ? '2026-07-08'
+      : fechasOficialesComunes.filter(f => f < finDefault).slice(-1)[0];
+
+    cargarFechasFinales(fechasComunes, finDefault);
+    inicioEl.min = fechasOficialesComunes[0] || '';
+    inicioEl.max = finDefault;
+    inicioEl.value = inicioPreferido || '';
+    calcularEl.disabled = false;
+    estadoCargaEl.textContent = `Modelos cargados. Fechas comparables: ${fechasComunes.length}.`;
+    calcular();
+  } catch (error) {
+    estadoCargaEl.textContent = `No se pudo cargar el comparador: ${error.message}`;
+    estadoCargaEl.classList.add('error');
+  }
+}
+
+calcularEl.addEventListener('click', calcular);
+[montoEl, inicioEl, finalEl].forEach(el => el.addEventListener('change', calcular));
+cargarDatos();
+</script>
+</body>
+</html>

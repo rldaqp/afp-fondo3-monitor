@@ -1,0 +1,520 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Fondo 3 AFP - tablero operativo</title>
+  <style>
+    :root {
+      --bg: #f4f7fb;
+      --panel: #ffffff;
+      --ink: #06234b;
+      --muted: #4d668a;
+      --line: #dbe5f2;
+      --blue: #1f5fbf;
+      --orange: #d46a1f;
+      --green: #107c41;
+      --yellow: #8a5a00;
+      --red: #b42318;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--bg); color: var(--ink); }
+    main { max-width: 1180px; margin: 0 auto; padding: 28px 18px 42px; }
+    header { margin-bottom: 18px; }
+    h1 { margin: 0 0 8px; font-size: 30px; line-height: 1.15; letter-spacing: 0; }
+    h2 { margin: 0 0 10px; font-size: 21px; letter-spacing: 0; }
+    p { margin: 0; color: var(--muted); line-height: 1.45; }
+    section { margin-top: 18px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 18px; }
+    .hero { background: #ffffff; border-bottom: 1px solid var(--line); }
+    .hero strong { color: var(--ink); }
+    .kpis { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px; margin-top: 16px; }
+    .kpi { background: #f8fbff; border: 1px solid var(--line); border-radius: 8px; padding: 14px; min-height: 94px; }
+    .kpi span, .kpi small { display: block; color: var(--muted); }
+    .kpi strong { display: block; margin: 8px 0 5px; font-size: 24px; line-height: 1.1; }
+    .flow { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-top: 12px; }
+    .step { background: #f8fbff; border: 1px solid var(--line); border-radius: 8px; padding: 13px; }
+    .step strong { display: block; margin-bottom: 6px; }
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 14px; }
+    th { text-align: left; color: #123863; background: #f4f7fb; font-weight: 700; }
+    th, td { padding: 10px 9px; border-bottom: 1px solid var(--line); vertical-align: middle; }
+    .badge { display: inline-flex; align-items: center; min-height: 24px; padding: 3px 9px; border-radius: 999px; background: #eef3f9; color: var(--muted); font-weight: 700; white-space: nowrap; }
+    .badge.ok, .badge.up { background: #e8f5ee; color: var(--green); }
+    .badge.warn, .badge.wait { background: #fff7df; color: var(--yellow); }
+    .badge.bad, .badge.down { background: #fdebea; color: var(--red); }
+    .badge.muted { background: #eef3f9; color: var(--muted); }
+    .terminal-chart { margin-top: 12px; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; background: #ffffff; color: var(--ink); }
+    .terminal-toolbar { display: flex; justify-content: space-between; gap: 12px; align-items: center; padding: 10px 12px; border-bottom: 1px solid var(--line); background: #f8fbff; }
+    .afp-tabs { display: flex; gap: 8px; flex-wrap: wrap; }
+    .afp-tab { border: 1px solid #c8d7eb; background: #ffffff; color: #123863; border-radius: 6px; padding: 7px 10px; font-weight: 700; cursor: pointer; }
+    .afp-tab.active { background: #1f5fbf; border-color: #1f5fbf; color: #ffffff; }
+    .chart-status { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; color: var(--muted); font-size: 13px; }
+    .chart-status strong, #chart-afp { color: var(--ink); }
+    .pending-pill, .ok-pill { padding: 3px 8px; border-radius: 999px; font-weight: 700; }
+    .pending-pill { color: #8a5a00; background: #fff3d4; }
+    .ok-pill { color: #107c41; background: #e8f5ee; }
+    .chart-layout { display: grid; grid-template-columns: minmax(0, 1fr) 260px; min-height: 440px; }
+    .terminal-frame { position: relative; height: 440px; background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%); }
+    #quota-chart { display: block; width: 100%; height: 100%; touch-action: none; }
+    .grid-line { stroke: #e3ebf6; stroke-width: 1; }
+    .grid-line.vertical { stroke-dasharray: 4 8; }
+    .plot-border { fill: none; stroke: #c8d7eb; stroke-width: 1; }
+    .axis-label { fill: #5d7494; font-size: 13px; }
+    .line-sbs { fill: none; stroke: #1f77d0; stroke-width: 3; }
+    .line-model { fill: none; stroke: #d46a1f; stroke-width: 3; }
+    .line-pending { fill: none; stroke: #d46a1f; stroke-width: 3; stroke-dasharray: 8 8; }
+    .dot-sbs { fill: #1f77d0; stroke: #ffffff; stroke-width: 2; }
+    .dot-model { fill: #d46a1f; stroke: #ffffff; stroke-width: 2; }
+    .dot-pending { fill: #f2a35e; stroke: #ffffff; stroke-width: 2; }
+    .crosshair { stroke: #536f91; stroke-width: 1; stroke-dasharray: 4 5; opacity: 0.72; pointer-events: none; }
+    .chart-detail { border-left: 1px solid var(--line); background: #f8fbff; padding: 16px; color: var(--ink); }
+    .chart-detail .detail-kicker { display: inline-flex; margin-bottom: 10px; padding: 4px 8px; border-radius: 999px; background: #eef3f9; color: var(--muted); font-size: 12px; font-weight: 700; }
+    .chart-detail strong { display: block; margin-bottom: 12px; font-size: 18px; }
+    .chart-detail p { font-size: 13px; }
+    .chart-detail dl { margin: 0 0 12px; display: grid; gap: 8px; }
+    .chart-detail dl div { display: flex; justify-content: space-between; gap: 14px; padding-bottom: 7px; border-bottom: 1px solid var(--line); }
+    .chart-detail dt { color: var(--muted); font-size: 13px; }
+    .chart-detail dd { margin: 0; font-weight: 700; text-align: right; }
+    .terminal-help { padding: 9px 12px 12px; color: var(--muted); font-size: 13px; border-top: 1px solid var(--line); }
+    .legend { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 10px; color: var(--muted); font-size: 13px; }
+    .legend span::before { content: ""; display: inline-block; width: 18px; height: 3px; margin-right: 6px; vertical-align: middle; background: var(--blue); }
+    .legend .model::before { background: var(--orange); }
+    .legend .pending::before { background: repeating-linear-gradient(90deg, var(--orange), var(--orange) 6px, transparent 6px, transparent 10px); }
+    .note { background: #f8fbff; }
+    .small { font-size: 13px; }
+    @media (max-width: 840px) {
+      main { padding: 18px 10px 30px; }
+      .kpis, .flow, .charts, .chart-layout { grid-template-columns: 1fr; }
+      .chart-detail { border-left: 0; border-top: 1px solid var(--line); }
+      h1 { font-size: 25px; }
+      section { padding: 14px; }
+    }
+    </style>
+</head>
+<body>
+  <main>
+    <header class="hero">
+      <h1>Fondo 3 AFP - tablero operativo</h1>
+      <p><strong>Objetivo simple:</strong> guardar cada senal del modelo, esperar la publicacion SBS y revisar si acerto. No dice que la AFP tenga exactamente esos activos; es una cartera sintetica con proxies.</p>
+      <div class="kpis">
+        
+      <article class="kpi">
+        <span>Ultima SBS base</span>
+        <strong>2026-07-20</strong>
+        <small>desde esta cuota parte el calculo</small>
+      </article>
+    
+        
+      <article class="kpi">
+        <span>Fecha a comprobar</span>
+        <strong>2026-07-22</strong>
+        <small>4 AFP pendientes de SBS</small>
+      </article>
+    
+        
+      <article class="kpi">
+        <span>Ruedas acumuladas</span>
+        <strong>2</strong>
+        <small>dias de mercado desde la SBS base</small>
+      </article>
+    
+        
+      <article class="kpi">
+        <span>Pasan test final</span>
+        <strong>0/4 AFP</strong>
+        <small>ultimo 20% reservado</small>
+      </article>
+    
+        
+      <article class="kpi">
+        <span>Direccion test</span>
+        <strong>50.00% a 50.00%</strong>
+        <small>acierto diario fuera de muestra</small>
+      </article>
+    
+      </div>
+    </header>
+
+    <section>
+      <h2>1. Como lo probamos manana</h2>
+      <div class="flow">
+        <div class="step"><strong>Paso 1</strong><p>Despues del cierre de mercado se actualiza el visor. Sale una fila nueva con cuota estimada y direccion.</p></div>
+        <div class="step"><strong>Paso 2</strong><p>Si la confianza es verde, la senal se puede mirar como semaforo fuerte. Amarillo es cuidado. Gris no se usa.</p></div>
+        <div class="step"><strong>Paso 3</strong><p>Cuando SBS publique la misma fecha, la bitacora muestra Error cuota, Error % y cambia a Acierto o Fallo.</p></div>
+      </div>
+    </section>
+
+    <section>
+      <h2>2. Semaforo actual</h2>
+      <p>Esta es la parte que se mira primero. Fecha SBS base es la ultima cuota oficial usada. Ruedas acum. dice si la estimacion es de 1 dia o de varios dias encadenados.</p>
+      <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>AFP</th><th>Fecha SBS base</th><th>Fecha a comprobar</th><th>Ruedas acum.</th>
+            <th>Direccion</th><th>Confianza</th><th>Usar</th><th>Ret. dia</th>
+            <th>Ret. acum.</th><th>Cuota estimada</th><th>SBS publicada</th><th>Error cuota</th><th>Estado</th>
+          </tr>
+        </thead>
+        <tbody>
+    <tr><td>Habitat</td><td>2026-07-20</td><td>2026-07-22</td><td>2</td><td><span class="badge up">Sube</span></td><td><span class="badge muted">Gris</span></td><td>No</td><td>+0.337%</td><td>+1.567%</td><td>32.4600</td><td>-</td><td>-</td><td><span class="badge wait">Pendiente SBS</span></td></tr>
+<tr><td>Integra</td><td>2026-07-20</td><td>2026-07-22</td><td>2</td><td><span class="badge up">Sube</span></td><td><span class="badge muted">Gris</span></td><td>No</td><td>+0.383%</td><td>+1.485%</td><td>69.2292</td><td>-</td><td>-</td><td><span class="badge wait">Pendiente SBS</span></td></tr>
+<tr><td>Prima</td><td>2026-07-20</td><td>2026-07-22</td><td>2</td><td><span class="badge up">Sube</span></td><td><span class="badge muted">Gris</span></td><td>No</td><td>+0.276%</td><td>+1.327%</td><td>62.7460</td><td>-</td><td>-</td><td><span class="badge wait">Pendiente SBS</span></td></tr>
+<tr><td>Profuturo</td><td>2026-07-20</td><td>2026-07-22</td><td>2</td><td><span class="badge up">Sube</span></td><td><span class="badge muted">Gris</span></td><td>No</td><td>+0.491%</td><td>+1.613%</td><td>69.1617</td><td>-</td><td>-</td><td><span class="badge wait">Pendiente SBS</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    </section>
+
+    <section>
+      <h2>3. Resultado del modelo</h2>
+      <p>La columna que manda es Dir. test. Compara el modelo contra el ultimo 20% que no se uso para escogerlo.</p>
+      <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>AFP</th><th>Dir. test</th><th>Dir. antes</th><th>Mejora</th>
+            <th>RMSE cuota</th><th>Dir. senal fuerte</th><th>Dias con senal fuerte</th><th>Resultado</th>
+          </tr>
+        </thead>
+        <tbody>
+    <tr><td>Habitat</td><td>50.00%</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td><span class="badge muted">No pasa</span></td></tr>
+<tr><td>Integra</td><td>50.00%</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td><span class="badge muted">No pasa</span></td></tr>
+<tr><td>Prima</td><td>50.00%</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td><span class="badge muted">No pasa</span></td></tr>
+<tr><td>Profuturo</td><td>50.00%</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td><span class="badge muted">No pasa</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    </section>
+
+    <section>
+      <h2>4. Grafica SBS vs modelo</h2>
+      <p>Azul es la cuota publicada por SBS. Naranja es lo estimado por el modelo. La parte punteada son fechas pendientes de publicacion SBS.</p>
+      <div class="legend"><span>SBS</span><span class="model">Modelo</span><span class="pending">Pendiente</span></div>
+      
+      <div class="terminal-chart">
+        <div class="terminal-toolbar">
+          <div class="afp-tabs"><button class="afp-tab active" type="button" data-afp="Habitat">Habitat</button>
+<button class="afp-tab" type="button" data-afp="Integra">Integra</button>
+<button class="afp-tab" type="button" data-afp="Prima">Prima</button>
+<button class="afp-tab" type="button" data-afp="Profuturo">Profuturo</button></div>
+          <div class="chart-status">
+            <span id="chart-afp">Habitat</span>
+            <span id="chart-date">-</span>
+            <span>SBS <strong id="chart-sbs">-</strong></span>
+            <span>Modelo <strong id="chart-model">-</strong></span>
+            <span id="chart-pending">-</span>
+          </div>
+        </div>
+        <div class="chart-layout">
+          <div class="terminal-frame">
+            <svg id="quota-chart" viewBox="0 0 980 430" role="img" aria-label="Grafica interactiva SBS vs modelo"></svg>
+          </div>
+          <aside id="chart-detail" class="chart-detail" aria-live="polite">
+            <span class="detail-kicker">Detalle</span>
+            <strong>Selecciona un punto</strong>
+            <p>Mueve el mouse o toca la grafica para ver fecha y cuota estimada.</p>
+          </aside>
+        </div>
+        <p class="terminal-help">Mueve el mouse o toca la grafica. El detalle aparece a la derecha y los valores exactos tambien estan abajo en la tabla.</p>
+      </div>
+    
+    </section>
+
+    <section>
+      <h2>5. Cuotas pendientes por fecha</h2>
+      <p>Aqui se ve exacto que cuota estimada corresponde a cada fecha pendiente. Si hay 2 o 3 ruedas acumuladas, lo dira en la columna Ruedas.</p>
+      <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Fecha pendiente</th><th>AFP</th><th>SBS base</th><th>Ruedas</th>
+            <th>Ret. dia</th><th>Ret. acum.</th><th>Cuota estimada</th>
+            <th>SBS publicada</th><th>Error cuota</th>
+          </tr>
+        </thead>
+        <tbody>
+    <tr><td>2026-07-21</td><td>Habitat</td><td>2026-07-20</td><td>1</td><td>+1.226%</td><td>+1.226%</td><td>32.3511</td><td>-</td><td>-</td></tr>
+<tr><td>2026-07-21</td><td>Integra</td><td>2026-07-20</td><td>1</td><td>+1.098%</td><td>+1.098%</td><td>68.9653</td><td>-</td><td>-</td></tr>
+<tr><td>2026-07-21</td><td>Prima</td><td>2026-07-20</td><td>1</td><td>+1.047%</td><td>+1.047%</td><td>62.5731</td><td>-</td><td>-</td></tr>
+<tr><td>2026-07-21</td><td>Profuturo</td><td>2026-07-20</td><td>1</td><td>+1.117%</td><td>+1.117%</td><td>68.8239</td><td>-</td><td>-</td></tr>
+<tr><td>2026-07-22</td><td>Habitat</td><td>2026-07-20</td><td>2</td><td>+0.337%</td><td>+1.567%</td><td>32.4600</td><td>-</td><td>-</td></tr>
+<tr><td>2026-07-22</td><td>Integra</td><td>2026-07-20</td><td>2</td><td>+0.383%</td><td>+1.485%</td><td>69.2292</td><td>-</td><td>-</td></tr>
+<tr><td>2026-07-22</td><td>Prima</td><td>2026-07-20</td><td>2</td><td>+0.276%</td><td>+1.327%</td><td>62.7460</td><td>-</td><td>-</td></tr>
+<tr><td>2026-07-22</td><td>Profuturo</td><td>2026-07-20</td><td>2</td><td>+0.491%</td><td>+1.613%</td><td>69.1617</td><td>-</td><td>-</td></tr>
+        </tbody>
+      </table>
+    </div>
+    </section>
+
+    <section>
+      <h2>6. Bitacora de comprobacion</h2>
+      <p>Aqui se mide el error. Si SBS publicada esta vacio, todavia no hay contra que comparar. Cuando llegue, se llena Error cuota y Error %.</p>
+      <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Fecha</th><th>AFP</th><th>SBS base</th><th>Ruedas</th><th>Senal</th><th>Confianza</th>
+            <th>Cuota estimada</th><th>SBS publicada</th><th>Error cuota</th><th>Error %</th><th>Revision</th>
+          </tr>
+        </thead>
+        <tbody>
+    <tr><td>2026-07-22</td><td>Habitat</td><td>2026-07-20</td><td>2</td><td><span class="badge up">Sube</span></td><td><span class="badge muted">Gris</span></td><td>32.4600</td><td>-</td><td>-</td><td>-</td><td><span class="badge wait">Pendiente SBS</span></td></tr>
+<tr><td>2026-07-22</td><td>Integra</td><td>2026-07-20</td><td>2</td><td><span class="badge up">Sube</span></td><td><span class="badge muted">Gris</span></td><td>69.2292</td><td>-</td><td>-</td><td>-</td><td><span class="badge wait">Pendiente SBS</span></td></tr>
+<tr><td>2026-07-22</td><td>Prima</td><td>2026-07-20</td><td>2</td><td><span class="badge up">Sube</span></td><td><span class="badge muted">Gris</span></td><td>62.7460</td><td>-</td><td>-</td><td>-</td><td><span class="badge wait">Pendiente SBS</span></td></tr>
+<tr><td>2026-07-22</td><td>Profuturo</td><td>2026-07-20</td><td>2</td><td><span class="badge up">Sube</span></td><td><span class="badge muted">Gris</span></td><td>69.1617</td><td>-</td><td>-</td><td>-</td><td><span class="badge wait">Pendiente SBS</span></td></tr>
+<tr><td>2026-07-21</td><td>Habitat</td><td>2026-07-20</td><td>1</td><td><span class="badge up">Sube</span></td><td><span class="badge muted">Gris</span></td><td>32.3511</td><td>-</td><td>-</td><td>-</td><td><span class="badge wait">Pendiente SBS</span></td></tr>
+<tr><td>2026-07-21</td><td>Integra</td><td>2026-07-20</td><td>1</td><td><span class="badge up">Sube</span></td><td><span class="badge muted">Gris</span></td><td>68.9653</td><td>-</td><td>-</td><td>-</td><td><span class="badge wait">Pendiente SBS</span></td></tr>
+<tr><td>2026-07-21</td><td>Prima</td><td>2026-07-20</td><td>1</td><td><span class="badge up">Sube</span></td><td><span class="badge muted">Gris</span></td><td>62.5731</td><td>-</td><td>-</td><td>-</td><td><span class="badge wait">Pendiente SBS</span></td></tr>
+<tr><td>2026-07-21</td><td>Profuturo</td><td>2026-07-20</td><td>1</td><td><span class="badge up">Sube</span></td><td><span class="badge muted">Gris</span></td><td>68.8239</td><td>-</td><td>-</td><td>-</td><td><span class="badge wait">Pendiente SBS</span></td></tr>
+<tr><td>2026-07-20</td><td>Integra</td><td>2026-07-17</td><td>1</td><td><span class="badge up">Sube</span></td><td><span class="badge muted">Gris</span></td><td>68.4735</td><td>68.2162</td><td>0.2573</td><td>0.38%</td><td><span class="badge bad">Fallo</span></td></tr>
+<tr><td>2026-07-20</td><td>Prima</td><td>2026-07-17</td><td>1</td><td><span class="badge up">Sube</span></td><td><span class="badge muted">Gris</span></td><td>62.0511</td><td>61.9245</td><td>0.1266</td><td>0.20%</td><td><span class="badge bad">Fallo</span></td></tr>
+<tr><td>2026-07-20</td><td>Profuturo</td><td>2026-07-17</td><td>1</td><td><span class="badge down">Baja</span></td><td><span class="badge muted">Gris</span></td><td>68.1828</td><td>68.0639</td><td>0.1189</td><td>0.17%</td><td><span class="badge ok">Acierto</span></td></tr>
+<tr><td>2026-07-17</td><td>Habitat</td><td>2026-07-16</td><td>1</td><td><span class="badge down">Baja</span></td><td><span class="badge muted">Gris</span></td><td>32.0012</td><td>32.0836</td><td>-0.0824</td><td>0.26%</td><td><span class="badge ok">Acierto</span></td></tr>
+<tr><td>2026-07-17</td><td>Integra</td><td>2026-07-16</td><td>1</td><td><span class="badge down">Baja</span></td><td><span class="badge muted">Gris</span></td><td>68.6596</td><td>68.4554</td><td>0.2042</td><td>0.30%</td><td><span class="badge ok">Acierto</span></td></tr>
+<tr><td>2026-07-17</td><td>Prima</td><td>2026-07-16</td><td>1</td><td><span class="badge down">Baja</span></td><td><span class="badge muted">Gris</span></td><td>62.1573</td><td>62.0483</td><td>0.1090</td><td>0.18%</td><td><span class="badge ok">Acierto</span></td></tr>
+<tr><td>2026-07-17</td><td>Profuturo</td><td>2026-07-16</td><td>1</td><td><span class="badge down">Baja</span></td><td><span class="badge muted">Gris</span></td><td>68.2553</td><td>68.2148</td><td>0.0405</td><td>0.06%</td><td><span class="badge ok">Acierto</span></td></tr>
+<tr><td>2026-07-16</td><td>Habitat</td><td>2026-07-15</td><td>1</td><td><span class="badge down">Baja</span></td><td><span class="badge muted">Gris</span></td><td>32.3456</td><td>32.2856</td><td>0.0599</td><td>0.19%</td><td><span class="badge ok">Acierto</span></td></tr>
+<tr><td>2026-07-16</td><td>Integra</td><td>2026-07-15</td><td>1</td><td><span class="badge down">Baja</span></td><td><span class="badge muted">Gris</span></td><td>69.3958</td><td>68.8451</td><td>0.5508</td><td>0.80%</td><td><span class="badge ok">Acierto</span></td></tr>
+<tr><td>2026-07-16</td><td>Prima</td><td>2026-07-15</td><td>1</td><td><span class="badge down">Baja</span></td><td><span class="badge muted">Gris</span></td><td>63.1249</td><td>62.3457</td><td>0.7792</td><td>1.25%</td><td><span class="badge ok">Acierto</span></td></tr>
+<tr><td>2026-07-16</td><td>Profuturo</td><td>2026-07-15</td><td>1</td><td><span class="badge down">Baja</span></td><td><span class="badge muted">Gris</span></td><td>69.2124</td><td>68.4036</td><td>0.8088</td><td>1.18%</td><td><span class="badge ok">Acierto</span></td></tr>
+<tr><td>2026-07-13</td><td>Habitat</td><td>2026-07-09</td><td>2</td><td><span class="badge down">Baja</span></td><td><span class="badge muted">Gris</span></td><td>32.7325</td><td>32.6099</td><td>0.1226</td><td>0.38%</td><td><span class="badge ok">Acierto</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    </section>
+
+    <section class="note">
+      <h2>Lectura corta</h2>
+      <p class="small">Hoy no buscamos llenar la pantalla de experimentos. El tablero queda para operar: senal, test, grafica y bitacora. La validacion ya paso 72% de direccion en el test final para las cuatro AFP, pero la conclusion definitiva debe seguir con control walk-forward para vigilar sobreajuste.</p>
+    </section>
+  </main>
+  
+    <script>
+    const CHART_DATA = {"Habitat": [{"fecha": "2026-07-01", "afp": null, "sbs_publicada": 33.1019868, "modelo_overlay_estimado": 33.49726658953101, "cuota_base": 33.5370629, "fecha_base_sbs": "2026-06-30", "cuota_base_sbs": 33.5370629, "ruedas_estimadas_desde_sbs": 1.0, "retorno_estimado_pct": -0.11866367244996, "retorno_acumulado_estimado_desde_sbs_pct": -0.11866367244997, "direccion_estimada": "Baja", "resultado": "Acierto"}, {"fecha": "2026-07-02", "afp": null, "sbs_publicada": 32.8852411, "modelo_overlay_estimado": 33.18943859835173, "cuota_base": 33.1019868, "fecha_base_sbs": "2026-07-01", "cuota_base_sbs": 33.1019868, "ruedas_estimadas_desde_sbs": 1.0, "retorno_estimado_pct": 0.26418897113368, "retorno_acumulado_estimado_desde_sbs_pct": 0.26418897113369, "direccion_estimada": "Sube", "resultado": "Fallo"}, {"fecha": "2026-07-03", "afp": null, "sbs_publicada": 32.9033232, "modelo_overlay_estimado": 33.59783166539524, "cuota_base": 33.49726658953101, "fecha_base_sbs": "2026-06-30", "cuota_base_sbs": 33.5370629, "ruedas_estimadas_desde_sbs": 2.0, "retorno_estimado_pct": 0.06630770024411, "retorno_acumulado_estimado_desde_sbs_pct": 0.18119882941578, "direccion_estimada": "Sube", "resultado": "Acierto"}, {"fecha": "2026-07-06", "afp": null, "sbs_publicada": 33.3286403, "modelo_overlay_estimado": 33.15255004766608, "cuota_base": 32.8852411, "fecha_base_sbs": "2026-07-02", "cuota_base_sbs": 32.8852411, "ruedas_estimadas_desde_sbs": 1.0, "retorno_estimado_pct": 0.81285384788035, "retorno_acumulado_estimado_desde_sbs_pct": 0.8128538478803401, "direccion_estimada": "Sube", "resultado": "Acierto"}, {"fecha": "2026-07-07", "afp": null, "sbs_publicada": 32.7062959, "modelo_overlay_estimado": 32.944541368488046, "cuota_base": 33.3286403, "fecha_base_sbs": "2026-07-06", "cuota_base_sbs": 33.3286403, "ruedas_estimadas_desde_sbs": 1.0, "retorno_estimado_pct": -1.15245905039804, "retorno_acumulado_estimado_desde_sbs_pct": -1.15245905039803, "direccion_estimada": "Baja", "resultado": "Acierto"}, {"fecha": "2026-07-08", "afp": null, "sbs_publicada": 32.627339, "modelo_overlay_estimado": 32.62103932905663, "cuota_base": 32.944541368488046, "fecha_base_sbs": "2026-07-06", "cuota_base_sbs": 33.3286403, "ruedas_estimadas_desde_sbs": 2.0, "retorno_estimado_pct": -0.98195945669123, "retorno_acumulado_estimado_desde_sbs_pct": -2.12310182645938, "direccion_estimada": "Baja", "resultado": "Acierto"}, {"fecha": "2026-07-09", "afp": null, "sbs_publicada": 32.9828361, "modelo_overlay_estimado": 33.20864293697849, "cuota_base": 32.627339, "fecha_base_sbs": "2026-07-08", "cuota_base_sbs": 32.627339, "ruedas_estimadas_desde_sbs": 1.0, "retorno_estimado_pct": 1.78164678700427, "retorno_acumulado_estimado_desde_sbs_pct": 1.78164678700427, "direccion_estimada": "Sube", "resultado": "Acierto"}, {"fecha": "2026-07-10", "afp": null, "sbs_publicada": 33.1575753, "modelo_overlay_estimado": 33.192283669119696, "cuota_base": 32.9828361, "fecha_base_sbs": "2026-07-09", "cuota_base_sbs": 32.9828361, "ruedas_estimadas_desde_sbs": 1.0, "retorno_estimado_pct": 0.63501988878297, "retorno_acumulado_estimado_desde_sbs_pct": 0.63501988878298, "direccion_estimada": "Sube", "resultado": "Acierto"}, {"fecha": "2026-07-13", "afp": null, "sbs_publicada": 32.609853, "modelo_overlay_estimado": 32.73245166795351, "cuota_base": 33.192283669119696, "fecha_base_sbs": "2026-07-09", "cuota_base_sbs": 32.9828361, "ruedas_estimadas_desde_sbs": 2.0, "retorno_estimado_pct": -1.3853581324806, "retorno_acumulado_estimado_desde_sbs_pct": -0.75913554336974, "direccion_estimada": "Baja", "resultado": "Acierto"}, {"fecha": "2026-07-16", "afp": null, "sbs_publicada": 32.2856466, "modelo_overlay_estimado": 32.34558654365784, "cuota_base": 32.8170077, "fecha_base_sbs": "2026-07-15", "cuota_base_sbs": 32.8170077, "ruedas_estimadas_desde_sbs": 1.0, "retorno_estimado_pct": -1.43651475067959, "retorno_acumulado_estimado_desde_sbs_pct": -1.43651475067959, "direccion_estimada": "Baja", "resultado": "Acierto"}, {"fecha": "2026-07-17", "afp": null, "sbs_publicada": 32.0835618, "modelo_overlay_estimado": 32.00115283889647, "cuota_base": 32.2856466, "fecha_base_sbs": "2026-07-16", "cuota_base_sbs": 32.2856466, "ruedas_estimadas_desde_sbs": 1.0, "retorno_estimado_pct": -0.88117721360279, "retorno_acumulado_estimado_desde_sbs_pct": -0.8811772136028, "direccion_estimada": "Baja", "resultado": "Acierto"}, {"fecha": "2026-07-21", "afp": null, "sbs_publicada": null, "modelo_overlay_estimado": 32.35105499447381, "cuota_base": 31.9591046, "fecha_base_sbs": "2026-07-20", "cuota_base_sbs": 31.9591046, "ruedas_estimadas_desde_sbs": 1.0, "retorno_estimado_pct": 1.22641231467359, "retorno_acumulado_estimado_desde_sbs_pct": 1.22641231467359, "direccion_estimada": "Sube", "resultado": "Pendiente SBS"}, {"fecha": "2026-07-22", "afp": null, "sbs_publicada": null, "modelo_overlay_estimado": 32.460007446666104, "cuota_base": 32.35105499447381, "fecha_base_sbs": "2026-07-20", "cuota_base_sbs": 31.9591046, "ruedas_estimadas_desde_sbs": 2.0, "retorno_estimado_pct": 0.3367817593921, "retorno_acumulado_estimado_desde_sbs_pct": 1.56732440703644, "direccion_estimada": "Sube", "resultado": "Pendiente SBS"}], "Integra": [{"fecha": "2026-07-01", "afp": null, "sbs_publicada": 70.968107, "modelo_overlay_estimado": 72.12403979634551, "cuota_base": 72.3284597, "fecha_base_sbs": "2026-06-30", "cuota_base_sbs": 72.3284597, "ruedas_estimadas_desde_sbs": 1.0, "retorno_estimado_pct": -0.28262720442597, "retorno_acumulado_estimado_desde_sbs_pct": -0.28262720442597, "direccion_estimada": "Baja", "resultado": "Acierto"}, {"fecha": "2026-07-02", "afp": null, "sbs_publicada": 70.2858522, "modelo_overlay_estimado": 71.28482313338502, "cuota_base": 70.968107, "fecha_base_sbs": "2026-07-01", "cuota_base_sbs": 70.968107, "ruedas_estimadas_desde_sbs": 1.0, "retorno_estimado_pct": 0.44627952861278, "retorno_acumulado_estimado_desde_sbs_pct": 0.44627952861278, "direccion_estimada": "Sube", "resultado": "Fallo"}, {"fecha": "2026-07-03", "afp": null, "sbs_publicada": 70.3888031, "modelo_overlay_estimado": 72.45770575263049, "cuota_base": 72.12403979634551, "fecha_base_sbs": "2026-06-30", "cuota_base_sbs": 72.3284597, "ruedas_estimadas_desde_sbs": 2.0, "retorno_estimado_pct": 0.02118716386081, "retorno_acumulado_estimado_desde_sbs_pct": 0.17869321863976, "direccion_estimada": "Sube", "resultado": "Acierto"}, {"fecha": "2026-07-07", "afp": null, "sbs_publicada": 69.7095577, "modelo_overlay_estimado": 70.69430413055427, "cuota_base": 71.2425063, "fecha_base_sbs": "2026-07-06", "cuota_base_sbs": 71.2425063, "ruedas_estimadas_desde_sbs": 1.0, "retorno_estimado_pct": -0.7694874842517, "retorno_acumulado_estimado_desde_sbs_pct": -0.7694874842517, "direccion_estimada": "Baja", "resultado": "Acierto"}, {"fecha": "2026-07-08", "afp": null, "sbs_publicada": 69.5245767, "modelo_overlay_estimado": 70.38886418187941, "cuota_base": 70.69430413055427, "fecha_base_sbs": "2026-07-06", "cuota_base_sbs": 71.2425063, "ruedas_estimadas_desde_sbs": 2.0, "retorno_estimado_pct": -0.43205736647579, "retorno_acumulado_estimado_desde_sbs_pct": -1.19822022336767, "direccion_estimada": "Baja", "resultado": "Acierto"}, {"fecha": "2026-07-09", "afp": null, "sbs_publicada": 70.5668726, "modelo_overlay_estimado": 70.35927494286479, "cuota_base": 69.5245767, "fecha_base_sbs": "2026-07-08", "cuota_base_sbs": 69.5245767, "ruedas_estimadas_desde_sbs": 1.0, "retorno_estimado_pct": 1.20058011495204, "retorno_acumulado_estimado_desde_sbs_pct": 1.20058011495205, "direccion_estimada": "Sube", "resultado": "Acierto"}, {"fecha": "2026-07-10", "afp": null, "sbs_publicada": 70.8557412, "modelo_overlay_estimado": 70.8176413662623, "cuota_base": 70.5668726, "fecha_base_sbs": "2026-07-09", "cuota_base_sbs": 70.5668726, "ruedas_estimadas_desde_sbs": 1.0, "retorno_estimado_pct": 0.35536329870213, "retorno_acumulado_estimado_desde_sbs_pct": 0.35536329870213, "direccion_estimada": "Sube", "resultado": "Acierto"}, {"fecha": "2026-07-13", "afp": null, "sbs_publicada": 69.4388446, "modelo_overlay_estimado": 70.44778481661217, "cuota_base": 70.8176413662623, "fecha_base_sbs": "2026-07-09", "cuota_base_sbs": 70.5668726, "ruedas_estimadas_desde_sbs": 2.0, "retorno_estimado_pct": -0.52226612255731, "retorno_acumulado_estimado_desde_sbs_pct": -0.16875876597629, "direccion_estimada": "Baja", "resultado": "Acierto"}, {"fecha": "2026-07-14", "afp": null, "sbs_publicada": 70.3831329, "modelo_overlay_estimado": 70.95496499339002, "cuota_base": 70.44778481661217, "fecha_base_sbs": "2026-07-09", "cuota_base_sbs": 70.5668726, "ruedas_estimadas_desde_sbs": 3.0, "retorno_estimado_pct": 0.71993772138914, "retorno_acumulado_estimado_desde_sbs_pct": 0.54996399739843, "direccion_estimada": "Sube", "resultado": "Acierto"}, {"fecha": "2026-07-16", "afp": null, "sbs_publicada": 68.8450619, "modelo_overlay_estimado": 69.3958415014546, "cuota_base": 69.9906132, "fecha_base_sbs": "2026-07-15", "cuota_base_sbs": 69.9906132, "ruedas_estimadas_desde_sbs": 1.0, "retorno_estimado_pct": -0.8497878091821099, "retorno_acumulado_estimado_desde_sbs_pct": -0.8497878091821099, "direccion_estimada": "Baja", "resultado": "Acierto"}, {"fecha": "2026-07-17", "afp": null, "sbs_publicada": 68.4554312, "modelo_overlay_estimado": 68.6596433713772, "cuota_base": 68.8450619, "fecha_base_sbs": "2026-07-16", "cuota_base_sbs": 68.8450619, "ruedas_estimadas_desde_sbs": 1.0, "retorno_estimado_pct": -0.26932727417999, "retorno_acumulado_estimado_desde_sbs_pct": -0.26932727417999, "direccion_estimada": "Baja", "resultado": "Acierto"}, {"fecha": "2026-07-20", "afp": null, "sbs_publicada": 68.216209, "modelo_overlay_estimado": 68.47349439914767, "cuota_base": 68.4554312, "fecha_base_sbs": "2026-07-17", "cuota_base_sbs": 68.4554312, "ruedas_estimadas_desde_sbs": 1.0, "retorno_estimado_pct": 0.0263868020857, "retorno_acumulado_estimado_desde_sbs_pct": 0.0263868020857, "direccion_estimada": "Sube", "resultado": "Fallo"}, {"fecha": "2026-07-21", "afp": null, "sbs_publicada": null, "modelo_overlay_estimado": 68.96529601617972, "cuota_base": 68.216209, "fecha_base_sbs": "2026-07-20", "cuota_base_sbs": 68.216209, "ruedas_estimadas_desde_sbs": 1.0, "retorno_estimado_pct": 1.09810707331993, "retorno_acumulado_estimado_desde_sbs_pct": 1.09810707331994, "direccion_estimada": "Sube", "resultado": "Pendiente SBS"}, {"fecha": "2026-07-22", "afp": null, "sbs_publicada": null, "modelo_overlay_estimado": 69.2291557153766, "cuota_base": 68.96529601617972, "fecha_base_sbs": "2026-07-20", "cuota_base_sbs": 68.216209, "ruedas_estimadas_desde_sbs": 2.0, "retorno_estimado_pct": 0.38259779111944, "retorno_acumulado_estimado_desde_sbs_pct": 1.48490619784602, "direccion_estimada": "Sube", "resultado": "Pendiente SBS"}], "Prima": [{"fecha": "2026-07-01", "afp": null, "sbs_publicada": 64.5091479, "modelo_overlay_estimado": 65.57636864055486, "cuota_base": 65.7918163, "fecha_base_sbs": "2026-06-30", "cuota_base_sbs": 65.7918163, "ruedas_estimadas_desde_sbs": 1.0, "retorno_estimado_pct": -0.3274687819268, "retorno_acumulado_estimado_desde_sbs_pct": -0.3274687819268, "direccion_estimada": "Baja", "resultado": "Acierto"}, {"fecha": "2026-07-02", "afp": null, "sbs_publicada": 63.9206382, "modelo_overlay_estimado": 64.75766438275072, "cuota_base": 64.5091479, "fecha_base_sbs": "2026-07-01", "cuota_base_sbs": 64.5091479, "ruedas_estimadas_desde_sbs": 1.0, "retorno_estimado_pct": 0.38524223438195, "retorno_acumulado_estimado_desde_sbs_pct": 0.38524223438194, "direccion_estimada": "Sube", "resultado": "Fallo"}, {"fecha": "2026-07-03", "afp": null, "sbs_publicada": 63.9694471, "modelo_overlay_estimado": 65.83592845772588, "cuota_base": 65.57636864055486, "fecha_base_sbs": "2026-06-30", "cuota_base_sbs": 65.7918163, "ruedas_estimadas_desde_sbs": 2.0, "retorno_estimado_pct": 0.0084091551226951, "retorno_acumulado_estimado_desde_sbs_pct": 0.06704809231097, "direccion_estimada": "Sube", "resultado": "Acierto"}, {"fecha": "2026-07-06", "afp": null, "sbs_publicada": 64.8574126, "modelo_overlay_estimado": 64.3357589138343, "cuota_base": 63.9206382, "fecha_base_sbs": "2026-07-02", "cuota_base_sbs": 63.9206382, "ruedas_estimadas_desde_sbs": 1.0, "retorno_estimado_pct": 0.64943142860281, "retorno_acumulado_estimado_desde_sbs_pct": 0.6494314286028, "direccion_estimada": "Sube", "resultado": "Acierto"}, {"fecha": "2026-07-07", "afp": null, "sbs_publicada": 63.398309, "modelo_overlay_estimado": 64.31417146677857, "cuota_base": 64.8574126, "fecha_base_sbs": "2026-07-06", "cuota_base_sbs": 64.8574126, "ruedas_estimadas_desde_sbs": 1.0, "retorno_estimado_pct": -0.83759297733908, "retorno_acumulado_estimado_desde_sbs_pct": -0.83759297733908, "direccion_estimada": "Baja", "resultado": "Acierto"}, {"fecha": "2026-07-08", "afp": null, "sbs_publicada": 63.4375649, "modelo_overlay_estimado": 64.13811593312406, "cuota_base": 64.31417146677857, "fecha_base_sbs": "2026-07-06", "cuota_base_sbs": 64.8574126, "ruedas_estimadas_desde_sbs": 2.0, "retorno_estimado_pct": -0.2737429864045599, "retorno_acumulado_estimado_desde_sbs_pct": -1.10904311171357, "direccion_estimada": "Baja", "resultado": "Fallo"}, {"fecha": "2026-07-09", "afp": null, "sbs_publicada": 64.3698862, "modelo_overlay_estimado": 64.1621606750588, "cuota_base": 63.4375649, "fecha_base_sbs": "2026-07-08", "cuota_base_sbs": 63.4375649, "ruedas_estimadas_desde_sbs": 1.0, "retorno_estimado_pct": 1.14221877242769, "retorno_acumulado_estimado_desde_sbs_pct": 1.14221877242768, "direccion_estimada": "Sube", "resultado": "Acierto"}, {"fecha": "2026-07-10", "afp": null, "sbs_publicada": 64.6882598, "modelo_overlay_estimado": 64.59390799858267, "cuota_base": 64.3698862, "fecha_base_sbs": "2026-07-09", "cuota_base_sbs": 64.3698862, "ruedas_estimadas_desde_sbs": 1.0, "retorno_estimado_pct": 0.34802267303474, "retorno_acumulado_estimado_desde_sbs_pct": 0.34802267303475, "direccion_estimada": "Sube", "resultado": "Acierto"}, {"fecha": "2026-07-13", "afp": null, "sbs_publicada": 63.1882938, "modelo_overlay_estimado": 64.17760719009749, "cuota_base": 64.59390799858267, "fecha_base_sbs": "2026-07-09", "cuota_base_sbs": 64.3698862, "ruedas_estimadas_desde_sbs": 2.0, "retorno_estimado_pct": -0.64448927365458, "retorno_acumulado_estimado_desde_sbs_pct": -0.29870956941742, "direccion_estimada": "Baja", "resultado": "Acierto"}, {"fecha": "2026-07-14", "afp": null, "sbs_publicada": 64.2229518, "modelo_overlay_estimado": 64.57744595460885, "cuota_base": 64.17760719009749, "fecha_base_sbs": "2026-07-09", "cuota_base_sbs": 64.3698862, "ruedas_estimadas_desde_sbs": 3.0, "retorno_estimado_pct": 0.6230191214936, "retorno_acumulado_estimado_desde_sbs_pct": 0.32244853434097, "direccion_estimada": "Sube", "resultado": "Acierto"}, {"fecha": "2026-07-16", "afp": null, "sbs_publicada": 62.3456937, "modelo_overlay_estimado": 63.12486941798546, "cuota_base": 63.6610026, "fecha_base_sbs": "2026-07-15", "cuota_base_sbs": 63.6610026, "ruedas_estimadas_desde_sbs": 1.0, "retorno_estimado_pct": -0.84216892621566, "retorno_acumulado_estimado_desde_sbs_pct": -0.8421689262156499, "direccion_estimada": "Baja", "resultado": "Acierto"}, {"fecha": "2026-07-17", "afp": null, "sbs_publicada": 62.048325, "modelo_overlay_estimado": 62.15730226603485, "cuota_base": 62.3456937, "fecha_base_sbs": "2026-07-16", "cuota_base_sbs": 62.3456937, "ruedas_estimadas_desde_sbs": 1.0, "retorno_estimado_pct": -0.3021723278461899, "retorno_acumulado_estimado_desde_sbs_pct": -0.3021723278461899, "direccion_estimada": "Baja", "resultado": "Acierto"}, {"fecha": "2026-07-20", "afp": null, "sbs_publicada": 61.9245126, "modelo_overlay_estimado": 62.05111574509974, "cuota_base": 62.048325, "fecha_base_sbs": "2026-07-17", "cuota_base_sbs": 62.048325, "ruedas_estimadas_desde_sbs": 1.0, "retorno_estimado_pct": 0.0044976961098454, "retorno_acumulado_estimado_desde_sbs_pct": 0.0044976961098397, "direccion_estimada": "Sube", "resultado": "Fallo"}, {"fecha": "2026-07-21", "afp": null, "sbs_publicada": null, "modelo_overlay_estimado": 62.57312468114031, "cuota_base": 61.9245126, "fecha_base_sbs": "2026-07-20", "cuota_base_sbs": 61.9245126, "ruedas_estimadas_desde_sbs": 1.0, "retorno_estimado_pct": 1.0474237969865, "retorno_acumulado_estimado_desde_sbs_pct": 1.0474237969865, "direccion_estimada": "Sube", "resultado": "Pendiente SBS"}, {"fecha": "2026-07-22", "afp": null, "sbs_publicada": null, "modelo_overlay_estimado": 62.74596808772946, "cuota_base": 62.57312468114031, "fecha_base_sbs": "2026-07-20", "cuota_base_sbs": 61.9245126, "ruedas_estimadas_desde_sbs": 2.0, "retorno_estimado_pct": 0.27622626721923, "retorno_acumulado_estimado_desde_sbs_pct": 1.3265433238621198, "direccion_estimada": "Sube", "resultado": "Pendiente SBS"}], "Profuturo": [{"fecha": "2026-07-01", "afp": null, "sbs_publicada": 70.9226332, "modelo_overlay_estimado": 71.74794491459173, "cuota_base": 71.9348302, "fecha_base_sbs": "2026-06-30", "cuota_base_sbs": 71.9348302, "ruedas_estimadas_desde_sbs": 1.0, "retorno_estimado_pct": -0.2597980489961199, "retorno_acumulado_estimado_desde_sbs_pct": -0.25979804899611, "direccion_estimada": "Baja", "resultado": "Acierto"}, {"fecha": "2026-07-02", "afp": null, "sbs_publicada": 70.3358541, "modelo_overlay_estimado": 71.31788868168552, "cuota_base": 70.9226332, "fecha_base_sbs": "2026-07-01", "cuota_base_sbs": 70.9226332, "ruedas_estimadas_desde_sbs": 1.0, "retorno_estimado_pct": 0.55730514202835, "retorno_acumulado_estimado_desde_sbs_pct": 0.55730514202836, "direccion_estimada": "Sube", "resultado": "Fallo"}, {"fecha": "2026-07-03", "afp": null, "sbs_publicada": 70.3944744, "modelo_overlay_estimado": 72.15353176305611, "cuota_base": 71.74794491459173, "fecha_base_sbs": "2026-06-30", "cuota_base_sbs": 71.9348302, "ruedas_estimadas_desde_sbs": 2.0, "retorno_estimado_pct": 0.0084735879116648, "retorno_acumulado_estimado_desde_sbs_pct": 0.3040273570509, "direccion_estimada": "Sube", "resultado": "Acierto"}, {"fecha": "2026-07-07", "afp": null, "sbs_publicada": 69.9352638, "modelo_overlay_estimado": 70.78071556002274, "cuota_base": 71.3369613, "fecha_base_sbs": "2026-07-06", "cuota_base_sbs": 71.3369613, "ruedas_estimadas_desde_sbs": 1.0, "retorno_estimado_pct": -0.7797440903573299, "retorno_acumulado_estimado_desde_sbs_pct": -0.7797440903573299, "direccion_estimada": "Baja", "resultado": "Acierto"}, {"fecha": "2026-07-08", "afp": null, "sbs_publicada": 69.8131004, "modelo_overlay_estimado": 70.41627801511254, "cuota_base": 70.78071556002274, "fecha_base_sbs": "2026-07-06", "cuota_base_sbs": 71.3369613, "ruedas_estimadas_desde_sbs": 2.0, "retorno_estimado_pct": -0.5148825383111, "retorno_acumulado_estimado_desde_sbs_pct": -1.29061186250367, "direccion_estimada": "Baja", "resultado": "Acierto"}, {"fecha": "2026-07-09", "afp": null, "sbs_publicada": 70.9792394, "modelo_overlay_estimado": 70.71468827933464, "cuota_base": 69.8131004, "fecha_base_sbs": "2026-07-08", "cuota_base_sbs": 69.8131004, "ruedas_estimadas_desde_sbs": 1.0, "retorno_estimado_pct": 1.29143079761379, "retorno_acumulado_estimado_desde_sbs_pct": 1.2914307976138, "direccion_estimada": "Sube", "resultado": "Acierto"}, {"fecha": "2026-07-10", "afp": null, "sbs_publicada": 71.0624925, "modelo_overlay_estimado": 71.24028069948861, "cuota_base": 70.9792394, "fecha_base_sbs": "2026-07-09", "cuota_base_sbs": 70.9792394, "ruedas_estimadas_desde_sbs": 1.0, "retorno_estimado_pct": 0.36777133947228, "retorno_acumulado_estimado_desde_sbs_pct": 0.36777133947227, "direccion_estimada": "Sube", "resultado": "Acierto"}, {"fecha": "2026-07-13", "afp": null, "sbs_publicada": 69.4242724, "modelo_overlay_estimado": 70.87548240383036, "cuota_base": 71.24028069948861, "fecha_base_sbs": "2026-07-09", "cuota_base_sbs": 70.9792394, "ruedas_estimadas_desde_sbs": 2.0, "retorno_estimado_pct": -0.51206745969611, "retorno_acumulado_estimado_desde_sbs_pct": -0.14617935757935, "direccion_estimada": "Baja", "resultado": "Acierto"}, {"fecha": "2026-07-14", "afp": null, "sbs_publicada": 70.5044231, "modelo_overlay_estimado": 71.35352740197501, "cuota_base": 70.87548240383036, "fecha_base_sbs": "2026-07-09", "cuota_base_sbs": 70.9792394, "ruedas_estimadas_desde_sbs": 3.0, "retorno_estimado_pct": 0.67448570638414, "retorno_acumulado_estimado_desde_sbs_pct": 0.5273203899322301, "direccion_estimada": "Sube", "resultado": "Acierto"}, {"fecha": "2026-07-16", "afp": null, "sbs_publicada": 68.4036329, "modelo_overlay_estimado": 69.21240494241201, "cuota_base": 69.9080824, "fecha_base_sbs": "2026-07-15", "cuota_base_sbs": 69.9080824, "ruedas_estimadas_desde_sbs": 1.0, "retorno_estimado_pct": -0.99513165531771, "retorno_acumulado_estimado_desde_sbs_pct": -0.99513165531771, "direccion_estimada": "Baja", "resultado": "Acierto"}, {"fecha": "2026-07-17", "afp": null, "sbs_publicada": 68.2147702, "modelo_overlay_estimado": 68.25526799330214, "cuota_base": 68.4036329, "fecha_base_sbs": "2026-07-16", "cuota_base_sbs": 68.4036329, "ruedas_estimadas_desde_sbs": 1.0, "retorno_estimado_pct": -0.21689623841289, "retorno_acumulado_estimado_desde_sbs_pct": -0.21689623841288, "direccion_estimada": "Baja", "resultado": "Acierto"}, {"fecha": "2026-07-20", "afp": null, "sbs_publicada": 68.06385, "modelo_overlay_estimado": 68.18277597245887, "cuota_base": 68.2147702, "fecha_base_sbs": "2026-07-17", "cuota_base_sbs": 68.2147702, "ruedas_estimadas_desde_sbs": 1.0, "retorno_estimado_pct": -0.04690219940246, "retorno_acumulado_estimado_desde_sbs_pct": -0.04690219940246, "direccion_estimada": "Baja", "resultado": "Acierto"}, {"fecha": "2026-07-21", "afp": null, "sbs_publicada": null, "modelo_overlay_estimado": 68.82387912896235, "cuota_base": 68.06385, "fecha_base_sbs": "2026-07-20", "cuota_base_sbs": 68.06385, "ruedas_estimadas_desde_sbs": 1.0, "retorno_estimado_pct": 1.11664140209869, "retorno_acumulado_estimado_desde_sbs_pct": 1.11664140209868, "direccion_estimada": "Sube", "resultado": "Pendiente SBS"}, {"fecha": "2026-07-22", "afp": null, "sbs_publicada": null, "modelo_overlay_estimado": 69.16171379650831, "cuota_base": 68.82387912896235, "fecha_base_sbs": "2026-07-20", "cuota_base_sbs": 68.06385, "ruedas_estimadas_desde_sbs": 2.0, "retorno_estimado_pct": 0.4908683901889999, "retorno_acumulado_estimado_desde_sbs_pct": 1.61299103196235, "direccion_estimada": "Sube", "resultado": "Pendiente SBS"}]};
+    const AFPS = ["Habitat", "Integra", "Prima", "Profuturo"];
+    const svg = document.getElementById("quota-chart");
+    const detail = document.getElementById("chart-detail");
+    const statusAfp = document.getElementById("chart-afp");
+    const statusDate = document.getElementById("chart-date");
+    const statusSbs = document.getElementById("chart-sbs");
+    const statusModel = document.getElementById("chart-model");
+    const statusPending = document.getElementById("chart-pending");
+    const NS = "http://www.w3.org/2000/svg";
+    const box = { w: 980, h: 430, l: 72, r: 34, t: 28, b: 54 };
+    let activeAfp = "Habitat";
+    let activePoints = [];
+
+    function fmtNum(v) {
+      return v === null || Number.isNaN(v) ? "-" : Number(v).toFixed(4);
+    }
+
+    function fmtPct(v) {
+      if (v === null || Number.isNaN(v)) return "-";
+      const n = Number(v);
+      return `${n > 0 ? "+" : ""}${n.toFixed(3)}%`;
+    }
+
+    function fmtDateShort(iso) {
+      if (!iso || iso === "-") return "-";
+      const [y, m, d] = iso.split("-");
+      return `${d}/${m}`;
+    }
+
+    function el(tag, attrs = {}, text = "") {
+      const node = document.createElementNS(NS, tag);
+      for (const [k, v] of Object.entries(attrs)) node.setAttribute(k, v);
+      if (text) node.textContent = text;
+      return node;
+    }
+
+    function valuesFor(rows) {
+      const vals = [];
+      rows.forEach(r => {
+        if (r.sbs_publicada !== null) vals.push(r.sbs_publicada);
+        if (r.modelo_overlay_estimado !== null) vals.push(r.modelo_overlay_estimado);
+      });
+      return vals;
+    }
+
+    function yScale(value, min, max) {
+      const inner = box.h - box.t - box.b;
+      return box.t + (max - value) / Math.max(max - min, 0.000001) * inner;
+    }
+
+    function xScale(index, total) {
+      const inner = box.w - box.l - box.r;
+      return box.l + index / Math.max(total - 1, 1) * inner;
+    }
+
+    function pathFor(points) {
+      return points.map((p, i) => `${i === 0 ? "M" : "L"}${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(" ");
+    }
+
+    function addPath(points, cls) {
+      if (points.length < 2) return;
+      svg.appendChild(el("path", { d: pathFor(points), class: cls }));
+    }
+
+    function addCircle(p, cls) {
+      svg.appendChild(el("circle", { cx: p.x, cy: p.y, r: 4.4, class: cls }));
+    }
+
+    function renderGrid(min, max, rows) {
+      const plotBottom = box.h - box.b;
+      const plotRight = box.w - box.r;
+      for (let i = 0; i <= 5; i += 1) {
+        const y = box.t + (plotBottom - box.t) * i / 5;
+        svg.appendChild(el("line", { x1: box.l, y1: y, x2: plotRight, y2: y, class: "grid-line" }));
+        const value = max - (max - min) * i / 5;
+        svg.appendChild(el("text", { x: box.l - 10, y: y + 4, "text-anchor": "end", class: "axis-label" }, value.toFixed(4)));
+      }
+      const tickIndexes = [0, Math.floor((rows.length - 1) / 2), rows.length - 1].filter((v, i, a) => a.indexOf(v) === i);
+      tickIndexes.forEach(idx => {
+        const x = xScale(idx, rows.length);
+        svg.appendChild(el("line", { x1: x, y1: box.t, x2: x, y2: plotBottom, class: "grid-line vertical" }));
+        svg.appendChild(el("text", { x, y: plotBottom + 26, "text-anchor": "middle", class: "axis-label" }, fmtDateShort(rows[idx].fecha)));
+      });
+      svg.appendChild(el("rect", { x: box.l, y: box.t, width: plotRight - box.l, height: plotBottom - box.t, class: "plot-border" }));
+    }
+
+    function rowToPoint(row, index, min, max, key) {
+      const value = row[key];
+      if (value === null || Number.isNaN(value)) return null;
+      return {
+        x: xScale(index, activePoints.length),
+        y: yScale(value, min, max),
+        value,
+        row,
+        index
+      };
+    }
+
+    function updateStatus(row) {
+      statusAfp.textContent = activeAfp;
+      statusDate.textContent = row ? row.fecha : "-";
+      statusSbs.textContent = row ? fmtNum(row.sbs_publicada) : "-";
+      statusModel.textContent = row ? fmtNum(row.modelo_overlay_estimado) : "-";
+      if (!row) {
+        statusPending.textContent = "-";
+        statusPending.className = "";
+        return;
+      }
+      const pending = row.sbs_publicada === null;
+      statusPending.textContent = pending ? `Pendiente SBS, ${row.ruedas_estimadas_desde_sbs || "-"} rueda(s)` : "Con SBS";
+      statusPending.className = pending ? "pending-pill" : "ok-pill";
+    }
+
+    function updateDetail(row) {
+      if (!row) {
+        detail.innerHTML = `
+          <span class="detail-kicker">Detalle</span>
+          <strong>Sin dato seleccionado</strong>
+          <p>Mueve el mouse o toca la grafica.</p>
+        `;
+        return;
+      }
+      const pending = row.sbs_publicada === null;
+      detail.innerHTML = `
+        <span class="detail-kicker">${pending ? "Pendiente SBS" : "Con SBS"}</span>
+        <strong>${activeAfp} ${row.fecha}</strong>
+        <dl>
+          <div><dt>SBS</dt><dd>${fmtNum(row.sbs_publicada)}</dd></div>
+          <div><dt>Modelo</dt><dd>${fmtNum(row.modelo_overlay_estimado)}</dd></div>
+          <div><dt>Ret. dia</dt><dd>${fmtPct(row.retorno_estimado_pct)}</dd></div>
+          <div><dt>Ret. acum.</dt><dd>${fmtPct(row.retorno_acumulado_estimado_desde_sbs_pct)}</dd></div>
+          <div><dt>Ruedas</dt><dd>${row.ruedas_estimadas_desde_sbs || "-"}</dd></div>
+        </dl>
+        <p>${pending ? "Esperando publicacion SBS para medir error." : "Ya tiene cuota SBS publicada."}</p>
+      `;
+      updateStatus(row);
+    }
+
+    function renderChart(afp) {
+      activeAfp = afp;
+      const rows = (CHART_DATA[afp] || []).filter(r => r.fecha);
+      activePoints = rows;
+      svg.replaceChildren();
+      statusAfp.textContent = afp;
+      if (!rows.length) return;
+
+      const vals = valuesFor(rows);
+      const rawMin = Math.min(...vals);
+      const rawMax = Math.max(...vals);
+      const pad = Math.max((rawMax - rawMin) * 0.12, 0.02);
+      const min = rawMin - pad;
+      const max = rawMax + pad;
+      renderGrid(min, max, rows);
+
+      const sbsPts = [];
+      const modelSolid = [];
+      const modelPending = [];
+      rows.forEach((row, idx) => {
+        const sbs = rowToPoint(row, idx, min, max, "sbs_publicada");
+        const model = rowToPoint(row, idx, min, max, "modelo_overlay_estimado");
+        if (sbs) sbsPts.push(sbs);
+        if (model && row.sbs_publicada !== null) modelSolid.push(model);
+      });
+      const pendingRows = rows.filter(r => r.sbs_publicada === null && r.modelo_overlay_estimado !== null);
+      if (pendingRows.length && modelSolid.length) modelPending.push(modelSolid[modelSolid.length - 1]);
+      pendingRows.forEach(row => {
+        const idx = rows.indexOf(row);
+        const point = rowToPoint(row, idx, min, max, "modelo_overlay_estimado");
+        if (point) modelPending.push(point);
+      });
+
+      addPath(sbsPts, "line-sbs");
+      addPath(modelSolid, "line-model");
+      addPath(modelPending, "line-pending");
+      sbsPts.forEach(p => addCircle(p, "dot-sbs"));
+      modelSolid.forEach(p => addCircle(p, "dot-model"));
+      modelPending.slice(1).forEach(p => addCircle(p, "dot-pending"));
+
+      const crossX = el("line", { x1: 0, y1: box.t, x2: 0, y2: box.h - box.b, class: "crosshair", visibility: "hidden" });
+      const crossY = el("line", { x1: box.l, y1: 0, x2: box.w - box.r, y2: 0, class: "crosshair", visibility: "hidden" });
+      svg.appendChild(crossX);
+      svg.appendChild(crossY);
+      const overlay = el("rect", { x: box.l, y: box.t, width: box.w - box.l - box.r, height: box.h - box.t - box.b, fill: "transparent", class: "hover-zone" });
+      svg.appendChild(overlay);
+
+      function locate(event) {
+        const rect = svg.getBoundingClientRect();
+        const svgX = (event.clientX - rect.left) / rect.width * box.w;
+        const idx = Math.max(0, Math.min(rows.length - 1, Math.round((svgX - box.l) / (box.w - box.l - box.r) * (rows.length - 1))));
+        const row = rows[idx];
+        const yValue = row.modelo_overlay_estimado ?? row.sbs_publicada;
+        const x = xScale(idx, rows.length);
+        const y = yValue === null ? box.t : yScale(yValue, min, max);
+        crossX.setAttribute("x1", x);
+        crossX.setAttribute("x2", x);
+        crossY.setAttribute("y1", y);
+        crossY.setAttribute("y2", y);
+        crossX.setAttribute("visibility", "visible");
+        crossY.setAttribute("visibility", "visible");
+        updateDetail(row);
+      }
+      overlay.addEventListener("pointermove", locate);
+      overlay.addEventListener("pointerdown", locate);
+      overlay.addEventListener("pointerleave", () => {
+        crossX.setAttribute("visibility", "hidden");
+        crossY.setAttribute("visibility", "hidden");
+        updateStatus(rows[rows.length - 1]);
+        updateDetail(rows[rows.length - 1]);
+      });
+      updateStatus(rows[rows.length - 1]);
+      updateDetail(rows[rows.length - 1]);
+    }
+
+    document.querySelectorAll(".afp-tab").forEach(button => {
+      button.addEventListener("click", () => {
+        document.querySelectorAll(".afp-tab").forEach(b => b.classList.remove("active"));
+        button.classList.add("active");
+        renderChart(button.dataset.afp);
+      });
+    });
+    renderChart(activeAfp);
+    </script>
+    
+</body>
+</html>
