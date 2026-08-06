@@ -377,7 +377,7 @@ Promise.all([fetch('data/latest.json?ts='+Date.now(),{cache:'no-store'}).then(r=
 <script id="tradeHistoryScript">
 (function(){
   'use strict';
-  const KEY='habitat_fondo3_trade_history_v1';
+  const KEY='habitat_fondo3_trade_history_v2';
   let signals=[],timeline=[],live=null;
   const $=id=>document.getElementById(id);
   const finite=x=>x!==null&&x!==undefined&&x!==''&&Number.isFinite(Number(x));
@@ -539,10 +539,12 @@ Promise.all([fetch('data/latest.json?ts='+Date.now(),{cache:'no-store'}).then(r=
 <script id="tradeCloudScript">
 (function(){
   'use strict';
-  const TRADE_KEY='habitat_fondo3_trade_history_v1';
-  const URL_KEY='habitat_fondo3_drive_sync_url_v1';
+  const FUND='HABITAT';
+  const DRIVE_SHEET='Habitat';
+  const TRADE_KEY='habitat_fondo3_trade_history_v2';
+  const URL_KEY='habitat_fondo3_drive_sync_url_v2';
   const SECRET_KEY='fondo3_drive_sync_key_v1';
-  const SNAP_KEY='fondo3_drive_sync_snapshot_v1';
+  const SNAP_KEY='habitat_fondo3_drive_sync_snapshot_v2';
   const DEFAULT_URL='https://script.google.com/macros/s/AKfycbxY9JqIeTnweKaEXAOs7hQ6KftlPgVsGOFPwOp7hqL5gJ47OuuHlAJBksTGdOQ2yc_Y0Q/exec';
   let syncing=false,timer=null;
   const $=id=>document.getElementById(id);
@@ -563,7 +565,7 @@ Promise.all([fetch('data/latest.json?ts='+Date.now(),{cache:'no-store'}).then(r=
       function done(err,data){clearTimeout(timeout);delete window[cb];s.remove();err?reject(err):resolve(data)}
       window[cb]=data=>{if(!data||data.ok!==true)done(new Error(data&&data.error?data.error:'Respuesta inválida'));else done(null,data)};
       const u=new URL(c.url);
-      u.searchParams.set('action',action);u.searchParams.set('key',c.key);u.searchParams.set('callback',cb);u.searchParams.set('_',Date.now());
+      u.searchParams.set('action',action);u.searchParams.set('fund',FUND);u.searchParams.set('key',c.key);u.searchParams.set('callback',cb);u.searchParams.set('_',Date.now());
       Object.entries(extra).forEach(([k,v])=>u.searchParams.set(k,String(v)));
       s.onerror=()=>done(new Error('No se pudo contactar Apps Script'));
       s.src=u.toString();document.head.appendChild(s);
@@ -576,6 +578,11 @@ Promise.all([fetch('data/latest.json?ts='+Date.now(),{cache:'no-store'}).then(r=
     const c=cfg();if(!c.url||!c.key||syncing)return;
     syncing=true;setStatus('Sincronizando con Drive…','cloud-warn');
     try{
+      // TRADE_CLOUD_FUND_ROUTING_V2
+      const probe=await jsonp('ping');
+      if(probe.routing!==true||String(probe.fund||'').toUpperCase()!==FUND){
+        throw new Error(`El puente de Drive aún no está actualizado para la hoja ${DRIVE_SHEET}.`);
+      }
       const current=rows(),old=snapshot();
       if(old===null){
         for(const r of current){await jsonp('upsert',{payload:JSON.stringify(r)})}
@@ -588,7 +595,7 @@ Promise.all([fetch('data/latest.json?ts='+Date.now(),{cache:'no-store'}).then(r=
       const remote=Array.isArray(out.rows)?out.rows:[];
       localStorage.setItem(TRADE_KEY,JSON.stringify(remote));
       localStorage.setItem(SNAP_KEY,JSON.stringify(remote));
-      setStatus(`Drive conectado · ${remote.length} ${remote.length===1?'operación':'operaciones'} sincronizadas.`,'cloud-ok');
+      setStatus(`Drive ${DRIVE_SHEET} conectado · ${remote.length} ${remote.length===1?'operación':'operaciones'} sincronizadas.`,'cloud-ok');
       window.dispatchEvent(new Event('fondo3-cloud-synced'));
       if(!initial)setTimeout(()=>location.reload(),180);
     }catch(e){setStatus('Drive no sincronizó: '+e.message,'cloud-bad')}
