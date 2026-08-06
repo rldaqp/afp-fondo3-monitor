@@ -10,6 +10,7 @@ on:
       - "scripts/update_live_market_only.py"
       - "scripts/update_live_market_hybrid.py"
       - "scripts/update_habitat_live_market.py"
+      - "scripts/postprocess_live_consistency.py"
       - "requirements-live.txt"
   schedule:
     # Una ejecución corta cada cinco minutos durante la franja que cubre
@@ -51,6 +52,7 @@ jobs:
         env:
           PYTHONUTF8: "1"
           PYTHONIOENCODING: "utf-8"
+          GITHUB_TOKEN: ${{ github.token }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -102,4 +104,20 @@ jobs:
               git pull --rebase origin migracion-github-actions
               git push origin HEAD:migracion-github-actions
             fi
+          fi
+
+          tmp="$(mktemp -d)"
+          git clone --depth 1 --branch gh-pages "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" "$tmp/gh-pages"
+          mkdir -p "$tmp/gh-pages/data" "$tmp/gh-pages/habitat/data"
+          cp public/data/live_market.json "$tmp/gh-pages/data/live_market.json"
+          cp public/habitat/data/live_market.json "$tmp/gh-pages/habitat/data/live_market.json"
+          cd "$tmp/gh-pages"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/live_market.json habitat/data/live_market.json
+          if git diff --cached --quiet; then
+            echo "gh-pages ya tiene los snapshots intradía vigentes."
+          else
+            git commit -m "Publicar snapshots intradía"
+            git push origin HEAD:gh-pages
           fi
