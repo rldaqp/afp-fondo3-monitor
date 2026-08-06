@@ -22,6 +22,7 @@ from habitat_complete_official_calendar import (
 )
 from postprocess_habitat_chart_clarity import main as clarify_habitat_chart
 from postprocess_habitat_sbs_indicators import ensure_latest_consistency
+from postprocess_trade_cloud_fund_routing import patch as route_trade_cloud
 
 ROOT = Path(__file__).resolve().parents[1]
 OFFICIAL_CORRECTIONS = (
@@ -116,6 +117,7 @@ def main() -> None:
     habitat_ols.main()
     clarify_habitat_chart()
     ensure_latest_consistency()
+    route_trade_cloud("habitat")
     validate_official_estimate_calendar()
 
 
