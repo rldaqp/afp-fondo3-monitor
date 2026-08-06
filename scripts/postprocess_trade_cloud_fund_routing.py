@@ -59,13 +59,31 @@ def patch(target: str) -> None:
     cloud = replace_constant(cloud, "SNAP_KEY", cfg["snapshot_key"])
 
     if re.search(r"const FUND='[^']*';", cloud):
-        cloud = re.sub(r"const FUND='[^']*';", f"const FUND='{cfg['fund']}';", cloud)
+        cloud = re.sub(
+            r"const FUND='[^']*';",
+            f"const FUND='{cfg['fund']}';",
+            cloud,
+        )
     else:
         cloud = cloud.replace(
             "  'use strict';\n",
             "  'use strict';\n"
             f"  const FUND='{cfg['fund']}';\n"
             f"  const DRIVE_SHEET='{cfg['sheet']}';\n",
+            1,
+        )
+
+    if re.search(r"const DRIVE_SHEET='[^']*';", cloud):
+        cloud = re.sub(
+            r"const DRIVE_SHEET='[^']*';",
+            f"const DRIVE_SHEET='{cfg['sheet']}';",
+            cloud,
+        )
+    else:
+        fund_line = f"  const FUND='{cfg['fund']}';\n"
+        cloud = cloud.replace(
+            fund_line,
+            fund_line + f"  const DRIVE_SHEET='{cfg['sheet']}';\n",
             1,
         )
 
@@ -108,10 +126,17 @@ def patch(target: str) -> None:
         "Drive ${DRIVE_SHEET} conectado · ${remote.length}",
     )
 
-    html = html[:history_start] + history + html[history_end:cloud_start] + cloud + html[cloud_end:]
+    html = (
+        html[:history_start]
+        + history
+        + html[history_end:cloud_start]
+        + cloud
+        + html[cloud_end:]
+    )
 
     required = [
         f"const FUND='{cfg['fund']}';",
+        f"const DRIVE_SHEET='{cfg['sheet']}';",
         f"const KEY='{cfg['trade_key']}';",
         f"const TRADE_KEY='{cfg['trade_key']}';",
         f"const SNAP_KEY='{cfg['snapshot_key']}';",
