@@ -56,8 +56,9 @@ def main() -> None:
     latest = json.loads(HABITAT_LATEST.read_text(encoding="utf-8"))
     assets = copy.deepcopy(market.get("assets", []))
     is_open = bool(market.get("market_open"))
+    is_intraday = str(market.get("mode", "")).startswith("INTRAD")
 
-    if is_open and not market.get("warning"):
+    if is_intraday and not market.get("warning"):
         coefficients = latest.get("coefficients", {}) or {}
         estimated_return = finite_number(coefficients.get("intercept"))
         for key, value in factor_returns(assets).items():
@@ -68,23 +69,24 @@ def main() -> None:
             finite_number(latest.get("latest_sbs_vc")),
         )
         payload = {
-            "generated_at_lima": datetime.now(LIMA).isoformat(),
-            "mode": "INTRADÍA PROVISIONAL",
-            "market_open": True,
+            "generated_at_lima": market.get("generated_at_lima")
+            or datetime.now(LIMA).isoformat(),
+            "mode": market.get("mode") or "INTRADIA PROVISIONAL",
+            "market_open": is_open,
             "signal_date": market.get("signal_date"),
             "vc_base": base_vc,
             "vc_estimated": base_vc * (1.0 + estimated_return),
             "return_estimated": estimated_return,
             "signal": classify(estimated_return),
             "assets": assets,
-            "action": "ESPERAR",
-            "engine": "LIVE HÁBITAT INDEPENDIENTE",
+            "action": "ESPERAR" if is_open else "ULTIMO_CORTE",
+            "engine": "LIVE HABITAT INDEPENDIENTE",
             "fx_fresh": market.get("fx_fresh"),
             "fx_source": market.get("fx_source", "SIN DATO"),
             "fx_provisional": bool(market.get("fx_provisional", True)),
             "fx_rule": market.get("fx_rule", ""),
             "note": (
-                "Snapshot intradía calculado con los coeficientes propios de Hábitat "
+                "Snapshot intradia calculado con los coeficientes propios de Habitat "
                 "y los mismos retornos de mercado del motor en vivo."
             ),
         }
@@ -100,14 +102,14 @@ def main() -> None:
             "signal": latest.get("signal"),
             "assets": assets,
             "action": "CIERRE",
-            "engine": "LIVE HÁBITAT INDEPENDIENTE",
+            "engine": "LIVE HABITAT INDEPENDIENTE",
             "warning": market.get("warning"),
             "fx_source": latest.get("latest_fx_source", market.get("fx_source", "SIN DATO")),
             "fx_provisional": bool(
                 latest.get("latest_fx_provisional", market.get("fx_provisional", True))
             ),
             "fx_rule": market.get("fx_rule", ""),
-            "note": "Cierre diario de Hábitat con actualización del motor de mercado.",
+            "note": "Cierre diario de Habitat con actualizacion del motor de mercado.",
         }
 
     HABITAT_LIVE.parent.mkdir(parents=True, exist_ok=True)

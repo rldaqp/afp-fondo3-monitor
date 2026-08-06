@@ -117,6 +117,38 @@ def _apply_hybrid_fx(payload: dict, latest: dict, pending: pd.DataFrame) -> dict
     return payload
 
 
+def _preserve_today_intraday(payload: dict) -> dict:
+    """No borrar el snapshot de hoy con el cierre diario anterior al terminar NY."""
+    if str(payload.get("mode", "")).startswith("INTRAD"):
+        return payload
+    today_lima = datetime.now(base.LIMA).date().isoformat()
+    if str(payload.get("signal_date", "")) >= today_lima:
+        return payload
+    if not base.LIVE_PATH.exists():
+        return payload
+    try:
+        previous = json.loads(base.LIVE_PATH.read_text(encoding="utf-8"))
+    except Exception:
+        return payload
+    if not str(previous.get("mode", "")).startswith("INTRAD"):
+        return payload
+    if str(previous.get("signal_date", "")) != today_lima:
+        return payload
+    if not np.isfinite(float(previous.get("vc_estimated", np.nan))):
+        return payload
+
+    preserved = dict(previous)
+    preserved["market_open"] = False
+    preserved["mode"] = "INTRADIA PROVISIONAL - ULTIMO CORTE"
+    preserved["action"] = "ULTIMO_CORTE"
+    preserved["checked_at_lima"] = datetime.now(base.LIMA).isoformat()
+    preserved["note"] = (
+        "Se conserva el ultimo snapshot intradia de hoy porque el cierre diario "
+        "de hoy aun no esta disponible."
+    )
+    return preserved
+
+
 def _update_habitat_live() -> None:
     script = ROOT / "scripts" / "update_habitat_live_market.py"
     if not script.exists():
@@ -169,6 +201,7 @@ def main() -> None:
             "fx_rule": "BCRP si existe; Yahoo PEN=X provisional si BCRP está rezagado; 0 % solo si ambas fuentes faltan.",
         }
 
+    payload = _preserve_today_intraday(payload)
     base.LIVE_PATH.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
     _update_habitat_live()
     print(json.dumps(payload, ensure_ascii=False, indent=2))
