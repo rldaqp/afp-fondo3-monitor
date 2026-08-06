@@ -148,8 +148,6 @@ Promise.all([fetch('data/latest.json?ts='+Date.now(),{cache:'no-store'}).then(r=
   function clock(iso,tz){try{return new Intl.DateTimeFormat('es-PE',{timeZone:tz,hour:'2-digit',minute:'2-digit',hour12:false}).format(new Date(iso))}catch(e){return'—'}}
 
 
-  function renderAudit(){if(!latestData)return;const el=$('audit');if(!el)return;const olsStamp=latestData.generated_at_lima?clock(latestData.generated_at_lima,'America/Lima')+' Lima':'--';const liveStamp=liveData&&liveData.generated_at_lima?clock(liveData.generated_at_lima,'America/Lima')+' Lima':'no disponible';const age=liveData&&liveData.generated_at_lima?(Date.now()-new Date(liveData.generated_at_lima).getTime())/60000:null;const freshness=Number.isFinite(age)?(age<=15?'vigente':'ultimo corte de hoy · hace '+Math.round(age)+' min'):'sin edad';const src=latestData.sources||{};el.innerHTML=`OLS diario: ${olsStamp}<br>Snapshot intrad&iacute;a: ${liveStamp} &middot; ${(liveData&&liveData.mode)||'sin dato'} &middot; ${freshness}<br>&Uacute;ltimo mercado completo: ${fmt(latestData.latest_market_date)}<br>Fuentes: ${src.market||'--'} &middot; ${src.sbs||'--'}<br>El OLS diario se recalibra con las ultimas 90 observaciones completas; el snapshot intrad&iacute;a se refresca aparte.`}
-
   function liveSnapshotActive(){
     if(!liveData||!String(liveData.mode||'').startsWith('INTRAD')||!Number.isFinite(Number(liveData.vc_estimated)))return false;
     const d=String(liveData.signal_date||'').slice(0,10);
@@ -190,7 +188,7 @@ Promise.all([fetch('data/latest.json?ts='+Date.now(),{cache:'no-store'}).then(r=
     ],{title:retDays==='all'?'Todo el historial':`Últimos ${retDays} días`,paper_bgcolor:'#0f1b2d',plot_bgcolor:'#0f1b2d',font:{color:'#fff',size:11},margin:{l:48,r:18,t:45,b:45},showlegend:false,shapes:[{type:'line',xref:'paper',x0:0,x1:1,y0:0,y1:0,line:{width:1}},{type:'line',xref:'paper',x0:0,x1:1,y0:.1,y1:.1,line:{dash:'dot'}},{type:'line',xref:'paper',x0:0,x1:1,y0:-.1,y1:-.1,line:{dash:'dot'}}]},{responsive:true});active('.ret-controls',retDays)
   }
 
-  function renderTop(){if(!latestData)return;const live=liveSnapshotActive(),vc=live?Number(liveData.vc_estimated):Number(latestData.latest_estimated_vc),r=live?Number(liveData.return_estimated):Number(latestData.latest_return_estimated),s=live?liveData.signal:latestData.signal,d=live?liveData.signal_date:latestData.latest_estimate_date;$('estVc').textContent=vc.toFixed(7);$('estDate').textContent=fmt(d)+' · '+(live?'INTRADÍA PROVISIONAL':'CIERRE DIARIO');$('signal').textContent=s;$('signal').className='value signal '+(s==='SUBE'?'up':s==='BAJA'?'down':'flat');$('ret').textContent=`Retorno estimado VC (día): ${(r*100).toFixed(3)}%`;const h=$('monitorHelp');if(h)h.innerHTML=`<b>${live?'INTRADÍA PROVISIONAL':'CIERRE DIARIO'} · Retorno estimado del VC: ${(r*100).toFixed(3)}% · Señal ${s}</b><br>${live?'Usa el último corte intradía disponible de Yahoo y puede cambiar hasta el cierre.':'Usa cierres diarios disponibles. No es la rentabilidad acumulada de tu inversión.'}`}
+  function renderTop(){if(!latestData)return;const live=liveData&&liveSnapshotActive(),vc=live?Number(liveData.vc_estimated):Number(latestData.latest_estimated_vc),r=live?Number(liveData.return_estimated):Number(latestData.latest_return_estimated),s=live?liveData.signal:latestData.signal,d=live?liveData.signal_date:latestData.latest_estimate_date;$('estVc').textContent=vc.toFixed(7);$('estDate').textContent=fmt(d)+' · '+(live?'INTRADÍA PROVISIONAL':'CIERRE DIARIO');$('signal').textContent=s;$('signal').className='value signal '+(s==='SUBE'?'up':s==='BAJA'?'down':'flat');$('ret').textContent=`Retorno estimado VC (día): ${(r*100).toFixed(3)}%`;const h=$('monitorHelp');if(h)h.innerHTML=`<b>${live?'INTRADÍA PROVISIONAL':'CIERRE DIARIO'} · Retorno estimado del VC: ${(r*100).toFixed(3)}% · Señal ${s}</b><br>${live?'Usa el último corte intradía disponible de Yahoo y puede cambiar hasta el cierre.':'Usa cierres diarios disponibles. No es la rentabilidad acumulada de tu inversión.'}`}
 
   function insightPct(x,d=1){return x==null||!Number.isFinite(Number(x))?'—':(Number(x)*100).toFixed(d)+'%'}
   function liveContributions(){
@@ -258,22 +256,21 @@ Promise.all([fetch('data/latest.json?ts='+Date.now(),{cache:'no-store'}).then(r=
     if(!liveData)return;
     if(!liveSnapshotActive()){
       // MARKET_INDICATORS_PRESERVED_V2
-      const vc=latestData?Number(latestData.latest_estimated_vc):NaN,r=latestData?Number(latestData.latest_return_estimated):NaN,s=latestData?latestData.signal:'—';
+      const vc=latestData?Number(latestData.latest_estimated_vc):NaN,r=latestData?Number(latestData.latest_return_estimated):NaN,s=latestData?latestData.signal:'â€”';
       const assets=(liveData&&Array.isArray(liveData.assets))?liveData.assets:[];
       const stamps=assets.map(a=>a.timestamp).filter(Boolean).sort();
       const lastStamp=stamps.length?stamps.at(-1):null;
-      $('marketMode').textContent=assets.length?'ÚLTIMO CORTE DE INDICADORES · CIERRE OLS VIGENTE':'CIERRE DIARIO';
+      $('marketMode').textContent=assets.length?'ULTIMO CORTE DE INDICADORES · CIERRE OLS VIGENTE':'CIERRE DIARIO';
       $('marketMode').className='market-mode zero';
       $('marketTime').innerHTML=`VC cierre OLS: ${fmt(latestData&&latestData.latest_estimate_date)}<br>${lastStamp?'Indicadores: '+(String(lastStamp).includes('T')?clock(lastStamp,'America/Lima')+' Lima':fmt(lastStamp)):'Indicadores sin corte disponible'}`;
-      const cards=assets.map(a=>{const p=Number(a.precio_actual),rr=Number(a.retorno);return `<div class="market-item"><div class="market-symbol">${a.serie}</div><div class="market-price">${Number.isFinite(p)?p.toFixed(a.serie==='USD_PEN'?4:2):'—'}</div><div class="market-ret ${cls(rr)}">${Number.isFinite(rr)?(rr>=0?'+':'')+(rr*100).toFixed(2)+'%':'—'}</div><div class="market-source">${a.estado||'Último dato disponible'} · corte informativo</div></div>`}).join('');
-      const closeCard=Number.isFinite(vc)?`<div class="market-item"><div class="market-symbol">VC estimado cierre</div><div class="market-price">${vc.toFixed(7)}</div><div class="market-ret ${cls(r)}">${r>=0?'+':''}${(r*100).toFixed(3)}%</div><div class="market-source">Mismo valor del gráfico · Señal ${s}</div></div>`:'<div class="note">Cierre todavía no disponible.</div>';
+      const cards=assets.map(a=>{const p=Number(a.precio_actual),rr=Number(a.retorno);return `<div class="market-item"><div class="market-symbol">${a.serie}</div><div class="market-price">${Number.isFinite(p)?p.toFixed(a.serie==='USD_PEN'?4:2):'—'}</div><div class="market-ret ${cls(rr)}">${Number.isFinite(rr)?(rr>=0?'+':'')+(rr*100).toFixed(2)+'%':'—'}</div><div class="market-source">${a.estado||'Ultimo dato disponible'} · corte informativo</div></div>`}).join('');
+      const closeCard=Number.isFinite(vc)?`<div class="market-item"><div class="market-symbol">VC estimado cierre</div><div class="market-price">${vc.toFixed(7)}</div><div class="market-ret ${cls(r)}">${r>=0?'+':''}${(r*100).toFixed(3)}%</div><div class="market-source">Mismo valor del grafico · Señal ${s}</div></div>`:'<div class="note">Cierre todavia no disponible.</div>';
       $('marketGrid').innerHTML=(cards||'<div class="note">No hay indicadores guardados.</div>')+closeCard;
       renderTop();return;
     }
     $('marketMode').textContent=liveData.mode||'—';$('marketMode').className='market-mode '+(liveData.market_open?'pos':'zero');
     const stamps=(liveData.assets||[]).map(a=>a.timestamp).filter(x=>String(x||'').includes('T'));
     if(liveData.market_open&&stamps.length){const last=stamps.sort().at(-1);$('marketTime').innerHTML=`Corte Yahoo: ${clock(last,'America/New_York')} NY · ${clock(last,'America/Lima')} Lima<br>Visor actualizado: ${clock(liveData.generated_at_lima,'America/Lima')} Lima`}
-    else if(String(liveData.mode||'').startsWith('INTRAD')){$('marketTime').innerHTML=`Fecha estimada: ${fmt(liveData.signal_date)}<br>Último corte: ${clock(liveData.generated_at_lima,'America/Lima')} Lima${liveData.checked_at_lima?'<br>Revisado: '+clock(liveData.checked_at_lima,'America/Lima')+' Lima':''}`}
     else{$('marketTime').innerHTML=`Cierre utilizado: ${fmt(liveData.signal_date)}<br>Visor actualizado: ${clock(liveData.generated_at_lima,'America/Lima')} Lima`}
     $('marketGrid').innerHTML=(liveData.assets||[]).map(a=>`<div class="market-item"><div class="market-symbol">${a.serie}</div><div class="market-price">${a.precio_actual==null?'—':Number(a.precio_actual).toFixed(a.serie==='USD_PEN'?4:2)}</div><div class="market-ret ${cls(a.retorno)}">${Number(a.retorno)>=0?'+':''}${(Number(a.retorno)*100).toFixed(2)}%</div><div class="market-source">${a.estado||''}${a.retorno_modelo!=null&&Number(a.retorno_modelo)!==Number(a.retorno)?'<br>Modelo: '+(Number(a.retorno_modelo)*100).toFixed(2)+'%':''}</div></div>`).join('')||'<div class="note">Cotización intradía no disponible; se mantiene el último cierre.</div>';renderTop();renderInsights()
   }
@@ -287,7 +284,7 @@ Promise.all([fetch('data/latest.json?ts='+Date.now(),{cache:'no-store'}).then(r=
     let interval=operationSeries.filter(x=>x.fecha>=entryDate&&x.fecha<=exitDate&&Number.isFinite(Number(x.vc)));
     if(!interval.length){$('detail').textContent='No existe un valor cuota disponible en la línea temporal del monitor entre las fechas seleccionadas.';return}
     const a=interval[0];let b=interval.at(-1),liveUsed=false;
-    if(mode==='inside'&&liveSnapshotActive()){b={fecha:liveData.signal_date,vc:Number(liveData.vc_estimated),fuente:'MODELO OLS · INTRADÍA PROVISIONAL'};liveUsed=true}
+    if(mode==='inside'&&liveData&&liveSnapshotActive()){b={fecha:liveData.signal_date,vc:Number(liveData.vc_estimated),fuente:'MODELO OLS · INTRADÍA PROVISIONAL'};liveUsed=true}
     const vi=Number(a.vc),vo=Number(b.vc),units=capital/vi,final=units*vo,gain=final-capital,rent=final/capital-1;
     $('mCapital').textContent=money(capital);$('mFinal').textContent=money(final);$('mGain').textContent=money(gain);$('mRent').textContent=pct(rent);
     const provisional=liveUsed||b.fuente!=='SBS OFICIAL',tag=provisional?'RESULTADO PROVISIONAL · VC MODELO':'RESULTADO CON VC OFICIAL SBS',adjusted=(a.fecha!==entryDate||(mode==='closed'&&b.fecha!==$('exit').value))?' · Fechas ajustadas a las observaciones disponibles del monitor.':'';
@@ -296,7 +293,7 @@ Promise.all([fetch('data/latest.json?ts='+Date.now(),{cache:'no-store'}).then(r=
   }
 
   function fetchLiveJson(primary,fallback){return fetch(primary,{cache:'no-store'}).catch(()=>fetch(fallback,{cache:'no-store'})).then(r=>r.json())}
-  function loadLive(){const ts=Date.now();return fetchLiveJson('data/live_market.json?ts='+ts,'https://raw.githubusercontent.com/rldaqp/afp-fondo3-monitor/migracion-github-actions/public/data/live_market.json?ts='+ts).then(x=>{liveData=x;renderMarket();renderAudit();return x}).catch(()=>null)}
+  function loadLive(){return fetchLiveJson('data/live_market.json?ts='+Date.now(),'https://raw.githubusercontent.com/rldaqp/afp-fondo3-monitor/migracion-github-actions/public/data/live_market.json?ts='+Date.now()).then(x=>{liveData=x;renderMarket();return x}).catch(()=>null)}
   Promise.all([
     fetch('data/signals.json?ts='+Date.now(),{cache:'no-store'}).then(r=>r.json()),
     fetch('data/series.json?ts='+Date.now(),{cache:'no-store'}).then(r=>r.json()),
@@ -305,7 +302,7 @@ Promise.all([fetch('data/latest.json?ts='+Date.now(),{cache:'no-store'}).then(r=
     fetch('data/model_insights.json?ts='+Date.now(),{cache:'no-store'}).then(r=>r.json()),
     loadLive()
   ]).then(([sig,ser,op,latest,insights])=>{
-    richSignals=sig.sort((a,b)=>a.fecha.localeCompare(b.fecha));allSeries=ser.sort((a,b)=>a.fecha.localeCompare(b.fecha));operationSeries=op.sort((a,b)=>a.fecha.localeCompare(b.fecha));latestData=latest;modelInsights=insights;renderAudit();
+    richSignals=sig.sort((a,b)=>a.fecha.localeCompare(b.fecha));allSeries=ser.sort((a,b)=>a.fecha.localeCompare(b.fecha));operationSeries=op.sort((a,b)=>a.fecha.localeCompare(b.fecha));latestData=latest;modelInsights=insights;
     renderVC();renderSignals();renderTop();renderMarket();renderInsights();
     document.querySelectorAll('.vc-controls button').forEach(b=>b.onclick=()=>{vcDays=b.dataset.days==='all'?'all':Number(b.dataset.days);renderVC()});
     document.querySelectorAll('.ret-controls button').forEach(b=>b.onclick=()=>{retDays=b.dataset.days==='all'?'all':Number(b.dataset.days);renderSignals()});
