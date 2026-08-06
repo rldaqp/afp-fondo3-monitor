@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import importlib.util
 import json
+import subprocess
+import sys
 from datetime import datetime
 from pathlib import Path
 
@@ -19,12 +21,7 @@ spec.loader.exec_module(base)
 
 
 def _configure_assets_from_model(latest: dict) -> None:
-    """El intradía usa exactamente los factores publicados por el OLS vigente.
-
-    Durante la migración, un latest.json antiguo de 6 factores sigue funcionando.
-    En cuanto latest.json publica ret_EEM, EEM entra automáticamente en la misma
-    descarga Yahoo intradía que los demás ETF.
-    """
+    """El intradía usa exactamente los factores publicados por el OLS vigente."""
     if "ret_EEM" in (latest.get("coefficients", {}) or {}) and "EEM" not in base.ASSETS:
         base.ASSETS.append("EEM")
     base.FEATURES = [f"ret_{x}" for x in base.ASSETS] + ["ret_USD_PEN"]
@@ -44,7 +41,6 @@ def _apply_hybrid_fx(payload: dict, latest: dict, pending: pd.DataFrame) -> dict
         payload["fx_provisional"] = True
         return payload
 
-    # BCRP de la misma fecha siempre tiene prioridad y conserva la metodología histórica.
     if "BCRP MISMA FECHA" in str(row.get("estado", "")):
         payload["fx_source"] = "BCRP"
         payload["fx_provisional"] = False
@@ -54,8 +50,6 @@ def _apply_hybrid_fx(payload: dict, latest: dict, pending: pd.DataFrame) -> dict
     signal_date = pd.Timestamp(payload.get("signal_date")).normalize()
 
     if payload.get("market_open"):
-        # El motor base ya descargó PEN=X intradía como referencia visual. Reutilizamos
-        # exactamente ese retorno, pero ahora sí entra provisionalmente al OLS.
         fx_ret = pd.to_numeric(pd.Series([row.get("retorno")]), errors="coerce").iloc[0]
         if np.isfinite(fx_ret):
             beta_fx = float(latest["coefficients"]["ret_USD_PEN"])
@@ -82,8 +76,6 @@ def _apply_hybrid_fx(payload: dict, latest: dict, pending: pd.DataFrame) -> dict
             payload["fx_source"] = "SIN DATO · 0 %"
             payload["fx_provisional"] = True
     else:
-        # Fuera de mercado, latest.json ya contiene el cálculo diario híbrido. Ajustamos
-        # la tarjeta USD/PEN para que el celular muestre la fuente realmente utilizada.
         p = pending.copy()
         if not p.empty:
             p["fecha"] = pd.to_datetime(p["fecha"], errors="coerce")
@@ -125,6 +117,20 @@ def _apply_hybrid_fx(payload: dict, latest: dict, pending: pd.DataFrame) -> dict
     return payload
 
 
+def _update_habitat_live() -> None:
+    script = ROOT / "scripts" / "update_habitat_live_market.py"
+    if not script.exists():
+        return
+    subprocess.run([sys.executable, str(script)], cwd=ROOT, check=True)
+    # Compatibilidad con ejecuciones antiguas del workflow, que solo hacían git add
+    # explícito del archivo de Profuturo.
+    subprocess.run(
+        ["git", "add", "public/habitat/data/live_market.json"],
+        cwd=ROOT,
+        check=True,
+    )
+
+
 def main() -> None:
     if not base.LATEST_PATH.exists():
         raise RuntimeError("Falta public/data/latest.json")
@@ -164,10 +170,9 @@ def main() -> None:
         }
 
     base.LIVE_PATH.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
+    _update_habitat_live()
     print(json.dumps(payload, ensure_ascii=False, indent=2))
 
 
 if __name__ == "__main__":
     main()
-
-# SYNC_TRIGGER_EEM_20260727: fuerza una ejecución posterior a la publicación del OLS de 7 factores.
