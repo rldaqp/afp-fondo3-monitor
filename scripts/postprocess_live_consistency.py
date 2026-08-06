@@ -103,5 +103,22 @@ html = html.replace(
     f"fetch('{raw_live}'",
 )
 
+habitat_path = ROOT / "public" / "habitat" / "index.html"
+if habitat_path.exists():
+    habitat = habitat_path.read_text(encoding="utf-8")
+    habitat_raw_live = (
+        "https://raw.githubusercontent.com/rldaqp/afp-fondo3-monitor/"
+        "migracion-github-actions/public/habitat/data/live_market.json"
+    )
+    habitat = habitat.replace(
+        "fetch('data/live_market.json?ts='+Date.now()",
+        f"fetch('{habitat_raw_live}?ts='+Date.now()",
+    )
+    habitat = habitat.replace(
+        "fetch('data/live_market.json'",
+        f"fetch('{habitat_raw_live}'",
+    )
+    habitat_path.write_text(habitat, encoding="utf-8")
+
 HTML_PATH.write_text(html, encoding="utf-8")
 print("Visor: indicadores preservados, intradía directo y cierre consistente.")

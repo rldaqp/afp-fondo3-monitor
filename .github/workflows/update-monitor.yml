@@ -117,6 +117,7 @@ jobs:
           grep -q "Histórico de entradas y salidas" public/index.html
           grep -q "Respaldo y sincronización en Google Drive" public/index.html
           grep -q "MARKET_INDICATORS_PRESERVED_V2" public/index.html
+          grep -q "raw.githubusercontent.com/rldaqp/afp-fondo3-monitor/migracion-github-actions/public/data/live_market.json" public/index.html
           ! grep -q "AFP_SELECTOR_V1" public/index.html
 
           python - <<'PY'

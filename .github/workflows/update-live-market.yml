@@ -21,7 +21,7 @@ permissions:
 
 concurrency:
   group: fondo3-live-snapshot
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   live:
