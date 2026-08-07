@@ -44,12 +44,12 @@
     },
     "current": {
       "fecha": "2026-08-06",
-      "ret_estimado": -0.007577994688422299,
+      "ret_estimado": -0.0075815298452478995,
       "senal": "BAJA",
-      "vc_estimado": 70.41750255555405,
+      "vc_estimado": 70.41725171779203,
       "agrees_with_ols": true,
       "ols_signal": "BAJA",
-      "ols_return_estimated": -0.006579177744318477
+      "ols_return_estimated": -0.006583327315944463
     },
     "performance": {
       "window_n": 90,
@@ -98,9 +98,9 @@
       },
       {
         "fecha": "2026-08-06",
-        "ret_estimado": -0.007577994688422299,
+        "ret_estimado": -0.0075815298452478995,
         "senal": "BAJA",
-        "vc_estimado": 70.41750255555405
+        "vc_estimado": 70.41725171779203
       }
     ]
   },
@@ -162,9 +162,9 @@
     {
       "feature": "ret_MCHI",
       "label": "MCHI",
-      "value": -0.0018746571216368,
+      "value": -0.0017853682756253,
       "coefficient": -0.046473572135245104,
-      "contribution_pp": 0.008712201297123879
+      "contribution_pp": 0.008297244134525053
     },
     {
       "feature": "ret_SPY",
