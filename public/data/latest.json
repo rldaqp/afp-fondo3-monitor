@@ -1,5 +1,5 @@
 {
-  "generated_at_lima": "2026-08-06T19:00:44.191886-05:00",
+  "generated_at_lima": "2026-08-06T19:35:55.863771-05:00",
   "model": "OLS rolling 90",
   "window": 90,
   "threshold": 0.001,
@@ -15,12 +15,12 @@
   "signal": "BAJA",
   "estimate_type": "CIERRE DIARIO · MODELO OLS · PARIDAD NOTEBOOK",
   "coefficients": {
-    "intercept": -0.0002953887421315959,
-    "ret_SPY": -0.013025577586781436,
+    "intercept": -0.0002953887421315955,
+    "ret_SPY": -0.013025577586781521,
     "ret_NEM": 0.10085016441770328,
-    "ret_FCX": 0.06080992896483915,
-    "ret_EPU": 0.2980673899617155,
-    "ret_MCHI": -0.04647357213524513,
+    "ret_FCX": 0.06080992896483925,
+    "ret_EPU": 0.29806738996171533,
+    "ret_MCHI": -0.046473572135245104,
     "ret_EEM": 0.36349904027071145,
     "ret_USD_PEN": 0.390773901366512
   },
