@@ -251,7 +251,7 @@ Promise.all([fetch('data/latest.json?ts='+Date.now(),{cache:'no-store'}).then(r=
     ],{title:retDays==='all'?'Todo el historial':`Últimos ${retDays} días`,paper_bgcolor:'#0f1b2d',plot_bgcolor:'#0f1b2d',font:{color:'#fff',size:11},margin:{l:48,r:18,t:45,b:45},showlegend:false,shapes:[{type:'line',xref:'paper',x0:0,x1:1,y0:0,y1:0,line:{width:1}},{type:'line',xref:'paper',x0:0,x1:1,y0:.1,y1:.1,line:{dash:'dot'}},{type:'line',xref:'paper',x0:0,x1:1,y0:-.1,y1:-.1,line:{dash:'dot'}}]},{responsive:true});active('.ret-controls',retDays)
   }
 
-  function renderTop(){if(!latestData)return;const live=liveData&&liveSnapshotActive(),label=live?liveSnapshotLabel():'CIERRE DIARIO',vc=live?Number(liveData.vc_estimated):Number(latestData.latest_estimated_vc),r=live?Number(liveData.return_estimated):Number(latestData.latest_return_estimated),s=live?liveData.signal:latestData.signal,d=live?liveData.signal_date:latestData.latest_estimate_date;$('estVc').textContent=vc.toFixed(7);$('estDate').textContent=fmt(d)+' · '+label;$('signal').textContent=s;$('signal').className='value signal '+(s==='SUBE'?'up':s==='BAJA'?'down':'flat');$('ret').textContent=`Retorno estimado VC (día): ${(r*100).toFixed(3)}%`;const h=$('monitorHelp');if(h)h.innerHTML=`<b>${label} · Retorno estimado del VC: ${(r*100).toFixed(3)}% · Señal ${s}</b><br>${label.startsWith('INTRAD')?'Usa el último corte intradía disponible de Yahoo y puede cambiar hasta el cierre.':'Usa cierres diarios disponibles. No es la rentabilidad acumulada de tu inversión.'}`}
+  function renderTop(){if(!latestData)return;const live=liveData&&liveSnapshotActive(),vc=live?Number(liveData.vc_estimated):Number(latestData.latest_estimated_vc),r=live?Number(liveData.return_estimated):Number(latestData.latest_return_estimated),s=live?liveData.signal:latestData.signal,d=live?liveData.signal_date:latestData.latest_estimate_date;$('estVc').textContent=vc.toFixed(7);$('estDate').textContent=fmt(d)+' · '+(live?'INTRADÍA PROVISIONAL':'CIERRE DIARIO');$('signal').textContent=s;$('signal').className='value signal '+(s==='SUBE'?'up':s==='BAJA'?'down':'flat');$('ret').textContent=`Retorno estimado VC (día): ${(r*100).toFixed(3)}%`;const h=$('monitorHelp');if(h)h.innerHTML=`<b>${live?'INTRADÍA PROVISIONAL':'CIERRE DIARIO'} · Retorno estimado del VC: ${(r*100).toFixed(3)}% · Señal ${s}</b><br>${live?'Usa el último corte intradía disponible de Yahoo y puede cambiar hasta el cierre.':'Usa cierres diarios disponibles. No es la rentabilidad acumulada de tu inversión.'}`}
 
   function insightPct(x,d=1){return x==null||!Number.isFinite(Number(x))?'—':(Number(x)*100).toFixed(d)+'%'}
   function liveContributions(){
@@ -333,8 +333,7 @@ Promise.all([fetch('data/latest.json?ts='+Date.now(),{cache:'no-store'}).then(r=
     }
     $('marketMode').textContent=liveData.mode||'—';$('marketMode').className='market-mode '+(liveData.market_open?'pos':'zero');
     const stamps=(liveData.assets||[]).map(a=>a.timestamp).filter(x=>String(x||'').includes('T'));
-    if(liveData.market_open&&stamps.length){const last=stamps.sort().at(-1);$('marketTime').innerHTML=`Último tick Yahoo: ${clock(last,'America/New_York')} NY · ${clock(last,'America/Lima')} Lima<br>Calculado: ${clock(liveData.generated_at_lima,'America/Lima')} Lima`}
-    else if(String(liveData.mode||'').startsWith('INTRAD')){const last=stamps.length?stamps.sort().at(-1):null;$('marketTime').innerHTML=`Fecha estimada: ${fmt(liveData.signal_date)}<br>${last?'Último tick Yahoo: '+clock(last,'America/New_York')+' NY · '+clock(last,'America/Lima')+' Lima':'Último tick Yahoo no disponible'}<br>Calculado: ${clock(liveData.generated_at_lima,'America/Lima')} Lima${liveData.checked_at_lima?'<br>Revisado: '+clock(liveData.checked_at_lima,'America/Lima')+' Lima':''}`}
+    if(liveData.market_open&&stamps.length){const last=stamps.sort().at(-1);$('marketTime').innerHTML=`Corte Yahoo: ${clock(last,'America/New_York')} NY · ${clock(last,'America/Lima')} Lima<br>Visor actualizado: ${clock(liveData.generated_at_lima,'America/Lima')} Lima`}
     else{$('marketTime').innerHTML=`Cierre utilizado: ${fmt(liveData.signal_date)}<br>Visor actualizado: ${clock(liveData.generated_at_lima,'America/Lima')} Lima`}
     $('marketGrid').innerHTML=(liveData.assets||[]).map(a=>`<div class="market-item"><div class="market-symbol">${a.serie}</div><div class="market-price">${a.precio_actual==null?'—':Number(a.precio_actual).toFixed(a.serie==='USD_PEN'?4:2)}</div><div class="market-ret ${cls(a.retorno)}">${Number(a.retorno)>=0?'+':''}${(Number(a.retorno)*100).toFixed(2)}%</div><div class="market-source">${a.estado||''}${a.retorno_modelo!=null&&Number(a.retorno_modelo)!==Number(a.retorno)?'<br>Modelo: '+(Number(a.retorno_modelo)*100).toFixed(2)+'%':''}</div></div>`).join('')||'<div class="note">Cotización intradía no disponible; se mantiene el último cierre.</div>';renderTop();renderInsights()
   }
@@ -348,7 +347,7 @@ Promise.all([fetch('data/latest.json?ts='+Date.now(),{cache:'no-store'}).then(r=
     let interval=operationSeries.filter(x=>x.fecha>=entryDate&&x.fecha<=exitDate&&Number.isFinite(Number(x.vc)));
     if(!interval.length){$('detail').textContent='No existe un valor cuota disponible en la línea temporal del monitor entre las fechas seleccionadas.';return}
     const a=interval[0];let b=interval.at(-1),liveUsed=false;
-    if(mode==='inside'&&liveData&&liveSnapshotActive()){b={fecha:liveData.signal_date,vc:Number(liveData.vc_estimated),fuente:'MODELO OLS · '+liveSnapshotLabel()};liveUsed=true}
+    if(mode==='inside'&&liveData&&liveSnapshotActive()){b={fecha:liveData.signal_date,vc:Number(liveData.vc_estimated),fuente:'MODELO OLS · INTRADÍA PROVISIONAL'};liveUsed=true}
     const vi=Number(a.vc),vo=Number(b.vc),units=capital/vi,final=units*vo,gain=final-capital,rent=final/capital-1;
     $('mCapital').textContent=money(capital);$('mFinal').textContent=money(final);$('mGain').textContent=money(gain);$('mRent').textContent=pct(rent);
     const provisional=liveUsed||b.fuente!=='SBS OFICIAL',tag=provisional?'RESULTADO PROVISIONAL · VC MODELO':'RESULTADO CON VC OFICIAL SBS',adjusted=(a.fecha!==entryDate||(mode==='closed'&&b.fecha!==$('exit').value))?' · Fechas ajustadas a las observaciones disponibles del monitor.':'';
@@ -397,15 +396,15 @@ Promise.all([fetch('data/latest.json?ts='+Date.now(),{cache:'no-store'}).then(r=
   function officialRow(date){return timeline.find(x=>x.fecha===date&&x.fuente==='SBS OFICIAL')||null}
   function officialAt(date){const row=officialRow(date);return row&&finite(row.vc)?Number(row.vc):null}
   function estimateAt(date){
-    if(live&&live.signal_date===date&&finite(live.vc_estimated))return Number(live.vc_estimated);
+    if(live&&live.market_open&&live.signal_date===date&&finite(live.vc_estimated))return Number(live.vc_estimated);
     const s=signalAt(date);return s&&finite(s.vc_estimado)?Number(s.vc_estimado):null;
   }
   function entryEffective(requested){
-    if(live&&live.signal_date===requested&&finite(live.vc_estimated))return {fecha:requested,vc:live.vc_estimated,fuente:String(live.mode||'').startsWith('INTRAD')?'MODELO OLS · INTRADÍA PROVISIONAL':'MODELO OLS · CIERRE DIARIO'};
+    if(live&&live.market_open&&live.signal_date===requested)return {fecha:requested,vc:live.vc_estimated,fuente:'MODELO OLS · INTRADÍA PROVISIONAL'};
     return timeline.find(x=>x.fecha>=requested)||null;
   }
   function exitEffective(requested){
-    if(live&&live.signal_date===requested&&finite(live.vc_estimated))return {fecha:requested,vc:live.vc_estimated,fuente:String(live.mode||'').startsWith('INTRAD')?'MODELO OLS · INTRADÍA PROVISIONAL':'MODELO OLS · CIERRE DIARIO'};
+    if(live&&live.market_open&&live.signal_date===requested)return {fecha:requested,vc:live.vc_estimated,fuente:'MODELO OLS · INTRADÍA PROVISIONAL'};
     return [...timeline].reverse().find(x=>x.fecha<=requested)||null;
   }
 
