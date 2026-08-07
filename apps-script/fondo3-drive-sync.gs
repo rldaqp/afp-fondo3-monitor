@@ -1,256 +1,207 @@
 // AFP Fondo 3 - puente JSONP para guardar operaciones en Google Sheets.
 //
-// Uso:
-// 1. Abre la hoja de Google Sheets que usas como respaldo.
-// 2. Extensiones > Apps Script.
-// 3. Pega este archivo completo.
-// 4. En Configuracion del proyecto > Propiedades de secuencia de comandos,
-//    crea SYNC_KEY con la misma clave que escribes en la pagina web.
-// 5. Implementar > Nueva implementacion > Aplicacion web.
-//    Ejecutar como: tu usuario.
-//    Quien tiene acceso: Cualquier usuario.
-// 6. Copia la URL que termina en /exec en la pagina del monitor.
+// Este es el puente compatible con la hoja existente "Operaciones Fondo 3".
+// La clave se lee desde la pestana Config, celda B4. No hace falta crear
+// propiedades de secuencia de comandos en Apps Script.
 
-const F3_HEADERS = [
-  'id',
-  'fund',
-  'created_at',
-  'confirmed',
-  'confirmed_at',
-  'capital',
-  'entry_requested',
-  'entry_date',
-  'entry_est_vc',
-  'entry_sbs_vc',
-  'exit_requested',
-  'exit_date',
-  'exit_est_vc',
-  'exit_sbs_vc',
-  'closed_at'
-];
-
-const F3_SHEETS = {
-  PROFUTURO: 'Profuturo',
-  HABITAT: 'Habitat'
-};
+const SPREADSHEET_ID = '1Bktbl-tRBIJnBsZzgXUNajj2_I9l6Slpsseno7zcRe8';
+const DATA_SHEETS = { PROFUTURO: 'Profuturo', HABITAT: 'Habitat' };
+const CONFIG_SHEET = 'Config';
 
 function doGet(e) {
-  const params = (e && e.parameter) || {};
-  const callback = params.callback || 'callback';
-
+  const p = (e && e.parameter) || {};
+  const callback = sanitizeCallback_(p.callback || '');
   try {
-    const action = String(params.action || 'ping').toLowerCase();
-    const fund = normalizeFund_(params.fund);
+    validateKey_(p.key || '');
+    const action = String(p.action || 'list').toLowerCase();
+    const fund = resolveFund_(p.fund);
+    let data;
 
     if (action === 'ping') {
-      requireKey_(params.key);
-      return jsonp_(callback, {
+      data = {
         ok: true,
+        service: 'Fondo3 Drive Sync v2',
         routing: true,
         fund: fund,
-        sheet: F3_SHEETS[fund]
-      });
+        sheet: DATA_SHEETS[fund],
+        now: new Date().toISOString()
+      };
+    } else if (action === 'list') {
+      data = { ok: true, routing: true, fund: fund, rows: listRows_(fund) };
+    } else if (action === 'upsert') {
+      if (!p.payload) throw new Error('Falta payload');
+      const row = JSON.parse(p.payload);
+      data = { ok: true, routing: true, fund: fund, row: upsertRow_(row, fund) };
+    } else if (action === 'delete') {
+      if (!p.id) throw new Error('Falta id');
+      deleteRow_(p.id, fund);
+      data = { ok: true, routing: true, fund: fund, id: p.id };
+    } else {
+      throw new Error('Accion no soportada: ' + action);
     }
 
-    requireKey_(params.key);
-
-    if (action === 'list') {
-      return jsonp_(callback, {
-        ok: true,
-        routing: true,
-        fund: fund,
-        rows: listRows_(fund)
-      });
-    }
-
-    if (action === 'upsert') {
-      const row = parsePayload_(params.payload);
-      row.fund = fund;
-      upsertRow_(fund, row);
-      return jsonp_(callback, {
-        ok: true,
-        routing: true,
-        fund: fund
-      });
-    }
-
-    if (action === 'delete') {
-      deleteRow_(fund, params.id);
-      return jsonp_(callback, {
-        ok: true,
-        routing: true,
-        fund: fund
-      });
-    }
-
-    throw new Error('Accion no soportada: ' + action);
+    return respond_(data, callback);
   } catch (err) {
-    return jsonp_(callback, {
-      ok: false,
-      error: err && err.message ? err.message : String(err)
-    });
+    return respond_({ ok: false, error: String(err && err.message ? err.message : err) }, callback);
   }
 }
 
-function normalizeFund_(fund) {
-  const value = String(fund || 'PROFUTURO').trim().toUpperCase();
-  if (!F3_SHEETS[value]) {
-    throw new Error('Fondo no soportado: ' + value);
-  }
-  return value;
+function spreadsheet_() {
+  return SpreadsheetApp.openById(SPREADSHEET_ID);
 }
 
-function requireKey_(key) {
-  const expected = PropertiesService.getScriptProperties().getProperty('SYNC_KEY');
-  if (!expected) {
-    throw new Error('Falta configurar SYNC_KEY en Apps Script.');
-  }
-  if (String(key || '') !== String(expected)) {
-    throw new Error('La clave de sincronizacion no es valida.');
-  }
+function validateKey_(provided) {
+  const sh = spreadsheet_().getSheetByName(CONFIG_SHEET);
+  if (!sh) throw new Error('No existe la pestana Config');
+  const expected = String(sh.getRange('B4').getDisplayValue() || '').trim();
+  if (!expected || expected === 'PENDIENTE') throw new Error('SYNC_KEY no configurada');
+  if (String(provided || '') !== expected) throw new Error('Clave de sincronizacion incorrecta');
 }
 
-function parsePayload_(payload) {
-  if (!payload) {
-    throw new Error('Falta payload.');
+function resolveFund_(value) {
+  const fund = String(value || '').trim().toUpperCase();
+  if (!Object.prototype.hasOwnProperty.call(DATA_SHEETS, fund)) {
+    throw new Error('Fondo invalido o ausente. Use PROFUTURO o HABITAT.');
   }
-  const row = JSON.parse(payload);
-  if (!row || !row.id) {
-    throw new Error('La operacion no tiene id.');
-  }
-  return row;
+  return fund;
 }
 
-function getSheet_(fund) {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const name = F3_SHEETS[fund];
-  let sheet = ss.getSheetByName(name);
-  if (!sheet) {
-    sheet = ss.insertSheet(name);
-  }
-  ensureHeaders_(sheet);
-  return sheet;
-}
-
-function ensureHeaders_(sheet) {
-  const lastCol = Math.max(sheet.getLastColumn(), F3_HEADERS.length);
-  const current = sheet.getRange(1, 1, 1, lastCol).getValues()[0].map(String);
-  const present = new Set(current.filter(Boolean));
-  const merged = current.filter(Boolean);
-
-  F3_HEADERS.forEach(header => {
-    if (!present.has(header)) {
-      merged.push(header);
-    }
-  });
-
-  if (merged.length === 0) {
-    sheet.getRange(1, 1, 1, F3_HEADERS.length).setValues([F3_HEADERS]);
-    return;
-  }
-
-  sheet.getRange(1, 1, 1, merged.length).setValues([merged]);
-}
-
-function headers_(sheet) {
-  return sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0].map(String);
+function dataSheet_(fund) {
+  const name = DATA_SHEETS[fund];
+  const sh = spreadsheet_().getSheetByName(name);
+  if (!sh) throw new Error('No existe la pestana ' + name);
+  return sh;
 }
 
 function listRows_(fund) {
-  const sheet = getSheet_(fund);
-  const lastRow = sheet.getLastRow();
-  if (lastRow < 2) {
-    return [];
-  }
-
-  const headers = headers_(sheet);
-  return sheet.getRange(2, 1, lastRow - 1, headers.length).getValues()
-    .map(values => objectFromRow_(headers, values))
-    .filter(row => row.id);
-}
-
-function upsertRow_(fund, row) {
-  const sheet = getSheet_(fund);
-  const headers = headers_(sheet);
-  const idCol = headers.indexOf('id') + 1;
-  const values = rowFromObject_(headers, row);
-  const found = findRowById_(sheet, idCol, row.id);
-
-  if (found) {
-    sheet.getRange(found, 1, 1, headers.length).setValues([values]);
-  } else {
-    sheet.appendRow(values);
-  }
-}
-
-function deleteRow_(fund, id) {
-  if (!id) {
-    throw new Error('Falta id para eliminar.');
-  }
-
-  const sheet = getSheet_(fund);
-  const headers = headers_(sheet);
-  const idCol = headers.indexOf('id') + 1;
-  const found = findRowById_(sheet, idCol, id);
-  if (found) {
-    sheet.deleteRow(found);
-  }
-}
-
-function findRowById_(sheet, idCol, id) {
-  const lastRow = sheet.getLastRow();
-  if (lastRow < 2) {
-    return 0;
-  }
-
-  const ids = sheet.getRange(2, idCol, lastRow - 1, 1).getValues();
-  for (let i = 0; i < ids.length; i += 1) {
-    if (String(ids[i][0]) === String(id)) {
-      return i + 2;
+  const sh = dataSheet_(fund);
+  const last = sh.getLastRow();
+  if (last < 2) return [];
+  const values = sh.getRange(2, 1, last - 1, 20).getValues();
+  return values.map(function(r) {
+    const raw = r[19];
+    let row = null;
+    if (raw) {
+      try { row = JSON.parse(String(raw)); } catch (e) {}
     }
+    if (!row) row = rowFromColumns_(r);
+    if (row && row.id) row.fund = fund;
+    return row;
+  }).filter(function(r) { return r && r.id; });
+}
+
+function rowFromColumns_(r) {
+  return {
+    id: r[0] || '',
+    confirmed: String(r[14]).toUpperCase() === 'SI',
+    capital: numberOrNull_(r[4]),
+    entry_requested: textOrNull_(r[2]),
+    entry_date: textOrNull_(r[3]),
+    entry_est_vc: numberOrNull_(r[5]),
+    entry_sbs_vc: numberOrNull_(r[6]),
+    exit_requested: textOrNull_(r[7]),
+    exit_date: textOrNull_(r[8]),
+    exit_est_vc: numberOrNull_(r[9]),
+    exit_sbs_vc: numberOrNull_(r[10]),
+    created_at: textOrNull_(r[15]),
+    confirmed_at: textOrNull_(r[16]),
+    closed_at: textOrNull_(r[17]),
+    origin: textOrNull_(r[18]) || 'DRIVE'
+  };
+}
+
+function upsertRow_(obj, fund) {
+  if (!obj || !obj.id) throw new Error('La operacion no tiene ID');
+  const sh = dataSheet_(fund);
+  const last = sh.getLastRow();
+  let target = last + 1;
+  if (last >= 2) {
+    const ids = sh.getRange(2, 1, last - 1, 1).getDisplayValues().flat();
+    const idx = ids.findIndex(function(x) { return String(x) === String(obj.id); });
+    if (idx >= 0) target = idx + 2;
   }
-  return 0;
+  obj.fund = fund;
+  obj.origin = obj.origin || ('VISOR GITHUB - ' + fund);
+  const row = columnsFromObject_(obj);
+  sh.getRange(target, 1, 1, 20).setValues([row]);
+  SpreadsheetApp.flush();
+  return obj;
 }
 
-function objectFromRow_(headers, values) {
-  const row = {};
-  headers.forEach((header, index) => {
-    if (!header) {
-      return;
-    }
-    row[header] = normalizeCell_(values[index]);
-  });
-  return row;
+function deleteRow_(id, fund) {
+  const sh = dataSheet_(fund);
+  const last = sh.getLastRow();
+  if (last < 2) return;
+  const ids = sh.getRange(2, 1, last - 1, 1).getDisplayValues().flat();
+  const idx = ids.findIndex(function(x) { return String(x) === String(id); });
+  if (idx >= 0) sh.deleteRow(idx + 2);
 }
 
-function rowFromObject_(headers, row) {
-  return headers.map(header => {
-    if (!header) {
-      return '';
-    }
-    const value = row[header];
-    if (value === undefined || value === null) {
-      return '';
-    }
-    return value;
-  });
+function columnsFromObject_(o) {
+  const estRet = ratio_(o.entry_est_vc, o.exit_est_vc);
+  const realRet = ratio_(o.entry_sbs_vc, o.exit_sbs_vc);
+  const diff = estRet !== null && realRet !== null ? realRet - estRet : null;
+  return [
+    o.id || '',
+    o.exit_date ? 'CERRADA' : 'ABIERTA',
+    o.entry_requested || '',
+    o.entry_date || '',
+    numberOrBlank_(o.capital),
+    numberOrBlank_(o.entry_est_vc),
+    numberOrBlank_(o.entry_sbs_vc),
+    o.exit_requested || '',
+    o.exit_date || '',
+    numberOrBlank_(o.exit_est_vc),
+    numberOrBlank_(o.exit_sbs_vc),
+    numberOrBlank_(estRet),
+    numberOrBlank_(realRet),
+    numberOrBlank_(diff),
+    o.confirmed ? 'SI' : 'NO',
+    o.created_at || '',
+    o.confirmed_at || '',
+    o.closed_at || '',
+    o.origin || ('VISOR GITHUB - ' + (o.fund || '')),
+    JSON.stringify(o)
+  ];
 }
 
-function normalizeCell_(value) {
-  if (value === '') {
-    return null;
+function ratio_(a, b) {
+  const x = Number(a), y = Number(b);
+  if (!isFinite(x) || !isFinite(y) || x === 0) return null;
+  return y / x - 1;
+}
+
+function numberOrBlank_(v) {
+  if (v === null || v === undefined || v === '') return '';
+  const n = Number(v);
+  return isFinite(n) ? n : '';
+}
+
+function numberOrNull_(v) {
+  if (v === null || v === undefined || v === '') return null;
+  const n = Number(v);
+  return isFinite(n) ? n : null;
+}
+
+function textOrNull_(v) {
+  if (v === null || v === undefined || v === '') return null;
+  if (Object.prototype.toString.call(v) === '[object Date]') {
+    return Utilities.formatDate(v, 'America/Lima', "yyyy-MM-dd'T'HH:mm:ssXXX");
   }
-  if (value instanceof Date) {
-    return value.toISOString();
-  }
-  return value;
+  return String(v);
 }
 
-function jsonp_(callback, payload) {
-  const safe = String(callback || 'callback').match(/^[A-Za-z_$][0-9A-Za-z_$]*(?:\.[A-Za-z_$][0-9A-Za-z_$]*)*$/)
-    ? callback
-    : 'callback';
-  return ContentService
-    .createTextOutput(safe + '(' + JSON.stringify(payload) + ');')
-    .setMimeType(ContentService.MimeType.JAVASCRIPT);
+function sanitizeCallback_(name) {
+  const s = String(name || '');
+  return /^[A-Za-z_$][0-9A-Za-z_$.]*$/.test(s) ? s : '';
+}
+
+function respond_(obj, callback) {
+  const json = JSON.stringify(obj);
+  if (callback) {
+    return ContentService.createTextOutput(callback + '(' + json + ');')
+      .setMimeType(ContentService.MimeType.JAVASCRIPT);
+  }
+  return ContentService.createTextOutput(json)
+    .setMimeType(ContentService.MimeType.JSON);
 }

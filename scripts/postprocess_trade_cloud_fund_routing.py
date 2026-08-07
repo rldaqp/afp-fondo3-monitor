@@ -13,7 +13,7 @@ CONFIG = {
         "sheet": "Profuturo",
         "trade_key": "profuturo_fondo3_trade_history_v2",
         "legacy_keys": ["fondo3_trade_history_v1", "profuturo_fondo3_trade_history_v1"],
-        "url_key": "profuturo_fondo3_drive_sync_url_v2",
+        "url_key": "profuturo_fondo3_drive_sync_url_v3",
         "snapshot_key": "profuturo_fondo3_drive_sync_snapshot_v2",
     },
     "habitat": {
@@ -22,7 +22,7 @@ CONFIG = {
         "sheet": "Habitat",
         "trade_key": "habitat_fondo3_trade_history_v2",
         "legacy_keys": ["habitat_fondo3_trade_history_v1"],
-        "url_key": "habitat_fondo3_drive_sync_url_v2",
+        "url_key": "habitat_fondo3_drive_sync_url_v3",
         "snapshot_key": "habitat_fondo3_drive_sync_snapshot_v2",
     },
 }

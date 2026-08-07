@@ -29,13 +29,13 @@ Y responde a estas acciones:
 1. Abre la hoja de Google Sheets donde guardas las operaciones.
 2. Ve a `Extensiones > Apps Script`.
 3. Pega el contenido de `apps-script/fondo3-drive-sync.gs`.
-4. En `Configuracion del proyecto > Propiedades de secuencia de comandos`, crea `SYNC_KEY`.
-5. Usa la misma clave `SYNC_KEY` en el campo de clave de la pagina del monitor.
-6. Ve a `Implementar > Nueva implementacion > Aplicacion web`.
+4. No crees propiedades de script: la clave ya se lee desde la pestana `Config`, celda `B4`.
+5. Ve a `Implementar > Administrar implementaciones`.
+6. Edita la aplicacion web existente, selecciona `Nueva version` y pulsa `Implementar`.
 7. Configura:
    - Ejecutar como: tu usuario.
    - Quien tiene acceso: cualquier usuario.
-8. Copia la URL que termina en `/exec` y pegala en el monitor.
+8. Puedes mantener la URL `/exec` existente que esta en `Config!B5`.
 
 ## Verificacion rapida
 
