@@ -1,5 +1,5 @@
 {
-  "generated_at_lima": "2026-08-07T10:42:03.423371-05:00",
+  "generated_at_lima": "2026-08-07T11:38:49.339249-05:00",
   "model": "OLS rolling 90",
   "window": 90,
   "threshold": 0.001,
@@ -10,7 +10,7 @@
   "latest_sbs_vc": 68.1332558,
   "latest_market_date": "2026-08-06",
   "latest_estimate_date": "2026-08-06",
-  "latest_estimated_vc": 70.52185704009493,
+  "latest_estimated_vc": 69.84599638150196,
   "latest_return_estimated": -0.006583327315944463,
   "signal": "BAJA",
   "estimate_type": "CIERRE DIARIO · MODELO OLS · PARIDAD NOTEBOOK",
@@ -33,7 +33,7 @@
     "fx": "BCRP PD04646PD para histórico y entrenamiento; Yahoo PEN=X solo como respaldo provisional de predicciones cuando BCRP aún no publicó la fecha",
     "EEM": "Yahoo Finance · Close · auto_adjust=False · misma descarga que los demás ETF"
   },
-  "market_note": "Yahoo Finance actualizado; respaldo guardado solo donde Yahoo no trae valor; BCRP exclusivo para USD/PEN hasta 2026-08-04",
+  "market_note": "Yahoo Finance actualizado; respaldo guardado solo donde Yahoo no trae valor; BCRP exclusivo para USD/PEN hasta 2026-08-05",
   "vc_mode_rule": "INTRADÍA PROVISIONAL 09:30-16:10 NY; fuera de ese intervalo CIERRE DIARIO",
   "model_factors": [
     "SPY",
