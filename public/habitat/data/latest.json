@@ -1,7 +1,7 @@
 {
   "afp": "Hábitat",
   "fund": 3,
-  "generated_at_lima": "2026-08-07T10:14:10.105513-05:00",
+  "generated_at_lima": "2026-08-07T11:14:11.889184-05:00",
   "model": "OLS rolling 90",
   "window": 90,
   "threshold": 0.001,
@@ -12,7 +12,7 @@
   "latest_sbs_vc": 32.1022567,
   "latest_market_date": "2026-08-06",
   "latest_estimate_date": "2026-08-06",
-  "latest_estimated_vc": 32.788995046562775,
+  "latest_estimated_vc": 32.75961905467425,
   "latest_return_estimated": -0.004001039695182793,
   "signal": "BAJA",
   "estimate_type": "CIERRE DIARIO · OLS ROLLING 90 · MISMA METODOLOGÍA PROFUTURO",
@@ -43,7 +43,7 @@
   "latest_fx_provisional": true,
   "sources": {
     "sbs": "SBS oficial · Hábitat Fondo 3",
-    "market": "Yahoo Finance actualizado; respaldo guardado solo donde Yahoo no trae valor; BCRP exclusivo para USD/PEN hasta 2026-08-04",
+    "market": "Yahoo Finance actualizado; respaldo guardado solo donde Yahoo no trae valor; BCRP exclusivo para USD/PEN hasta 2026-08-05",
     "fx": "BCRP PD04646PD para histórico y entrenamiento; Yahoo PEN=X solo como respaldo provisional posterior al último VC SBS.",
     "EEM": "Yahoo Finance · Close · auto_adjust=False"
   },
