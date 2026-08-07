@@ -21,7 +21,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: fondo3-live-snapshot
+  group: fondo3-data-writes
   cancel-in-progress: false
 
 jobs:
