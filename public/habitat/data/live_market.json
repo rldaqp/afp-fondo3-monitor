@@ -1,9 +1,8 @@
 {
-  "generated_at_lima": "2026-08-07T17:38:13.661707-05:00",
+  "generated_at_lima": "2026-08-07T17:57:16.855451-05:00",
   "mode": "CIERRE DIARIO",
   "market_open": false,
   "signal_date": "2026-08-07",
-  "vc_base": 32.8727097,
   "vc_estimated": 33.34567023653654,
   "return_estimated": 0.011541215885046101,
   "signal": "SUBE",
@@ -16,7 +15,7 @@
       "precio_actual": 773.260009765625,
       "retorno": 0.006115348472417681,
       "retorno_modelo": 0.006115348472417681,
-      "estado": "CIERRE DIARIO YAHOO · USADO POR MODELO",
+      "estado": "CIERRE DIARIO · MISMA FUENTE DEL MODELO PROFUTURO",
       "usado_modelo": true
     },
     {
@@ -27,7 +26,7 @@
       "precio_actual": 112.9800033569336,
       "retorno": 0.07161152451772468,
       "retorno_modelo": 0.07161152451772468,
-      "estado": "CIERRE DIARIO YAHOO · USADO POR MODELO",
+      "estado": "CIERRE DIARIO · MISMA FUENTE DEL MODELO PROFUTURO",
       "usado_modelo": true
     },
     {
@@ -38,7 +37,7 @@
       "precio_actual": 69.62000274658203,
       "retorno": 0.021120598928729084,
       "retorno_modelo": 0.021120598928729084,
-      "estado": "CIERRE DIARIO YAHOO · USADO POR MODELO",
+      "estado": "CIERRE DIARIO · MISMA FUENTE DEL MODELO PROFUTURO",
       "usado_modelo": true
     },
     {
@@ -46,10 +45,10 @@
       "ticker": "EPU",
       "timestamp": "2026-08-07",
       "precio_anterior": 89.44000244140625,
-      "precio_actual": 90.73999786376952,
-      "retorno": 0.014534832143088483,
-      "retorno_modelo": 0.014534832143088483,
-      "estado": "CIERRE DIARIO YAHOO · USADO POR MODELO",
+      "precio_actual": 90.73999786376953,
+      "retorno": 0.014534832143088705,
+      "retorno_modelo": 0.014534832143088705,
+      "estado": "CIERRE DIARIO · MISMA FUENTE DEL MODELO PROFUTURO",
       "usado_modelo": true
     },
     {
@@ -60,7 +59,7 @@
       "precio_actual": 56.56999969482422,
       "retorno": 0.011804683405711947,
       "retorno_modelo": 0.011804683405711947,
-      "estado": "CIERRE DIARIO YAHOO · USADO POR MODELO",
+      "estado": "CIERRE DIARIO · MISMA FUENTE DEL MODELO PROFUTURO",
       "usado_modelo": true
     },
     {
@@ -71,26 +70,24 @@
       "precio_actual": 65.63999938964844,
       "retorno": 0.00953557026441576,
       "retorno_modelo": 0.00953557026441576,
-      "estado": "CIERRE DIARIO YAHOO · USADO POR MODELO",
+      "estado": "CIERRE DIARIO · MISMA FUENTE DEL MODELO PROFUTURO",
       "usado_modelo": true
     },
     {
       "serie": "USD_PEN",
       "ticker": "PEN=X",
       "timestamp": "2026-08-05",
-      "precio_anterior": null,
-      "precio_actual": null,
-      "retorno": -0.0002069160418427,
-      "retorno_modelo": -0.0002069160418427,
-      "estado": "YAHOO PEN=X · PROVISIONAL · USADO POR MODELO",
-      "usado_modelo": true
+      "precio_anterior": 3.391,
+      "precio_actual": 3.388,
+      "retorno": null,
+      "retorno_modelo": null,
+      "estado": "CIERRE DIARIO · MISMA FUENTE DEL MODELO PROFUTURO",
+      "usado_modelo": false
     }
   ],
   "action": "CIERRE",
-  "engine": "LIVE HABITAT INDEPENDIENTE",
-  "warning": null,
+  "engine": "OLS HÁBITAT · PARIDAD METODOLÓGICA PROFUTURO",
+  "fx_rule": "Misma metodología de Profuturo: LinearRegression OLS, ventana móvil de 90 observaciones completas, siete factores, Yahoo Close, BCRP para USD/PEN histórico, PEN=X solo como respaldo pendiente y VC encadenado.",
   "fx_source": "YAHOO PEN=X PROVISIONAL",
-  "fx_provisional": true,
-  "fx_rule": "Histórico/entrenamiento: BCRP. Predicción: BCRP si existe; si está rezagado, Yahoo PEN=X provisional; 0 % solo si ambas fuentes faltan.",
-  "note": "Cierre diario de Habitat con actualizacion del motor de mercado."
+  "fx_provisional": true
 }
