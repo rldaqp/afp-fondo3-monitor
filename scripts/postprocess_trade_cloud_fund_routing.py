@@ -12,6 +12,7 @@ CONFIG = {
         "fund": "PROFUTURO",
         "sheet": "Profuturo",
         "trade_key": "profuturo_fondo3_trade_history_v2",
+        "legacy_keys": ["fondo3_trade_history_v1", "profuturo_fondo3_trade_history_v1"],
         "url_key": "profuturo_fondo3_drive_sync_url_v2",
         "snapshot_key": "profuturo_fondo3_drive_sync_snapshot_v2",
     },
@@ -20,6 +21,7 @@ CONFIG = {
         "fund": "HABITAT",
         "sheet": "Habitat",
         "trade_key": "habitat_fondo3_trade_history_v2",
+        "legacy_keys": ["habitat_fondo3_trade_history_v1"],
         "url_key": "habitat_fondo3_drive_sync_url_v2",
         "snapshot_key": "habitat_fondo3_drive_sync_snapshot_v2",
     },
@@ -33,6 +35,68 @@ def replace_constant(text: str, name: str, value: str) -> str:
     if count == 0:
         raise RuntimeError(f"No se encontró la constante {name}.")
     return updated
+
+
+def js_array(values: list[str]) -> str:
+    return "[" + ",".join(f"'{value}'" for value in values) + "]"
+
+
+def ensure_history_migration(history: str, keys: list[str]) -> str:
+    legacy_line = f"  const LEGACY_KEYS={js_array(keys)};"
+    history = re.sub(r"  const LEGACY_KEYS=\[[^\]]*\];", legacy_line, history)
+    if legacy_line not in history:
+        history = history.replace(
+            "  let signals=[],timeline=[],live=null;\n",
+            legacy_line + "\n  let signals=[],timeline=[],live=null;\n",
+            1,
+        )
+
+    old_loader = (
+        "  function loadRows(){try{const x=JSON.parse(localStorage.getItem(KEY)||'[]');"
+        "return Array.isArray(x)?x:[]}catch(e){return []}}\n"
+        "  function saveRows(rows){localStorage.setItem(KEY,JSON.stringify(rows))}"
+    )
+    new_loader = (
+        "  function readRowsFrom(k){try{const x=JSON.parse(localStorage.getItem(k)||'[]');"
+        "return Array.isArray(x)?x:[]}catch(e){return []}}\n"
+        "  function normalizeRows(list,source){return (Array.isArray(list)?list:[]).filter(x=>x&&typeof x==='object').map((x,i)=>x.id?x:{...x,id:`legacy-${source}-${i}-${x.created_at||''}-${x.entry_date||''}-${x.exit_date||''}`})}\n"
+        "  function mergeRows(groups){const m=new Map();groups.flat().forEach(r=>{if(r&&r.id)m.set(String(r.id),{...(m.get(String(r.id))||{}),...r})});return [...m.values()]}\n"
+        "  function loadRows(){const current=normalizeRows(readRowsFrom(KEY),KEY),legacy=LEGACY_KEYS.flatMap(k=>normalizeRows(readRowsFrom(k),k));if(!legacy.length)return current;const merged=mergeRows([legacy,current]);if(merged.length!==current.length)localStorage.setItem(KEY,JSON.stringify(merged));return merged}\n"
+        "  function saveRows(rows){localStorage.setItem(KEY,JSON.stringify(rows))}"
+    )
+    if old_loader in history:
+        history = history.replace(old_loader, new_loader, 1)
+    elif "function loadRows(){const current=normalizeRows" not in history:
+        raise RuntimeError("No se pudo incorporar la migracion local de operaciones.")
+    return history
+
+
+def ensure_cloud_migration(cloud: str, keys: list[str]) -> str:
+    legacy_line = f"  const LEGACY_KEYS={js_array(keys)};"
+    cloud = re.sub(r"  const LEGACY_KEYS=\[[^\]]*\];", legacy_line, cloud)
+    if legacy_line not in cloud:
+        cloud = cloud.replace(
+            "  const URL_KEY=",
+            legacy_line + "\n  const URL_KEY=",
+            1,
+        )
+
+    old_rows = (
+        "  const read=(k,fb)=>{try{const x=JSON.parse(localStorage.getItem(k)||'');return x??fb}catch(e){return fb}};\n"
+        "  const rows=()=>read(TRADE_KEY,[]);"
+    )
+    new_rows = (
+        "  const read=(k,fb)=>{try{const x=JSON.parse(localStorage.getItem(k)||'');return x??fb}catch(e){return fb}};\n"
+        "  function normalizeRows(list,source){return (Array.isArray(list)?list:[]).filter(x=>x&&typeof x==='object').map((x,i)=>x.id?x:{...x,id:`legacy-${source}-${i}-${x.created_at||''}-${x.entry_date||''}-${x.exit_date||''}`})}\n"
+        "  function mergeRows(groups){const m=new Map();groups.flat().forEach(r=>{if(r&&r.id)m.set(String(r.id),{...(m.get(String(r.id))||{}),...r})});return [...m.values()]}\n"
+        "  function migrateRows(){const current=normalizeRows(read(TRADE_KEY,[]),TRADE_KEY),legacy=LEGACY_KEYS.flatMap(k=>normalizeRows(read(k,[]),k));if(!legacy.length)return current;const merged=mergeRows([legacy,current]);if(merged.length!==current.length)localStorage.setItem(TRADE_KEY,JSON.stringify(merged));return merged}\n"
+        "  const rows=()=>migrateRows();"
+    )
+    if old_rows in cloud:
+        cloud = cloud.replace(old_rows, new_rows, 1)
+    elif "const rows=()=>migrateRows();" not in cloud:
+        raise RuntimeError("No se pudo incorporar la migracion Drive de operaciones.")
+    return cloud
 
 
 def patch(target: str) -> None:
@@ -54,7 +118,9 @@ def patch(target: str) -> None:
     cloud = html[cloud_start:cloud_end]
 
     history = replace_constant(history, "KEY", cfg["trade_key"])
+    history = ensure_history_migration(history, cfg["legacy_keys"])
     cloud = replace_constant(cloud, "TRADE_KEY", cfg["trade_key"])
+    cloud = ensure_cloud_migration(cloud, cfg["legacy_keys"])
     cloud = replace_constant(cloud, "URL_KEY", cfg["url_key"])
     cloud = replace_constant(cloud, "SNAP_KEY", cfg["snapshot_key"])
 
@@ -139,6 +205,7 @@ def patch(target: str) -> None:
         f"const DRIVE_SHEET='{cfg['sheet']}';",
         f"const KEY='{cfg['trade_key']}';",
         f"const TRADE_KEY='{cfg['trade_key']}';",
+        f"const LEGACY_KEYS={js_array(cfg['legacy_keys'])};",
         f"const SNAP_KEY='{cfg['snapshot_key']}';",
         "u.searchParams.set('fund',FUND);",
         marker,

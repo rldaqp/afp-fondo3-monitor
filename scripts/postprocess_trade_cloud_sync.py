@@ -7,7 +7,31 @@ html = HTML_PATH.read_text(encoding="utf-8")
 
 START = "<!-- TRADE_CLOUD_V1_START -->"
 END = "<!-- TRADE_CLOUD_V1_END -->"
-html = re.sub(re.escape(START) + r".*?" + re.escape(END), "", html, flags=re.S)
+
+
+def remove_existing_cloud_block(source: str) -> str:
+    start = source.find(START)
+    if start >= 0:
+        trade_wrap = source.find('<div class="trade-wrap">', start)
+        if trade_wrap > start:
+            source = source[:start] + source[trade_wrap:]
+        else:
+            source = re.sub(re.escape(START) + r".*?" + re.escape(END), "", source, flags=re.S)
+
+    script_start = source.find('<script id="tradeCloudScript">')
+    if script_start >= 0:
+        script_end = source.find(END, script_start)
+        if script_end >= 0:
+            source = source[:script_start] + source[script_end + len(END):]
+        else:
+            close = source.find("</script>", script_start)
+            if close >= 0:
+                source = source[:script_start] + source[close + len("</script>"):]
+
+    return source.replace(END, "")
+
+
+html = remove_existing_cloud_block(html)
 
 css = r'''
 <style id="tradeCloudStyles">
@@ -38,6 +62,7 @@ js = r'''
   const FUND='PROFUTURO';
   const DRIVE_SHEET='Profuturo';
   const TRADE_KEY='profuturo_fondo3_trade_history_v2';
+  const LEGACY_KEYS=['fondo3_trade_history_v1','profuturo_fondo3_trade_history_v1'];
   const URL_KEY='profuturo_fondo3_drive_sync_url_v2';
   const SECRET_KEY='fondo3_drive_sync_key_v1';
   const SNAP_KEY='profuturo_fondo3_drive_sync_snapshot_v2';
@@ -45,7 +70,10 @@ js = r'''
   let syncing=false,timer=null;
   const $=id=>document.getElementById(id);
   const read=(k,fb)=>{try{const x=JSON.parse(localStorage.getItem(k)||'');return x??fb}catch(e){return fb}};
-  const rows=()=>read(TRADE_KEY,[]);
+  function normalizeRows(list,source){return (Array.isArray(list)?list:[]).filter(x=>x&&typeof x==='object').map((x,i)=>x.id?x:{...x,id:`legacy-${source}-${i}-${x.created_at||''}-${x.entry_date||''}-${x.exit_date||''}`})}
+  function mergeRows(groups){const m=new Map();groups.flat().forEach(r=>{if(r&&r.id)m.set(String(r.id),{...(m.get(String(r.id))||{}),...r})});return [...m.values()]}
+  function migrateRows(){const current=normalizeRows(read(TRADE_KEY,[]),TRADE_KEY),legacy=LEGACY_KEYS.flatMap(k=>normalizeRows(read(k,[]),k));if(!legacy.length)return current;const merged=mergeRows([legacy,current]);if(merged.length!==current.length)localStorage.setItem(TRADE_KEY,JSON.stringify(merged));return merged}
+  const rows=()=>migrateRows();
   const snapshot=()=>read(SNAP_KEY,null);
   const stable=x=>JSON.stringify(x,Object.keys(x||{}).sort());
   const setStatus=(txt,cls='')=>{const el=$('tradeCloudStatus');if(el){el.textContent=txt;el.className='cloud-status '+cls}};
@@ -135,10 +163,23 @@ html = re.sub(
     count=1,
 )
 
+old_history_loader = "  function loadRows(){try{const x=JSON.parse(localStorage.getItem(KEY)||'[]');return Array.isArray(x)?x:[]}catch(e){return []}}\n  function saveRows(rows){localStorage.setItem(KEY,JSON.stringify(rows))}"
+new_history_loader = """  const LEGACY_KEYS=['fondo3_trade_history_v1','profuturo_fondo3_trade_history_v1'];
+  function readRowsFrom(k){try{const x=JSON.parse(localStorage.getItem(k)||'[]');return Array.isArray(x)?x:[]}catch(e){return []}}
+  function normalizeRows(list,source){return (Array.isArray(list)?list:[]).filter(x=>x&&typeof x==='object').map((x,i)=>x.id?x:{...x,id:`legacy-${source}-${i}-${x.created_at||''}-${x.entry_date||''}-${x.exit_date||''}`})}
+  function mergeRows(groups){const m=new Map();groups.flat().forEach(r=>{if(r&&r.id)m.set(String(r.id),{...(m.get(String(r.id))||{}),...r})});return [...m.values()]}
+  function loadRows(){const current=normalizeRows(readRowsFrom(KEY),KEY),legacy=LEGACY_KEYS.flatMap(k=>normalizeRows(readRowsFrom(k),k));if(!legacy.length)return current;const merged=mergeRows([legacy,current]);if(merged.length!==current.length)localStorage.setItem(KEY,JSON.stringify(merged));return merged}
+  function saveRows(rows){localStorage.setItem(KEY,JSON.stringify(rows))}"""
+if old_history_loader in html:
+    html = html.replace(old_history_loader, new_history_loader, 1)
+elif "const LEGACY_KEYS=['fondo3_trade_history_v1','profuturo_fondo3_trade_history_v1'];" not in html:
+    raise RuntimeError("No se pudo incorporar la migracion local Profuturo.")
+
 required = [
     "const FUND='PROFUTURO';",
     "const KEY='profuturo_fondo3_trade_history_v2';",
     "const TRADE_KEY='profuturo_fondo3_trade_history_v2';",
+    "const LEGACY_KEYS=['fondo3_trade_history_v1','profuturo_fondo3_trade_history_v1'];",
     "const SNAP_KEY='profuturo_fondo3_drive_sync_snapshot_v2';",
     "u.searchParams.set('fund',FUND);",
     "TRADE_CLOUD_FUND_ROUTING_V2",
