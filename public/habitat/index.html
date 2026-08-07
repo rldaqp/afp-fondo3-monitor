@@ -563,7 +563,7 @@ Promise.all([fetch('data/latest.json?ts='+Date.now(),{cache:'no-store'}).then(r=
     return new Promise((resolve,reject)=>{
       const cb='__f3cb_'+Date.now()+'_'+Math.random().toString(16).slice(2);
       const s=document.createElement('script');
-      const timeout=setTimeout(()=>done(new Error('Tiempo de espera agotado')),15000);
+      const timeout=setTimeout(()=>done(new Error('Apps Script no devolvio JSONP. Revisa que la Web app este publicada para cualquier usuario y que soporte Profuturo/Habitat.')),15000);
       function done(err,data){clearTimeout(timeout);delete window[cb];s.remove();err?reject(err):resolve(data)}
       window[cb]=data=>{if(!data||data.ok!==true)done(new Error(data&&data.error?data.error:'Respuesta inválida'));else done(null,data)};
       const u=new URL(c.url);
