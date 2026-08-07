@@ -129,7 +129,8 @@ h1{font-size:1.45rem;margin:5px 0}.sub,.note{color:var(--muted);font-size:.82rem
   </div>
   <div id="tradeCloudStatus" class="cloud-status">Las operaciones de Hábitat se guardan únicamente en la hoja Hábitat.</div>
 </div>
-<div class="trade-wrap">
+
+  <div class="trade-wrap">
     <table class="trade-table">
       <thead><tr>
         <th>Estado</th><th>Entrada</th><th>VC est. entrada</th><th>VC SBS entrada</th>
@@ -379,7 +380,6 @@ Promise.all([fetch('data/latest.json?ts='+Date.now(),{cache:'no-store'}).then(r=
 (function(){
   'use strict';
   const KEY='habitat_fondo3_trade_history_v2';
-  const LEGACY_KEYS=['habitat_fondo3_trade_history_v1'];
   let signals=[],timeline=[],live=null;
   const $=id=>document.getElementById(id);
   const finite=x=>x!==null&&x!==undefined&&x!==''&&Number.isFinite(Number(x));
@@ -390,6 +390,7 @@ Promise.all([fetch('data/latest.json?ts='+Date.now(),{cache:'no-store'}).then(r=
   const money=x=>finite(x)?new Intl.NumberFormat('es-PE',{style:'currency',currency:'PEN'}).format(Number(x)):'—';
   const uid=()=>`${Date.now()}-${Math.random().toString(16).slice(2)}`;
 
+  const LEGACY_KEYS=['habitat_fondo3_trade_history_v1'];
   function readRowsFrom(k){try{const x=JSON.parse(localStorage.getItem(k)||'[]');return Array.isArray(x)?x:[]}catch(e){return []}}
   function normalizeRows(list,source){return (Array.isArray(list)?list:[]).filter(x=>x&&typeof x==='object').map((x,i)=>x.id?x:{...x,id:`legacy-${source}-${i}-${x.created_at||''}-${x.entry_date||''}-${x.exit_date||''}`})}
   function mergeRows(groups){const m=new Map();groups.flat().forEach(r=>{if(r&&r.id)m.set(String(r.id),{...(m.get(String(r.id))||{}),...r})});return [...m.values()]}
@@ -540,8 +541,6 @@ Promise.all([fetch('data/latest.json?ts='+Date.now(),{cache:'no-store'}).then(r=
 })();
 </script>
 <!-- TRADE_HISTORY_V1_END -->
-
-
 
 <script id="tradeCloudScript">
 (function(){
