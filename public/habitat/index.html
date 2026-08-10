@@ -538,7 +538,7 @@ Promise.all([fetch('data/latest.json?ts='+Date.now(),{cache:'no-store'}).then(r=
       $('tradeSaveBtn').onclick=saveCurrent;render();
     }catch(e){$('tradeMsg').textContent='No se pudo cargar la bitácora: '+e}
   }
-  window.addEventListener('fondo3-cloud-synced',()=>{render();$('tradeMsg').textContent='Operación guardada y sincronizada con Drive.'});$('tradeMsg').textContent='Operación guardada y sincronizada con Drive.'});
+  window.addEventListener('fondo3-cloud-synced',()=>{render();$('tradeMsg').textContent='Operación guardada y sincronizada con Drive.'});
   boot();
 })();
 </script>
