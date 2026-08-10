@@ -66,6 +66,22 @@ jobs:
         run: |
           python scripts/run_habitat_exact_pipeline.py
           python scripts/postprocess_live_consistency.py
+          python - <<'PY'
+          import re
+          from pathlib import Path
+          path = Path('public/habitat/index.html')
+          html = path.read_text(encoding='utf-8')
+          url = 'https://script.google.com/macros/s/AKfycbxoYHkCu0cZPx_KsMlI0Jd5PEATgxBjZTR8oK8qs1cUjRHJbiK0t-bxkH5ACprgp81S7g/exec'
+          html, count = re.subn(
+              r"const DEFAULT_URL='https://script\.google\.com/macros/s/[^']+/exec';",
+              f"const DEFAULT_URL='{url}';",
+              html,
+              count=1,
+          )
+          if count != 1:
+              raise RuntimeError('No se pudo actualizar la URL activa de Apps Script en Hábitat')
+          path.write_text(html, encoding='utf-8')
+          PY
 
       - name: Validar histórico oficial, OLS, visor y Drive
         run: |
@@ -82,6 +98,7 @@ jobs:
           grep -q "u.searchParams.set('fund',FUND);" public/habitat/index.html
           grep -q "TRADE_CLOUD_FUND_ROUTING_V3" public/habitat/index.html
           grep -q "fondo3-local-trade-change" public/habitat/index.html
+          grep -q "AKfycbxoYHkCu0cZPx_KsMlI0Jd5PEATgxBjZTR8oK8qs1cUjRHJbiK0t-bxkH5ACprgp81S7g" public/habitat/index.html
           grep -q "raw.githubusercontent.com/rldaqp/afp-fondo3-monitor/migracion-github-actions/public/habitat/data/live_market.json" public/habitat/index.html
           python - <<'PY'
           import re
