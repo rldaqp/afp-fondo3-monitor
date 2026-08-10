@@ -8,6 +8,9 @@ on:
     paths:
       - ".github/workflows/fix-profuturo-ui-consistency.yml"
       - "scripts/postprocess_live_consistency.py"
+      - "scripts/fix_trade_history_boot.py"
+      - "public/index.html"
+      - "public/habitat/index.html"
 
 permissions:
   contents: write
@@ -126,6 +129,9 @@ jobs:
           patch('public/habitat/index.html', 'HABITAT', 'Habitat', 'habitat_fondo3_trade_history_v3', 'habitat_fondo3_drive_sync_snapshot_v3')
           PY
 
+      - name: Activar botón Guardar en ambos visores
+        run: python scripts/fix_trade_history_boot.py
+
       - name: Validar corrección
         run: |
           grep -q "function liveSnapshotActive" public/index.html
@@ -135,6 +141,8 @@ jobs:
           grep -q "fondo3-local-trade-change" public/habitat/index.html
           grep -q "const FUND='PROFUTURO'" public/index.html
           grep -q "const FUND='HABITAT'" public/habitat/index.html
+          grep -q "TRADE_HISTORY_FETCH_HELPER_V1" public/index.html
+          grep -q "TRADE_HISTORY_FETCH_HELPER_V1" public/habitat/index.html
 
       - name: Guardar ambos visores corregidos
         run: |
@@ -144,7 +152,7 @@ jobs:
           if git diff --cached --quiet; then
             echo "Los dos visores ya contienen la corrección."
           else
-            git commit -m "Separar operaciones Profuturo y Habitat y sincronizar Drive al instante"
+            git commit -m "Corregir botón Guardar y mantener operaciones AFP separadas"
             git pull --rebase origin migracion-github-actions
             git push origin HEAD:migracion-github-actions
           fi
