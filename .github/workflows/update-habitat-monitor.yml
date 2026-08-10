@@ -66,6 +66,7 @@ jobs:
         run: |
           python scripts/run_habitat_exact_pipeline.py
           python scripts/postprocess_live_consistency.py
+          python scripts/postprocess_trade_cloud_fund_routing.py habitat
 
       - name: Validar histórico oficial, OLS, visor y Drive
         run: |
@@ -74,11 +75,14 @@ jobs:
           grep -q "HABITAT_CHART_OFFICIAL_VS_OLS_V6" public/habitat/index.html
           grep -q "const FUND='HABITAT';" public/habitat/index.html
           grep -q "const DRIVE_SHEET='Habitat';" public/habitat/index.html
-          grep -q "const KEY='habitat_fondo3_trade_history_v2';" public/habitat/index.html
-          grep -q "const TRADE_KEY='habitat_fondo3_trade_history_v2';" public/habitat/index.html
-          grep -q "const SNAP_KEY='habitat_fondo3_drive_sync_snapshot_v2';" public/habitat/index.html
+          grep -q "const KEY='habitat_fondo3_trade_history_v3';" public/habitat/index.html
+          grep -q "const TRADE_KEY='habitat_fondo3_trade_history_v3';" public/habitat/index.html
+          grep -q "const SNAP_KEY='habitat_fondo3_drive_sync_snapshot_v3';" public/habitat/index.html
+          grep -q "const LEGACY_KEYS=\[\];" public/habitat/index.html
+          grep -q "const ORIGIN='VISOR GITHUB · HABITAT';" public/habitat/index.html
           grep -q "u.searchParams.set('fund',FUND);" public/habitat/index.html
-          grep -q "TRADE_CLOUD_FUND_ROUTING_V2" public/habitat/index.html
+          grep -q "TRADE_CLOUD_FUND_ROUTING_V3" public/habitat/index.html
+          grep -q "fondo3-local-trade-change" public/habitat/index.html
           grep -q "raw.githubusercontent.com/rldaqp/afp-fondo3-monitor/migracion-github-actions/public/habitat/data/live_market.json" public/habitat/index.html
 
       - name: Guardar resultados de Hábitat
