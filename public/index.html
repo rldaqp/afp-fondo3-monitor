@@ -495,7 +495,7 @@ Promise.all([fetch('data/latest.json?ts='+Date.now(),{cache:'no-store'}).then(r=
   const URL_KEY='profuturo_fondo3_drive_sync_url_v3';
   const SECRET_KEY='fondo3_drive_sync_key_v1';
   const SNAP_KEY='profuturo_fondo3_drive_sync_snapshot_v3';
-  const DEFAULT_URL='https://script.google.com/macros/s/AKfycbxY9JqIeTnweKaEXAOs7hQ6KftlPgVsGOFPwOp7hqL5gJ47OuuHlAJBksTGdOQ2yc_Y0Q/exec';
+  const DEFAULT_URL='https://script.google.com/macros/s/AKfycbxoYHkCu0cZPx_KsMlI0Jd5PEATgxBjZTR8oK8qs1cUjRHJbiK0t-bxkH5ACprgp81S7g/exec';
   let syncing=false,timer=null,pending=false;
   const $=id=>document.getElementById(id);
   const read=(k,fb)=>{try{const x=JSON.parse(localStorage.getItem(k)||'');return x??fb}catch(e){return fb}};
