@@ -50,6 +50,13 @@
       "contribution_pp": 0.2871223149126938
     },
     {
+      "feature": "ret_USD_PEN",
+      "label": "USD/PEN",
+      "value": -0.02155210993049006,
+      "coefficient": 0.050296004064990865,
+      "contribution_pp": -0.10839850086730582
+    },
+    {
       "feature": "ret_MCHI",
       "label": "MCHI",
       "value": 0.011804683405711947,
@@ -76,13 +83,6 @@
       "value": 0.021120598928729084,
       "coefficient": 0.020799891944603438,
       "contribution_pp": 0.04393061755228721
-    },
-    {
-      "feature": "ret_USD_PEN",
-      "label": "USD/PEN",
-      "value": -0.00020691604184275292,
-      "coefficient": 0.050296004064990865,
-      "contribution_pp": -0.001040705008163492
     }
   ],
   "quality": {
