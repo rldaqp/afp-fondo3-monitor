@@ -43,13 +43,6 @@
       "contribution_pp": 0.20661775327262777
     },
     {
-      "feature": "ret_USD_PEN",
-      "label": "USD/PEN",
-      "value": 0.020032959940994743,
-      "coefficient": 0.06520477049201806,
-      "contribution_pp": 0.1306244555228354
-    },
-    {
       "feature": "intercept",
       "label": "Base",
       "value": 1.0,
@@ -76,6 +69,13 @@
       "value": -0.00044083002500616697,
       "coefficient": 0.2015916787222244,
       "contribution_pp": -0.008886766477215336
+    },
+    {
+      "feature": "ret_USD_PEN",
+      "label": "USD/PEN",
+      "value": -0.0008516572166136216,
+      "coefficient": 0.06520477049201806,
+      "contribution_pp": -0.00555321133471621
     },
     {
       "feature": "ret_SPY",
