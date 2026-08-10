@@ -83,6 +83,18 @@ jobs:
           grep -q "TRADE_CLOUD_FUND_ROUTING_V3" public/habitat/index.html
           grep -q "fondo3-local-trade-change" public/habitat/index.html
           grep -q "raw.githubusercontent.com/rldaqp/afp-fondo3-monitor/migracion-github-actions/public/habitat/data/live_market.json" public/habitat/index.html
+          python - <<'PY'
+          import re
+          from pathlib import Path
+          html = Path('public/habitat/index.html').read_text(encoding='utf-8')
+          for script_id in ('tradeHistoryScript', 'tradeCloudScript'):
+              m = re.search(rf'<script id="{script_id}">(.*?)</script>', html, re.S)
+              assert m, script_id
+              Path(f'/tmp/{script_id}.js').write_text(m.group(1), encoding='utf-8')
+          assert "});$('tradeMsg').textContent='Operación guardada y sincronizada con Drive.'});" not in html
+          PY
+          node --check /tmp/tradeHistoryScript.js
+          node --check /tmp/tradeCloudScript.js
 
       - name: Guardar resultados de Hábitat
         run: |
