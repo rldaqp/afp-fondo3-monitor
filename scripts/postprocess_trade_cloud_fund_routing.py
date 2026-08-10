@@ -71,7 +71,7 @@ def patch_history(history: str, cfg: dict[str, str]) -> str:
                 1,
             )
 
-    # No se migran claves antiguas: cada AFP usa un almacén local v3 exclusivo.
+    # Cada AFP usa un almacén local v3 exclusivo.
     end_storage = history.find("  function signalAt(")
     if end_storage < 0:
         raise RuntimeError("No se encontró signalAt en el histórico.")
@@ -94,6 +94,19 @@ def patch_history(history: str, cfg: dict[str, str]) -> str:
     )
     history = history[:start_storage] + storage + history[end_storage:]
 
+    # El histórico es un IIFE separado. No puede llamar a fetchLiveJson definido
+    # dentro de otro IIFE. Se instala un cargador local para evitar que boot() falle
+    # antes de conectar el botón OK · Guardar.
+    helper = (
+        "  function fetchTradeLiveJson(primary,fallback){return fetch(primary,{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.json()}).catch(()=>fetch(fallback,{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.json()}))}\n"
+    )
+    if "function fetchTradeLiveJson(" not in history:
+        anchor = "  function signalAt(date){"
+        if anchor not in history:
+            raise RuntimeError("No se encontró punto para instalar fetchTradeLiveJson.")
+        history = history.replace(anchor, helper + anchor, 1)
+    history = history.replace("fetchLiveJson(", "fetchTradeLiveJson(")
+
     history = re.sub(
         r"row=\{id:uid\(\),(?:fund:FUND,origin:ORIGIN,)?created_at:",
         "row={id:uid(),fund:FUND,origin:ORIGIN,created_at:",
@@ -109,9 +122,14 @@ def patch_history(history: str, cfg: dict[str, str]) -> str:
             1,
         )
 
-    # Reemplaza la línea completa. La expresión anterior podía dejar un fragmento
-    # duplicado al aplicar el parche por segunda vez y rompía todo el script JS,
-    # por lo que el botón OK · Guardar quedaba sin handler.
+    # El botón se conecta antes de cargar datos. Así un fallo de red no lo deja muerto.
+    history = history.replace(
+        "  async function boot(){\n    try{",
+        "  async function boot(){\n    if($('tradeSaveBtn'))$('tradeSaveBtn').onclick=saveCurrent;\n    try{",
+        1,
+    )
+    history = history.replace("      $('tradeSaveBtn').onclick=saveCurrent;render();", "      render();", 1)
+
     listener = "  window.addEventListener('fondo3-cloud-synced',()=>{render();$('tradeMsg').textContent='Operación guardada y sincronizada con Drive.'});"
     history, count = re.subn(
         r"(?m)^\s*window\.addEventListener\('fondo3-cloud-synced'.*$",
@@ -124,6 +142,8 @@ def patch_history(history: str, cfg: dict[str, str]) -> str:
 
     if "});$('tradeMsg').textContent='Operación guardada y sincronizada con Drive.'});" in history:
         raise AssertionError("Quedó un listener duplicado y el JavaScript sería inválido.")
+    if "fetchLiveJson(" in history:
+        raise AssertionError("El histórico sigue dependiendo de fetchLiveJson externo.")
     return history
 
 
@@ -267,6 +287,8 @@ def patch(target: str) -> None:
         "TRADE_CLOUD_FUND_ROUTING_V3",
         "fondo3-local-trade-change",
         f"const ORIGIN='{cfg['origin']}';",
+        "function fetchTradeLiveJson(",
+        "if($('tradeSaveBtn'))$('tradeSaveBtn').onclick=saveCurrent;",
         "Operación guardada y sincronizada con Drive.",
     ]
     missing = [item for item in required if item not in html]
@@ -274,7 +296,7 @@ def patch(target: str) -> None:
         raise AssertionError(f"{target}: faltan controles v3 de separación: {missing}")
 
     path.write_text(html, encoding="utf-8")
-    print(f"{target}: separación permanente v3 activa en {cfg['sheet']} y botón Guardar operativo.")
+    print(f"{target}: separación v3 activa y botón Guardar enlazado antes de cargar datos.")
 
 
 def main() -> None:
