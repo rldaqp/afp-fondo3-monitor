@@ -320,7 +320,9 @@ Promise.all([fetch('data/latest.json?ts='+Date.now(),{cache:'no-store'}).then(r=
 <script id="tradeHistoryScript">
 (function(){
   'use strict';
-  const KEY='profuturo_fondo3_trade_history_v2';
+  const FUND='PROFUTURO';
+  const ORIGIN='VISOR GITHUB · PROFUTURO';
+  const KEY='profuturo_fondo3_trade_history_v3';
   let signals=[],timeline=[],live=null;
   const $=id=>document.getElementById(id);
   const finite=x=>x!==null&&x!==undefined&&x!==''&&Number.isFinite(Number(x));
@@ -331,12 +333,11 @@ Promise.all([fetch('data/latest.json?ts='+Date.now(),{cache:'no-store'}).then(r=
   const money=x=>finite(x)?new Intl.NumberFormat('es-PE',{style:'currency',currency:'PEN'}).format(Number(x)):'—';
   const uid=()=>`${Date.now()}-${Math.random().toString(16).slice(2)}`;
 
-  const LEGACY_KEYS=['fondo3_trade_history_v1','profuturo_fondo3_trade_history_v1'];
+  const LEGACY_KEYS=[];
   function readRowsFrom(k){try{const x=JSON.parse(localStorage.getItem(k)||'[]');return Array.isArray(x)?x:[]}catch(e){return []}}
   function normalizeRows(list,source){return (Array.isArray(list)?list:[]).filter(x=>x&&typeof x==='object').map((x,i)=>x.id?x:{...x,id:`legacy-${source}-${i}-${x.created_at||''}-${x.entry_date||''}-${x.exit_date||''}`})}
-  function mergeRows(groups){const m=new Map();groups.flat().forEach(r=>{if(r&&r.id)m.set(String(r.id),{...(m.get(String(r.id))||{}),...r})});return [...m.values()]}
-  function loadRows(){const current=normalizeRows(readRowsFrom(KEY),KEY),legacy=LEGACY_KEYS.flatMap(k=>normalizeRows(readRowsFrom(k),k));if(!legacy.length)return current;const merged=mergeRows([legacy,current]);if(merged.length!==current.length)localStorage.setItem(KEY,JSON.stringify(merged));return merged}
-  function saveRows(rows){localStorage.setItem(KEY,JSON.stringify(rows))}
+  function loadRows(){return normalizeRows(readRowsFrom(KEY),KEY).filter(r=>String(r.fund||FUND).toUpperCase()===FUND)}
+  function saveRows(rows){const clean=(Array.isArray(rows)?rows:[]).filter(r=>String(r.fund||FUND).toUpperCase()===FUND).map(r=>({...r,fund:FUND,origin:ORIGIN}));localStorage.setItem(KEY,JSON.stringify(clean));window.dispatchEvent(new Event('fondo3-local-trade-change'))}
   function signalAt(date){return signals.find(x=>x.fecha===date)||null}
   function officialRow(date){return timeline.find(x=>x.fecha===date&&x.fuente==='SBS OFICIAL')||null}
   function officialAt(date){const row=officialRow(date);return row&&finite(row.vc)?Number(row.vc):null}
@@ -459,9 +460,10 @@ Promise.all([fetch('data/latest.json?ts='+Date.now(),{cache:'no-store'}).then(r=
     if(row&&mode==='closed'){
       row.exit_requested=exitRequested;row.exit_date=exitDate;row.exit_est_vc=finite(exitEst)?Number(exitEst):null;row.exit_sbs_vc=exitOfficial;row.closed_at=new Date().toISOString();row.confirmed=false;
     }else{
-      row={id:uid(),created_at:new Date().toISOString(),confirmed:false,capital:cap,entry_requested:er,entry_date:ep.fecha,entry_est_vc:finite(entryEst)?Number(entryEst):null,entry_sbs_vc:entryOfficial,exit_requested:exitRequested,exit_date:exitDate,exit_est_vc:finite(exitEst)?Number(exitEst):null,exit_sbs_vc:exitDate?exitOfficial:null};
+      row={id:uid(),fund:FUND,origin:ORIGIN,created_at:new Date().toISOString(),confirmed:false,capital:cap,entry_requested:er,entry_date:ep.fecha,entry_est_vc:finite(entryEst)?Number(entryEst):null,entry_sbs_vc:entryOfficial,exit_requested:exitRequested,exit_date:exitDate,exit_est_vc:finite(exitEst)?Number(exitEst):null,exit_sbs_vc:exitDate?exitOfficial:null};
       rows.push(row);
     }
+    row.fund=FUND;row.origin=ORIGIN;
     saveRows(rows);render();
     $('tradeMsg').textContent=mode==='closed'?'Operación cerrada guardada. La SBS usa la serie oficial completa; el estimado solo aparece cuando el modelo lo generó.':'Entrada guardada como operación abierta.';
   }
@@ -477,7 +479,7 @@ Promise.all([fetch('data/latest.json?ts='+Date.now(),{cache:'no-store'}).then(r=
       $('tradeSaveBtn').onclick=saveCurrent;render();
     }catch(e){$('tradeMsg').textContent='No se pudo cargar la bitácora: '+e}
   }
-  window.addEventListener('fondo3-cloud-synced',()=>render());
+  window.addEventListener('fondo3-cloud-synced',()=>{render();$('tradeMsg').textContent='Operación guardada y sincronizada con Drive.'});
   boot();
 })();
 </script>
@@ -488,18 +490,17 @@ Promise.all([fetch('data/latest.json?ts='+Date.now(),{cache:'no-store'}).then(r=
   'use strict';
   const FUND='PROFUTURO';
   const DRIVE_SHEET='Profuturo';
-  const TRADE_KEY='profuturo_fondo3_trade_history_v2';
-  const LEGACY_KEYS=['fondo3_trade_history_v1','profuturo_fondo3_trade_history_v1'];
+  const TRADE_KEY='profuturo_fondo3_trade_history_v3';
+  const LEGACY_KEYS=[];
   const URL_KEY='profuturo_fondo3_drive_sync_url_v3';
   const SECRET_KEY='fondo3_drive_sync_key_v1';
-  const SNAP_KEY='profuturo_fondo3_drive_sync_snapshot_v2';
+  const SNAP_KEY='profuturo_fondo3_drive_sync_snapshot_v3';
   const DEFAULT_URL='https://script.google.com/macros/s/AKfycbxY9JqIeTnweKaEXAOs7hQ6KftlPgVsGOFPwOp7hqL5gJ47OuuHlAJBksTGdOQ2yc_Y0Q/exec';
-  let syncing=false,timer=null;
+  let syncing=false,timer=null,pending=false;
   const $=id=>document.getElementById(id);
   const read=(k,fb)=>{try{const x=JSON.parse(localStorage.getItem(k)||'');return x??fb}catch(e){return fb}};
   function normalizeRows(list,source){return (Array.isArray(list)?list:[]).filter(x=>x&&typeof x==='object').map((x,i)=>x.id?x:{...x,id:`legacy-${source}-${i}-${x.created_at||''}-${x.entry_date||''}-${x.exit_date||''}`})}
-  function mergeRows(groups){const m=new Map();groups.flat().forEach(r=>{if(r&&r.id)m.set(String(r.id),{...(m.get(String(r.id))||{}),...r})});return [...m.values()]}
-  function migrateRows(){const current=normalizeRows(read(TRADE_KEY,[]),TRADE_KEY),legacy=LEGACY_KEYS.flatMap(k=>normalizeRows(read(k,[]),k));if(!legacy.length)return current;const merged=mergeRows([legacy,current]);if(merged.length!==current.length)localStorage.setItem(TRADE_KEY,JSON.stringify(merged));return merged}
+  function migrateRows(){return normalizeRows(read(TRADE_KEY,[]),TRADE_KEY).filter(r=>String(r.fund||FUND).toUpperCase()===FUND)}
   const rows=()=>migrateRows();
   const snapshot=()=>read(SNAP_KEY,null);
   const stable=x=>JSON.stringify(x,Object.keys(x||{}).sort());
@@ -526,10 +527,11 @@ Promise.all([fetch('data/latest.json?ts='+Date.now(),{cache:'no-store'}).then(r=
   function mapById(list){const m=new Map();(Array.isArray(list)?list:[]).forEach(x=>{if(x&&x.id)m.set(String(x.id),x)});return m}
 
   async function syncNow(initial=false){
-    const c=cfg();if(!c.url||!c.key||syncing)return;
+    const c=cfg();if(!c.url||!c.key)return;
+    if(syncing){pending=true;return}
     syncing=true;setStatus('Sincronizando Profuturo con Drive…','cloud-warn');
     try{
-      // TRADE_CLOUD_FUND_ROUTING_V2
+      // TRADE_CLOUD_FUND_ROUTING_V3
       const probe=await jsonp('ping');
       if(probe.routing!==true||String(probe.fund||'').toUpperCase()!==FUND){
         throw new Error(`El puente de Drive aún no está actualizado para la hoja ${DRIVE_SHEET}.`);
@@ -543,14 +545,14 @@ Promise.all([fetch('data/latest.json?ts='+Date.now(),{cache:'no-store'}).then(r=
         for(const id of sm.keys()){if(!cm.has(id))await jsonp('delete',{id})}
       }
       const out=await jsonp('list');
-      const remote=Array.isArray(out.rows)?out.rows:[];
-      localStorage.setItem(TRADE_KEY,JSON.stringify(remote));
+      const remote=(Array.isArray(out.rows)?out.rows:[]).filter(r=>String(r.fund||FUND).toUpperCase()===FUND);
+      if(!pending)localStorage.setItem(TRADE_KEY,JSON.stringify(remote));
       localStorage.setItem(SNAP_KEY,JSON.stringify(remote));
       setStatus(`Drive Profuturo conectado · ${remote.length} ${remote.length===1?'operación':'operaciones'} sincronizadas.`,'cloud-ok');
       window.dispatchEvent(new Event('fondo3-cloud-synced'));
       if(!initial)setTimeout(()=>location.reload(),180);
     }catch(e){setStatus('Drive no sincronizó: '+e.message,'cloud-bad')}
-    finally{syncing=false}
+    finally{syncing=false;if(pending){pending=false;setTimeout(()=>syncNow(true),0)}}
   }
 
   async function connect(){
@@ -566,7 +568,7 @@ Promise.all([fetch('data/latest.json?ts='+Date.now(),{cache:'no-store'}).then(r=
     const c=cfg();if($('tradeCloudUrl'))$('tradeCloudUrl').value=c.url;if($('tradeCloudKey'))$('tradeCloudKey').value=c.key;
     if($('tradeCloudConnect'))$('tradeCloudConnect').onclick=connect;
     if(c.url&&c.key){setStatus('Drive Profuturo configurado. Verificando…','cloud-warn');setTimeout(()=>syncNow(true),900)}
-    document.addEventListener('click',ev=>{if(ev.target.closest('#tradeHistoryPanel button')&&!ev.target.closest('#tradeCloudConnect'))setTimeout(()=>syncNow(true),350)},true);
+    window.addEventListener('fondo3-local-trade-change',()=>{pending=true;syncNow(true)});
     timer=setInterval(()=>syncNow(true),30000);
   }
   boot();
