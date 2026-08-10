@@ -71,7 +71,7 @@ def patch_history(history: str, cfg: dict[str, str]) -> str:
                 1,
             )
 
-    # Sustituye cualquier migración heredada por un almacén nuevo y exclusivo.
+    # No se migran claves antiguas: cada AFP usa un almacén local v3 exclusivo.
     end_storage = history.find("  function signalAt(")
     if end_storage < 0:
         raise RuntimeError("No se encontró signalAt en el histórico.")
@@ -109,12 +109,21 @@ def patch_history(history: str, cfg: dict[str, str]) -> str:
             1,
         )
 
-    history = re.sub(
-        r"window\.addEventListener\('fondo3-cloud-synced',\(\)=>[^;]*;?\);",
-        "window.addEventListener('fondo3-cloud-synced',()=>{render();$('tradeMsg').textContent='Operación guardada y sincronizada con Drive.'});",
+    # Reemplaza la línea completa. La expresión anterior podía dejar un fragmento
+    # duplicado al aplicar el parche por segunda vez y rompía todo el script JS,
+    # por lo que el botón OK · Guardar quedaba sin handler.
+    listener = "  window.addEventListener('fondo3-cloud-synced',()=>{render();$('tradeMsg').textContent='Operación guardada y sincronizada con Drive.'});"
+    history, count = re.subn(
+        r"(?m)^\s*window\.addEventListener\('fondo3-cloud-synced'.*$",
+        listener,
         history,
         count=1,
     )
+    if count == 0:
+        history = history.replace("  boot();", listener + "\n  boot();", 1)
+
+    if "});$('tradeMsg').textContent='Operación guardada y sincronizada con Drive.'});" in history:
+        raise AssertionError("Quedó un listener duplicado y el JavaScript sería inválido.")
     return history
 
 
@@ -164,7 +173,6 @@ def patch_cloud(cloud: str, cfg: dict[str, str]) -> str:
     )
     cloud = cloud[:read_start] + storage + cloud[snapshot_start:]
 
-    # Siempre envía el fondo al Apps Script.
     if "u.searchParams.set('fund',FUND);" not in cloud:
         cloud = cloud.replace(
             "u.searchParams.set('action',action);",
@@ -259,13 +267,14 @@ def patch(target: str) -> None:
         "TRADE_CLOUD_FUND_ROUTING_V3",
         "fondo3-local-trade-change",
         f"const ORIGIN='{cfg['origin']}';",
+        "Operación guardada y sincronizada con Drive.",
     ]
     missing = [item for item in required if item not in html]
     if missing:
         raise AssertionError(f"{target}: faltan controles v3 de separación: {missing}")
 
     path.write_text(html, encoding="utf-8")
-    print(f"{target}: separación permanente v3 activa en {cfg['sheet']}.")
+    print(f"{target}: separación permanente v3 activa en {cfg['sheet']} y botón Guardar operativo.")
 
 
 def main() -> None:
