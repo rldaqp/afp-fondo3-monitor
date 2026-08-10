@@ -23,6 +23,8 @@ on:
       - "scripts/postprocess_trade_history.py"
       - "scripts/postprocess_trade_cloud_sync.py"
       - "scripts/postprocess_trade_notebook_basis.py"
+      - "scripts/postprocess_trade_cloud_fund_routing.py"
+      - "scripts/postprocess_trade_runtime_fixes.py"
       - "scripts/postprocess_live_consistency.py"
       - "data/rolling90/sbs_reference_corrections.csv"
       - "data/rolling90/notebook_training_reference.csv"
@@ -90,6 +92,7 @@ jobs:
           python scripts/postprocess_trade_cloud_sync.py
           python scripts/postprocess_trade_notebook_basis.py
           python scripts/postprocess_live_consistency.py
+          python scripts/postprocess_trade_runtime_fixes.py profuturo
 
       - name: Validar modelo y visor Profuturo
         run: |
@@ -118,6 +121,9 @@ jobs:
           grep -q "Respaldo y sincronización en Google Drive" public/index.html
           grep -q "MARKET_INDICATORS_PRESERVED_V2" public/index.html
           grep -q "raw.githubusercontent.com/rldaqp/afp-fondo3-monitor/migracion-github-actions/public/data/live_market.json" public/index.html
+          grep -q "AKfycbxoYHkCu0cZPx_KsMlI0Jd5PEATgxBjZTR8oK8qs1cUjRHJbiK0t-bxkH5ACprgp81S7g/exec" public/index.html
+          grep -q "fuente:'PENDIENTE'" public/index.html
+          ! grep -q "No existe una fecha efectiva de entrada en la línea del monitor." public/index.html
           ! grep -q "AFP_SELECTOR_V1" public/index.html
 
           python - <<'PY'
