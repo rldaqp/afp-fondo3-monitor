@@ -417,9 +417,18 @@ Promise.all([fetch('data/latest.json?ts='+Date.now(),{cache:'no-store'}).then(r=
   function reconcile(rows){
     let changed=false;
     rows.forEach(r=>{
-      const ei=officialAt(r.entry_date);
-      if(ei!==null&&r.entry_sbs_vc!==ei){r.entry_sbs_vc=ei;changed=true}
-      if(r.exit_date){const xo=officialAt(r.exit_date);if(xo!==null&&r.exit_sbs_vc!==xo){r.exit_sbs_vc=xo;changed=true}}
+      const requested=r.entry_requested||r.entry_date;
+      const ep=entryEffective(requested);
+      if(ep){
+        if(r.entry_date!==ep.fecha){r.entry_date=ep.fecha;changed=true}
+        if(!finite(r.entry_est_vc)){const ee=estimateAt(ep.fecha);if(finite(ee)){r.entry_est_vc=Number(ee);changed=true}}
+        const ei=officialAt(ep.fecha);
+        if(ei!==null&&r.entry_sbs_vc!==ei){r.entry_sbs_vc=ei;changed=true}
+      }
+      if(r.exit_date){
+        const xo=officialAt(r.exit_date);
+        if(xo!==null&&r.exit_sbs_vc!==xo){r.exit_sbs_vc=xo;changed=true}
+      }
     });
     if(changed)saveRows(rows);
     return rows;
@@ -504,9 +513,8 @@ Promise.all([fetch('data/latest.json?ts='+Date.now(),{cache:'no-store'}).then(r=
     if(mode==='monitor'){$('tradeMsg').textContent='Selecciona “Sigo dentro” o “Ya salí” antes de guardar.';return}
     const er=$('entry')?.value,cap=Number($('capital')?.value||0);
     if(!er||!finite(cap)||cap<=0){$('tradeMsg').textContent='Completa fecha de entrada y capital.';return}
-    const ep=entryEffective(er);if(!ep){$('tradeMsg').textContent='No existe una fecha efectiva de entrada en la línea del monitor.';return}
+    const ep=entryEffective(er)||{fecha:er,vc:null,fuente:'PENDIENTE'};
     const entryEst=estimateAt(ep.fecha),entryOfficial=officialAt(ep.fecha);
-    if(!finite(entryEst)&&entryOfficial===null){$('tradeMsg').textContent='Todavía no existe un VC estimado u oficial para la fecha efectiva de entrada.';return}
     let exitDate=null,exitRequested=null,exitEst=null,exitOfficial=null;
     if(mode==='closed'){
       exitRequested=$('exit')?.value;
@@ -625,7 +633,7 @@ Promise.all([fetch('data/latest.json?ts='+Date.now(),{cache:'no-store'}).then(r=
   }
 
   function boot(){
-    if(!localStorage.getItem(URL_KEY))localStorage.setItem(URL_KEY,DEFAULT_URL);
+    localStorage.setItem(URL_KEY,DEFAULT_URL);
     const c=cfg();if($('tradeCloudUrl'))$('tradeCloudUrl').value=c.url;if($('tradeCloudKey'))$('tradeCloudKey').value=c.key;
     if($('tradeCloudConnect'))$('tradeCloudConnect').onclick=connect;
     if(c.url&&c.key){setStatus('Drive Hábitat configurado. Verificando…','cloud-warn');setTimeout(()=>syncNow(true),900)}
