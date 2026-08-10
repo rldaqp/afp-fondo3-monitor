@@ -2575,37 +2575,37 @@
   },
   {
     "fecha": "2026-08-05",
-    "ret_estimado": 0.011315124638830224,
+    "ret_estimado": 0.011315124638830226,
     "senal": "SUBE",
-    "vc_real": null,
+    "vc_real": 69.8102662,
     "vc_estimado": 70.57376675959088,
-    "tipo": "PENDIENTE",
-    "estado_fuentes": "COMPLETAS"
+    "tipo": "HISTORICO"
   },
   {
     "fecha": "2026-08-06",
-    "ret_estimado": -0.006559934621675411,
+    "ret_estimado": -0.0059292344710563565,
     "senal": "BAJA",
-    "vc_real": null,
-    "vc_estimado": 70.1108074636426,
-    "tipo": "PENDIENTE",
-    "estado_fuentes": "USD/PEN YAHOO PEN=X · PROVISIONAL"
+    "vc_real": 69.2016742,
+    "vc_estimado": 69.39634476321335,
+    "tipo": "HISTORICO",
+    "estado_fuentes": "CALENDARIO COMPLETO · 0%: ret_USD_PEN",
+    "calendario_completado": true
   },
   {
     "fecha": "2026-08-07",
-    "ret_estimado": 0.01420801425331025,
+    "ret_estimado": 0.013234897449465292,
     "senal": "SUBE",
     "vc_real": null,
-    "vc_estimado": 71.10694281539713,
+    "vc_estimado": 70.11755126136832,
     "tipo": "PENDIENTE",
     "estado_fuentes": "COMPLETAS"
   },
   {
     "fecha": "2026-08-10",
-    "ret_estimado": 0.008897502995260594,
+    "ret_estimado": 0.008174195075006194,
     "senal": "SUBE",
     "vc_real": null,
-    "vc_estimado": 71.73961705208094,
+    "vc_estimado": 70.69070580356049,
     "tipo": "PENDIENTE",
     "estado_fuentes": "USD/PEN YAHOO PEN=X · PROVISIONAL"
   }
