@@ -1,10 +1,10 @@
 {
   "generated_for": "2026-08-11",
-  "current_signal": "SUBE",
+  "current_signal": "NEUTRO",
   "confidence": {
-    "historical_accuracy": 0.8695652173913043,
-    "n": 46,
-    "label": "SUBE",
+    "historical_accuracy": 0.1,
+    "n": 10,
+    "label": "NEUTRO",
     "description": "Aciertos históricos de la misma clase de señal; no es garantía futura."
   },
   "performance": {
@@ -50,13 +50,6 @@
       "contribution_pp": 0.14588154297603298
     },
     {
-      "feature": "ret_USD_PEN",
-      "label": "USD/PEN",
-      "value": 0.021386209732393135,
-      "coefficient": 0.06714146674947237,
-      "contribution_pp": 0.14359014896447161
-    },
-    {
       "feature": "intercept",
       "label": "Base",
       "value": 1.0,
@@ -76,6 +69,13 @@
       "value": -0.0031952597501651026,
       "coefficient": 0.09911592304699074,
       "contribution_pp": -0.03167011195125112
+    },
+    {
+      "feature": "ret_USD_PEN",
+      "label": "USD/PEN",
+      "value": 0.0006264554817234647,
+      "coefficient": 0.06714146674947237,
+      "contribution_pp": 0.00420611398961607
     },
     {
       "feature": "ret_NEM",
