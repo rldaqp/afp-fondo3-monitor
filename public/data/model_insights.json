@@ -44,12 +44,12 @@
     },
     "current": {
       "fecha": "2026-08-10",
-      "ret_estimado": -0.00025625616176567893,
+      "ret_estimado": -0.00021356416440157836,
       "senal": "NEUTRO",
-      "vc_estimado": 70.01390084072402,
+      "vc_estimado": 70.0168906401487,
       "agrees_with_ols": true,
       "ols_signal": "NEUTRO",
-      "ols_return_estimated": 0.00016866181388141725
+      "ols_return_estimated": 0.00021138871136479906
     },
     "performance": {
       "window_n": 90,
@@ -92,9 +92,9 @@
       },
       {
         "fecha": "2026-08-10",
-        "ret_estimado": -0.00025625616176567893,
+        "ret_estimado": -0.00021356416440157836,
         "senal": "NEUTRO",
-        "vc_estimado": 70.01390084072402
+        "vc_estimado": 70.0168906401487
       }
     ]
   },
@@ -140,18 +140,18 @@
       "contribution_pp": -0.038686962545398024
     },
     {
-      "feature": "ret_USD_PEN",
-      "label": "USD/PEN",
-      "value": -0.0008516572166136,
-      "coefficient": 0.38332200206065653,
-      "contribution_pp": -0.032645894934173136
-    },
-    {
       "feature": "ret_MCHI",
       "label": "MCHI",
       "value": 0.0063638078892283,
       "coefficient": -0.04986186634500253,
       "contribution_pp": -0.03173113384179742
+    },
+    {
+      "feature": "ret_USD_PEN",
+      "label": "USD/PEN",
+      "value": -0.0007401924500369,
+      "coefficient": 0.38332200206065653,
+      "contribution_pp": -0.028373205185832695
     },
     {
       "feature": "ret_EPU",
@@ -169,14 +169,12 @@
     }
   ],
   "quality": {
-    "status": "PROVISIONAL",
+    "status": "OK",
     "critical": [],
-    "warnings": [
-      "FX provisional: YAHOO PEN=X PROVISIONAL"
-    ],
+    "warnings": [],
     "training_n": 90,
     "latest_sbs_date": "2026-08-06",
-    "fx_source": "YAHOO PEN=X PROVISIONAL",
-    "fx_provisional": true
+    "fx_source": "BCRP",
+    "fx_provisional": false
   }
 }
