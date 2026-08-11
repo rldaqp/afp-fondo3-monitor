@@ -1,5 +1,5 @@
 {
-  "generated_at_lima": "2026-08-10T18:23:36.218361-05:00",
+  "generated_at_lima": "2026-08-10T19:54:48.564470-05:00",
   "model": "OLS rolling 90",
   "window": 90,
   "threshold": 0.001,
@@ -11,18 +11,18 @@
   "latest_market_date": "2026-08-10",
   "latest_estimate_date": "2026-08-10",
   "latest_estimated_vc": 70.12937741474899,
-  "latest_return_estimated": 0.00016866181388142554,
+  "latest_return_estimated": 0.00016866181388141725,
   "signal": "NEUTRO",
   "estimate_type": "CIERRE DIARIO · MODELO OLS · PARIDAD NOTEBOOK",
   "coefficients": {
-    "intercept": -0.00038686962545398003,
-    "ret_SPY": 0.02171347921921589,
-    "ret_NEM": 0.08524203534694186,
-    "ret_FCX": 0.05979399729987478,
+    "intercept": -0.00038686962545398025,
+    "ret_SPY": 0.021713479219216295,
+    "ret_NEM": 0.08524203534694164,
+    "ret_FCX": 0.059793997299874696,
     "ret_EPU": 0.30010014211060876,
-    "ret_MCHI": -0.049861866345002726,
-    "ret_EEM": 0.3708707619206395,
-    "ret_USD_PEN": 0.3833220020606565
+    "ret_MCHI": -0.04986186634500253,
+    "ret_EEM": 0.37087076192063945,
+    "ret_USD_PEN": 0.38332200206065653
   },
   "parity_rule": "BCRP exclusivo para histórico/entrenamiento; en predicción pendiente se usa BCRP si existe; si BCRP está rezagado se usa Yahoo PEN=X provisional; 0 % solo si ambas fuentes faltan; VC encadenado",
   "parity_verified": true,
