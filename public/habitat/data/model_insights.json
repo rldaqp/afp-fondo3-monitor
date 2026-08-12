@@ -10,7 +10,7 @@
   "performance": {
     "window_n": 90,
     "classification_accuracy": 0.7777777777777778,
-    "mae_return_pp": 0.31920959521850945,
+    "mae_return_pp": 0.31920959521850933,
     "sube_n": 46,
     "sube_accuracy": 0.8695652173913043,
     "baja_n": 34,
@@ -19,56 +19,56 @@
     "neutro_accuracy": 0.1
   },
   "uncertainty": {
-    "relative_q80": 0.0051757833946602,
+    "relative_q80": 0.005175783394660197,
     "label": "Banda empírica 80%"
   },
   "benchmarks": {
     "zero_change_mae_pp": 1.0047260978084522,
-    "ols_mae_pp": 0.31920959521850945,
-    "ols_mae_improvement_vs_zero": 0.6822919242221518
+    "ols_mae_pp": 0.31920959521850933,
+    "ols_mae_improvement_vs_zero": 0.6822919242221519
   },
   "contributions": [
     {
       "feature": "ret_EPU",
       "label": "EPU",
       "value": -0.009702285369647123,
-      "coefficient": 0.2037210279819339,
-      "contribution_pp": -0.19765595492785892
+      "coefficient": 0.20372102798193398,
+      "contribution_pp": -0.197655954927859
     },
     {
       "feature": "ret_MCHI",
       "label": "MCHI",
       "value": -0.023010738912149886,
-      "coefficient": -0.06438453066174622,
-      "contribution_pp": 0.14815356250387512
+      "coefficient": -0.06438453066174613,
+      "contribution_pp": 0.1481535625038749
     },
     {
       "feature": "ret_EEM",
       "label": "EEM",
       "value": 0.00398959864256021,
-      "coefficient": 0.3656546837062729,
-      "contribution_pp": 0.14588154297603295
+      "coefficient": 0.36565468370627296,
+      "contribution_pp": 0.14588154297603298
     },
     {
       "feature": "intercept",
       "label": "Base",
       "value": 1.0,
-      "coefficient": 0.00044612123299743824,
-      "contribution_pp": 0.044612123299743824
+      "coefficient": 0.0004461212329974378,
+      "contribution_pp": 0.04461212329974378
     },
     {
       "feature": "ret_FCX",
       "label": "FCX",
       "value": -0.023259102821750588,
-      "coefficient": 0.017860209912625376,
-      "contribution_pp": -0.04154124587758027
+      "coefficient": 0.017860209912625394,
+      "contribution_pp": -0.04154124587758031
     },
     {
       "feature": "ret_SPY",
       "label": "SPY",
       "value": -0.0031952597501651026,
-      "coefficient": 0.09911592304699061,
-      "contribution_pp": -0.03167011195125107
+      "coefficient": 0.09911592304699074,
+      "contribution_pp": -0.03167011195125112
     },
     {
       "feature": "ret_USD_PEN",
@@ -81,8 +81,8 @@
       "feature": "ret_NEM",
       "label": "NEM",
       "value": -0.0004264288832240837,
-      "coefficient": 0.05080638973880769,
-      "contribution_pp": -0.0021665312036967307
+      "coefficient": 0.05080638973880741,
+      "contribution_pp": -0.002166531203696719
     }
   ],
   "quality": {
