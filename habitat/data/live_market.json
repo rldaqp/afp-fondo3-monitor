@@ -1,11 +1,11 @@
 {
-  "generated_at_lima": "2026-08-12T15:57:03.253909-05:00",
+  "generated_at_lima": "2026-08-12T16:35:37.996293-05:00",
   "mode": "CIERRE DIARIO",
   "market_open": false,
   "signal_date": "2026-08-12",
-  "vc_base": 33.1720851,
-  "vc_estimated": 33.42799175248059,
-  "return_estimated": 0.007836438684854372,
+  "vc_base": 33.0718532,
+  "vc_estimated": 33.34023242438345,
+  "return_estimated": 0.00749604356073909,
   "signal": "SUBE",
   "assets": [
     {
@@ -13,9 +13,9 @@
       "ticker": "SPY",
       "timestamp": "2026-08-12",
       "precio_anterior": 770.5599975585938,
-      "precio_actual": 772.469970703125,
-      "retorno": 0.0024786819333766363,
-      "retorno_modelo": 0.0024786819333766363,
+      "precio_actual": 772.489990234375,
+      "retorno": 0.0025046624297864195,
+      "retorno_modelo": 0.0025046624297864195,
       "estado": "CIERRE DIARIO YAHOO · USADO POR MODELO",
       "usado_modelo": true
     },
@@ -80,8 +80,8 @@
       "timestamp": "2026-08-11",
       "precio_anterior": null,
       "precio_actual": null,
-      "retorno": 0.0184502073645502,
-      "retorno_modelo": 0.0184502073645502,
+      "retorno": 0.014673006932228,
+      "retorno_modelo": 0.014673006932228,
       "estado": "YAHOO PEN=X · PROVISIONAL · USADO POR MODELO",
       "usado_modelo": true
     }
