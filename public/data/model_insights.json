@@ -3,18 +3,18 @@
   "current_signal": "SUBE",
   "confidence": {
     "label": "ALTA",
-    "historical_accuracy": 0.8478260869565217,
-    "n": 46,
+    "historical_accuracy": 0.851063829787234,
+    "n": 47,
     "description": "Acierto histórico de la misma clase de señal en las últimas 90 observaciones OLS; no es una probabilidad garantizada."
   },
   "performance": {
     "window_n": 90,
     "classification_accuracy": 0.8222222222222222,
-    "mae_return_pp": 0.34934833764608514,
-    "sube_accuracy": 0.8478260869565217,
-    "sube_n": 46,
-    "baja_accuracy": 0.9459459459459459,
-    "baja_n": 37,
+    "mae_return_pp": 0.3499644104998799,
+    "sube_accuracy": 0.851063829787234,
+    "sube_n": 47,
+    "baja_accuracy": 0.9444444444444444,
+    "baja_n": 36,
     "neutro_accuracy": 0.0,
     "neutro_n": 7
   },
@@ -29,72 +29,73 @@
     },
     "training": {
       "n": 90,
-      "start": "2026-03-19",
+      "start": "2026-03-20",
       "end": "2026-08-10"
     },
     "coefficients": {
-      "intercept": -0.0008446693662826537,
-      "ret_SPY": -0.1071114978867308,
-      "ret_NEM": 0.044595191700737266,
-      "ret_FCX": 0.10402119315489003,
-      "ret_EPU": 0.34312339317642765,
-      "ret_MCHI": -0.056419173787030624,
-      "ret_EEM": 0.3755310344684627,
-      "ret_USD_PEN": 0.3805784810732312
+      "intercept": -0.0009281940205330577,
+      "ret_SPY": -0.10255334686713188,
+      "ret_NEM": 0.038370012913733514,
+      "ret_FCX": 0.09585353069222471,
+      "ret_EPU": 0.35219076846193237,
+      "ret_MCHI": -0.060272246656920714,
+      "ret_EEM": 0.38577964226811773,
+      "ret_USD_PEN": 0.39777550665699574
     },
     "current": {
       "fecha": "2026-08-12",
-      "ret_estimado": 0.010285525423836147,
+      "ret_estimado": 0.010552171135660662,
       "senal": "SUBE",
-      "vc_estimado": 69.60931107170431,
+      "vc_estimado": 69.63399569928073,
       "agrees_with_ols": true,
       "ols_signal": "SUBE",
-      "ols_return_estimated": 0.011538570745662557
+      "ols_return_estimated": 0.011696911738806546
     },
     "performance": {
       "window_n": 90,
-      "correct": 77,
-      "classification_accuracy": 0.8555555555555555,
-      "mae_return_pp": 0.3364212181989675,
-      "sube_n": 46,
-      "sube_accuracy": 0.8695652173913043,
+      "correct": 78,
+      "classification_accuracy": 0.8666666666666667,
+      "mae_return_pp": 0.3375439086627329,
+      "sube_n": 47,
+      "sube_accuracy": 0.8723404255319149,
       "baja_n": 36,
       "baja_accuracy": 0.9722222222222222,
-      "neutro_n": 8,
-      "neutro_accuracy": 0.25
+      "neutro_n": 7,
+      "neutro_accuracy": 0.2857142857142857
     },
     "comparison_vs_ols": {
       "paired_n": 90,
       "ols_correct": 74,
-      "huber_correct": 77,
-      "net_correct": 3,
+      "huber_correct": 78,
+      "net_correct": 4,
       "ols_accuracy": 0.8222222222222222,
-      "huber_accuracy": 0.8555555555555555,
-      "accuracy_delta_pp": 3.3333333333333326,
-      "ols_mae_return_pp": 0.34934833764608514,
-      "huber_mae_return_pp": 0.3364212181989661,
-      "mae_delta_pp": -0.012927119447119051,
-      "corrected_errors": 3,
+      "huber_accuracy": 0.8666666666666667,
+      "accuracy_delta_pp": 4.444444444444451,
+      "ols_mae_return_pp": 0.3499644104998799,
+      "huber_mae_return_pp": 0.3375439086627317,
+      "mae_delta_pp": -0.012420501837148212,
+      "corrected_errors": 4,
       "new_errors": 0,
       "corrected_dates": [
         "2026-04-06",
         "2026-06-17",
-        "2026-06-22"
+        "2026-06-22",
+        "2026-08-10"
       ],
       "new_error_dates": []
     },
     "pending_series": [
       {
         "fecha": "2026-08-11",
-        "ret_estimado": -0.004488368657450854,
+        "ret_estimado": -0.0043981138029983834,
         "senal": "BAJA",
-        "vc_estimado": 68.90063187087803
+        "vc_estimado": 68.9068785246643
       },
       {
         "fecha": "2026-08-12",
-        "ret_estimado": 0.010285525423836147,
+        "ret_estimado": 0.010552171135660662,
         "senal": "SUBE",
-        "vc_estimado": 69.60931107170431
+        "vc_estimado": 69.63399569928073
       }
     ]
   },
@@ -105,9 +106,9 @@
     "description": "Se deriva de los errores relativos históricos del VC estimado. Para días encadenados pendientes se amplía con la raíz del horizonte."
   },
   "benchmarks": {
-    "zero_change_mae_pp": 1.2807594584081359,
-    "ols_mae_pp": 0.34934833764608514,
-    "ols_mae_improvement_vs_zero": 0.7272334509398881,
+    "zero_change_mae_pp": 1.2623623572240021,
+    "ols_mae_pp": 0.3499644104998799,
+    "ols_mae_improvement_vs_zero": 0.7227702422389486,
     "previous_direction_accuracy": 0.3595505617977528
   },
   "contributions": [
@@ -115,57 +116,57 @@
       "feature": "ret_USD_PEN",
       "label": "USD/PEN",
       "value": 0.014673006932228,
-      "coefficient": 0.416928520412989,
-      "contribution_pp": 0.6117595070263351
+      "coefficient": 0.4210370230144304,
+      "contribution_pp": 0.6177879157415378
     },
     {
       "feature": "ret_EEM",
       "label": "EEM",
       "value": 0.0157419956364481,
-      "coefficient": 0.37197626666719563,
-      "contribution_pp": 0.5855648766737249
+      "coefficient": 0.38387410720176696,
+      "contribution_pp": 0.6042944520515626
     },
     {
       "feature": "ret_EPU",
       "label": "EPU",
       "value": -0.0041193804034643,
-      "coefficient": 0.3175242094784779,
-      "contribution_pp": -0.13080030061511352
+      "coefficient": 0.31999604962036443,
+      "contribution_pp": -0.1318185455992119
     },
     {
       "feature": "ret_MCHI",
       "label": "MCHI",
       "value": -0.0097086859259272,
-      "coefficient": -0.06511378583413678,
-      "contribution_pp": 0.06321692961117216
+      "coefficient": -0.06227047329322377,
+      "contribution_pp": 0.06045644676627472
     },
     {
       "feature": "intercept",
       "label": "Base",
       "value": 1.0,
-      "coefficient": -0.0005466854367994207,
-      "contribution_pp": -0.054668543679942075
+      "coefficient": -0.000530801422647975,
+      "contribution_pp": -0.0530801422647975
     },
     {
       "feature": "ret_NEM",
       "label": "NEM",
       "value": 0.0053749446151256,
-      "coefficient": 0.07331962475259696,
-      "contribution_pp": 0.039408892224700065
+      "coefficient": 0.06397162139138463,
+      "contribution_pp": 0.03438439219184764
     },
     {
       "feature": "ret_FCX",
       "label": "FCX",
       "value": 0.0050820162648892,
-      "coefficient": 0.06382150421286747,
-      "contribution_pp": 0.03243419224594871
+      "coefficient": 0.058624962363466565,
+      "contribution_pp": 0.029793301225965428
     },
     {
       "feature": "ret_SPY",
       "label": "SPY",
       "value": 0.0025046624297864,
-      "coefficient": 0.027714397744284566,
-      "contribution_pp": 0.006941521079426651
+      "coefficient": 0.031434790069268276,
+      "contribution_pp": 0.007873353767471888
     }
   ],
   "quality": {
