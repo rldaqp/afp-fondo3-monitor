@@ -44,12 +44,12 @@
     },
     "current": {
       "fecha": "2026-08-12",
-      "ret_estimado": 0.010552171135660662,
+      "ret_estimado": 0.012968160277765503,
       "senal": "SUBE",
-      "vc_estimado": 69.63399569928073,
+      "vc_estimado": 69.80047396961267,
       "agrees_with_ols": true,
       "ols_signal": "SUBE",
-      "ols_return_estimated": 0.011696911738806546
+      "ols_return_estimated": 0.014254185525159033
     },
     "performance": {
       "window_n": 90,
@@ -93,9 +93,9 @@
       },
       {
         "fecha": "2026-08-12",
-        "ret_estimado": 0.010552171135660662,
+        "ret_estimado": 0.012968160277765503,
         "senal": "SUBE",
-        "vc_estimado": 69.63399569928073
+        "vc_estimado": 69.80047396961267
       }
     ]
   },
@@ -115,9 +115,9 @@
     {
       "feature": "ret_USD_PEN",
       "label": "USD/PEN",
-      "value": 0.014673006932228,
+      "value": 0.0207467573308119,
       "coefficient": 0.4210370230144304,
-      "contribution_pp": 0.6177879157415378
+      "contribution_pp": 0.8735152943767853
     },
     {
       "feature": "ret_EEM",
