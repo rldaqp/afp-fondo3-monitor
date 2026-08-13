@@ -19,7 +19,7 @@
     "neutro_accuracy": 0.09090909090909091
   },
   "uncertainty": {
-    "relative_q80": 0.005175783394660197,
+    "relative_q80": 0.0051757833946602,
     "label": "Banda empírica 80%"
   },
   "benchmarks": {
@@ -32,36 +32,36 @@
       "feature": "ret_EEM",
       "label": "EEM",
       "value": 0.01574199563644818,
-      "coefficient": 0.3695154937266356,
-      "contribution_pp": 0.5816911289844693
+      "coefficient": 0.36951549372663556,
+      "contribution_pp": 0.5816911289844692
     },
     {
       "feature": "ret_EPU",
       "label": "EPU",
       "value": -0.004119380403464379,
-      "coefficient": 0.20632613216398382,
-      "contribution_pp": -0.08499358255589164
+      "coefficient": 0.20632613216398388,
+      "contribution_pp": -0.08499358255589166
     },
     {
       "feature": "ret_MCHI",
       "label": "MCHI",
       "value": -0.009708685925927218,
-      "coefficient": -0.06714968646250713,
-      "contribution_pp": 0.06519352158889685
+      "coefficient": -0.06714968646250719,
+      "contribution_pp": 0.0651935215888969
     },
     {
       "feature": "intercept",
       "label": "Base",
       "value": 1.0,
-      "coefficient": 0.00045716280286040175,
-      "contribution_pp": 0.045716280286040176
+      "coefficient": 0.0004571628028604022,
+      "contribution_pp": 0.04571628028604022
     },
     {
       "feature": "ret_SPY",
       "label": "SPY",
       "value": 0.0025046624297864195,
-      "coefficient": 0.10245318859251919,
-      "contribution_pp": 0.025661065227950537
+      "coefficient": 0.10245318859251899,
+      "contribution_pp": 0.02566106522795049
     },
     {
       "feature": "ret_NEM",
@@ -74,15 +74,15 @@
       "feature": "ret_FCX",
       "label": "FCX",
       "value": 0.005082016264889244,
-      "coefficient": 0.015657941362869146,
-      "contribution_pp": 0.007957391268078306
+      "coefficient": 0.015657941362869132,
+      "contribution_pp": 0.007957391268078299
     },
     {
       "feature": "ret_USD_PEN",
       "label": "USD/PEN",
       "value": -0.0008912655971480277,
-      "coefficient": 0.05571950223876606,
-      "contribution_pp": -0.0049660875435624694
+      "coefficient": 0.05571950223876596,
+      "contribution_pp": -0.004966087543562461
     }
   ],
   "quality": {
