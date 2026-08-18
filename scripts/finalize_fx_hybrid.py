@@ -281,3 +281,5 @@ if __name__ == "__main__":
 
     v5.LATEST_PATH.write_text(json.dumps(latest, ensure_ascii=False, indent=2), encoding="utf-8")
     print(f"Último mercado validado: {expected_market_date:%Y-%m-%d}")
+
+# FORCE_RECALC_2026_08_18: cambio inocuo para disparar el workflow pesado de Profuturo inmediatamente.
