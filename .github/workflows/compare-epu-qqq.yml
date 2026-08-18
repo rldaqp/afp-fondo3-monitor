@@ -1,0 +1,71 @@
+name: Comparar EPU vs Nasdaq QQQ
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - migracion-github-actions
+    paths:
+      - ".github/workflows/compare-epu-qqq.yml"
+      - "scripts/compare_epu_qqq_relevance.py"
+      - "data/rolling90/markets.csv"
+      - "data/rolling90/sbs_profuturo_f3.csv"
+      - "data/rolling90/sbs_habitat_f3.csv"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: compare-epu-qqq
+  cancel-in-progress: true
+
+jobs:
+  compare:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Descargar repositorio
+        uses: actions/checkout@v4
+        with:
+          ref: migracion-github-actions
+          fetch-depth: 0
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Instalar dependencias
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Comparar EPU y Nasdaq QQQ
+        run: python scripts/compare_epu_qqq_relevance.py
+
+      - name: Validar resultado
+        run: |
+          test -s data/rolling90/epu_qqq_relevance.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=json.loads(Path('data/rolling90/epu_qqq_relevance.json').read_text(encoding='utf-8'))
+          for fund in ('PROFUTURO','HABITAT'):
+              r=p['results'][fund]
+              for v in ('BASE_SIN_EPU_QQQ','EPU','QQQ','EPU_QQQ'):
+                  assert r['rolling_90'][v]['n_predictions'] > 10
+          print(json.dumps(p['recommendation'], ensure_ascii=False, indent=2))
+          PY
+
+      - name: Guardar análisis
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/rolling90/epu_qqq_relevance.json
+          if git diff --cached --quiet; then
+            echo "Sin cambios en el contraste."
+          else
+            git commit -m "Actualizar contraste EPU vs Nasdaq QQQ"
+            git pull --rebase origin migracion-github-actions
+            git push origin HEAD:migracion-github-actions
+          fi
