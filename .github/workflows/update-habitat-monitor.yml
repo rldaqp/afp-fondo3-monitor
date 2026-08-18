@@ -8,6 +8,7 @@ on:
     paths:
       - ".github/workflows/update-habitat-monitor.yml"
       - "scripts/run_habitat_exact_pipeline.py"
+      - "scripts/update_habitat_live_market.py"
       - "scripts/habitat_complete_official_calendar.py"
       - "scripts/build_habitat_exact_parity.py"
       - "scripts/build_habitat_profuturo_parity.py"
@@ -66,6 +67,10 @@ jobs:
           PYTHONIOENCODING: "utf-8"
         run: |
           python scripts/run_habitat_exact_pipeline.py
+          # El pipeline pesado deja como snapshot el cierre diario. Inmediatamente
+          # reconstruimos el mercado de Hábitat con el snapshot común intradía de
+          # Yahoo, manteniendo los coeficientes y el VC base propios de Hábitat.
+          python scripts/update_habitat_live_market.py
           python scripts/postprocess_live_consistency.py
           python scripts/postprocess_trade_runtime_fixes.py habitat
 
@@ -89,6 +94,7 @@ jobs:
           ! grep -q "No existe una fecha efectiva de entrada en la línea del monitor." public/habitat/index.html
           grep -q "raw.githubusercontent.com/rldaqp/afp-fondo3-monitor/migracion-github-actions/public/habitat/data/live_market.json" public/habitat/index.html
           python - <<'PY'
+          import json
           import re
           from pathlib import Path
           html = Path('public/habitat/index.html').read_text(encoding='utf-8')
@@ -97,6 +103,21 @@ jobs:
               assert m, script_id
               Path(f'/tmp/{script_id}.js').write_text(m.group(1), encoding='utf-8')
           assert "});$('tradeMsg').textContent='Operación guardada y sincronizada con Drive.'});" not in html
+
+          # Si el mercado común está intradía, Hábitat debe conservar exactamente
+          # los mismos precios/retornos de los factores. Solo cambian coeficientes,
+          # VC estimado y señal del fondo.
+          prof = json.loads(Path('public/data/live_market.json').read_text(encoding='utf-8'))
+          hab = json.loads(Path('public/habitat/data/live_market.json').read_text(encoding='utf-8'))
+          if str(prof.get('mode','')).startswith('INTRAD'):
+              assert str(hab.get('mode','')).startswith('INTRAD'), (prof.get('mode'), hab.get('mode'))
+              assert hab.get('signal_date') == prof.get('signal_date')
+              p = {x['serie']: x for x in prof.get('assets', [])}
+              h = {x['serie']: x for x in hab.get('assets', [])}
+              for serie in ('SPY','NEM','FCX','EPU','MCHI','EEM','USD_PEN'):
+                  assert serie in p and serie in h, serie
+                  assert abs(float(p[serie]['precio_actual']) - float(h[serie]['precio_actual'])) < 1e-9, serie
+                  assert abs(float(p[serie]['retorno_modelo']) - float(h[serie]['retorno_modelo'])) < 1e-12, serie
           PY
           node --check /tmp/tradeHistoryScript.js
           node --check /tmp/tradeCloudScript.js
