@@ -41,17 +41,20 @@ h1{font-size:1.45rem;margin:5px 0}.sub,.note{color:var(--muted);font-size:.82rem
 .challenger-kicker{font-size:.68rem;color:#94a3b8;font-weight:800;text-transform:uppercase;letter-spacing:.04em}.challenger-value{font-size:1.05rem;font-weight:900;margin-top:3px}.challenger-sub{font-size:.7rem;color:#cbd5e1;text-align:right;line-height:1.35;max-width:58%}.challenger-warn{color:#fbbf24}.challenger-ok{color:#4ade80}.challenger-diff{color:#f59e0b}
 @media(max-width:700px){.challenger-box{display:block}.challenger-sub{text-align:left;max-width:none;margin-top:5px}}
 </style>
-<!-- SPY_QQQ_CHALLENGER_CSS START -->
-<style id="spyQqqChallengerStyles">
-.spyqqq-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:10px}.spyqqq-title{font-size:.96rem;font-weight:850}.spyqqq-kicker{font-size:.68rem;color:#94a3b8;margin-top:2px}.spyqqq-badge{padding:5px 10px;border-radius:999px;font-size:.72rem;font-weight:900;border:1px solid #475569;white-space:nowrap}.spyqqq-mixed{color:#fbbf24}.spyqqq-qqq{color:#38bdf8}.spyqqq-spy{color:#4ade80}.spyqqq-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:9px}.spyqqq-card{background:#0b1728;border:1px solid #243244;border-radius:11px;padding:10px}.spyqqq-card b{font-size:.82rem}.spyqqq-big{font-size:1.05rem;font-weight:900;margin-top:4px}.spyqqq-sub{font-size:.68rem;color:#94a3b8;margin-top:3px;line-height:1.35}.spyqqq-table{width:100%;border-collapse:collapse;font-size:.72rem;margin-top:8px}.spyqqq-table th,.spyqqq-table td{padding:7px 5px;border-top:1px solid #243244;text-align:right}.spyqqq-table th:first-child,.spyqqq-table td:first-child{text-align:left}.spyqqq-win{font-weight:850;color:#e2e8f0}.spyqqq-note{font-size:.68rem;color:#94a3b8;line-height:1.4;margin-top:8px}
-@media(max-width:700px){.spyqqq-head{display:block}.spyqqq-badge{display:inline-block;margin-top:7px}.spyqqq-grid{grid-template-columns:1fr 1fr}.spyqqq-table{font-size:.68rem}.spyqqq-table th,.spyqqq-table td{padding:6px 3px}}
-</style>
-<!-- SPY_QQQ_CHALLENGER_CSS END -->
+
 <!-- INVESTMENT_SIGNAL_1PCT_CSS START -->
 <style id="investmentSignal1PctStyles">
 .vc-precision-compact{display:none;margin-top:4px;font-size:.72rem;font-weight:800;color:#cbd5e1;line-height:1.25}
 </style>
 <!-- INVESTMENT_SIGNAL_1PCT_CSS END -->
+
+<!-- QQQ_INCREMENTAL_CHALLENGER_UI_V1 START -->
+<style id="qqqIncrementalStyles">
+.qqqi-panel{border-color:#334155}.qqqi-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;margin-bottom:10px}.qqqi-title{font-size:.98rem;font-weight:900}.qqqi-kicker{font-size:.7rem;color:#94a3b8;margin-top:3px;line-height:1.35}.qqqi-badge{padding:5px 9px;border:1px solid #475569;border-radius:999px;font-size:.7rem;font-weight:900;white-space:nowrap}.qqqi-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}.qqqi-card{background:#0b1728;border:1px solid #243244;border-radius:12px;padding:11px}.qqqi-label{font-size:.72rem;color:#94a3b8;font-weight:800}.qqqi-signal{font-size:1.15rem;font-weight:950;margin-top:5px}.qqqi-vc{font-size:1.18rem;font-weight:950;margin-top:4px}.qqqi-ret{font-size:.76rem;color:#cbd5e1;margin-top:3px}.qqqi-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:9px}.qqqi-mini{background:#101d31;border:1px solid #243244;border-radius:9px;padding:8px}.qqqi-mini span{display:block;color:#94a3b8;font-size:.65rem}.qqqi-mini b{display:block;margin-top:3px;font-size:.8rem}.qqqi-note{font-size:.68rem;color:#94a3b8;line-height:1.4;margin-top:8px}.qqqi-details{margin-top:8px}.qqqi-details summary{cursor:pointer;color:#cbd5e1;font-size:.72rem;font-weight:800}.qqqi-table{width:100%;border-collapse:collapse;font-size:.69rem;margin-top:7px}.qqqi-table th,.qqqi-table td{padding:6px 4px;border-top:1px solid #243244;text-align:right}.qqqi-table th:first-child,.qqqi-table td:first-child{text-align:left}
+@media(max-width:700px){.qqqi-head{display:block}.qqqi-badge{display:inline-block;margin-top:7px}.qqqi-grid{grid-template-columns:1fr 1fr}.qqqi-strip{grid-template-columns:1fr 1fr}.qqqi-mini:last-child{grid-column:1/-1}.qqqi-vc{font-size:1.08rem}}
+@media(max-width:390px){.qqqi-grid{grid-template-columns:1fr}.qqqi-strip{grid-template-columns:1fr 1fr}}
+</style>
+<!-- QQQ_INCREMENTAL_CHALLENGER_UI_V1 END -->
 </head><body><main class="wrap">
 <h1>Profuturo Fondo 3</h1><div class="sub">GitHub Actions · OLS Rolling 90 · umbral ±0.10% · datos independientes del notebook</div><div id="error"></div>
 <section class="grid"><div class="card"><div class="label">Último VC SBS</div><div class="value" id="sbsVc">—</div><div class="sub" id="sbsDate">—</div></div>
@@ -59,22 +62,39 @@ h1{font-size:1.45rem;margin:5px 0}.sub,.note{color:var(--muted);font-size:.82rem
 <div class="card"><div class="label">Señal</div><div class="value signal" id="signal">—</div><div class="sub" id="ret">—</div><div id="vcPrecisionCompact" class="vc-precision-compact"></div></div>
 <div class="card"><div class="label">Ventana vigente</div><div class="value">90</div><div class="sub" id="window">—</div></div></section><div id="monitorHelp" class="monitor-help"><b>Retorno estimado del VC:</b> variación diaria estimada por el OLS. Cada punto se dibuja desde el eje 0. Durante mercado abierto es provisional; al cierre usa cierres diarios.</div>
 
-<!-- SPY_QQQ_CHALLENGER_PANEL START -->
-<section class="panel" id="spyQqqChallengerPanel">
-  <div class="spyqqq-head">
-    <div><div class="spyqqq-title">Mercado USA · SPY vs Nasdaq QQQ</div><div class="spyqqq-kicker">Challenger diario · no modifica la señal oficial OLS</div></div>
-    <div id="spyQqqDominance" class="spyqqq-badge">Cargando…</div>
+
+
+<!-- QQQ_INCREMENTAL_CHALLENGER_PANEL_V1 START -->
+<section class="panel qqqi-panel" id="qqqIncrementalPanel">
+  <div class="qqqi-head">
+    <div><div class="qqqi-title">Comparación de VC estimado</div><div class="qqqi-kicker">OLS oficial vs QQQ incremental residualizado · mismo VC base · challenger en sombra</div></div>
+    <div id="qqqiBadge" class="qqqi-badge">Cargando…</div>
   </div>
-  <div class="spyqqq-grid">
-    <div class="spyqqq-card"><b>SPY · modelo actual</b><div class="spyqqq-big" id="spyQqqSpy90">—</div><div class="spyqqq-sub" id="spyQqqSpySub">Últimas 90 predicciones</div></div>
-    <div class="spyqqq-card"><b>Nasdaq QQQ · challenger</b><div class="spyqqq-big" id="spyQqqQqq90">—</div><div class="spyqqq-sub" id="spyQqqQqqSub">Últimas 90 predicciones</div></div>
+  <div class="qqqi-grid">
+    <div class="qqqi-card">
+      <div class="qqqi-label">OLS OFICIAL</div>
+      <div id="qqqiOfficialSignal" class="qqqi-signal">—</div>
+      <div id="qqqiOfficialVc" class="qqqi-vc">—</div>
+      <div id="qqqiOfficialRet" class="qqqi-ret">—</div>
+    </div>
+    <div class="qqqi-card">
+      <div class="qqqi-label">QQQ INCREMENTAL · CHALLENGER</div>
+      <div id="qqqiChallengerSignal" class="qqqi-signal">—</div>
+      <div id="qqqiChallengerVc" class="qqqi-vc">—</div>
+      <div id="qqqiChallengerRet" class="qqqi-ret">—</div>
+    </div>
   </div>
-  <details><summary>Ver comparación 30 / 60 / 90 / 180 / histórico</summary>
-    <div style="overflow-x:auto"><table class="spyqqq-table"><thead><tr><th>Ventana</th><th>SPY acierto</th><th>QQQ acierto</th><th>SPY MAE</th><th>QQQ MAE</th><th>Mejor</th></tr></thead><tbody id="spyQqqRows"></tbody></table></div>
+  <div class="qqqi-strip">
+    <div class="qqqi-mini"><span>Diferencia de VC</span><b id="qqqiVcDiff">—</b></div>
+    <div class="qqqi-mini"><span>Backtest 90d · MAE</span><b id="qqqiMae90">—</b></div>
+    <div class="qqqi-mini"><span>Prueba futura SBS</span><b id="qqqiForward">—</b></div>
+  </div>
+  <details class="qqqi-details"><summary>Ver desempeño 30 / 60 / 90 / 180 / histórico</summary>
+    <div style="overflow-x:auto"><table class="qqqi-table"><thead><tr><th>Ventana</th><th>MAE OLS</th><th>MAE QQQ inc.</th><th>Acierto OLS</th><th>Acierto QQQ inc.</th><th>Δ MAE</th></tr></thead><tbody id="qqqiRows"></tbody></table></div>
   </details>
-  <div class="spyqqq-note" id="spyQqqNote">El modelo oficial sigue usando SPY. Este panel observa si Nasdaq QQQ muestra una ventaja estable antes de considerar cualquier cambio.</div>
+  <div id="qqqiNote" class="qqqi-note">El OLS continúa siendo la señal oficial. El challenger se evalúa en paralelo contra los VC que publique la SBS.</div>
 </section>
-<!-- SPY_QQQ_CHALLENGER_PANEL END -->
+<!-- QQQ_INCREMENTAL_CHALLENGER_PANEL_V1 END -->
 <section class="panel" id="modelInsightsPanel">
   <div class="insight-head"><div class="insight-title">Confianza y calidad del modelo</div><div id="qualityBadge" class="insight-badge">Cargando…</div></div>
   <div class="insight-grid">
@@ -84,8 +104,7 @@ h1{font-size:1.45rem;margin:5px 0}.sub,.note{color:var(--muted);font-size:.82rem
     <div class="insight-card"><div class="insight-label">OLS vs sin cambio</div><div class="insight-value" id="benchmarkValue">—</div><div class="insight-sub">Comparación por MAE</div></div>
   </div>
 
-  <div class="challenger-box" id="huberChallengerBox">
-    <div><div class="challenger-kicker">Challenger Huber · paralelo</div><div class="challenger-value" id="huberValue">—</div></div>
+  <div id="huberChallengerBox" hidden><span id="huberValue"></span><span id="huberSub"></span></div>
     <div class="challenger-sub" id="huberSub">OLS continúa como señal principal.</div>
   </div>
   <details class="insight-details"><summary>Ver qué mueve la señal y rendimiento</summary>
@@ -248,7 +267,7 @@ Promise.all([fetch('data/latest.json?ts='+Date.now(),{cache:'no-store'}).then(r=
     $('confidenceSub').textContent=`${modelInsights.current_signal||'—'} · n=${c.n||0} · no es probabilidad garantizada`;
     $('bandValue').textContent=u.relative_q80==null?'—':'±'+(Number(u.relative_q80)*100).toFixed(2)+'%';
     $('qualityValue').textContent=q.status||'—';
-    $('qualitySub').textContent=`OLS ${q.training_n||0}/90 · Huber ${h.training&&h.training.n?h.training.n:0}/90 · FX ${q.fx_provisional?'provisional':'confirmado'}`;
+    $('qualitySub').textContent=`OLS ${q.training_n||0}/90 · FX ${q.fx_provisional?'provisional':'confirmado'}`;
     const qc=q.status==='OK'?'quality-ok':q.status==='REVISAR'?'quality-bad':'quality-warn';
     $('qualityValue').className='insight-value '+qc;$('qualityBadge').className='insight-badge '+qc;$('qualityBadge').textContent=q.status||'—';
     const imp=b.ols_mae_improvement_vs_zero;
@@ -612,40 +631,7 @@ Promise.all([fetch('data/latest.json?ts='+Date.now(),{cache:'no-store'}).then(r=
 })();
 </script>
 <!-- TRADE_CLOUD_V1_END -->
-<!-- SPY_QQQ_CHALLENGER_SCRIPT START -->
-<script id="spyQqqChallengerScript">
-(function(){
-  'use strict';
-  const pct=x=>x==null?'—':(Number(x)*100).toFixed(1)+'%';
-  const mae=x=>x==null?'—':(Number(x)*100).toFixed(3)+'%';
-  const labels={'30':'30','60':'60','90':'90','180':'180','ALL':'Histórico'};
-  function dominance(w){
-    const core=['60','90','180','ALL'];let qm=0,sm=0,qd=0,sd=0;
-    core.forEach(k=>{const r=w[k];if(!r)return;if(r.winner_mae==='QQQ')qm++;else if(r.winner_mae==='SPY')sm++;if(r.winner_direction==='QQQ')qd++;else if(r.winner_direction==='SPY')sd++;});
-    if(qm>=3&&qd>=2)return {label:'NASDAQ QQQ DOMINANTE',cls:'spyqqq-qqq'};
-    if(sm>=3&&sd>=2)return {label:'SPY DOMINANTE',cls:'spyqqq-spy'};
-    return {label:'MERCADO USA · MIXTO',cls:'spyqqq-mixed'};
-  }
-  function better(r){
-    if(!r)return '—';
-    const ma=r.winner_mae,di=r.winner_direction;
-    if(di==='EMPATE')return ma==='QQQ'?'QQQ ≈ SPY':'SPY ≈ QQQ';
-    if(ma===di)return ma;
-    return 'MIXTO';
-  }
-  fetch('data/spy_qqq_challenger.json?ts='+Date.now(),{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.json()}).then(d=>{
-    const w=d.windows||{},d90=w['90'];if(!d90)throw new Error('Sin ventana 90');
-    const dom=dominance(w),badge=document.getElementById('spyQqqDominance');badge.textContent=dom.label;badge.className='spyqqq-badge '+dom.cls;
-    document.getElementById('spyQqqSpy90').textContent=pct(d90.SPY.direction_accuracy)+' acierto';
-    document.getElementById('spyQqqQqq90').textContent=pct(d90.QQQ.direction_accuracy)+' acierto';
-    document.getElementById('spyQqqSpySub').textContent='MAE '+mae(d90.SPY.mae)+' · rolling 90';
-    document.getElementById('spyQqqQqqSub').textContent='MAE '+mae(d90.QQQ.mae)+' · rolling 90';
-    document.getElementById('spyQqqRows').innerHTML=['30','60','90','180','ALL'].map(k=>{const r=w[k];if(!r)return '';const b=better(r);return `<tr><td>${labels[k]}</td><td>${pct(r.SPY.direction_accuracy)}</td><td>${pct(r.QQQ.direction_accuracy)}</td><td>${mae(r.SPY.mae)}</td><td>${mae(r.QQQ.mae)}</td><td class="spyqqq-win">${b}</td></tr>`}).join('');
-    const last=d.last_prediction||'—';document.getElementById('spyQqqNote').textContent=`Último VC SBS evaluado: ${last}. La señal oficial continúa con SPY; QQQ solo actúa como challenger hasta demostrar una ventaja estable en varias ventanas.`;
-  }).catch(e=>{const b=document.getElementById('spyQqqDominance');if(b){b.textContent='CHALLENGER NO DISPONIBLE';b.className='spyqqq-badge spyqqq-mixed'}const n=document.getElementById('spyQqqNote');if(n)n.textContent='No se pudo cargar el contraste SPY/QQQ: '+e.message;});
-})();
-</script>
-<!-- SPY_QQQ_CHALLENGER_SCRIPT END -->
+
 <!-- INVESTMENT_SIGNAL_1PCT_SCRIPT START -->
 <script id="investmentSignal1PctScript">
 (function(){
@@ -682,4 +668,33 @@ Promise.all([fetch('data/latest.json?ts='+Date.now(),{cache:'no-store'}).then(r=
 })();
 </script>
 <!-- INVESTMENT_SIGNAL_1PCT_SCRIPT END -->
+
+<!-- QQQ_INCREMENTAL_CHALLENGER_SCRIPT_V1 START -->
+<script id="qqqIncrementalScript">
+(function(){
+  'use strict';
+  const $=id=>document.getElementById(id);
+  const pct=(x,d=3)=>x==null||!Number.isFinite(Number(x))?'—':(Number(x)*100).toFixed(d)+'%';
+  const vc=x=>x==null||!Number.isFinite(Number(x))?'—':Number(x).toFixed(7);
+  const cls=s=>s==='SUBE'?'up':s==='BAJA'?'down':'flat';
+  const fmtMae=x=>x==null||!Number.isFinite(Number(x))?'—':(Number(x)*100).toFixed(3)+'%';
+  const fmtAcc=x=>x==null||!Number.isFinite(Number(x))?'—':(Number(x)*100).toFixed(1)+'%';
+  function setSignal(id,s){const el=$(id);el.textContent=s||'—';el.className='qqqi-signal '+cls(s)}
+  fetch('data/qqq_incremental_challenger.json?v='+Date.now(),{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.json()}).then(d=>{
+    const o=d.official||{},c=d.challenger||{},cmp=d.comparison||{},bt=d.performance_backtest||{},w=bt.windows||{},f=d.shadow_forward||{};
+    setSignal('qqqiOfficialSignal',o.signal);setSignal('qqqiChallengerSignal',c.signal);
+    $('qqqiOfficialVc').textContent='VC '+vc(o.vc_estimated);$('qqqiChallengerVc').textContent='VC '+vc(c.vc_estimated);
+    $('qqqiOfficialRet').textContent='Retorno '+pct(o.return_estimated);$('qqqiChallengerRet').textContent='Retorno '+pct(c.return_estimated);
+    const diff=Number(cmp.vc_difference);$('qqqiVcDiff').textContent=Number.isFinite(diff)?(diff>=0?'+':'')+diff.toFixed(7):'—';
+    const same=!!cmp.same_signal;$('qqqiBadge').textContent=same?'MISMA SEÑAL':'SEÑALES DISTINTAS';$('qqqiBadge').className='qqqi-badge '+(same?'challenger-ok':'challenger-diff');
+    const m90=w['90']||{};$('qqqiMae90').textContent=`${fmtMae(m90.official_mae)} → ${fmtMae(m90.challenger_mae)}`;
+    $('qqqiForward').textContent=(f.n||0)+' evaluados · '+(f.pending||0)+' pendientes';
+    const labels={'30':'30 días','60':'60 días','90':'90 días','180':'180 días','ALL':'Histórico'};
+    $('qqqiRows').innerHTML=['30','60','90','180','ALL'].map(k=>{const r=w[k]||{};const imp=r.mae_improvement_pct;return `<tr><td>${labels[k]}</td><td>${fmtMae(r.official_mae)}</td><td>${fmtMae(r.challenger_mae)}</td><td>${fmtAcc(r.official_direction_accuracy)}</td><td>${fmtAcc(r.challenger_direction_accuracy)}</td><td>${imp==null?'—':(Number(imp)>=0?'+':'')+Number(imp).toFixed(2)+'%'}</td></tr>`}).join('');
+    const source=d.qqq&&d.qqq.source?d.qqq.source:'QQQ';
+    $('qqqiNote').textContent=`Fecha ${d.signal_date||'—'} · ${source} · QQQ residual ${pct(d.qqq&&d.qqq.residual,3)}. OLS sigue oficial; el challenger queda registrado para contraste futuro con SBS.`;
+  }).catch(e=>{$('qqqiBadge').textContent='NO DISPONIBLE';$('qqqiNote').textContent='No se pudo cargar el challenger QQQ incremental: '+e.message});
+})();
+</script>
+<!-- QQQ_INCREMENTAL_CHALLENGER_SCRIPT_V1 END -->
 </body></html>
