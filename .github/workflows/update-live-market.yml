@@ -62,6 +62,98 @@ jobs:
           python scripts/update_live_market_hybrid.py
           python scripts/update_habitat_live_market.py
 
+          # Control de coherencia de Profuturo al cierre. Antes podía ocurrir que
+          # los activos ya fueran del día T pero la señal/VC siguieran siendo T-1.
+          # Si existe la predicción exacta de T, esta manda. Si todavía no existe,
+          # se calcula un cierre provisional con los retornos visibles y los betas
+          # vigentes, en vez de publicar una señal de una fecha distinta.
+          python - <<'PY'
+          import csv
+          import json
+          from pathlib import Path
+
+          live_path = Path("public/data/live_market.json")
+          latest_path = Path("public/data/latest.json")
+          pending_path = Path("data/rolling90/pending_predictions.csv")
+
+          live = json.loads(live_path.read_text(encoding="utf-8"))
+          latest = json.loads(latest_path.read_text(encoding="utf-8"))
+          signal_date = str(live.get("signal_date", ""))[:10]
+
+          pending = []
+          if pending_path.exists():
+              with pending_path.open("r", encoding="utf-8", newline="") as fh:
+                  pending = list(csv.DictReader(fh))
+
+          same = [r for r in pending if str(r.get("fecha", ""))[:10] == signal_date]
+          source = None
+
+          if str(live.get("mode", "")).startswith("CIERRE"):
+              if same:
+                  r = same[-1]
+                  live["return_estimated"] = float(r["ret_estimado"])
+                  live["vc_estimated"] = float(r["valor_cuota_estimado"])
+                  live["signal"] = str(r["senal"])
+                  source = "PREDICCION OLS EXACTA DEL CIERRE"
+
+                  fx_source = str(r.get("usd_pen_fuente", ""))
+                  if fx_source.startswith("YAHOO"):
+                      fx_ret = float(r.get("ret_USD_PEN") or 0.0)
+                      for a in live.get("assets", []):
+                          if a.get("serie") == "USD_PEN":
+                              a["ticker"] = "PEN=X"
+                              a["retorno"] = fx_ret
+                              a["retorno_modelo"] = fx_ret
+                              a["estado"] = "YAHOO PEN=X · PROVISIONAL · USADO POR MODELO"
+                              a["usado_modelo"] = True
+                      live["fx_source"] = "YAHOO PEN=X PROVISIONAL"
+                      live["fx_provisional"] = True
+                  elif fx_source == "BCRP":
+                      live["fx_source"] = "BCRP"
+                      live["fx_provisional"] = False
+              elif str(latest.get("latest_estimate_date", ""))[:10] == signal_date:
+                  live["return_estimated"] = float(latest["latest_return_estimated"])
+                  live["vc_estimated"] = float(latest["latest_estimated_vc"])
+                  live["signal"] = str(latest["signal"])
+                  source = "LATEST OLS DE LA MISMA FECHA"
+              else:
+                  beta = latest.get("coefficients") or {}
+                  features = {}
+                  for a in live.get("assets", []):
+                      serie = str(a.get("serie", ""))
+                      if serie:
+                          try:
+                              features[f"ret_{serie}"] = float(a.get("retorno_modelo") or 0.0)
+                          except Exception:
+                              features[f"ret_{serie}"] = 0.0
+                  pred = float(beta.get("intercept", 0.0))
+                  for feature, value in features.items():
+                      if feature in beta:
+                          pred += float(beta[feature]) * float(value)
+                  prior = [r for r in pending if str(r.get("fecha", ""))[:10] < signal_date]
+                  if prior:
+                      vc_base = float(prior[-1]["valor_cuota_estimado"])
+                  else:
+                      vc_base = float(latest["latest_sbs_vc"])
+                  threshold = float(latest.get("threshold", 0.001))
+                  live["return_estimated"] = pred
+                  live["vc_estimated"] = vc_base * (1.0 + pred)
+                  live["signal"] = "SUBE" if pred > threshold else ("BAJA" if pred < -threshold else "NEUTRO")
+                  live["warning"] = "Cierre OLS pesado pendiente; cálculo provisional coherente con los activos del mismo día."
+                  source = "CIERRE PROVISIONAL MISMA FECHA"
+
+              live["model_snapshot_source"] = source
+              live["model_snapshot_date"] = signal_date
+
+              # Regla anti-regresión: nunca publicar CIERRE con fecha T y un
+              # modelo explícitamente identificado como de otra fecha.
+              assert live["model_snapshot_date"] == signal_date
+              assert live.get("signal") in {"SUBE", "NEUTRO", "BAJA"}
+
+          live_path.write_text(json.dumps(live, ensure_ascii=False, indent=2), encoding="utf-8")
+          print("Profuturo cierre coherente:", signal_date, live.get("signal"), live.get("return_estimated"), source)
+          PY
+
           python - <<'PY'
           import json
           from pathlib import Path
@@ -89,6 +181,12 @@ jobs:
                       expected.add("EEM")
                   assert names == expected, (name, names, expected)
                   assert str(live.get("signal_date")) >= str(latest.get("latest_market_date")), (name, live)
+
+          if str(prof.get("mode", "")).startswith("CIERRE"):
+              assert str(prof.get("model_snapshot_date", "")) == str(prof.get("signal_date", "")), prof
+              if str(prof_latest.get("latest_estimate_date", "")) == str(prof.get("signal_date", "")):
+                  assert prof.get("signal") == prof_latest.get("signal"), (prof, prof_latest)
+                  assert abs(float(prof.get("return_estimated")) - float(prof_latest.get("latest_return_estimated"))) < 1e-12, (prof, prof_latest)
 
           if (
               str(prof.get("mode", "")).startswith(("INTRAD", "CIERRE"))
