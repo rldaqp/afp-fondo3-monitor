@@ -82,3 +82,5 @@ jobs:
             git commit -m "Publicar comparación OLS vs QQQ incremental"
             git push origin HEAD:gh-pages
           fi
+
+# Cambio intencional para disparar la instalación una vez añadido el workflow.
