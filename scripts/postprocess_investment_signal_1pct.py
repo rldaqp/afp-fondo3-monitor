@@ -32,6 +32,17 @@ def main() -> None:
     # Limpia una inserción compacta previa, si existe.
     html = re.sub(r'<div id="vcPrecisionCompact"[^>]*>.*?</div>', "", html, flags=re.S)
 
+    # En el visor, la constante del modelo debe mostrarse como tal y no como "Base".
+    # No altera el intercepto ni ningún cálculo OLS; solo cambia la etiqueta visible.
+    html = html.replace(
+        "out.push({label:'Base',contribution_pp:Number(beta.intercept||0)*100});",
+        "out.push({label:'Constante',contribution_pp:Number(beta.intercept||0)*100});",
+    )
+    html = html.replace(
+        '<b>${x.label}</b><div class="factor-track">',
+        '<b>${x.label===\'Base\'?\'Constante\':x.label}</b><div class="factor-track">',
+    )
+
     css = r'''<!-- INVESTMENT_SIGNAL_1PCT_CSS START -->
 <style id="investmentSignal1PctStyles">
 .vc-precision-compact{display:none;margin-top:4px;font-size:.72rem;font-weight:800;color:#cbd5e1;line-height:1.25}
@@ -93,6 +104,7 @@ def main() -> None:
         "Precisión VC:",
         "data/vc_accuracy_1pct.json",
         "THRESHOLD_PCT=1.0",
+        "Constante",
     ]
     missing = [item for item in required if item not in html]
     if missing:
@@ -101,7 +113,7 @@ def main() -> None:
         raise AssertionError("El panel grande de señal de inversión no fue retirado")
 
     HTML_PATH.write_text(html, encoding="utf-8")
-    print("Profuturo: precisión VC compacta junto a la señal; panel grande retirado.")
+    print("Profuturo: precisión VC compacta junto a la señal; Base visible renombrada a Constante.")
 
 
 if __name__ == "__main__":
