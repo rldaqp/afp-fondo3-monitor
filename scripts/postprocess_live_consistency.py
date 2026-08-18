@@ -66,6 +66,29 @@ def ensure_live_guard(html: str) -> str:
     return html
 
 
+def ensure_intraday_insights_consistency(html: str) -> str:
+    """Usa el mismo snapshot vigente en señal, aportes y challenger Huber.
+
+    Al terminar la sesión, el último corte intradía de hoy se conserva con
+    market_open=false hasta que exista el cierre diario. La cabecera ya lo
+    considera activo mediante liveSnapshotActive(); los insights deben hacer
+    exactamente lo mismo para no retroceder al día anterior.
+    """
+    html = html.replace(
+        "if(!(liveData&&liveData.market_open&&latestData&&latestData.coefficients))return null;",
+        "if(!(liveData&&liveSnapshotActive()&&latestData&&latestData.coefficients))return null;",
+    )
+    html = html.replace(
+        "if(liveData&&liveData.market_open&&h.coefficients){",
+        "if(liveData&&liveSnapshotActive()&&h.coefficients){",
+    )
+    html = html.replace(
+        "const hub=currentHuber(),olsSignal=liveData&&liveData.market_open?liveData.signal:",
+        "const hub=currentHuber(),olsSignal=liveData&&liveSnapshotActive()?liveData.signal:",
+    )
+    return html
+
+
 def ensure_intraday_series_points(html: str) -> str:
     html = html.replace(
         "    let off=cutoff(allSeries.filter(x=>x.fuente==='SBS OFICIAL'),vcDays),est=cutoff(richSignals.filter(x=>x.vc_estimado!=null),vcDays);",
@@ -174,6 +197,7 @@ def process(path: Path, raw_live: str) -> None:
     html = path.read_text(encoding="utf-8")
     html = ensure_cache_busting(html)
     html = ensure_live_guard(html)
+    html = ensure_intraday_insights_consistency(html)
     html = ensure_intraday_series_points(html)
     html = ensure_market_fallback(html)
     html = ensure_live_fetch_fallback(html, raw_live)
