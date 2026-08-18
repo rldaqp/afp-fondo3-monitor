@@ -27,6 +27,8 @@ v5.parity.engine.FEATURES = list(v5.parity.FEATURES)
 
 _original_run = v5._run_with_canonical_history
 _original_write_outputs = v5.parity._write_outputs
+_original_download_yahoo = v5.parity.engine.download_yahoo
+_original_rebuild_markets = v5.parity._rebuild_markets_notebook
 
 
 def _prepare_saved_markets_for_eem() -> None:
@@ -45,6 +47,87 @@ def _prepare_saved_markets_for_eem() -> None:
     saved["EEM"] = np.nan
     v5.parity.engine.save_csv(saved, path)
     print("Migración EEM: columna creada; valores serán descargados desde Yahoo Finance.")
+
+
+def _download_yahoo_repaired() -> pd.DataFrame:
+    """Repara huecos recientes de la descarga múltiple con consultas individuales.
+
+    Yahoo puede devolver la fila de una sesión para SPY/NEM/FCX/EPU/MCHI y dejar
+    un ticker aislado (por ejemplo EEM) vacío. Ese hueco hacía que el modelo
+    considerara 14/08 como último mercado aunque el 17/08 ya hubiera cerrado.
+    Se conserva Yahoo como única fuente de los ETF y solo se reintenta cada ticker
+    individualmente para la cola reciente.
+    """
+    try:
+        market = _original_download_yahoo().copy()
+    except Exception as exc:
+        print(f"Yahoo múltiple incompleto: {type(exc).__name__}: {exc}")
+        market = pd.DataFrame(columns=["fecha", *v5.parity.engine.ASSETS])
+
+    if "fecha" not in market.columns:
+        market["fecha"] = pd.NaT
+    market["fecha"] = pd.to_datetime(market["fecha"], errors="coerce")
+    for ticker in v5.parity.engine.ASSETS:
+        if ticker not in market.columns:
+            market[ticker] = np.nan
+        market[ticker] = pd.to_numeric(market[ticker], errors="coerce")
+
+    now_lima = pd.Timestamp.now(tz="America/Lima")
+    start = (now_lima - pd.Timedelta(days=35)).strftime("%Y-%m-%d")
+    end = (now_lima + pd.Timedelta(days=2)).strftime("%Y-%m-%d")
+
+    for ticker in v5.parity.engine.ASSETS:
+        try:
+            raw = yf.download(
+                tickers=ticker,
+                start=start,
+                end=end,
+                interval="1d",
+                auto_adjust=False,
+                actions=False,
+                progress=False,
+                threads=False,
+            )
+            ser = v5.parity._extract_close(raw, ticker)
+            if ser.empty:
+                print(f"Reintento Yahoo {ticker}: sin datos")
+                continue
+            idx = pd.to_datetime(ser.index)
+            if getattr(idx, "tz", None) is not None:
+                idx = idx.tz_convert("America/New_York").tz_localize(None)
+            repair = pd.DataFrame(
+                {
+                    "fecha": idx.normalize(),
+                    f"{ticker}__repair": ser.to_numpy(float),
+                }
+            )
+            repair = (
+                repair.dropna(subset=["fecha", f"{ticker}__repair"])
+                .sort_values("fecha")
+                .drop_duplicates("fecha", keep="last")
+            )
+            market = market.merge(repair, on="fecha", how="outer")
+            repaired_col = f"{ticker}__repair"
+            market[ticker] = pd.to_numeric(
+                market[repaired_col], errors="coerce"
+            ).combine_first(pd.to_numeric(market[ticker], errors="coerce"))
+            market = market.drop(columns=[repaired_col])
+        except Exception as exc:
+            print(f"Reintento Yahoo {ticker} falló: {type(exc).__name__}: {exc}")
+
+    return (
+        market.dropna(subset=["fecha"])
+        .sort_values("fecha")
+        .drop_duplicates("fecha", keep="last")
+        .reset_index(drop=True)
+    )
+
+
+def _rebuild_markets_persisted() -> tuple[pd.DataFrame, str]:
+    """Reconstruye mercados con el reintento Yahoo y persiste la cola reparada."""
+    markets, note = _original_rebuild_markets()
+    v5.parity.engine.save_csv(markets, v5.parity.DATA / "markets.csv")
+    return markets, note + "; reintento individual Yahoo habilitado para huecos recientes"
 
 
 def _penx_daily_returns() -> dict[pd.Timestamp, float]:
@@ -147,6 +230,8 @@ def _write_outputs_hybrid(sbs, markets, historical, pending, meta, market_note):
     return latest
 
 
+v5.parity.engine.download_yahoo = _download_yahoo_repaired
+v5.parity._rebuild_markets_notebook = _rebuild_markets_persisted
 v5._run_with_canonical_history = _run_hybrid
 v5.parity._write_outputs = _write_outputs_hybrid
 
@@ -158,4 +243,41 @@ if __name__ == "__main__":
     # únicamente la etiqueta de auditoría después de que finaliza su validación interna.
     latest = json.loads(v5.LATEST_PATH.read_text(encoding="utf-8"))
     latest["live_engine"] = "INDEPENDIENTE: update_live_market_hybrid.py"
+
+    # Control anti-regresión: si los cinco activos base ya tienen una sesión,
+    # EEM también debe tenerla. Nunca volver a publicar silenciosamente un viernes
+    # como último mercado por un hueco aislado de EEM en el lunes siguiente.
+    markets_check = v5.parity.engine.read_saved(v5.parity.DATA / "markets.csv")
+    markets_check["fecha"] = pd.to_datetime(markets_check["fecha"], errors="coerce")
+    core = ["SPY", "NEM", "FCX", "EPU", "MCHI"]
+    recent_core = (
+        markets_check.dropna(subset=core)
+        .sort_values("fecha")
+        .tail(5)
+    )
+    if recent_core.empty:
+        raise RuntimeError("No hay sesiones recientes de los cinco activos base para validar EEM")
+    missing_eem = recent_core.loc[recent_core["EEM"].isna(), "fecha"]
+    if not missing_eem.empty:
+        dates = ", ".join(pd.Timestamp(x).strftime("%Y-%m-%d") for x in missing_eem)
+        raise RuntimeError(f"EEM sigue faltando en sesiones ya cerradas: {dates}")
+
+    expected_market_date = pd.Timestamp(recent_core.iloc[-1]["fecha"]).normalize()
+    published_market_date = pd.Timestamp(latest["latest_market_date"]).normalize()
+    if published_market_date != expected_market_date:
+        raise RuntimeError(
+            "Último mercado inconsistente: "
+            f"latest.json={published_market_date:%Y-%m-%d}, "
+            f"mercados={expected_market_date:%Y-%m-%d}"
+        )
+
+    if expected_market_date > pd.Timestamp(latest["latest_sbs_date"]).normalize():
+        pending_check = v5.parity.engine.read_saved(v5.PENDING_PATH)
+        pending_check["fecha"] = pd.to_datetime(pending_check["fecha"], errors="coerce")
+        if expected_market_date not in set(pending_check["fecha"].dropna().dt.normalize()):
+            raise RuntimeError(
+                f"La sesión {expected_market_date:%Y-%m-%d} existe pero no fue estimada por el OLS"
+            )
+
     v5.LATEST_PATH.write_text(json.dumps(latest, ensure_ascii=False, indent=2), encoding="utf-8")
+    print(f"Último mercado validado: {expected_market_date:%Y-%m-%d}")
