@@ -1,0 +1,49 @@
+name: Analizar robustez QQQ incremental Profuturo
+
+on:
+  push:
+    branches:
+      - research-qqq-ridge-residual-20260818
+    paths:
+      - "scripts/analyze_profuturo_qqq_robustness.py"
+      - ".github/workflows/analyze-profuturo-qqq-robustness.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: profuturo-qqq-robustness-research
+  cancel-in-progress: true
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Descargar repositorio
+        uses: actions/checkout@v4
+        with:
+          ref: research-qqq-ridge-residual-20260818
+          fetch-depth: 0
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Instalar dependencias
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Ejecutar revision de robustez
+        run: python scripts/analyze_profuturo_qqq_robustness.py
+
+      - name: Guardar resultados en rama de investigacion
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add analysis/qqq_robustness_profuturo.json analysis/qqq_robustness_paired_predictions.csv
+          git commit -m "Guardar revision de robustez QQQ incremental" || exit 0
+          git push origin HEAD:research-qqq-ridge-residual-20260818
