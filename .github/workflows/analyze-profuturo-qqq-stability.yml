@@ -3,17 +3,17 @@ name: Analizar Ridge y QQQ residualizado Profuturo
 on:
   push:
     branches:
-      - migracion-github-actions
+      - research-qqq-ridge-residual-20260818
     paths:
       - "scripts/analyze_profuturo_qqq_stability.py"
       - ".github/workflows/analyze-profuturo-qqq-stability.yml"
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
-  group: profuturo-qqq-stability
+  group: profuturo-qqq-stability-research
   cancel-in-progress: true
 
 jobs:
@@ -23,7 +23,8 @@ jobs:
       - name: Descargar repositorio
         uses: actions/checkout@v4
         with:
-          ref: migracion-github-actions
+          ref: research-qqq-ridge-residual-20260818
+          fetch-depth: 0
 
       - name: Configurar Python
         uses: actions/setup-python@v5
@@ -39,9 +40,10 @@ jobs:
       - name: Ejecutar diagnóstico
         run: python scripts/analyze_profuturo_qqq_stability.py
 
-      - name: Guardar artefacto diagnóstico
-        uses: actions/upload-artifact@v4
-        with:
-          name: profuturo-qqq-stability
-          path: analysis/qqq_ridge_residualized_profuturo.json
-          retention-days: 30
+      - name: Guardar resultado en rama de investigación
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add analysis/qqq_ridge_residualized_profuturo.json
+          git commit -m "Guardar diagnóstico Ridge y QQQ residualizado" || exit 0
+          git push origin HEAD:research-qqq-ridge-residual-20260818
