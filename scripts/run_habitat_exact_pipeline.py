@@ -7,6 +7,7 @@ estimación ni se publica como "SBS pendiente".
 
 from __future__ import annotations
 
+import json
 from pathlib import Path
 from urllib.parse import urljoin
 
@@ -103,6 +104,36 @@ def recent_monthly_urls() -> list[str]:
     return sorted(urls)
 
 
+def validate_latest_market_consistency() -> None:
+    """Evita publicar Hábitat con una fecha de mercado atrasada.
+
+    Compara el último mercado publicado por Hábitat con la última fila completa
+    de los seis ETF de Yahoo ya persistidos en la base compartida. Si existe una
+    sesión posterior completa, el workflow falla en vez de dejar silenciosamente
+    una fecha antigua en el visor.
+    """
+    markets_path = ROOT / "data" / "rolling90" / "markets.csv"
+    latest_path = ROOT / "public" / "habitat" / "data" / "latest.json"
+
+    markets = pd.read_csv(markets_path)
+    markets["fecha"] = pd.to_datetime(markets["fecha"], errors="coerce")
+    equity = ["SPY", "NEM", "FCX", "EPU", "MCHI", "EEM"]
+    complete = markets.dropna(subset=["fecha", *equity]).sort_values("fecha")
+    if complete.empty:
+        raise RuntimeError("No hay sesiones completas de mercado para validar Hábitat.")
+
+    expected = pd.Timestamp(complete.iloc[-1]["fecha"]).normalize()
+    latest = json.loads(latest_path.read_text(encoding="utf-8"))
+    published = pd.Timestamp(latest["latest_market_date"]).normalize()
+    if published != expected:
+        raise RuntimeError(
+            "Hábitat publicó una fecha de mercado atrasada: "
+            f"visor={published:%Y-%m-%d}, mercado={expected:%Y-%m-%d}"
+        )
+
+    print(f"Hábitat validado con último mercado completo: {expected:%Y-%m-%d}")
+
+
 def main() -> None:
     install_official_corrections()
 
@@ -119,6 +150,7 @@ def main() -> None:
     ensure_latest_consistency()
     route_trade_cloud("habitat")
     validate_official_estimate_calendar()
+    validate_latest_market_consistency()
 
 
 if __name__ == "__main__":
