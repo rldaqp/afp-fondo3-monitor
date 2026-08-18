@@ -1,0 +1,123 @@
+{
+  "generated_at_utc": "2026-08-18T01:01:30.218069+00:00",
+  "nasdaq_proxy": "QQQ (Nasdaq-100 ETF, Yahoo Finance Close, auto_adjust=False)",
+  "method": "Prueba marginal sobre el modelo actual OLS rolling 90: se mantienen SPY, NEM, FCX, MCHI, EEM y USD/PEN. Se compara añadir EPU, añadir QQQ o añadir ambos, usando las mismas fechas y el mismo objetivo SBS.",
+  "results": {
+    "PROFUTURO": {
+      "fund": "PROFUTURO",
+      "common_complete_rows": 384,
+      "first_date": "2025-01-03",
+      "last_date": "2026-08-13",
+      "target_corr_full": {
+        "EPU": 0.8491208400744876,
+        "QQQ": 0.636070716741347
+      },
+      "target_corr_recent_90": {
+        "EPU": 0.8596875027639655,
+        "QQQ": 0.8266819550648236
+      },
+      "epu_qqq_return_corr": 0.5543825875539257,
+      "standardized_beta_both_recent_90": {
+        "epu": 0.47790203656942387,
+        "qqq": 0.3302663248252819,
+        "abs_epu": 0.47790203656942387,
+        "abs_qqq": 0.3302663248252819
+      },
+      "rolling_90": {
+        "BASE_SIN_EPU_QQQ": {
+          "n_predictions": 294,
+          "mae": 0.0036055804641629903,
+          "rmse": 0.004900688860873375,
+          "direction_accuracy": 0.7380952380952381,
+          "pred_actual_corr": 0.9122685348050575
+        },
+        "EPU": {
+          "n_predictions": 294,
+          "mae": 0.002731326474543465,
+          "rmse": 0.0037477092397691417,
+          "direction_accuracy": 0.782312925170068,
+          "pred_actual_corr": 0.9508454764721279,
+          "mae_improvement_vs_base": 0.2424724668632453
+        },
+        "QQQ": {
+          "n_predictions": 294,
+          "mae": 0.0036038054385804535,
+          "rmse": 0.00489849492024106,
+          "direction_accuracy": 0.7414965986394558,
+          "pred_actual_corr": 0.9123829110949432,
+          "mae_improvement_vs_base": 0.0004922995340637115
+        },
+        "EPU_QQQ": {
+          "n_predictions": 294,
+          "mae": 0.0026288125462563283,
+          "rmse": 0.003638022498449471,
+          "direction_accuracy": 0.8095238095238095,
+          "pred_actual_corr": 0.9535460390323989,
+          "mae_improvement_vs_base": 0.27090448476051743
+        }
+      },
+      "winner_by_mae": "EPU_QQQ",
+      "qqq_mae_advantage_vs_epu": -0.31943415485796933
+    },
+    "HABITAT": {
+      "fund": "HABITAT",
+      "common_complete_rows": 384,
+      "first_date": "2025-01-03",
+      "last_date": "2026-08-13",
+      "target_corr_full": {
+        "EPU": 0.8280301764670954,
+        "QQQ": 0.7134940523343324
+      },
+      "target_corr_recent_90": {
+        "EPU": 0.850544840837712,
+        "QQQ": 0.8406056708022459
+      },
+      "epu_qqq_return_corr": 0.5543825875539257,
+      "standardized_beta_both_recent_90": {
+        "epu": 0.4788019063154957,
+        "qqq": 0.2925395505549123,
+        "abs_epu": 0.4788019063154957,
+        "abs_qqq": 0.2925395505549123
+      },
+      "rolling_90": {
+        "BASE_SIN_EPU_QQQ": {
+          "n_predictions": 294,
+          "mae": 0.0030163747732212583,
+          "rmse": 0.00421448206880291,
+          "direction_accuracy": 0.7517006802721088,
+          "pred_actual_corr": 0.9041662723863563
+        },
+        "EPU": {
+          "n_predictions": 294,
+          "mae": 0.0026093905490103307,
+          "rmse": 0.003489007097415631,
+          "direction_accuracy": 0.7551020408163265,
+          "pred_actual_corr": 0.9370507660922281,
+          "mae_improvement_vs_base": 0.13492495290175743
+        },
+        "QQQ": {
+          "n_predictions": 294,
+          "mae": 0.0029594118337866863,
+          "rmse": 0.004220024095844389,
+          "direction_accuracy": 0.7619047619047619,
+          "pred_actual_corr": 0.903889822822694,
+          "mae_improvement_vs_base": 0.018884569629834203
+        },
+        "EPU_QQQ": {
+          "n_predictions": 294,
+          "mae": 0.0025251847747949628,
+          "rmse": 0.003431457966336319,
+          "direction_accuracy": 0.7687074829931972,
+          "pred_actual_corr": 0.9387057981022525,
+          "mae_improvement_vs_base": 0.16284117039665535
+        }
+      },
+      "winner_by_mae": "EPU_QQQ",
+      "qqq_mae_advantage_vs_epu": -0.13413909424524775
+    }
+  },
+  "recommendation": {
+    "action": "KEEP_EPU_AND_ADD_QQQ",
+    "summary": "EPU y QQQ juntos producen el menor MAE en ambos fondos; aportan información complementaria."
+  }
+}
