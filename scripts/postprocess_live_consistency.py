@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import os
+import sys
 from pathlib import Path
 
 
@@ -204,18 +206,36 @@ def process(path: Path, raw_live: str) -> None:
     path.write_text(html, encoding="utf-8")
 
 
-process(
-    ROOT / "public" / "index.html",
-    "https://raw.githubusercontent.com/rldaqp/afp-fondo3-monitor/"
-    "migracion-github-actions/public/data/live_market.json",
-)
+def resolve_target() -> str:
+    if len(sys.argv) > 1:
+        arg = sys.argv[1].strip().lower()
+        if arg in {"profuturo", "habitat", "both"}:
+            return arg
 
-habitat_path = ROOT / "public" / "habitat" / "index.html"
-if habitat_path.exists():
+    workflow = os.environ.get("GITHUB_WORKFLOW", "").strip().lower()
+    if "hábitat" in workflow or "habitat" in workflow:
+        return "habitat"
+    if "rolling 90" in workflow or "profuturo" in workflow:
+        return "profuturo"
+    return "both"
+
+
+target = resolve_target()
+
+if target in {"profuturo", "both"}:
     process(
-        habitat_path,
+        ROOT / "public" / "index.html",
         "https://raw.githubusercontent.com/rldaqp/afp-fondo3-monitor/"
-        "migracion-github-actions/public/habitat/data/live_market.json",
+        "migracion-github-actions/public/data/live_market.json",
     )
 
-print("Visor: intradia de hoy visible con fallback local y raw.")
+if target in {"habitat", "both"}:
+    habitat_path = ROOT / "public" / "habitat" / "index.html"
+    if habitat_path.exists():
+        process(
+            habitat_path,
+            "https://raw.githubusercontent.com/rldaqp/afp-fondo3-monitor/"
+            "migracion-github-actions/public/habitat/data/live_market.json",
+        )
+
+print(f"Visor {target}: snapshot vigente visible con fallback local y raw.")
