@@ -49,36 +49,17 @@ h1{font-size:1.45rem;margin:5px 0}.sub,.note{color:var(--muted);font-size:.82rem
 <!-- SPY_QQQ_CHALLENGER_CSS END -->
 <!-- INVESTMENT_SIGNAL_1PCT_CSS START -->
 <style id="investmentSignal1PctStyles">
-.invest1-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;margin-bottom:10px}.invest1-title{font-size:.96rem;font-weight:850}.invest1-kicker{font-size:.69rem;color:#94a3b8;margin-top:3px;line-height:1.35}.invest1-badge{padding:6px 11px;border-radius:999px;border:1px solid #475569;font-size:.76rem;font-weight:900;white-space:nowrap}.invest1-enter{color:#4ade80}.invest1-wait{color:#fbbf24}.invest1-exit{color:#f87171}.invest1-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.invest1-card{background:#0b1728;border:1px solid #243244;border-radius:11px;padding:10px}.invest1-label{font-size:.69rem;color:#94a3b8}.invest1-value{font-size:1.02rem;font-weight:900;margin-top:4px}.invest1-note{font-size:.7rem;color:#cbd5e1;line-height:1.45;margin-top:9px}.invest1-rule{font-size:.67rem;color:#94a3b8;margin-top:6px;line-height:1.4}
-@media(max-width:700px){.invest1-head{display:block}.invest1-badge{display:inline-block;margin-top:7px}.invest1-grid{grid-template-columns:1fr 1fr}.invest1-card:last-child{grid-column:1/-1}}
+.vc-precision-compact{display:none;margin-top:4px;font-size:.72rem;font-weight:800;color:#cbd5e1;line-height:1.25}
 </style>
 <!-- INVESTMENT_SIGNAL_1PCT_CSS END -->
 </head><body><main class="wrap">
 <h1>Profuturo Fondo 3</h1><div class="sub">GitHub Actions · OLS Rolling 90 · umbral ±0.10% · datos independientes del notebook</div><div id="error"></div>
 <section class="grid"><div class="card"><div class="label">Último VC SBS</div><div class="value" id="sbsVc">—</div><div class="sub" id="sbsDate">—</div></div>
 <div class="card"><div class="label">VC más reciente</div><div class="value" id="estVc">—</div><div class="sub" id="estDate">—</div></div>
-<div class="card"><div class="label">Señal</div><div class="value signal" id="signal">—</div><div class="sub" id="ret">—</div></div>
+<div class="card"><div class="label">Señal</div><div class="value signal" id="signal">—</div><div class="sub" id="ret">—</div><div id="vcPrecisionCompact" class="vc-precision-compact"></div></div>
 <div class="card"><div class="label">Ventana vigente</div><div class="value">90</div><div class="sub" id="window">—</div></div></section><div id="monitorHelp" class="monitor-help"><b>Retorno estimado del VC:</b> variación diaria estimada por el OLS. Cada punto se dibuja desde el eje 0. Durante mercado abierto es provisional; al cierre usa cierres diarios.</div>
 
 <!-- SPY_QQQ_CHALLENGER_PANEL START -->
-<!-- INVESTMENT_SIGNAL_1PCT_PANEL START -->
-<section class="panel" id="investmentSignal1PctPanel">
-  <div class="invest1-head">
-    <div>
-      <div class="invest1-title">Señal de inversión · umbral 1%</div>
-      <div class="invest1-kicker">Capa táctica sobre el VC estimado; no cambia la señal oficial SUBE / BAJA / NEUTRO.</div>
-    </div>
-    <div id="invest1Badge" class="invest1-badge invest1-wait">Cargando…</div>
-  </div>
-  <div class="invest1-grid">
-    <div class="invest1-card"><div class="invest1-label">Margen estimado vs último VC SBS</div><div id="invest1Margin" class="invest1-value">—</div></div>
-    <div class="invest1-card"><div class="invest1-label">VC SBS de referencia</div><div id="invest1Sbs" class="invest1-value">—</div></div>
-    <div class="invest1-card"><div class="invest1-label">VC estimado usado</div><div id="invest1Estimated" class="invest1-value">—</div></div>
-  </div>
-  <div id="invest1Note" class="invest1-note">—</div>
-  <div class="invest1-rule"><b>Regla:</b> +1.00% o más = ENTRAR · entre −1.00% y +1.00% = ESPERAR · −1.00% o menos = SALIR / NO ENTRAR. Es una regla del visor basada en el modelo, no una garantía de rentabilidad.</div>
-</section>
-<!-- INVESTMENT_SIGNAL_1PCT_PANEL END -->
 <section class="panel" id="spyQqqChallengerPanel">
   <div class="spyqqq-head">
     <div><div class="spyqqq-title">Mercado USA · SPY vs Nasdaq QQQ</div><div class="spyqqq-kicker">Challenger diario · no modifica la señal oficial OLS</div></div>
@@ -669,33 +650,35 @@ Promise.all([fetch('data/latest.json?ts='+Date.now(),{cache:'no-store'}).then(r=
 <script id="investmentSignal1PctScript">
 (function(){
   'use strict';
-  const THRESHOLD=0.01;
-  const finite=x=>Number.isFinite(Number(x));
-  const pct=x=>(Number(x)*100).toFixed(2)+'%';
-  const vc=x=>Number(x).toFixed(7);
-  function render(latest,live){
-    const sbs=Number(latest.latest_sbs_vc);
-    const useLive=!!(live&&live.market_open&&finite(live.vc_estimated));
-    const estimated=useLive?Number(live.vc_estimated):Number(latest.latest_estimated_vc);
-    if(!finite(sbs)||!finite(estimated)||sbs<=0){throw new Error('VC insuficiente')}
-    const margin=estimated/sbs-1;
-    let label='ESPERAR',cls='invest1-wait',text='El margen estimado todavía no supera el filtro de ±1.00%.';
-    if(margin>=THRESHOLD){label='ENTRAR';cls='invest1-enter';text='El VC estimado está al menos 1.00% por encima del último VC oficial SBS.'}
-    else if(margin<=-THRESHOLD){label='SALIR / NO ENTRAR';cls='invest1-exit';text='El VC estimado está al menos 1.00% por debajo del último VC oficial SBS.'}
-    const badge=document.getElementById('invest1Badge');badge.textContent=label;badge.className='invest1-badge '+cls;
-    const m=document.getElementById('invest1Margin');m.textContent=(margin>=0?'+':'')+pct(margin);m.className='invest1-value '+(margin>=THRESHOLD?'pos':margin<=-THRESHOLD?'neg':'zero');
-    document.getElementById('invest1Sbs').textContent=vc(sbs);
-    document.getElementById('invest1Estimated').textContent=vc(estimated);
-    const source=useLive?'intradía provisional':'último cálculo oficial del visor';
-    document.getElementById('invest1Note').textContent=`${text} Margen actual: ${(margin>=0?'+':'')+pct(margin)} · fuente: ${source}.`;
+  const THRESHOLD_PCT=1.0;
+  const target=document.getElementById('vcPrecisionCompact');
+  const retNode=document.getElementById('ret');
+  if(!target||!retNode)return;
+
+  let accuracy=null;
+  function currentReturnPct(){
+    const txt=String(retNode.textContent||'').replace(',', '.');
+    const m=txt.match(/([+-]?\d+(?:\.\d+)?)\s*%/);
+    return m?Number(m[1]):NaN;
   }
-  Promise.all([
-    fetch('data/latest.json?ts='+Date.now(),{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error('latest '+r.status);return r.json()}),
-    fetch('data/live_market.json?ts='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():null).catch(()=>null)
-  ]).then(([latest,live])=>render(latest,live)).catch(e=>{
-    const badge=document.getElementById('invest1Badge');if(badge){badge.textContent='NO DISPONIBLE';badge.className='invest1-badge invest1-wait'}
-    const note=document.getElementById('invest1Note');if(note)note.textContent='No se pudo calcular la señal de inversión: '+e.message;
-  });
+  function render(){
+    const r=currentReturnPct();
+    if(Number.isFinite(r)&&Math.abs(r)>=THRESHOLD_PCT&&Number.isFinite(accuracy)){
+      target.textContent='Precisión VC: '+accuracy.toFixed(1)+'%';
+      target.style.display='block';
+    }else{
+      target.textContent='';
+      target.style.display='none';
+    }
+  }
+
+  fetch('data/vc_accuracy_1pct.json?ts='+Date.now(),{cache:'no-store'})
+    .then(r=>{if(!r.ok)throw new Error(String(r.status));return r.json()})
+    .then(x=>{accuracy=Number(x.accuracy)*100;render()})
+    .catch(()=>{accuracy=null;render()});
+
+  new MutationObserver(render).observe(retNode,{childList:true,subtree:true,characterData:true});
+  render();
 })();
 </script>
 <!-- INVESTMENT_SIGNAL_1PCT_SCRIPT END -->
