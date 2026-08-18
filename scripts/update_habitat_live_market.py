@@ -69,6 +69,96 @@ def upsert_by_date(rows: list[dict], row: dict, date_key: str = "fecha") -> list
     return sorted(filtered, key=lambda item: str(item.get(date_key, "")))
 
 
+def previous_pending_vc(signal_date: str, latest: dict) -> float:
+    """Devuelve la base realmente usada para encadenar el VC pendiente.
+
+    El primer día posterior al último VC SBS parte del VC oficial. Los días
+    pendientes siguientes parten del VC estimado del día pendiente anterior.
+    """
+    latest_sbs_date = str(latest.get("latest_sbs_date") or "")
+    fallback = finite_number(latest.get("latest_sbs_vc"))
+    rows = read_json(HABITAT_SIGNALS, [])
+    if not isinstance(rows, list):
+        return fallback
+
+    candidates = []
+    for row in rows:
+        date = str(row.get("fecha") or "")
+        if not date or not (latest_sbs_date < date < signal_date):
+            continue
+        value = row.get("vc_estimado")
+        try:
+            number = float(value)
+        except (TypeError, ValueError):
+            continue
+        if np.isfinite(number):
+            candidates.append((date, number))
+    return sorted(candidates)[-1][1] if candidates else fallback
+
+
+def align_assets_with_habitat_model(assets: list[dict], signal_date: str) -> list[dict]:
+    """Alinea el cierre visual con los retornos exactos usados por Hábitat.
+
+    Profuturo y Hábitat comparten precios de mercado, pero el cálculo diario de
+    PEN=X puede haberse obtenido en ejecuciones distintas. Para un cierre ya
+    calculado por el pipeline pesado, model_insights.json conserva los valores
+    exactos de cada factor que produjeron la señal de Hábitat.
+    """
+    insights = read_json(HABITAT_INSIGHTS, {})
+    if not isinstance(insights, dict):
+        return assets
+    if str(insights.get("generated_for") or "") != signal_date:
+        return assets
+
+    exact: dict[str, float] = {}
+    for item in insights.get("contributions", []) or []:
+        if not isinstance(item, dict):
+            continue
+        feature = str(item.get("feature") or "")
+        if not feature.startswith("ret_"):
+            continue
+        try:
+            value = float(item.get("value"))
+        except (TypeError, ValueError):
+            continue
+        if np.isfinite(value):
+            exact[feature] = value
+
+    out = copy.deepcopy(assets)
+    for asset in out:
+        serie = str(asset.get("serie") or "")
+        feature = "ret_USD_PEN" if serie == "USD_PEN" else f"ret_{serie}"
+        if feature not in exact:
+            continue
+        asset["retorno_modelo"] = exact[feature]
+        # En el cierre de Hábitat la tarjeta debe mostrar el mismo retorno que
+        # alimentó el OLS. Esto es especialmente importante para PEN=X.
+        asset["retorno"] = exact[feature]
+    return out
+
+
+def validate_payload_identity(payload: dict) -> None:
+    """Impide publicar un VC cuya base, retorno y resultado no sean coherentes."""
+    if not str(payload.get("mode", "")).startswith("CIERRE"):
+        return
+    try:
+        base = float(payload["vc_base"])
+        ret = float(payload["return_estimated"])
+        vc = float(payload["vc_estimated"])
+    except (KeyError, TypeError, ValueError):
+        return
+    if not all(np.isfinite(x) for x in (base, ret, vc)):
+        return
+    expected = base * (1.0 + ret)
+    tolerance = max(1e-10, abs(vc) * 1e-10)
+    if abs(expected - vc) > tolerance:
+        raise RuntimeError(
+            "Cierre Hábitat inconsistente: "
+            f"base {base:.10f} × (1 + {ret:.10f}) = {expected:.10f}, "
+            f"pero vc_estimated = {vc:.10f}"
+        )
+
+
 def sync_fallback_outputs(payload: dict, latest: dict) -> None:
     """Mantiene los JSON base al día cuando el motor live ya tiene cierre nuevo."""
     mode = str(payload.get("mode", ""))
@@ -184,12 +274,16 @@ def main() -> None:
             ),
         }
     else:
+        signal_date = str(latest.get("latest_estimate_date") or "")
+        if signal_date and market_signal_date == signal_date:
+            assets = align_assets_with_habitat_model(assets, signal_date)
+        base_vc = previous_pending_vc(signal_date, latest) if signal_date else finite_number(latest.get("latest_sbs_vc"))
         payload = {
             "generated_at_lima": datetime.now(LIMA).isoformat(),
             "mode": market.get("mode", "CIERRE DIARIO"),
             "market_open": False,
-            "signal_date": latest.get("latest_estimate_date"),
-            "vc_base": latest.get("latest_sbs_vc"),
+            "signal_date": signal_date,
+            "vc_base": base_vc,
             "vc_estimated": latest.get("latest_estimated_vc"),
             "return_estimated": latest.get("latest_return_estimated"),
             "signal": latest.get("signal"),
@@ -202,9 +296,12 @@ def main() -> None:
                 latest.get("latest_fx_provisional", market.get("fx_provisional", True))
             ),
             "fx_rule": market.get("fx_rule", ""),
-            "note": "Cierre diario de Habitat con actualizacion del motor de mercado.",
+            "model_snapshot_source": "PREDICCION OLS EXACTA DE HÁBITAT",
+            "model_snapshot_date": signal_date,
+            "note": "Cierre diario de Hábitat alineado con el OLS exacto del mismo día.",
         }
 
+    validate_payload_identity(payload)
     HABITAT_LIVE.parent.mkdir(parents=True, exist_ok=True)
     write_json(HABITAT_LIVE, payload)
     sync_fallback_outputs(payload, latest)
