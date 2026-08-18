@@ -223,7 +223,7 @@ Promise.all([fetch('data/latest.json?ts='+Date.now(),{cache:'no-store'}).then(r=
 
   function insightPct(x,d=1){return x==null||!Number.isFinite(Number(x))?'—':(Number(x)*100).toFixed(d)+'%'}
   function liveContributions(){
-    if(!(liveData&&liveData.market_open&&latestData&&latestData.coefficients))return null;
+    if(!(liveData&&liveSnapshotActive()&&latestData&&latestData.coefficients))return null;
     const beta=latestData.coefficients,map={SPY:'ret_SPY',NEM:'ret_NEM',FCX:'ret_FCX',EPU:'ret_EPU',MCHI:'ret_MCHI',EEM:'ret_EEM',USD_PEN:'ret_USD_PEN'},out=[];
     out.push({label:'Constante',contribution_pp:Number(beta.intercept||0)*100});
     (liveData.assets||[]).forEach(a=>{const k=map[a.serie],r=Number(a.retorno_modelo);if(k&&Number.isFinite(r)&&Number.isFinite(Number(beta[k])))out.push({label:a.serie==='USD_PEN'?'USD/PEN':a.serie,contribution_pp:Number(beta[k])*r*100})});
@@ -232,7 +232,7 @@ Promise.all([fetch('data/latest.json?ts='+Date.now(),{cache:'no-store'}).then(r=
   function classifyModelReturn(r){return Number(r)>.001?'SUBE':Number(r)<-.001?'BAJA':'NEUTRO'}
   function currentHuber(){
     const h=modelInsights&&modelInsights.challenger_huber;if(!h||h.status!=='CHALLENGER ACTIVO')return null;
-    if(liveData&&liveData.market_open&&h.coefficients){
+    if(liveData&&liveSnapshotActive()&&h.coefficients){
       const beta=h.coefficients,map={SPY:'ret_SPY',NEM:'ret_NEM',FCX:'ret_FCX',EPU:'ret_EPU',MCHI:'ret_MCHI',EEM:'ret_EEM',USD_PEN:'ret_USD_PEN'};
       let r=Number(beta.intercept||0),used=0;
       (liveData.assets||[]).forEach(a=>{const k=map[a.serie],v=Number(a.retorno_modelo);if(k&&Number.isFinite(v)&&Number.isFinite(Number(beta[k]))){r+=Number(beta[k])*v;used+=1}});
@@ -254,7 +254,7 @@ Promise.all([fetch('data/latest.json?ts='+Date.now(),{cache:'no-store'}).then(r=
     const imp=b.ols_mae_improvement_vs_zero;
     $('benchmarkValue').textContent=imp==null?'—':(imp>=0?'Mejor ':'Peor ')+(Math.abs(Number(imp))*100).toFixed(0)+'%';
 
-    const hub=currentHuber(),olsSignal=liveData&&liveData.market_open?liveData.signal:(latestData?latestData.signal:modelInsights.current_signal);
+    const hub=currentHuber(),olsSignal=liveData&&liveSnapshotActive()?liveData.signal:(latestData?latestData.signal:modelInsights.current_signal);
     if(hub){
       const same=String(hub.senal)===String(olsSignal),hv=$('huberValue'),hs=$('huberSub');
       hv.textContent=`${hub.senal} · ${(Number(hub.ret_estimado)*100).toFixed(3)}%`;

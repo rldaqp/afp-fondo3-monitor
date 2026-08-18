@@ -3781,20 +3781,29 @@
   },
   {
     "fecha": "2026-08-14",
-    "vc": 70.8599701311016,
-    "fuente": "MODELO OLS",
-    "es_oficial": false,
+    "vc": 70.8740985,
+    "fuente": "SBS OFICIAL",
+    "es_oficial": true,
     "senal": "SUBE",
     "ret_estimado": 0.0027599547434061,
-    "estado_modelo": "COMPLETAS"
+    "estado_modelo": "OLS FACTORES COMPLETOS"
   },
   {
     "fecha": "2026-08-17",
-    "vc": 71.33256141983418,
+    "vc": 71.34496504900544,
     "fuente": "MODELO OLS",
     "es_oficial": false,
     "senal": "SUBE",
-    "ret_estimado": 0.0066693690084571,
+    "ret_estimado": 0.0066437042441596,
     "estado_modelo": "COMPLETAS"
+  },
+  {
+    "fecha": "2026-08-18",
+    "vc": 70.2845804404232,
+    "fuente": "MODELO OLS",
+    "es_oficial": false,
+    "senal": "BAJA",
+    "ret_estimado": -0.0148627812467758,
+    "estado_modelo": "USD/PEN YAHOO PEN=X · PROVISIONAL"
   }
 ]

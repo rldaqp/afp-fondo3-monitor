@@ -2635,18 +2635,26 @@
     "fecha": "2026-08-14",
     "ret_estimado": 0.0027599547434061897,
     "senal": "SUBE",
-    "vc_real": null,
+    "vc_real": 70.8740985,
     "vc_estimado": 70.8599701311016,
+    "tipo": "HISTORICO"
+  },
+  {
+    "fecha": "2026-08-17",
+    "ret_estimado": 0.006643704244159621,
+    "senal": "SUBE",
+    "vc_real": null,
+    "vc_estimado": 71.34496504900544,
     "tipo": "PENDIENTE",
     "estado_fuentes": "COMPLETAS"
   },
   {
-    "fecha": "2026-08-17",
-    "ret_estimado": 0.00666936900845717,
-    "senal": "SUBE",
+    "fecha": "2026-08-18",
+    "ret_estimado": -0.01486278124677588,
+    "senal": "BAJA",
     "vc_real": null,
-    "vc_estimado": 71.33256141983418,
+    "vc_estimado": 70.2845804404232,
     "tipo": "PENDIENTE",
-    "estado_fuentes": "COMPLETAS"
+    "estado_fuentes": "USD/PEN YAHOO PEN=X · PROVISIONAL"
   }
 ]
