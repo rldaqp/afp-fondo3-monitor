@@ -47,11 +47,16 @@ h1{font-size:1.45rem;margin:5px 0}.sub,.note{color:var(--muted);font-size:.82rem
 @media(max-width:700px){.spyqqq-head{display:block}.spyqqq-badge{display:inline-block;margin-top:7px}.spyqqq-grid{grid-template-columns:1fr 1fr}.spyqqq-table{font-size:.68rem}.spyqqq-table th,.spyqqq-table td{padding:6px 3px}}
 </style>
 <!-- SPY_QQQ_CHALLENGER_CSS END -->
+<!-- INVESTMENT_SIGNAL_1PCT_CSS START -->
+<style id="investmentSignal1PctStyles">
+.vc-precision-compact{display:none;margin-top:4px;font-size:.72rem;font-weight:800;color:#cbd5e1;line-height:1.25}
+</style>
+<!-- INVESTMENT_SIGNAL_1PCT_CSS END -->
 <style>#huberChallengerBox{display:none!important}</style></head><body><main class="wrap">
 <h1>Hábitat Fondo 3</h1><div class="sub">GitHub Actions · OLS Rolling 90 · umbral ±0.10% · modelo propio con datos oficiales SBS</div><div id="error"></div>
 <section class="grid"><div class="card"><div class="label">Último VC SBS</div><div class="value" id="sbsVc">—</div><div class="sub" id="sbsDate">—</div></div>
 <div class="card"><div class="label">VC más reciente</div><div class="value" id="estVc">—</div><div class="sub" id="estDate">—</div></div>
-<div class="card"><div class="label">Señal</div><div class="value signal" id="signal">—</div><div class="sub" id="ret">—</div></div>
+<div class="card"><div class="label">Señal</div><div class="value signal" id="signal">—</div><div class="sub" id="ret">—</div><div id="vcPrecisionCompact" class="vc-precision-compact"></div></div>
 <div class="card"><div class="label">Ventana vigente</div><div class="value">90</div><div class="sub" id="window">—</div></div></section><div id="monitorHelp" class="monitor-help"><b>Retorno estimado del VC:</b> variación diaria estimada por el OLS. Cada punto se dibuja desde el eje 0. Durante mercado abierto es provisional; al cierre usa cierres diarios.</div>
 
 <!-- SPY_QQQ_CHALLENGER_PANEL START -->
@@ -279,7 +284,7 @@ Promise.all([fetch('data/latest.json?ts='+Date.now(),{cache:'no-store'}).then(r=
   function liveContributions(){
     if(!(liveData&&liveData.market_open&&latestData&&latestData.coefficients))return null;
     const beta=latestData.coefficients,map={SPY:'ret_SPY',NEM:'ret_NEM',FCX:'ret_FCX',EPU:'ret_EPU',MCHI:'ret_MCHI',EEM:'ret_EEM',USD_PEN:'ret_USD_PEN'},out=[];
-    out.push({label:'Base',contribution_pp:Number(beta.intercept||0)*100});
+    out.push({label:'Constante',contribution_pp:Number(beta.intercept||0)*100});
     (liveData.assets||[]).forEach(a=>{const k=map[a.serie],r=Number(a.retorno_modelo);if(k&&Number.isFinite(r)&&Number.isFinite(Number(beta[k])))out.push({label:a.serie==='USD_PEN'?'USD/PEN':a.serie,contribution_pp:Number(beta[k])*r*100})});
     return out.sort((a,b)=>Math.abs(b.contribution_pp)-Math.abs(a.contribution_pp));
   }
@@ -322,7 +327,7 @@ Promise.all([fetch('data/latest.json?ts='+Date.now(),{cache:'no-store'}).then(r=
 
     const contrib=liveContributions()||(modelInsights.contributions||[]);
     const max=Math.max(...contrib.map(x=>Math.abs(Number(x.contribution_pp)||0)),0.0001);
-    $('factorList').innerHTML=contrib.map(x=>{const v=Number(x.contribution_pp)||0,w=Math.max(2,Math.abs(v)/max*100),cl=v>0?'posbar':v<0?'negbar':'';return `<div class="factor-row"><b>${x.label}</b><div class="factor-track"><div class="factor-fill ${cl}" style="width:${w.toFixed(1)}%"></div></div><div class="factor-value ${v>0?'pos':v<0?'neg':'zero'}">${v>=0?'+':''}${v.toFixed(3)} pp</div></div>`}).join('')||'<div class="note">Sin contribuciones disponibles.</div>';
+    $('factorList').innerHTML=contrib.map(x=>{const v=Number(x.contribution_pp)||0,w=Math.max(2,Math.abs(v)/max*100),cl=v>0?'posbar':v<0?'negbar':'';return `<div class="factor-row"><b>${x.label==='Base'?'Constante':x.label}</b><div class="factor-track"><div class="factor-fill ${cl}" style="width:${w.toFixed(1)}%"></div></div><div class="factor-value ${v>0?'pos':v<0?'neg':'zero'}">${v>=0?'+':''}${v.toFixed(3)} pp</div></div>`}).join('')||'<div class="note">Sin contribuciones disponibles.</div>';
     const items=[
       ['Acierto OLS',insightPct(p.classification_accuracy,0)],
       ['MAE OLS',p.mae_return_pp==null?'—':Number(p.mae_return_pp).toFixed(2)+' pp'],
@@ -700,6 +705,42 @@ Promise.all([fetch('data/latest.json?ts='+Date.now(),{cache:'no-store'}).then(r=
 })();
 </script>
 <!-- SPY_QQQ_CHALLENGER_SCRIPT END -->
+<!-- INVESTMENT_SIGNAL_1PCT_SCRIPT START -->
+<script id="investmentSignal1PctScript">
+(function(){
+  'use strict';
+  const THRESHOLD_PCT=1.0;
+  const target=document.getElementById('vcPrecisionCompact');
+  const retNode=document.getElementById('ret');
+  if(!target||!retNode)return;
+
+  let accuracy=null;
+  function currentReturnPct(){
+    const txt=String(retNode.textContent||'').replace(',', '.');
+    const m=txt.match(/([+-]?\d+(?:\.\d+)?)\s*%/);
+    return m?Number(m[1]):NaN;
+  }
+  function render(){
+    const r=currentReturnPct();
+    if(Number.isFinite(r)&&Math.abs(r)>=THRESHOLD_PCT&&Number.isFinite(accuracy)){
+      target.textContent='Precisión VC: '+accuracy.toFixed(1)+'%';
+      target.style.display='block';
+    }else{
+      target.textContent='';
+      target.style.display='none';
+    }
+  }
+
+  fetch('data/vc_accuracy_1pct.json?ts='+Date.now(),{cache:'no-store'})
+    .then(r=>{if(!r.ok)throw new Error(String(r.status));return r.json()})
+    .then(x=>{accuracy=Number(x.accuracy)*100;render()})
+    .catch(()=>{accuracy=null;render()});
+
+  new MutationObserver(render).observe(retNode,{childList:true,subtree:true,characterData:true});
+  render();
+})();
+</script>
+<!-- INVESTMENT_SIGNAL_1PCT_SCRIPT END -->
 
 <!-- HABITAT_SBS_INDICATORS_JS_V1 START -->
 <script>
