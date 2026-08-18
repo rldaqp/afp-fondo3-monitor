@@ -1,11 +1,11 @@
 {
-  "generated_at_lima": "2026-08-18T17:01:06.395250-05:00",
+  "generated_at_lima": "2026-08-18T17:18:23.702044-05:00",
   "mode": "CIERRE DIARIO",
   "market_open": false,
   "signal_date": "2026-08-18",
-  "vc_base": 33.5502923,
+  "vc_base": 33.7479423149331,
   "vc_estimated": 33.19971155063856,
-  "return_estimated": -0.016244864921792664,
+  "return_estimated": -0.01624486492179265,
   "signal": "BAJA",
   "assets": [
     {
@@ -25,8 +25,8 @@
       "timestamp": "2026-08-18",
       "precio_anterior": 120.33000183105467,
       "precio_actual": 115.9800033569336,
-      "retorno": -0.0361505726579191,
-      "retorno_modelo": -0.0361505726579191,
+      "retorno": -0.03615057265791921,
+      "retorno_modelo": -0.03615057265791921,
       "estado": "CIERRE DIARIO YAHOO · USADO POR MODELO",
       "usado_modelo": true
     },
@@ -80,8 +80,8 @@
       "timestamp": "2026-08-17",
       "precio_anterior": null,
       "precio_actual": null,
-      "retorno": 0.0198472007235266,
-      "retorno_modelo": 0.0198472007235266,
+      "retorno": 0.019907822167752,
+      "retorno_modelo": 0.019907822167752,
       "estado": "YAHOO PEN=X · PROVISIONAL · USADO POR MODELO",
       "usado_modelo": true
     }
@@ -92,5 +92,7 @@
   "fx_source": "YAHOO PEN=X PROVISIONAL",
   "fx_provisional": true,
   "fx_rule": "Histórico/entrenamiento: BCRP. Predicción: BCRP si existe; si está rezagado, Yahoo PEN=X provisional; 0 % solo si ambas fuentes faltan.",
-  "note": "Cierre diario de Habitat con actualizacion del motor de mercado."
+  "model_snapshot_source": "PREDICCION OLS EXACTA DE HÁBITAT",
+  "model_snapshot_date": "2026-08-18",
+  "note": "Cierre diario de Hábitat alineado con el OLS exacto del mismo día."
 }
