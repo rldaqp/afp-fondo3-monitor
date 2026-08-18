@@ -94,7 +94,7 @@ jobs:
           python scripts/postprocess_trade_history.py
           python scripts/postprocess_trade_cloud_sync.py
           python scripts/postprocess_trade_notebook_basis.py
-          python scripts/postprocess_live_consistency.py
+          python scripts/postprocess_live_consistency.py profuturo
           python scripts/postprocess_trade_runtime_fixes.py profuturo
           python scripts/postprocess_investment_signal_1pct.py
 
@@ -225,6 +225,13 @@ jobs:
                       yahoo["ret_USD_PEN"], errors="coerce"
                   ).notna().all()
 
+          # El bloque explicativo y el challenger deben corresponder a la misma
+          # fecha que la señal OLS publicada; así evitamos volver a mostrar el día anterior.
+          assert str(insights.get("generated_for")) == str(latest.get("latest_estimate_date")), (insights.get("generated_for"), latest.get("latest_estimate_date"))
+          assert str(insights.get("current_signal")) == str(latest.get("signal")), (insights.get("current_signal"), latest.get("signal"))
+          huber = (insights.get("challenger_huber") or {}).get("current") or {}
+          assert str(huber.get("fecha")) == str(latest.get("latest_estimate_date")), (huber, latest.get("latest_estimate_date"))
+
           print(json.dumps(latest, ensure_ascii=False, indent=2))
           print(json.dumps(vc_accuracy, ensure_ascii=False, indent=2))
           print(f"Puntos de señal Profuturo: {len(signals)}")
@@ -237,6 +244,10 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add data/rolling90 public/index.html public/data
           git reset public/data/live_market.json || true
+          # Después de preparar exactamente los archivos de Profuturo, limpiamos
+          # cualquier cambio lateral no staged. Esto evita que un HTML de Hábitat
+          # impida el rebase y bloquee la publicación completa de Pages.
+          git restore --worktree -- .
           if git diff --cached --quiet; then
             echo "No hay cambios de Profuturo para confirmar."
           else
