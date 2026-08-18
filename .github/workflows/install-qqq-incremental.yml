@@ -1,4 +1,4 @@
-name: Instalar challenger QQQ incremental
+name: Publicar panel QQQ incremental
 
 on:
   workflow_dispatch:
@@ -7,19 +7,16 @@ on:
       - migracion-github-actions
     paths:
       - ".github/workflows/install-qqq-incremental.yml"
-      - "scripts/install_qqq_incremental_workflows.py"
-      - "scripts/build_qqq_incremental_challenger.py"
-      - "scripts/postprocess_qqq_incremental_ui.py"
 
 permissions:
   contents: write
 
 concurrency:
-  group: install-qqq-incremental
+  group: publish-qqq-incremental-panel
   cancel-in-progress: true
 
 jobs:
-  install:
+  publish:
     runs-on: ubuntu-latest
     steps:
       - name: Descargar repositorio
@@ -39,9 +36,6 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Integrar challenger en workflows
-        run: python scripts/install_qqq_incremental_workflows.py
-
       - name: Calcular challenger y actualizar visor
         run: |
           python scripts/build_qqq_incremental_challenger.py
@@ -49,21 +43,22 @@ jobs:
           test -s public/data/qqq_incremental_challenger.json
           grep -q "QQQ INCREMENTAL · CHALLENGER" public/index.html
           ! grep -q "Challenger Huber · paralelo" public/index.html
+          ! grep -q "SPY_QQQ_CHALLENGER_PANEL START" public/index.html
 
-      - name: Guardar integración
+      - name: Guardar panel y registro futuro
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add .github/workflows/update-monitor.yml .github/workflows/update-live-market.yml public/index.html public/data/qqq_incremental_challenger.json data/rolling90/qqq_incremental_shadow.csv
+          git add public/index.html public/data/qqq_incremental_challenger.json data/rolling90/qqq_incremental_shadow.csv
           if git diff --cached --quiet; then
-            echo "La integración ya estaba aplicada."
+            echo "El visor ya estaba actualizado."
           else
-            git commit -m "Integrar QQQ incremental como único challenger visible"
+            git commit -m "Mostrar OLS y QQQ incremental lado a lado"
             git pull --rebase origin migracion-github-actions
             git push origin HEAD:migracion-github-actions
           fi
 
-      - name: Publicar cambios inmediatamente en gh-pages
+      - name: Publicar también en gh-pages
         env:
           GITHUB_TOKEN: ${{ github.token }}
         run: |
@@ -82,5 +77,3 @@ jobs:
             git commit -m "Publicar comparación OLS vs QQQ incremental"
             git push origin HEAD:gh-pages
           fi
-
-# Cambio intencional para disparar la instalación una vez añadido el workflow.
