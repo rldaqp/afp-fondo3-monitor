@@ -94,7 +94,7 @@ def ridge_predict(train_x: np.ndarray, y: np.ndarray, current_x: np.ndarray, alp
     return pred, float(np.linalg.norm(model.coef_))
 
 
-def residualize_qqq(train: pd.DataFrame, current: pd.Series) -> tuple[np.ndarray, np.ndarray]:
+def residualize_qqq_on_spy(train: pd.DataFrame, current: pd.Series) -> tuple[np.ndarray, np.ndarray]:
     spy = train["ret_SPY"].to_numpy(float)
     qqq = train["ret_QQQ"].to_numpy(float)
     beta = np.linalg.lstsq(np.c_[np.ones(len(spy)), spy], qqq, rcond=None)[0]
@@ -113,13 +113,30 @@ def residualize_qqq(train: pd.DataFrame, current: pd.Series) -> tuple[np.ndarray
     return train_x, current_x
 
 
+def residualize_qqq_on_all_current(train: pd.DataFrame, current: pd.Series) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    x_base = train[BASE_FEATURES].to_numpy(float)
+    qqq = train["ret_QQQ"].to_numpy(float)
+    design = np.c_[np.ones(len(x_base)), x_base]
+    beta = np.linalg.lstsq(design, qqq, rcond=None)[0]
+    resid_train = qqq - design @ beta
+
+    current_base = current[BASE_FEATURES].to_numpy(float)
+    resid_current = float(current["ret_QQQ"] - np.r_[1.0, current_base] @ beta)
+
+    train_x = np.column_stack([x_base, resid_train])
+    current_x = np.r_[current_base, resid_current].astype(float)
+    return train_x, current_x, beta
+
+
 def build_predictions(frame: pd.DataFrame) -> dict[str, pd.DataFrame]:
     rows: dict[str, list[dict]] = {
         "ACTUAL_OLS": [],
         "B_SPY_MAS_QQQ_OLS": [],
-        "QQQ_RESIDUAL_OLS": [],
+        "QQQ_RESIDUAL_SPY_OLS": [],
+        "QQQ_RESIDUAL_TODOS_OLS": [],
         **{f"RIDGE_{a:g}": [] for a in RIDGE_ALPHAS},
     }
+
     for i in range(TRAIN_WINDOW, len(frame)):
         train = frame.iloc[i - TRAIN_WINDOW:i]
         current = frame.iloc[i]
@@ -136,9 +153,13 @@ def build_predictions(frame: pd.DataFrame) -> dict[str, pd.DataFrame]:
         pred, norm = ols_predict(qx, y, qc)
         rows["B_SPY_MAS_QQQ_OLS"].append({"fecha": current["fecha"], "pred": pred, "actual": actual, "coef_norm": norm})
 
-        rx, rc = residualize_qqq(train, current)
+        rx, rc = residualize_qqq_on_spy(train, current)
         pred, norm = ols_predict(rx, y, rc)
-        rows["QQQ_RESIDUAL_OLS"].append({"fecha": current["fecha"], "pred": pred, "actual": actual, "coef_norm": norm})
+        rows["QQQ_RESIDUAL_SPY_OLS"].append({"fecha": current["fecha"], "pred": pred, "actual": actual, "coef_norm": norm})
+
+        fx, fc, _ = residualize_qqq_on_all_current(train, current)
+        pred, norm = ols_predict(fx, y, fc)
+        rows["QQQ_RESIDUAL_TODOS_OLS"].append({"fecha": current["fecha"], "pred": pred, "actual": actual, "coef_norm": norm})
 
         for a in RIDGE_ALPHAS:
             pred, norm = ridge_predict(qx, y, qc, a)
@@ -168,8 +189,9 @@ def vif_table(x: np.ndarray, names: list[str]) -> dict:
     for j, name in enumerate(names):
         y = x[:, j]
         others = np.delete(x, j, axis=1)
-        fit = np.linalg.lstsq(np.c_[np.ones(len(others)), others], y, rcond=None)[0]
-        pred = np.c_[np.ones(len(others)), others] @ fit
+        design = np.c_[np.ones(len(others)), others]
+        fit = np.linalg.lstsq(design, y, rcond=None)[0]
+        pred = design @ fit
         ss_res = float(np.sum((y - pred) ** 2))
         ss_tot = float(np.sum((y - y.mean()) ** 2))
         r2 = 1.0 - ss_res / ss_tot if ss_tot > 1e-20 else 1.0
@@ -179,15 +201,47 @@ def vif_table(x: np.ndarray, names: list[str]) -> dict:
 
 def recent_vifs(frame: pd.DataFrame) -> dict:
     recent = frame.tail(90).copy()
+    actual = vif_table(recent[BASE_FEATURES].to_numpy(float), BASE_FEATURES)
     b = vif_table(recent[B_FEATURES].to_numpy(float), B_FEATURES)
+
     spy = recent["ret_SPY"].to_numpy(float)
     qqq = recent["ret_QQQ"].to_numpy(float)
-    beta = np.linalg.lstsq(np.c_[np.ones(len(spy)), spy], qqq, rcond=None)[0]
-    resid = qqq - (beta[0] + beta[1] * spy)
-    rx = np.column_stack([spy, resid, *[recent[f].to_numpy(float) for f in OTHER_FEATURES]])
-    names = ["ret_SPY", "ret_QQQ_resid", *OTHER_FEATURES]
-    r = vif_table(rx, names)
-    return {"B_SPY_MAS_QQQ": b, "QQQ_RESIDUAL": r, "qqq_on_spy_beta_recent90": float(beta[1])}
+    beta_spy = np.linalg.lstsq(np.c_[np.ones(len(spy)), spy], qqq, rcond=None)[0]
+    resid_spy = qqq - (beta_spy[0] + beta_spy[1] * spy)
+    rx = np.column_stack([spy, resid_spy, *[recent[f].to_numpy(float) for f in OTHER_FEATURES]])
+    names_spy = ["ret_SPY", "ret_QQQ_resid_spy", *OTHER_FEATURES]
+    r_spy = vif_table(rx, names_spy)
+
+    x_base = recent[BASE_FEATURES].to_numpy(float)
+    design_all = np.c_[np.ones(len(x_base)), x_base]
+    beta_all = np.linalg.lstsq(design_all, qqq, rcond=None)[0]
+    resid_all = qqq - design_all @ beta_all
+    fx = np.column_stack([x_base, resid_all])
+    names_all = [*BASE_FEATURES, "ret_QQQ_resid_todos"]
+    r_all = vif_table(fx, names_all)
+
+    corr_resid_all = {
+        feature: float(np.corrcoef(recent[feature].to_numpy(float), resid_all)[0, 1])
+        for feature in BASE_FEATURES
+    }
+
+    return {
+        "ACTUAL": actual,
+        "B_SPY_MAS_QQQ": b,
+        "QQQ_RESIDUAL_SPY": r_spy,
+        "QQQ_RESIDUAL_TODOS": r_all,
+        "qqq_on_spy_beta_recent90": float(beta_spy[1]),
+        "qqq_on_all_current_beta_recent90": {
+            "intercept": float(beta_all[0]),
+            **{feature: float(beta_all[i + 1]) for i, feature in enumerate(BASE_FEATURES)},
+        },
+        "corr_qqq_residual_todos_vs_current_recent90": corr_resid_all,
+        "qqq_residual_todos_std_recent90": float(np.std(resid_all, ddof=0)),
+    }
+
+
+def max_prediction_diff(a: pd.DataFrame, b: pd.DataFrame) -> float:
+    return float(np.max(np.abs(a["pred"].to_numpy(float) - b["pred"].to_numpy(float))))
 
 
 def main() -> None:
@@ -196,8 +250,10 @@ def main() -> None:
     sbs["valor_cuota"] = pd.to_numeric(sbs["valor_cuota"], errors="coerce")
     sbs = sbs.dropna(subset=["valor_cuota"]).drop_duplicates("fecha", keep="last")
     sbs["ret_target"] = sbs["valor_cuota"].pct_change(fill_method=None)
+
     qqq = download_qqq(markets["fecha"].min(), max(markets["fecha"].max(), pd.Timestamp.now().normalize()))
     markets = markets.merge(qqq, on="fecha", how="left")
+
     frame = sbs[["fecha", "ret_target"]].merge(markets, on="fecha", how="inner")
     frame = frame.loc[frame["fecha"] >= pd.Timestamp("2025-01-01")]
     frame = frame.dropna(subset=["ret_target", *B_FEATURES]).sort_values("fecha").drop_duplicates("fecha", keep="last").reset_index(drop=True)
@@ -222,12 +278,16 @@ def main() -> None:
             "best_direction": max(metric_map, key=lambda n: metric_map[n]["direction_accuracy"]),
         }
 
-    max_abs_diff = float(np.max(np.abs(preds["B_SPY_MAS_QQQ_OLS"]["pred"] - preds["QQQ_RESIDUAL_OLS"]["pred"])))
+    equivalence = {
+        "spy_plus_qqq_vs_residual_spy": max_prediction_diff(preds["B_SPY_MAS_QQQ_OLS"], preds["QQQ_RESIDUAL_SPY_OLS"]),
+        "spy_plus_qqq_vs_residual_todos": max_prediction_diff(preds["B_SPY_MAS_QQQ_OLS"], preds["QQQ_RESIDUAL_TODOS_OLS"]),
+    }
+
     payload = {
         "generated_at_utc": pd.Timestamp.now(tz="UTC").isoformat(),
         "fund": "PROFUTURO",
         "purpose": "Diagnóstico solamente. No modifica visor ni modelo oficial.",
-        "method": "Rolling 90. QQQ residual se calcula dentro de cada ventana de entrenamiento para evitar leakage. Ridge usa variables estandarizadas dentro de cada ventana.",
+        "method": "Rolling 90. QQQ residual se calcula dentro de cada ventana para evitar leakage. QQQ_RESIDUAL_TODOS quita de QQQ lo explicado por SPY, EEM, EPU, MCHI, NEM, FCX y USD/PEN.",
         "common_complete_rows": int(len(frame)),
         "prediction_rows": int(len(next(iter(preds.values())))),
         "first_prediction": next(iter(preds.values())).iloc[0]["fecha"].strftime("%Y-%m-%d"),
@@ -235,8 +295,9 @@ def main() -> None:
         "ridge_alphas": RIDGE_ALPHAS,
         "windows": windows,
         "recent90_vif": recent_vifs(frame),
-        "residualization_equivalence_max_abs_prediction_diff": max_abs_diff,
+        "residualization_equivalence_max_abs_prediction_diff": equivalence,
     }
+
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
     print(json.dumps(payload, ensure_ascii=False, indent=2))
@@ -244,5 +305,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-
-# Trigger de ejecución de la rama de investigación.
