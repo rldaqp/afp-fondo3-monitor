@@ -6,6 +6,7 @@ on:
       - research-qqq-ridge-residual-20260818
     paths:
       - "scripts/analyze_profuturo_qqq_stability.py"
+      - "scripts/analyze_profuturo_qqq_robustness.py"
       - ".github/workflows/analyze-profuturo-qqq-stability.yml"
   workflow_dispatch:
 
@@ -37,13 +38,16 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Ejecutar diagnóstico
+      - name: Ejecutar diagnóstico de estabilidad
         run: python scripts/analyze_profuturo_qqq_stability.py
 
-      - name: Guardar resultado en rama de investigación
+      - name: Ejecutar revisión de robustez
+        run: python scripts/analyze_profuturo_qqq_robustness.py
+
+      - name: Guardar resultados en rama de investigación
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add analysis/qqq_ridge_residualized_profuturo.json
-          git commit -m "Guardar diagnóstico Ridge y QQQ residualizado" || exit 0
+          git add analysis/qqq_ridge_residualized_profuturo.json analysis/qqq_robustness_profuturo.json analysis/qqq_robustness_paired_predictions.csv
+          git commit -m "Guardar robustez y estabilidad de QQQ incremental" || exit 0
           git push origin HEAD:research-qqq-ridge-residual-20260818
