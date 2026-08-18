@@ -1,11 +1,11 @@
 {
-  "generated_at_lima": "2026-08-18T16:15:14.395355-05:00",
+  "generated_at_lima": "2026-08-18T16:21:54.529051-05:00",
   "mode": "CIERRE DIARIO",
   "market_open": false,
   "signal_date": "2026-08-18",
-  "vc_estimated": 71.33256141983418,
-  "return_estimated": 0.00666936900845717,
-  "signal": "SUBE",
+  "vc_estimated": 70.2845804404232,
+  "return_estimated": -0.01486278124677588,
+  "signal": "BAJA",
   "assets": [
     {
       "serie": "SPY",
@@ -75,19 +75,21 @@
     },
     {
       "serie": "USD_PEN",
-      "ticker": "BCRP PD04646PD",
+      "ticker": "PEN=X",
       "timestamp": "2026-08-17",
-      "precio_anterior": 3.359,
-      "precio_actual": 3.359,
-      "retorno": 0.0,
-      "retorno_modelo": 0.0,
-      "estado": "BCRP REZAGADO · MODELO USA 0 %",
+      "precio_anterior": null,
+      "precio_actual": null,
+      "retorno": 0.019847200723526637,
+      "retorno_modelo": 0.019847200723526637,
+      "estado": "YAHOO PEN=X · PROVISIONAL · USADO POR MODELO",
       "usado_modelo": true
     }
   ],
   "action": "CIERRE",
   "engine": "LIVE INDEPENDIENTE",
   "fx_rule": "Histórico/entrenamiento: BCRP. Predicción: BCRP si existe; si está rezagado, Yahoo PEN=X provisional; 0 % solo si ambas fuentes faltan.",
-  "fx_source": "BCRP",
-  "fx_provisional": false
+  "fx_source": "YAHOO PEN=X PROVISIONAL",
+  "fx_provisional": true,
+  "model_snapshot_source": "PREDICCION OLS EXACTA DEL CIERRE",
+  "model_snapshot_date": "2026-08-18"
 }
