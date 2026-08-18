@@ -105,7 +105,11 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/rolling90/sbs_habitat_f3.csv data/rolling90/sbs_habitat_f3_daily.csv public/habitat
+          # El pipeline también repara/actualiza markets.csv. Antes quedaba sin
+          # stage y hacía fallar `git pull --rebase` aunque el OLS ya estuviera bien.
+          # Como el runner parte de un checkout limpio, guardamos todos los cambios
+          # generados dentro de data/rolling90 y public/habitat.
+          git add data/rolling90 public/habitat
           if git diff --cached --quiet; then
             echo "No hay cambios de Hábitat para confirmar."
           else
