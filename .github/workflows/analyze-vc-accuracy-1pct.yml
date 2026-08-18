@@ -1,0 +1,40 @@
+name: Analizar precisión VC señal 1 por ciento
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - migracion-github-actions
+    paths:
+      - "scripts/analyze_vc_accuracy_1pct.py"
+      - ".github/workflows/analyze-vc-accuracy-1pct.yml"
+      - "public/data/signals.json"
+
+permissions:
+  contents: write
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: migracion-github-actions
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Calcular precisión del VC para señales de al menos 1 por ciento
+        run: python scripts/analyze_vc_accuracy_1pct.py
+      - name: Guardar resultado
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/rolling90/vc_accuracy_1pct.json
+          if git diff --cached --quiet; then
+            echo "Sin cambios"
+          else
+            git commit -m "Actualizar precisión VC para señal 1 por ciento"
+            git pull --rebase origin migracion-github-actions
+            git push origin HEAD:migracion-github-actions
+          fi
