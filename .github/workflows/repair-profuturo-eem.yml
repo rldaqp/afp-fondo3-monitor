@@ -1,0 +1,125 @@
+name: Reparar Profuturo EEM y recalcular
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - migracion-github-actions
+    paths:
+      - ".github/workflows/repair-profuturo-eem.yml"
+      - "scripts/repair_recent_yahoo_daily_gaps.py"
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: profuturo-rolling90-model
+  cancel-in-progress: true
+
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Descargar repositorio
+        uses: actions/checkout@v4
+        with:
+          ref: migracion-github-actions
+          fetch-depth: 0
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Instalar dependencias
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Reparar huecos Yahoo y recalcular Profuturo
+        env:
+          PYTHONUTF8: "1"
+          PYTHONIOENCODING: "utf-8"
+        run: |
+          python scripts/repair_recent_yahoo_daily_gaps.py
+          python scripts/apply_sbs_reference_corrections.py
+          python scripts/finalize_fx_hybrid.py
+          python scripts/complete_profuturo_signal_calendar.py
+          python scripts/build_model_insights.py
+          python scripts/build_vc_accuracy_1pct.py
+          python scripts/build_operation_series.py
+          python scripts/postprocess_mobile_ui_v3.py
+          if grep -q "model_insights.json" public/index.html && grep -q "Confianza y calidad del modelo" public/index.html; then
+            echo "Panel de indicadores ya integrado."
+          else
+            python scripts/postprocess_model_insights_ui.py
+          fi
+          python scripts/postprocess_mobile_ui_v4.py
+          python scripts/postprocess_fx_hybrid_ui.py
+          python scripts/postprocess_trade_history.py
+          python scripts/postprocess_trade_cloud_sync.py
+          python scripts/postprocess_trade_notebook_basis.py
+          python scripts/postprocess_live_consistency.py
+          python scripts/postprocess_trade_runtime_fixes.py profuturo
+          python scripts/postprocess_investment_signal_1pct.py
+
+      - name: Validar cierre 17 agosto y OLS
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          import pandas as pd
+
+          markets = pd.read_csv('data/rolling90/markets.csv')
+          markets['fecha'] = pd.to_datetime(markets['fecha'], errors='coerce')
+          row = markets.loc[markets['fecha'].eq(pd.Timestamp('2026-08-17'))]
+          assert not row.empty, 'Falta fila 2026-08-17 en markets.csv'
+          assert pd.notna(row.iloc[-1]['EEM']), 'EEM sigue vacío el 2026-08-17'
+
+          pending = pd.read_csv('data/rolling90/pending_predictions.csv')
+          pending['fecha'] = pd.to_datetime(pending['fecha'], errors='coerce')
+          assert pd.Timestamp('2026-08-17') in set(pending['fecha'].dropna()), 'OLS no generó 2026-08-17'
+
+          latest = json.loads(Path('public/data/latest.json').read_text(encoding='utf-8'))
+          assert latest['latest_market_date'] == '2026-08-17', latest
+          assert latest['latest_estimate_date'] == '2026-08-17', latest
+          print('VALIDADO: Profuturo usa cierre completo 2026-08-17')
+          PY
+
+      - name: Guardar resultados Profuturo
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/rolling90 public/index.html public/data
+          git reset public/data/live_market.json || true
+          if git diff --cached --quiet; then
+            echo "No hay cambios para confirmar."
+          else
+            git commit -m "Reparar EEM 17 agosto y recalcular Profuturo"
+            git pull --rebase origin migracion-github-actions
+            git push origin HEAD:migracion-github-actions
+          fi
+
+      - name: Actualizar rama antes de publicar
+        run: |
+          git fetch origin migracion-github-actions
+          git reset --hard origin/migracion-github-actions
+
+      - name: Configurar GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Subir visor
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: public
+
+      - name: Publicar visor
+        id: deployment
+        uses: actions/deploy-pages@v4
