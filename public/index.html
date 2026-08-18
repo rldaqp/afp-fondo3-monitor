@@ -41,6 +41,12 @@ h1{font-size:1.45rem;margin:5px 0}.sub,.note{color:var(--muted);font-size:.82rem
 .challenger-kicker{font-size:.68rem;color:#94a3b8;font-weight:800;text-transform:uppercase;letter-spacing:.04em}.challenger-value{font-size:1.05rem;font-weight:900;margin-top:3px}.challenger-sub{font-size:.7rem;color:#cbd5e1;text-align:right;line-height:1.35;max-width:58%}.challenger-warn{color:#fbbf24}.challenger-ok{color:#4ade80}.challenger-diff{color:#f59e0b}
 @media(max-width:700px){.challenger-box{display:block}.challenger-sub{text-align:left;max-width:none;margin-top:5px}}
 </style>
+<!-- SPY_QQQ_CHALLENGER_CSS START -->
+<style id="spyQqqChallengerStyles">
+.spyqqq-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:10px}.spyqqq-title{font-size:.96rem;font-weight:850}.spyqqq-kicker{font-size:.68rem;color:#94a3b8;margin-top:2px}.spyqqq-badge{padding:5px 10px;border-radius:999px;font-size:.72rem;font-weight:900;border:1px solid #475569;white-space:nowrap}.spyqqq-mixed{color:#fbbf24}.spyqqq-qqq{color:#38bdf8}.spyqqq-spy{color:#4ade80}.spyqqq-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:9px}.spyqqq-card{background:#0b1728;border:1px solid #243244;border-radius:11px;padding:10px}.spyqqq-card b{font-size:.82rem}.spyqqq-big{font-size:1.05rem;font-weight:900;margin-top:4px}.spyqqq-sub{font-size:.68rem;color:#94a3b8;margin-top:3px;line-height:1.35}.spyqqq-table{width:100%;border-collapse:collapse;font-size:.72rem;margin-top:8px}.spyqqq-table th,.spyqqq-table td{padding:7px 5px;border-top:1px solid #243244;text-align:right}.spyqqq-table th:first-child,.spyqqq-table td:first-child{text-align:left}.spyqqq-win{font-weight:850;color:#e2e8f0}.spyqqq-note{font-size:.68rem;color:#94a3b8;line-height:1.4;margin-top:8px}
+@media(max-width:700px){.spyqqq-head{display:block}.spyqqq-badge{display:inline-block;margin-top:7px}.spyqqq-grid{grid-template-columns:1fr 1fr}.spyqqq-table{font-size:.68rem}.spyqqq-table th,.spyqqq-table td{padding:6px 3px}}
+</style>
+<!-- SPY_QQQ_CHALLENGER_CSS END -->
 </head><body><main class="wrap">
 <h1>Profuturo Fondo 3</h1><div class="sub">GitHub Actions · OLS Rolling 90 · umbral ±0.10% · datos independientes del notebook</div><div id="error"></div>
 <section class="grid"><div class="card"><div class="label">Último VC SBS</div><div class="value" id="sbsVc">—</div><div class="sub" id="sbsDate">—</div></div>
@@ -48,6 +54,22 @@ h1{font-size:1.45rem;margin:5px 0}.sub,.note{color:var(--muted);font-size:.82rem
 <div class="card"><div class="label">Señal</div><div class="value signal" id="signal">—</div><div class="sub" id="ret">—</div></div>
 <div class="card"><div class="label">Ventana vigente</div><div class="value">90</div><div class="sub" id="window">—</div></div></section><div id="monitorHelp" class="monitor-help"><b>Retorno estimado del VC:</b> variación diaria estimada por el OLS. Cada punto se dibuja desde el eje 0. Durante mercado abierto es provisional; al cierre usa cierres diarios.</div>
 
+<!-- SPY_QQQ_CHALLENGER_PANEL START -->
+<section class="panel" id="spyQqqChallengerPanel">
+  <div class="spyqqq-head">
+    <div><div class="spyqqq-title">Mercado USA · SPY vs Nasdaq QQQ</div><div class="spyqqq-kicker">Challenger diario · no modifica la señal oficial OLS</div></div>
+    <div id="spyQqqDominance" class="spyqqq-badge">Cargando…</div>
+  </div>
+  <div class="spyqqq-grid">
+    <div class="spyqqq-card"><b>SPY · modelo actual</b><div class="spyqqq-big" id="spyQqqSpy90">—</div><div class="spyqqq-sub" id="spyQqqSpySub">Últimas 90 predicciones</div></div>
+    <div class="spyqqq-card"><b>Nasdaq QQQ · challenger</b><div class="spyqqq-big" id="spyQqqQqq90">—</div><div class="spyqqq-sub" id="spyQqqQqqSub">Últimas 90 predicciones</div></div>
+  </div>
+  <details><summary>Ver comparación 30 / 60 / 90 / 180 / histórico</summary>
+    <div style="overflow-x:auto"><table class="spyqqq-table"><thead><tr><th>Ventana</th><th>SPY acierto</th><th>QQQ acierto</th><th>SPY MAE</th><th>QQQ MAE</th><th>Mejor</th></tr></thead><tbody id="spyQqqRows"></tbody></table></div>
+  </details>
+  <div class="spyqqq-note" id="spyQqqNote">El modelo oficial sigue usando SPY. Este panel observa si Nasdaq QQQ muestra una ventaja estable antes de considerar cualquier cambio.</div>
+</section>
+<!-- SPY_QQQ_CHALLENGER_PANEL END -->
 <section class="panel" id="modelInsightsPanel">
   <div class="insight-head"><div class="insight-title">Confianza y calidad del modelo</div><div id="qualityBadge" class="insight-badge">Cargando…</div></div>
   <div class="insight-grid">
@@ -585,4 +607,38 @@ Promise.all([fetch('data/latest.json?ts='+Date.now(),{cache:'no-store'}).then(r=
 })();
 </script>
 <!-- TRADE_CLOUD_V1_END -->
+<!-- SPY_QQQ_CHALLENGER_SCRIPT START -->
+<script id="spyQqqChallengerScript">
+(function(){
+  'use strict';
+  const pct=x=>x==null?'—':(Number(x)*100).toFixed(1)+'%';
+  const mae=x=>x==null?'—':(Number(x)*100).toFixed(3)+'%';
+  const labels={'30':'30','60':'60','90':'90','180':'180','ALL':'Histórico'};
+  function dominance(w){
+    const core=['60','90','180','ALL'];let qm=0,sm=0,qd=0,sd=0;
+    core.forEach(k=>{const r=w[k];if(!r)return;if(r.winner_mae==='QQQ')qm++;else if(r.winner_mae==='SPY')sm++;if(r.winner_direction==='QQQ')qd++;else if(r.winner_direction==='SPY')sd++;});
+    if(qm>=3&&qd>=2)return {label:'NASDAQ QQQ DOMINANTE',cls:'spyqqq-qqq'};
+    if(sm>=3&&sd>=2)return {label:'SPY DOMINANTE',cls:'spyqqq-spy'};
+    return {label:'MERCADO USA · MIXTO',cls:'spyqqq-mixed'};
+  }
+  function better(r){
+    if(!r)return '—';
+    const ma=r.winner_mae,di=r.winner_direction;
+    if(di==='EMPATE')return ma==='QQQ'?'QQQ ≈ SPY':'SPY ≈ QQQ';
+    if(ma===di)return ma;
+    return 'MIXTO';
+  }
+  fetch('data/spy_qqq_challenger.json?ts='+Date.now(),{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.json()}).then(d=>{
+    const w=d.windows||{},d90=w['90'];if(!d90)throw new Error('Sin ventana 90');
+    const dom=dominance(w),badge=document.getElementById('spyQqqDominance');badge.textContent=dom.label;badge.className='spyqqq-badge '+dom.cls;
+    document.getElementById('spyQqqSpy90').textContent=pct(d90.SPY.direction_accuracy)+' acierto';
+    document.getElementById('spyQqqQqq90').textContent=pct(d90.QQQ.direction_accuracy)+' acierto';
+    document.getElementById('spyQqqSpySub').textContent='MAE '+mae(d90.SPY.mae)+' · rolling 90';
+    document.getElementById('spyQqqQqqSub').textContent='MAE '+mae(d90.QQQ.mae)+' · rolling 90';
+    document.getElementById('spyQqqRows').innerHTML=['30','60','90','180','ALL'].map(k=>{const r=w[k];if(!r)return '';const b=better(r);return `<tr><td>${labels[k]}</td><td>${pct(r.SPY.direction_accuracy)}</td><td>${pct(r.QQQ.direction_accuracy)}</td><td>${mae(r.SPY.mae)}</td><td>${mae(r.QQQ.mae)}</td><td class="spyqqq-win">${b}</td></tr>`}).join('');
+    const last=d.last_prediction||'—';document.getElementById('spyQqqNote').textContent=`Último VC SBS evaluado: ${last}. La señal oficial continúa con SPY; QQQ solo actúa como challenger hasta demostrar una ventaja estable en varias ventanas.`;
+  }).catch(e=>{const b=document.getElementById('spyQqqDominance');if(b){b.textContent='CHALLENGER NO DISPONIBLE';b.className='spyqqq-badge spyqqq-mixed'}const n=document.getElementById('spyQqqNote');if(n)n.textContent='No se pudo cargar el contraste SPY/QQQ: '+e.message;});
+})();
+</script>
+<!-- SPY_QQQ_CHALLENGER_SCRIPT END -->
 </body></html>
