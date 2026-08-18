@@ -1,0 +1,123 @@
+{
+  "generated_at_utc": "2026-08-18T00:51:54.199062+00:00",
+  "nasdaq_proxy": "QQQ (Nasdaq-100 ETF, Yahoo Finance Close, auto_adjust=False)",
+  "method": "Comparación justa con las mismas fechas completas: OLS rolling 90. Se evalúan cuatro variantes: sin SPY/QQQ, SPY, QQQ y ambos. Criterio principal: MAE fuera de muestra; también se reportan acierto direccional, correlaciones y beta estandarizado reciente.",
+  "results": {
+    "PROFUTURO": {
+      "fund": "PROFUTURO",
+      "common_complete_rows": 384,
+      "first_date": "2025-01-03",
+      "last_date": "2026-08-13",
+      "spy_qqq_return_corr": 0.9517350481436648,
+      "target_corr_full": {
+        "SPY": 0.5613461637017562,
+        "QQQ": 0.6360707167413474
+      },
+      "target_corr_recent_90": {
+        "SPY": 0.7810547093733754,
+        "QQQ": 0.8266819550648236
+      },
+      "standardized_beta_both_recent_90": {
+        "spy": -0.16456141327621454,
+        "qqq": 0.33026632482528184,
+        "abs_spy": 0.16456141327621454,
+        "abs_qqq": 0.33026632482528184
+      },
+      "rolling_90": {
+        "NEITHER": {
+          "n_predictions": 294,
+          "mae": 0.00280148110538804,
+          "rmse": 0.0037621028702093107,
+          "direction_accuracy": 0.782312925170068,
+          "pred_actual_corr": 0.9502352472778004
+        },
+        "SPY": {
+          "n_predictions": 294,
+          "mae": 0.002731326474543465,
+          "rmse": 0.0037477092397691417,
+          "direction_accuracy": 0.782312925170068,
+          "pred_actual_corr": 0.9508454764721286,
+          "mae_improvement_vs_neither": 0.02504197894094229
+        },
+        "QQQ": {
+          "n_predictions": 294,
+          "mae": 0.0026749219487001963,
+          "rmse": 0.0036669667473943047,
+          "direction_accuracy": 0.7993197278911565,
+          "pred_actual_corr": 0.9529537630394895,
+          "mae_improvement_vs_neither": 0.04517580234413676
+        },
+        "BOTH": {
+          "n_predictions": 294,
+          "mae": 0.0026288125462563283,
+          "rmse": 0.0036380224984494704,
+          "direction_accuracy": 0.8095238095238095,
+          "pred_actual_corr": 0.9535460390323987,
+          "mae_improvement_vs_neither": 0.06163473985229506
+        }
+      },
+      "winner_by_mae": "BOTH",
+      "qqq_mae_advantage_vs_spy": 0.020650964419292452
+    },
+    "HABITAT": {
+      "fund": "HABITAT",
+      "common_complete_rows": 384,
+      "first_date": "2025-01-03",
+      "last_date": "2026-08-13",
+      "spy_qqq_return_corr": 0.9517350481436648,
+      "target_corr_full": {
+        "SPY": 0.6485545302164607,
+        "QQQ": 0.7134940523343332
+      },
+      "target_corr_recent_90": {
+        "SPY": 0.7973362864810933,
+        "QQQ": 0.8406056708022459
+      },
+      "standardized_beta_both_recent_90": {
+        "spy": -0.10562648911949246,
+        "qqq": 0.29253955055491204,
+        "abs_spy": 0.10562648911949246,
+        "abs_qqq": 0.29253955055491204
+      },
+      "rolling_90": {
+        "NEITHER": {
+          "n_predictions": 294,
+          "mae": 0.002722448164257045,
+          "rmse": 0.0036108213645459253,
+          "direction_accuracy": 0.7448979591836735,
+          "pred_actual_corr": 0.931366121415139
+        },
+        "SPY": {
+          "n_predictions": 294,
+          "mae": 0.0026093905490103303,
+          "rmse": 0.0034890070974156304,
+          "direction_accuracy": 0.7551020408163265,
+          "pred_actual_corr": 0.9370507660922281,
+          "mae_improvement_vs_neither": 0.041527922085366265
+        },
+        "QQQ": {
+          "n_predictions": 294,
+          "mae": 0.002515411895934553,
+          "rmse": 0.003413036667912031,
+          "direction_accuracy": 0.7687074829931972,
+          "pred_actual_corr": 0.9395234106887287,
+          "mae_improvement_vs_neither": 0.0760478274814067
+        },
+        "BOTH": {
+          "n_predictions": 294,
+          "mae": 0.0025251847747949628,
+          "rmse": 0.003431457966336318,
+          "direction_accuracy": 0.7687074829931972,
+          "pred_actual_corr": 0.9387057981022517,
+          "mae_improvement_vs_neither": 0.07245808829418632
+        }
+      },
+      "winner_by_mae": "QQQ",
+      "qqq_mae_advantage_vs_spy": 0.036015556625442965
+    }
+  },
+  "recommendation": {
+    "action": "REPLACE_SPY_WITH_QQQ",
+    "summary": "QQQ aporta menor MAE rolling 90 que SPY en ambos fondos; conviene usar Nasdaq-100 como factor principal de mercado USA."
+  }
+}
