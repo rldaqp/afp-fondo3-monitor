@@ -9,6 +9,7 @@ on:
       - ".github/workflows/update-live-market.yml"
       - "scripts/update_live_market_only.py"
       - "scripts/update_live_market_hybrid.py"
+      - "scripts/build_qqq_incremental_challenger.py"
       - "scripts/update_habitat_live_market.py"
       - "scripts/postprocess_live_consistency.py"
       - "requirements-live.txt"
@@ -154,17 +155,23 @@ jobs:
           print("Profuturo cierre coherente:", signal_date, live.get("signal"), live.get("return_estimated"), source)
           PY
 
+          python scripts/build_qqq_incremental_challenger.py --live-only
+
           python - <<'PY'
           import json
           from pathlib import Path
 
           prof = json.loads(Path("public/data/live_market.json").read_text(encoding="utf-8"))
+          qqq = json.loads(Path("public/data/qqq_incremental_challenger.json").read_text(encoding="utf-8"))
           hab = json.loads(Path("public/habitat/data/live_market.json").read_text(encoding="utf-8"))
           prof_latest = json.loads(Path("public/data/latest.json").read_text(encoding="utf-8"))
           hab_latest = json.loads(Path("public/habitat/data/latest.json").read_text(encoding="utf-8"))
 
           assert prof.get("engine") == "LIVE INDEPENDIENTE", prof
           assert "HABITAT" in str(hab.get("engine", "")).upper(), hab
+          assert qqq.get("signal_date") == prof.get("signal_date"), (qqq, prof)
+          assert qqq.get("challenger", {}).get("signal") in {"SUBE", "NEUTRO", "BAJA"}, qqq
+          assert float(qqq.get("challenger", {}).get("vc_estimated")) > 0, qqq
 
           for name, live, latest in (
               ("Profuturo", prof, prof_latest),
@@ -196,10 +203,11 @@ jobs:
               assert hab.get("signal_date") == prof.get("signal_date"), (prof, hab, hab_latest)
 
           print("Profuturo", prof.get("generated_at_lima"), prof.get("mode"), prof.get("signal"))
+          print("QQQ incremental", qqq.get("challenger"))
           print("Habitat", hab.get("generated_at_lima"), hab.get("mode"), hab.get("signal"))
           PY
 
-          git add public/data/live_market.json public/habitat/data/live_market.json public/habitat/data/latest.json public/habitat/data/signals.json public/habitat/data/series.json public/habitat/data/operation_series.json public/habitat/data/model_insights.json
+          git add public/data/live_market.json public/data/qqq_incremental_challenger.json data/rolling90/qqq_incremental_shadow.csv public/habitat/data/live_market.json public/habitat/data/latest.json public/habitat/data/signals.json public/habitat/data/series.json public/habitat/data/operation_series.json public/habitat/data/model_insights.json
           if git diff --cached --quiet; then
             echo "No hubo cambios en el snapshot."
           else
@@ -214,6 +222,7 @@ jobs:
           git clone --depth 1 --branch gh-pages "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" "$tmp/gh-pages"
           mkdir -p "$tmp/gh-pages/data" "$tmp/gh-pages/habitat/data"
           cp public/data/live_market.json "$tmp/gh-pages/data/live_market.json"
+          cp public/data/qqq_incremental_challenger.json "$tmp/gh-pages/data/qqq_incremental_challenger.json"
           cp public/habitat/data/live_market.json "$tmp/gh-pages/habitat/data/live_market.json"
           cp public/habitat/data/latest.json "$tmp/gh-pages/habitat/data/latest.json"
           cp public/habitat/data/signals.json "$tmp/gh-pages/habitat/data/signals.json"
@@ -223,7 +232,7 @@ jobs:
           cd "$tmp/gh-pages"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/live_market.json habitat/data/live_market.json
+          git add data/live_market.json data/qqq_incremental_challenger.json habitat/data/live_market.json
           if git diff --cached --quiet; then
             echo "gh-pages ya tiene los snapshots intradia vigentes."
           else
