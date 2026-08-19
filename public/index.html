@@ -41,6 +41,8 @@ h1{font-size:1.45rem;margin:5px 0}.sub,.note{color:var(--muted);font-size:.82rem
 </style>
 <!-- INVESTMENT_SIGNAL_1PCT_CSS END -->
 
+
+
 <!-- QQQ_INCREMENTAL_CHALLENGER_UI_V1 START -->
 <style id="qqqIncrementalStyles">
 .qqqi-panel{border-color:#334155}.qqqi-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;margin-bottom:10px}.qqqi-title{font-size:.98rem;font-weight:900}.qqqi-kicker{font-size:.7rem;color:#94a3b8;margin-top:3px;line-height:1.35}.qqqi-badge{padding:5px 9px;border:1px solid #475569;border-radius:999px;font-size:.7rem;font-weight:900;white-space:nowrap}.qqqi-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}.qqqi-card{background:#0b1728;border:1px solid #243244;border-radius:12px;padding:11px}.qqqi-label{font-size:.72rem;color:#94a3b8;font-weight:800}.qqqi-signal{font-size:1.15rem;font-weight:950;margin-top:5px}.qqqi-vc{font-size:1.18rem;font-weight:950;margin-top:4px}.qqqi-ret{font-size:.76rem;color:#cbd5e1;margin-top:3px}.qqqi-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:9px}.qqqi-mini{background:#101d31;border:1px solid #243244;border-radius:9px;padding:8px}.qqqi-mini span{display:block;color:#94a3b8;font-size:.65rem}.qqqi-mini b{display:block;margin-top:3px;font-size:.8rem}.qqqi-note{font-size:.68rem;color:#94a3b8;line-height:1.4;margin-top:8px}.qqqi-details{margin-top:8px}.qqqi-details summary{cursor:pointer;color:#cbd5e1;font-size:.72rem;font-weight:800}.qqqi-table{width:100%;border-collapse:collapse;font-size:.69rem;margin-top:7px}.qqqi-table th,.qqqi-table td{padding:6px 4px;border-top:1px solid #243244;text-align:right}.qqqi-table th:first-child,.qqqi-table td:first-child{text-align:left}
@@ -54,6 +56,8 @@ h1{font-size:1.45rem;margin:5px 0}.sub,.note{color:var(--muted);font-size:.82rem
 <div class="card"><div class="label">VC más reciente</div><div class="value" id="estVc">—</div><div class="sub" id="estDate">—</div></div>
 <div class="card"><div class="label">Señal</div><div class="value signal" id="signal">—</div><div class="sub" id="ret">—</div><div id="vcPrecisionCompact" class="vc-precision-compact"></div></div>
 <div class="card"><div class="label">Ventana vigente</div><div class="value">90</div><div class="sub" id="window">—</div></div></section><div id="monitorHelp" class="monitor-help"><b>Retorno estimado del VC:</b> variación diaria estimada por el OLS. Cada punto se dibuja desde el eje 0. Durante mercado abierto es provisional; al cierre usa cierres diarios.</div>
+
+
 
 
 
@@ -631,6 +635,8 @@ Promise.all([fetch('data/latest.json?ts='+Date.now(),{cache:'no-store'}).then(r=
 })();
 </script>
 <!-- INVESTMENT_SIGNAL_1PCT_SCRIPT END -->
+
+
 
 <!-- QQQ_INCREMENTAL_CHALLENGER_SCRIPT_V1 START -->
 <script id="qqqIncrementalScript">
