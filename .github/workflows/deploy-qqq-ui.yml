@@ -1,0 +1,74 @@
+name: Desplegar visor QQQ incremental
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - migracion-github-actions
+    paths:
+      - ".github/workflows/deploy-qqq-ui.yml"
+      - "scripts/postprocess_qqq_incremental_ui.py"
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: deploy-qqq-ui
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Descargar repositorio
+        uses: actions/checkout@v4
+        with:
+          ref: migracion-github-actions
+          fetch-depth: 0
+
+      - name: Aplicar únicamente la UI QQQ incremental
+        run: |
+          python scripts/postprocess_qqq_incremental_ui.py
+          grep -q "Comparación de VC estimado" public/index.html
+          grep -q "QQQ INCREMENTAL · CHALLENGER" public/index.html
+          ! grep -q "Mercado USA · SPY vs Nasdaq QQQ" public/index.html
+          ! grep -q "Challenger Huber · paralelo" public/index.html
+          ! grep -q 'id="huberChallengerBox"' public/index.html
+
+      - name: Guardar HTML limpio
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/index.html
+          if git diff --cached --quiet; then
+            echo "El HTML ya estaba limpio."
+          else
+            git commit -m "Publicar visor con QQQ incremental como único challenger"
+            if ! git push origin HEAD:migracion-github-actions; then
+              git fetch origin migracion-github-actions
+              git rebase origin/migracion-github-actions
+              git push origin HEAD:migracion-github-actions
+            fi
+          fi
+
+      - name: Actualizar rama antes de publicar
+        run: |
+          git fetch origin migracion-github-actions
+          git reset --hard origin/migracion-github-actions
+
+      - name: Configurar GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Subir visor
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: public
+
+      - name: Publicar visor
+        id: deployment
+        uses: actions/deploy-pages@v4
