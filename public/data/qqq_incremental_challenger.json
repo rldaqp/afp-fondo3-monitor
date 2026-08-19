@@ -1,5 +1,5 @@
 {
-  "generated_at_lima": "2026-08-18T19:37:56.474514-05:00",
+  "generated_at_lima": "2026-08-18T21:13:11.154019-05:00",
   "signal_date": "2026-08-18",
   "mode": "CIERRE DIARIO",
   "market_open": false,
@@ -13,13 +13,13 @@
   },
   "challenger": {
     "model": "OLS rolling 90 + QQQ incremental residualizado",
-    "return_estimated": -0.022345235130259215,
+    "return_estimated": -0.02234523513025923,
     "signal": "BAJA",
     "vc_estimated": 69.75074502962529
   },
   "qqq": {
     "return": -0.01693450262957852,
-    "residual": 0.0007005022192346777,
+    "residual": 0.0007005022192346881,
     "previous_close": 729.8699951171875,
     "current_price": 717.510009765625,
     "source": "CIERRE DIARIO YAHOO",
@@ -36,7 +36,7 @@
   "comparison": {
     "same_signal": true,
     "vc_difference": 0.01825407791385203,
-    "return_difference_pp": 0.02558565681728825
+    "return_difference_pp": 0.02558565681728686
   },
   "training": {
     "window": 90,
@@ -44,14 +44,14 @@
     "start": "2026-03-25",
     "end": "2026-08-14",
     "qqq_residualizer": {
-      "intercept": -4.75353494686619e-05,
-      "ret_SPY": 0.9583579182874884,
-      "ret_NEM": 0.002226157570225762,
-      "ret_FCX": 0.039238740920814474,
-      "ret_EPU": -0.11430567185128065,
-      "ret_MCHI": -0.10510148724678317,
-      "ret_EEM": 0.4171291889457231,
-      "ret_USD_PEN": 0.09293434347039344
+      "intercept": -4.753534946866159e-05,
+      "ret_SPY": 0.9583579182874874,
+      "ret_NEM": 0.0022261575702257515,
+      "ret_FCX": 0.03923874092081472,
+      "ret_EPU": -0.11430567185128047,
+      "ret_MCHI": -0.10510148724678343,
+      "ret_EEM": 0.4171291889457233,
+      "ret_USD_PEN": 0.09293434347039364
     }
   },
   "performance_backtest": {
@@ -62,9 +62,9 @@
     "windows": {
       "30": {
         "n": 30,
-        "official_mae": 0.004931551403824498,
+        "official_mae": 0.0049315514038244974,
         "challenger_mae": 0.004771931934736038,
-        "mae_improvement_pct": 3.2366988806944814,
+        "mae_improvement_pct": 3.236698880694464,
         "official_direction_accuracy": 0.7666666666666667,
         "challenger_direction_accuracy": 0.7666666666666667,
         "direction_delta_pp": 0.0,
@@ -75,8 +75,8 @@
       "60": {
         "n": 60,
         "official_mae": 0.004257144231718892,
-        "challenger_mae": 0.004093031322469018,
-        "mae_improvement_pct": 3.854999979261003,
+        "challenger_mae": 0.0040930313224690216,
+        "mae_improvement_pct": 3.8549999792609215,
         "official_direction_accuracy": 0.7833333333333333,
         "challenger_direction_accuracy": 0.8166666666666667,
         "direction_delta_pp": 3.3333333333333326,
@@ -86,9 +86,9 @@
       },
       "90": {
         "n": 90,
-        "official_mae": 0.0036377079244793308,
-        "challenger_mae": 0.003542559472648956,
-        "mae_improvement_pct": 2.6156154866114947,
+        "official_mae": 0.003637707924479331,
+        "challenger_mae": 0.003542559472648957,
+        "mae_improvement_pct": 2.6156154866114707,
         "official_direction_accuracy": 0.8111111111111111,
         "challenger_direction_accuracy": 0.8444444444444444,
         "direction_delta_pp": 3.3333333333333326,
@@ -98,9 +98,9 @@
       },
       "180": {
         "n": 180,
-        "official_mae": 0.003131912086148184,
-        "challenger_mae": 0.003025332352982391,
-        "mae_improvement_pct": 3.40302442195531,
+        "official_mae": 0.0031319120861481834,
+        "challenger_mae": 0.003025332352982393,
+        "mae_improvement_pct": 3.4030244219552404,
         "official_direction_accuracy": 0.8333333333333334,
         "challenger_direction_accuracy": 0.8611111111111112,
         "direction_delta_pp": 2.777777777777779,
@@ -110,9 +110,9 @@
       },
       "ALL": {
         "n": 294,
-        "official_mae": 0.002711191543439929,
-        "challenger_mae": 0.002615217817271813,
-        "mae_improvement_pct": 3.5399094689689594,
+        "official_mae": 0.0027111915434399284,
+        "challenger_mae": 0.002615217817271814,
+        "mae_improvement_pct": 3.539909468968912,
         "official_direction_accuracy": 0.782312925170068,
         "challenger_direction_accuracy": 0.8095238095238095,
         "direction_delta_pp": 2.7210884353741527,
