@@ -1,29 +1,29 @@
 {
-  "generated_at_lima": "2026-08-19T08:12:48.058370-05:00",
-  "signal_date": "2026-08-18",
-  "mode": "CIERRE DIARIO",
-  "market_open": false,
+  "generated_at_lima": "2026-08-19T09:00:07.324489-05:00",
+  "signal_date": "2026-08-19",
+  "mode": "INTRADÍA PROVISIONAL",
+  "market_open": true,
   "fund": "HABITAT FONDO 3",
   "role": "CHALLENGER EN SOMBRA; no reemplaza el OLS oficial de Hábitat.",
-  "vc_base": 33.7479423149331,
+  "vc_base": 33.16770411017298,
   "official": {
     "model": "OLS rolling 90 oficial Hábitat",
-    "return_estimated": -0.017193291352266268,
-    "signal": "BAJA",
-    "vc_estimated": 33.16770411017298
+    "return_estimated": 0.010475715559959594,
+    "signal": "SUBE",
+    "vc_estimated": 33.515159544208046
   },
   "challenger": {
     "model": "OLS rolling 90 Hábitat + QQQ incremental residualizado",
-    "return_estimated": -0.017771827572097346,
-    "signal": "BAJA",
-    "vc_estimated": 33.14817970319902
+    "return_estimated": 0.007065631099348322,
+    "signal": "SUBE",
+    "vc_estimated": 33.402054871827794
   },
   "qqq": {
-    "return": -0.01693450262957852,
-    "residual": 0.0007041300141135895,
-    "previous_close": 729.8699951171875,
-    "current_price": 717.510009765625,
-    "source": "CIERRE DIARIO YAHOO",
+    "return": -0.0022438507193626167,
+    "residual": -0.012377867749890087,
+    "previous_close": 717.510009765625,
+    "current_price": 715.9000244140625,
+    "source": "INTRADÍA YAHOO",
     "residualized_against": [
       "ret_SPY",
       "ret_NEM",
@@ -36,8 +36,8 @@
   },
   "comparison": {
     "same_signal": true,
-    "vc_difference": -0.019524406973957298,
-    "return_difference_pp": -0.0578536219831078
+    "vc_difference": -0.11310467238025268,
+    "return_difference_pp": -0.34100844606112724
   },
   "training": {
     "window": 90,
@@ -139,7 +139,7 @@
   },
   "shadow_forward": {
     "n": 0,
-    "pending": 1,
+    "pending": 2,
     "start_date": "2026-08-18",
     "ledger": "data/rolling90/habitat_qqq_incremental_shadow.csv",
     "rule": "Solo cuenta como prueba futura cuando la SBS publique el VC real de Hábitat para la fecha guardada."
