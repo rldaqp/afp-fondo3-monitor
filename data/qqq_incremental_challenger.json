@@ -1,5 +1,5 @@
 {
-  "generated_at_lima": "2026-08-19T12:52:00.331014-05:00",
+  "generated_at_lima": "2026-08-19T13:02:04.824357-05:00",
   "signal_date": "2026-08-19",
   "mode": "INTRADÍA PROVISIONAL",
   "market_open": true,
@@ -7,21 +7,21 @@
   "vc_base": 69.81515743136731,
   "official": {
     "model": "OLS rolling 90 oficial",
-    "return_estimated": 0.017706054203507238,
+    "return_estimated": 0.019416885865535846,
     "signal": "SUBE",
-    "vc_estimated": 71.0513083930735
+    "vc_estimated": 71.17075037489658
   },
   "challenger": {
     "model": "OLS rolling 90 + QQQ incremental residualizado",
-    "return_estimated": 0.01581384900689206,
+    "return_estimated": 0.017198883391480364,
     "signal": "SUBE",
-    "vc_estimated": 70.91920378937935
+    "vc_estimated": 71.01590018298725
   },
   "qqq": {
-    "return": -0.0008501419398480037,
-    "residual": -0.004520730100083447,
+    "return": -0.0002857341180657613,
+    "residual": -0.005396635655270687,
     "previous_close": 717.510009765625,
-    "current_price": 716.9000244140625,
+    "current_price": 717.3049926757812,
     "source": "INTRADÍA YAHOO",
     "residualized_against": [
       "ret_SPY",
@@ -35,8 +35,8 @@
   },
   "comparison": {
     "same_signal": true,
-    "vc_difference": -0.13210460369414534,
-    "return_difference_pp": -0.18922051966151765
+    "vc_difference": -0.15485019190933258,
+    "return_difference_pp": -0.22180024740554827
   },
   "training": {
     "window": 90,
@@ -44,14 +44,14 @@
     "start": "2026-03-26",
     "end": "2026-08-14",
     "qqq_residualizer": {
-      "intercept": -6.566027536111674e-05,
-      "ret_SPY": 0.9601977639945573,
-      "ret_NEM": 0.0010022940657191115,
-      "ret_FCX": 0.03645968375813491,
-      "ret_EPU": -0.11306719888262257,
-      "ret_MCHI": -0.10148353014311805,
-      "ret_EEM": 0.4194356743235139,
-      "ret_USD_PEN": 0.09164109079871163
+      "intercept": -6.56602753611183e-05,
+      "ret_SPY": 0.960197763994558,
+      "ret_NEM": 0.0010022940657190694,
+      "ret_FCX": 0.036459683758134666,
+      "ret_EPU": -0.11306719888262223,
+      "ret_MCHI": -0.10148353014311785,
+      "ret_EEM": 0.4194356743235135,
+      "ret_USD_PEN": 0.0916410907987115
     }
   },
   "performance_backtest": {
