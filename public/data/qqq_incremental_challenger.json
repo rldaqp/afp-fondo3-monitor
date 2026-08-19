@@ -1,27 +1,27 @@
 {
-  "generated_at_lima": "2026-08-19T09:21:57.651043-05:00",
+  "generated_at_lima": "2026-08-19T09:49:11.123925-05:00",
   "signal_date": "2026-08-19",
   "mode": "INTRADÍA PROVISIONAL",
   "market_open": true,
   "role": "CHALLENGER EN SOMBRA; no reemplaza el OLS oficial.",
-  "vc_base": 69.73249095171144,
+  "vc_base": 69.74668487376293,
   "official": {
     "model": "OLS rolling 90 oficial",
-    "return_estimated": 0.01574599016601208,
+    "return_estimated": 0.020610167592459063,
     "signal": "SUBE",
-    "vc_estimated": 70.83049806848862
+    "vc_estimated": 71.18417573802961
   },
   "challenger": {
     "model": "OLS rolling 90 + QQQ incremental residualizado",
-    "return_estimated": 0.012380548916902722,
+    "return_estimated": 0.01788005304159625,
     "signal": "SUBE",
-    "vc_estimated": 70.59581746703658
+    "vc_estimated": 70.99375929878131
   },
   "qqq": {
-    "return": -0.005505166692129526,
-    "residual": -0.010720677576340033,
+    "return": -0.0015609470278378224,
+    "residual": -0.007983147875348436,
     "previous_close": 717.510009765625,
-    "current_price": 713.5599975585938,
+    "current_price": 716.3900146484375,
     "source": "INTRADÍA YAHOO",
     "residualized_against": [
       "ret_SPY",
@@ -35,8 +35,8 @@
   },
   "comparison": {
     "same_signal": true,
-    "vc_difference": -0.23468060145204106,
-    "return_difference_pp": -0.3365441249109358
+    "vc_difference": -0.19041643924829543,
+    "return_difference_pp": -0.2730114550862812
   },
   "training": {
     "window": 90,
