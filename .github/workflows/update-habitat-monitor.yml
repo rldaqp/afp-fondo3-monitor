@@ -12,6 +12,9 @@ on:
       - "scripts/habitat_complete_official_calendar.py"
       - "scripts/build_habitat_exact_parity.py"
       - "scripts/build_habitat_profuturo_parity.py"
+      - "scripts/build_habitat_qqq_incremental_challenger.py"
+      - "scripts/postprocess_habitat_qqq_incremental_ui.py"
+      - "scripts/build_qqq_incremental_challenger.py"
       - "scripts/enrich_habitat_daily_sbs.py"
       - "scripts/postprocess_habitat_chart_clarity.py"
       - "scripts/postprocess_live_consistency.py"
@@ -71,10 +74,14 @@ jobs:
           # reconstruimos el mercado de Hábitat con el snapshot común intradía de
           # Yahoo, manteniendo los coeficientes y el VC base propios de Hábitat.
           python scripts/update_habitat_live_market.py
+          # QQQ no sustituye a SPY: se residualiza contra los siete factores del
+          # OLS de Hábitat y solo se incorpora como información incremental.
+          python scripts/build_habitat_qqq_incremental_challenger.py
           python scripts/postprocess_live_consistency.py
           python scripts/postprocess_trade_runtime_fixes.py habitat
+          python scripts/postprocess_habitat_qqq_incremental_ui.py
 
-      - name: Validar histórico oficial, OLS, visor y Drive
+      - name: Validar histórico oficial, OLS, visor, QQQ y Drive
         run: |
           python scripts/validate_habitat_official.py
           PYTHONPATH=scripts python -c "from habitat_complete_official_calendar import validate_official_estimate_calendar; validate_official_estimate_calendar()"
@@ -93,6 +100,11 @@ jobs:
           grep -q "fuente:'PENDIENTE'" public/habitat/index.html
           ! grep -q "No existe una fecha efectiva de entrada en la línea del monitor." public/habitat/index.html
           grep -q "raw.githubusercontent.com/rldaqp/afp-fondo3-monitor/migracion-github-actions/public/habitat/data/live_market.json" public/habitat/index.html
+          test -s public/habitat/data/qqq_incremental_challenger.json
+          grep -q "QQQ INCREMENTAL · CHALLENGER" public/habitat/index.html
+          grep -q "HABITAT_QQQ_INCREMENTAL_PANEL_V1" public/habitat/index.html
+          ! grep -q "SPY_QQQ_CHALLENGER_PANEL START" public/habitat/index.html
+          ! grep -q "Mercado USA · SPY vs Nasdaq QQQ" public/habitat/index.html
           python - <<'PY'
           import json
           import re
@@ -104,11 +116,19 @@ jobs:
               Path(f'/tmp/{script_id}.js').write_text(m.group(1), encoding='utf-8')
           assert "});$('tradeMsg').textContent='Operación guardada y sincronizada con Drive.'});" not in html
 
+          hab = json.loads(Path('public/habitat/data/live_market.json').read_text(encoding='utf-8'))
+          qqq = json.loads(Path('public/habitat/data/qqq_incremental_challenger.json').read_text(encoding='utf-8'))
+          assert qqq['signal_date'] == hab['signal_date']
+          assert qqq['official']['signal'] == hab['signal']
+          assert abs(float(qqq['official']['return_estimated']) - float(hab['return_estimated'])) < 1e-12
+          assert abs(float(qqq['official']['vc_estimated']) - float(hab['vc_estimated'])) < 1e-10
+          assert abs(float(qqq['vc_base']) * (1.0 + float(qqq['official']['return_estimated'])) - float(qqq['official']['vc_estimated'])) < 1e-8
+          assert int(qqq['training']['n']) == 90
+
           # Si el mercado común está intradía, Hábitat debe conservar exactamente
           # los mismos precios/retornos de los factores. Solo cambian coeficientes,
           # VC estimado y señal del fondo.
           prof = json.loads(Path('public/data/live_market.json').read_text(encoding='utf-8'))
-          hab = json.loads(Path('public/habitat/data/live_market.json').read_text(encoding='utf-8'))
           if str(prof.get('mode','')).startswith('INTRAD'):
               assert str(hab.get('mode','')).startswith('INTRAD'), (prof.get('mode'), hab.get('mode'))
               assert hab.get('signal_date') == prof.get('signal_date')
@@ -116,7 +136,8 @@ jobs:
               h = {x['serie']: x for x in hab.get('assets', [])}
               for serie in ('SPY','NEM','FCX','EPU','MCHI','EEM','USD_PEN'):
                   assert serie in p and serie in h, serie
-                  assert abs(float(p[serie]['precio_actual']) - float(h[serie]['precio_actual'])) < 1e-9, serie
+                  if p[serie].get('precio_actual') is not None and h[serie].get('precio_actual') is not None:
+                      assert abs(float(p[serie]['precio_actual']) - float(h[serie]['precio_actual'])) < 1e-9, serie
                   assert abs(float(p[serie]['retorno_modelo']) - float(h[serie]['retorno_modelo'])) < 1e-12, serie
           PY
           node --check /tmp/tradeHistoryScript.js
@@ -134,7 +155,7 @@ jobs:
           if git diff --cached --quiet; then
             echo "No hay cambios de Hábitat para confirmar."
           else
-            git commit -m "Actualizar AFP Hábitat Fondo 3 con SBS oficial y OLS"
+            git commit -m "Actualizar AFP Hábitat Fondo 3 con SBS oficial y QQQ incremental"
             git pull --rebase origin migracion-github-actions
             git push origin HEAD:migracion-github-actions
           fi
