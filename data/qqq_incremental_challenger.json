@@ -1,5 +1,5 @@
 {
-  "generated_at_lima": "2026-08-19T12:00:22.605465-05:00",
+  "generated_at_lima": "2026-08-19T12:27:35.304885-05:00",
   "signal_date": "2026-08-19",
   "mode": "INTRADÍA PROVISIONAL",
   "market_open": true,
@@ -7,21 +7,21 @@
   "vc_base": 69.81515743136731,
   "official": {
     "model": "OLS rolling 90 oficial",
-    "return_estimated": 0.01935201357412883,
+    "return_estimated": 0.018077475956343993,
     "signal": "SUBE",
-    "vc_estimated": 71.16622130565906
+    "vc_estimated": 71.07723926122122
   },
   "challenger": {
     "model": "OLS rolling 90 + QQQ incremental residualizado",
-    "return_estimated": 0.01703728198809874,
+    "return_estimated": 0.016051440242713724,
     "signal": "SUBE",
-    "vc_estimated": 71.00461795556903
+    "vc_estimated": 70.93579125891254
   },
   "qqq": {
-    "return": -0.0006689529932923932,
-    "residual": -0.005657202430194296,
+    "return": -0.001700368944929087,
+    "residual": -0.0059243458108877035,
     "previous_close": 717.510009765625,
-    "current_price": 717.030029296875,
+    "current_price": 716.2899780273438,
     "source": "INTRADÍA YAHOO",
     "residualized_against": [
       "ret_SPY",
@@ -35,23 +35,23 @@
   },
   "comparison": {
     "same_signal": true,
-    "vc_difference": -0.1616033500900329,
-    "return_difference_pp": -0.23147315860300893
+    "vc_difference": -0.14144800230867816,
+    "return_difference_pp": -0.20260357136302684
   },
   "training": {
     "window": 90,
     "n": 90,
-    "start": "2026-03-26",
+    "start": "2026-03-25",
     "end": "2026-08-14",
     "qqq_residualizer": {
-      "intercept": -6.566027536111674e-05,
-      "ret_SPY": 0.9601977639945573,
-      "ret_NEM": 0.0010022940657191115,
-      "ret_FCX": 0.03645968375813491,
-      "ret_EPU": -0.11306719888262257,
-      "ret_MCHI": -0.10148353014311805,
-      "ret_EEM": 0.4194356743235139,
-      "ret_USD_PEN": 0.09164109079871163
+      "intercept": -4.753534946866159e-05,
+      "ret_SPY": 0.9583579182874874,
+      "ret_NEM": 0.0022261575702257515,
+      "ret_FCX": 0.03923874092081472,
+      "ret_EPU": -0.11430567185128047,
+      "ret_MCHI": -0.10510148724678343,
+      "ret_EEM": 0.4171291889457233,
+      "ret_USD_PEN": 0.09293434347039364
     }
   },
   "performance_backtest": {
@@ -62,9 +62,9 @@
     "windows": {
       "30": {
         "n": 30,
-        "official_mae": 0.0049315514038244974,
+        "official_mae": 0.004931551403824498,
         "challenger_mae": 0.004771931934736038,
-        "mae_improvement_pct": 3.236698880694464,
+        "mae_improvement_pct": 3.2366988806944814,
         "official_direction_accuracy": 0.7666666666666667,
         "challenger_direction_accuracy": 0.7666666666666667,
         "direction_delta_pp": 0.0,
@@ -75,8 +75,8 @@
       "60": {
         "n": 60,
         "official_mae": 0.004257144231718892,
-        "challenger_mae": 0.0040930313224690216,
-        "mae_improvement_pct": 3.8549999792609215,
+        "challenger_mae": 0.004093031322469018,
+        "mae_improvement_pct": 3.854999979261003,
         "official_direction_accuracy": 0.7833333333333333,
         "challenger_direction_accuracy": 0.8166666666666667,
         "direction_delta_pp": 3.3333333333333326,
@@ -86,9 +86,9 @@
       },
       "90": {
         "n": 90,
-        "official_mae": 0.003637707924479331,
-        "challenger_mae": 0.003542559472648957,
-        "mae_improvement_pct": 2.6156154866114707,
+        "official_mae": 0.0036377079244793308,
+        "challenger_mae": 0.003542559472648956,
+        "mae_improvement_pct": 2.6156154866114947,
         "official_direction_accuracy": 0.8111111111111111,
         "challenger_direction_accuracy": 0.8444444444444444,
         "direction_delta_pp": 3.3333333333333326,
@@ -98,9 +98,9 @@
       },
       "180": {
         "n": 180,
-        "official_mae": 0.0031319120861481834,
-        "challenger_mae": 0.003025332352982393,
-        "mae_improvement_pct": 3.4030244219552404,
+        "official_mae": 0.003131912086148184,
+        "challenger_mae": 0.003025332352982391,
+        "mae_improvement_pct": 3.40302442195531,
         "official_direction_accuracy": 0.8333333333333334,
         "challenger_direction_accuracy": 0.8611111111111112,
         "direction_delta_pp": 2.777777777777779,
@@ -110,9 +110,9 @@
       },
       "ALL": {
         "n": 294,
-        "official_mae": 0.0027111915434399284,
-        "challenger_mae": 0.002615217817271814,
-        "mae_improvement_pct": 3.539909468968912,
+        "official_mae": 0.002711191543439929,
+        "challenger_mae": 0.002615217817271813,
+        "mae_improvement_pct": 3.5399094689689594,
         "official_direction_accuracy": 0.782312925170068,
         "challenger_direction_accuracy": 0.8095238095238095,
         "direction_delta_pp": 2.7210884353741527,
