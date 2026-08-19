@@ -7,13 +7,16 @@ ROOT = Path(__file__).resolve().parents[1]
 HTML_PATH = ROOT / "public" / "habitat" / "index.html"
 html = HTML_PATH.read_text(encoding="utf-8")
 
-# Elimina el panel antiguo que sustituía SPY por QQQ. El challenger aprobado
-# conserva los siete factores del OLS oficial y añade solo el residuo incremental
-# de QQQ, evitando duplicar la exposición a mercado USA.
+# La plantilla de Hábitat se construye a partir de la visual de Profuturo y puede
+# heredar sus bloques QQQ. Antes de insertar el panel propio de Hábitat retiramos
+# tanto el contraste antiguo SPY-vs-QQQ como cualquier QQQ incremental genérico.
 for start, end in [
     ("<!-- SPY_QQQ_CHALLENGER_CSS START -->", "<!-- SPY_QQQ_CHALLENGER_CSS END -->"),
     ("<!-- SPY_QQQ_CHALLENGER_PANEL START -->", "<!-- SPY_QQQ_CHALLENGER_PANEL END -->"),
     ("<!-- SPY_QQQ_CHALLENGER_SCRIPT START -->", "<!-- SPY_QQQ_CHALLENGER_SCRIPT END -->"),
+    ("<!-- QQQ_INCREMENTAL_CHALLENGER_UI_V1 START -->", "<!-- QQQ_INCREMENTAL_CHALLENGER_UI_V1 END -->"),
+    ("<!-- QQQ_INCREMENTAL_CHALLENGER_PANEL_V1 START -->", "<!-- QQQ_INCREMENTAL_CHALLENGER_PANEL_V1 END -->"),
+    ("<!-- QQQ_INCREMENTAL_CHALLENGER_SCRIPT_V1 START -->", "<!-- QQQ_INCREMENTAL_CHALLENGER_SCRIPT_V1 END -->"),
     ("<!-- HABITAT_QQQ_INCREMENTAL_UI_V1 START -->", "<!-- HABITAT_QQQ_INCREMENTAL_UI_V1 END -->"),
     ("<!-- HABITAT_QQQ_INCREMENTAL_PANEL_V1 START -->", "<!-- HABITAT_QQQ_INCREMENTAL_PANEL_V1 END -->"),
     ("<!-- HABITAT_QQQ_INCREMENTAL_SCRIPT_V1 START -->", "<!-- HABITAT_QQQ_INCREMENTAL_SCRIPT_V1 END -->"),
@@ -109,6 +112,10 @@ if "QQQ INCREMENTAL · CHALLENGER" not in html:
     raise RuntimeError("No quedó insertado el panel QQQ incremental de Hábitat")
 if "SPY_QQQ_CHALLENGER_PANEL START" in html or "Mercado USA · SPY vs Nasdaq QQQ" in html:
     raise RuntimeError("Persistió el panel antiguo SPY vs QQQ en Hábitat")
+if "QQQ_INCREMENTAL_CHALLENGER_PANEL_V1 START" in html or 'id="qqqIncrementalPanel"' in html:
+    raise RuntimeError("Persistió el panel QQQ genérico de Profuturo dentro de Hábitat")
+if html.count("HABITAT_QQQ_INCREMENTAL_PANEL_V1 START") != 1:
+    raise RuntimeError("El panel QQQ de Hábitat quedó duplicado")
 
 HTML_PATH.write_text(html, encoding="utf-8")
-print("Hábitat: panel QQQ incremental aplicado y panel SPY/QQQ antiguo retirado.")
+print("Hábitat: único panel QQQ incremental aplicado; herencias de Profuturo retiradas.")
