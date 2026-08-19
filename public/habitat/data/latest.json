@@ -1,7 +1,7 @@
 {
   "afp": "Hábitat",
   "fund": 3,
-  "generated_at_lima": "2026-08-19T14:42:23.714101-05:00",
+  "generated_at_lima": "2026-08-19T15:42:17.172868-05:00",
   "model": "OLS rolling 90",
   "window": 90,
   "threshold": 0.001,
@@ -10,11 +10,11 @@
   "training_n": 90,
   "latest_sbs_date": "2026-08-14",
   "latest_sbs_vc": 33.5502923,
-  "latest_market_date": "2026-08-18",
-  "latest_estimate_date": "2026-08-18",
-  "latest_estimated_vc": 33.17158066432328,
-  "latest_return_estimated": -0.01707842348523828,
-  "signal": "BAJA",
+  "latest_market_date": "2026-08-19",
+  "latest_estimate_date": "2026-08-19",
+  "latest_estimated_vc": 33.686893103868975,
+  "latest_return_estimated": 0.0155347568377991,
+  "signal": "SUBE",
   "estimate_type": "CIERRE DIARIO · OLS ROLLING 90 · MISMA METODOLOGÍA PROFUTURO",
   "coefficients": {
     "intercept": 0.0005087684894054493,
@@ -39,8 +39,8 @@
     "EEM",
     "USD_PEN"
   ],
-  "latest_fx_source": "BCRP",
-  "latest_fx_provisional": false,
+  "latest_fx_source": "YAHOO PEN=X PROVISIONAL",
+  "latest_fx_provisional": true,
   "sources": {
     "sbs": "SBS oficial · Hábitat Fondo 3",
     "market": "Yahoo Finance actualizado; respaldo guardado solo donde Yahoo no trae valor; BCRP exclusivo para USD/PEN hasta 2026-08-18; reintento individual Yahoo habilitado para huecos recientes",
