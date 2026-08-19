@@ -1,25 +1,25 @@
 {
-  "generated_at_lima": "2026-08-19T17:12:08.830257-05:00",
+  "generated_at_lima": "2026-08-19T17:31:03.522269-05:00",
   "signal_date": "2026-08-19",
   "mode": "CIERRE DIARIO",
   "market_open": false,
   "role": "CHALLENGER EN SOMBRA; no reemplaza el OLS oficial.",
-  "vc_base": 69.99290823542191,
+  "vc_base": 69.99156235854103,
   "official": {
     "model": "OLS rolling 90 oficial",
-    "return_estimated": 0.027848854099279015,
+    "return_estimated": 0.027496093739958108,
     "signal": "SUBE",
-    "vc_estimated": 71.94213052485439
+    "vc_estimated": 71.91605691815761
   },
   "challenger": {
     "model": "OLS rolling 90 + QQQ incremental residualizado",
-    "return_estimated": 0.024934419693749765,
+    "return_estimated": 0.024622522478381266,
     "signal": "SUBE",
-    "vc_estimated": 71.73814078495003
+    "vc_estimated": 71.71493117601123
   },
   "qqq": {
     "return": -0.0019929933468779693,
-    "residual": -0.008503750079046435,
+    "residual": -0.00841588456121143,
     "previous_close": 717.510009765625,
     "current_price": 716.0800170898438,
     "source": "CIERRE DIARIO YAHOO",
@@ -35,8 +35,8 @@
   },
   "comparison": {
     "same_signal": true,
-    "vc_difference": -0.2039897399043582,
-    "return_difference_pp": -0.2914434405529249
+    "vc_difference": -0.2011257421463739,
+    "return_difference_pp": -0.28735712615768416
   },
   "training": {
     "window": 90,
