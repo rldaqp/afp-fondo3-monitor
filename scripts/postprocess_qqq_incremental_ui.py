@@ -7,8 +7,8 @@ ROOT = Path(__file__).resolve().parents[1]
 HTML_PATH = ROOT / "public" / "index.html"
 html = HTML_PATH.read_text(encoding="utf-8")
 
-# Retira el panel antiguo que comparaba QQQ como sustituto de SPY. Ese no es el
-# challenger aprobado: ahora usamos únicamente la señal incremental de QQQ.
+# Retira cualquier panel anterior de QQQ y vuelve a insertar una sola versión:
+# QQQ incremental residualizado. No sustituye a SPY dentro del OLS oficial.
 for start, end in [
     ("<!-- SPY_QQQ_CHALLENGER_CSS START -->", "<!-- SPY_QQQ_CHALLENGER_CSS END -->"),
     ("<!-- SPY_QQQ_CHALLENGER_PANEL START -->", "<!-- SPY_QQQ_CHALLENGER_PANEL END -->"),
@@ -19,16 +19,57 @@ for start, end in [
 ]:
     html = re.sub(re.escape(start) + r".*?" + re.escape(end), "", html, flags=re.S)
 
-# Huber deja de mostrarse. Conservamos nodos ocultos para que cualquier JS
-# heredado que todavía los consulte no rompa el resto del visor.
+# Huber ya no forma parte del visor. La limpieza se hace hasta el inicio del
+# bloque de detalles para evitar dejar cierres </div> huérfanos de versiones
+# anteriores del HTML.
 html = re.sub(
-    r'<div class="challenger-box" id="huberChallengerBox">.*?</div>\s*</div>',
-    '<div id="huberChallengerBox" hidden><span id="huberValue"></span><span id="huberSub"></span></div>',
+    r"\s*<!-- HUBER_CHALLENGER_UI_V1 -->\s*<style id=\"huberChallengerStyles\">.*?</style>",
+    "",
+    html,
+    flags=re.S,
+)
+html = re.sub(
+    r"\s*<div(?: class=\"challenger-box\")? id=\"huberChallengerBox\"[^>]*>.*?(?=\s*<details class=\"insight-details\">)",
+    "\n",
     html,
     count=1,
     flags=re.S,
 )
 html = html.replace("Challenger Huber · paralelo", "")
+
+# El JS heredado puede traer cálculos de Huber aunque ya no se muestren. Se
+# eliminan también esas ramas para que el panel de calidad quede solo en OLS.
+html = re.sub(
+    r"\n  function classifyModelReturn\(r\)\{.*?\n  function renderInsights\(\)\{",
+    "\n  function renderInsights(){",
+    html,
+    count=1,
+    flags=re.S,
+)
+html = re.sub(
+    r"const c=modelInsights\.confidence\|\|\{\},u=modelInsights\.uncertainty\|\|\{\},q=modelInsights\.quality\|\|\{\},b=modelInsights\.benchmarks\|\|\{\},p=modelInsights\.performance\|\|\{\},h=modelInsights\.challenger_huber\|\|\{\},hp=h\.performance\|\|\{\},hc=h\.comparison_vs_ols\|\|\{\};",
+    "const c=modelInsights.confidence||{},u=modelInsights.uncertainty||{},q=modelInsights.quality||{},b=modelInsights.benchmarks||{},p=modelInsights.performance||{};",
+    html,
+    count=1,
+)
+html = re.sub(
+    r"\n    const hub=currentHuber\(\),olsSignal=.*?\n    const contrib=liveContributions\(\)\|\|\(modelInsights\.contributions\|\|\[\]\);",
+    "\n    const contrib=liveContributions()||(modelInsights.contributions||[]);",
+    html,
+    count=1,
+    flags=re.S,
+)
+html = re.sub(
+    r"    const items=\[\n      \['Acierto OLS'.*?\n    \];",
+    "    const items=[\n      ['Acierto OLS',insightPct(p.classification_accuracy,0)],\n      ['MAE OLS',p.mae_return_pp==null?'—':Number(p.mae_return_pp).toFixed(2)+' pp'],\n      ['Acierto SUBE OLS',insightPct(p.sube_accuracy,0)+' · n='+Number(p.sube_n||0)],\n      ['Acierto BAJA OLS',insightPct(p.baja_accuracy,0)+' · n='+Number(p.baja_n||0)]\n    ];",
+    html,
+    count=1,
+    flags=re.S,
+)
+html = html.replace(
+    "'Controles de integridad sin alertas. Huber se registra como challenger y no reemplaza la señal OLS.'",
+    "'Controles de integridad sin alertas.'",
+)
 html = re.sub(
     r"\$\('qualitySub'\)\.textContent=`OLS \$\{q\.training_n\|\|0\}/90 · Huber \$\{h\.training&&h\.training\.n\?h\.training\.n:0\}/90 · FX \$\{q\.fx_provisional\?'provisional':'confirmado'\}`;",
     "$('qualitySub').textContent=`OLS ${q.training_n||0}/90 · FX ${q.fx_provisional?'provisional':'confirmado'}`;",
@@ -80,9 +121,6 @@ panel = r'''
 </section>
 <!-- QQQ_INCREMENTAL_CHALLENGER_PANEL_V1 END -->
 '''
-
-# Inserta inmediatamente antes del panel de calidad del modelo. Si no existe,
-# lo ubica antes del primer panel posterior al resumen principal.
 marker = '<section class="panel" id="modelInsightsPanel">'
 if marker in html:
     html = html.replace(marker, panel + marker, 1)
@@ -127,10 +165,10 @@ html = html.replace("</body>", script + "</body>", 1)
 # Comprobaciones anti-regresión del postprocesado.
 if "QQQ INCREMENTAL · CHALLENGER" not in html:
     raise RuntimeError("No quedó insertado el panel QQQ incremental")
-if "SPY_QQQ_CHALLENGER_PANEL START" in html:
+if "SPY_QQQ_CHALLENGER_PANEL START" in html or "Mercado USA · SPY vs Nasdaq QQQ" in html:
     raise RuntimeError("Persistió el panel antiguo SPY vs QQQ")
-if "Challenger Huber · paralelo" in html:
+if "Challenger Huber · paralelo" in html or "id=\"huberChallengerBox\"" in html:
     raise RuntimeError("Persistió Huber visible")
 
 HTML_PATH.write_text(html, encoding="utf-8")
-print("UI QQQ incremental aplicada; Huber retirado de la vista.")
+print("UI QQQ incremental aplicada; Huber retirado por completo de la vista.")
