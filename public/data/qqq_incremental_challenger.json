@@ -1,28 +1,28 @@
 {
-  "generated_at_lima": "2026-08-19T07:18:40.443739-05:00",
-  "signal_date": "2026-08-18",
-  "mode": "CIERRE DIARIO",
-  "market_open": false,
+  "generated_at_lima": "2026-08-19T08:35:26.011161-05:00",
+  "signal_date": "2026-08-19",
+  "mode": "INTRADÍA PROVISIONAL",
+  "market_open": true,
   "role": "CHALLENGER EN SOMBRA; no reemplaza el OLS oficial.",
-  "vc_base": 71.34496504900544,
+  "vc_base": 69.73249095171144,
   "official": {
     "model": "OLS rolling 90 oficial",
-    "return_estimated": -0.022601091698432097,
-    "signal": "BAJA",
-    "vc_estimated": 69.73249095171144
+    "return_estimated": 0.011910993564941479,
+    "signal": "SUBE",
+    "vc_estimated": 70.56307420270461
   },
   "challenger": {
     "model": "OLS rolling 90 + QQQ incremental residualizado",
-    "return_estimated": -0.02235357011277085,
-    "signal": "BAJA",
-    "vc_estimated": 69.75015037058931
+    "return_estimated": 0.009490140983211775,
+    "signal": "SUBE",
+    "vc_estimated": 70.39426212195372
   },
   "qqq": {
-    "return": -0.01693450262957852,
-    "residual": 0.0007041300141135964,
-    "previous_close": 729.8699951171875,
-    "current_price": 717.510009765625,
-    "source": "CIERRE DIARIO YAHOO",
+    "return": 0.0032473652745343973,
+    "residual": -0.006886651755993086,
+    "previous_close": 717.510009765625,
+    "current_price": 719.8400268554688,
+    "source": "INTRADÍA YAHOO",
     "residualized_against": [
       "ret_SPY",
       "ret_NEM",
@@ -35,8 +35,8 @@
   },
   "comparison": {
     "same_signal": true,
-    "vc_difference": 0.01765941887786937,
-    "return_difference_pp": 0.024752158566124574
+    "vc_difference": -0.1688120807508966,
+    "return_difference_pp": -0.24208525817297039
   },
   "training": {
     "window": 90,
@@ -138,7 +138,7 @@
   },
   "shadow_forward": {
     "n": 0,
-    "pending": 1,
+    "pending": 2,
     "start_date": "2026-08-18",
     "ledger": "data/rolling90/qqq_incremental_shadow.csv",
     "rule": "Solo cuenta como prueba futura cuando la SBS publique el VC real de la fecha guardada."
