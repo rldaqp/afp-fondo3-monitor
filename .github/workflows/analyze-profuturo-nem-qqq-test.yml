@@ -1,0 +1,50 @@
+name: Analizar NEM y QQQ incremental Profuturo
+
+on:
+  push:
+    branches:
+      - research-epu-fcx-nem-ablation-20260819
+    paths:
+      - "scripts/analyze_profuturo_nem_qqq_test.py"
+      - ".github/workflows/analyze-profuturo-nem-qqq-test.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: profuturo-nem-qqq-research
+  cancel-in-progress: true
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Descargar repositorio
+        uses: actions/checkout@v4
+        with:
+          ref: research-epu-fcx-nem-ablation-20260819
+          fetch-depth: 0
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Instalar dependencias
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Ejecutar prueba NEM y QQQ
+        run: python scripts/analyze_profuturo_nem_qqq_test.py
+
+      - name: Guardar resultado
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add analysis/nem_qqq_profuturo_test.json analysis/nem_qqq_profuturo_predictions.csv
+          git commit -m "Guardar prueba NEM y QQQ incremental" || exit 0
+          git pull --rebase origin research-epu-fcx-nem-ablation-20260819
+          git push origin HEAD:research-epu-fcx-nem-ablation-20260819
