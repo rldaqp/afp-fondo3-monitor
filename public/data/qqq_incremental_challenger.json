@@ -1,5 +1,5 @@
 {
-  "generated_at_lima": "2026-08-20T15:49:29.661576-05:00",
+  "generated_at_lima": "2026-08-20T16:12:08.553382-05:00",
   "signal_date": "2026-08-20",
   "mode": "INTRADIA PROVISIONAL - ULTIMO CORTE",
   "market_open": false,
@@ -13,13 +13,13 @@
   },
   "challenger": {
     "model": "OLS rolling 90 + QQQ incremental residualizado",
-    "return_estimated": 0.007541077879225571,
+    "return_estimated": 0.007541077879225567,
     "signal": "SUBE",
     "vc_estimated": 71.84769789898043
   },
   "qqq": {
     "return": -0.007191967784539344,
-    "residual": -0.0016360064989567671,
+    "residual": -0.001636006498956761,
     "previous_close": 716.0800170898438,
     "current_price": 710.9299926757812,
     "source": "CIERRE DIARIO YAHOO",
@@ -36,7 +36,7 @@
   "comparison": {
     "same_signal": true,
     "vc_difference": -0.039834312145714534,
-    "return_difference_pp": -0.05586080969815707
+    "return_difference_pp": -0.0558608096981575
   },
   "training": {
     "window": 90,
@@ -44,14 +44,14 @@
     "start": "2026-03-26",
     "end": "2026-08-17",
     "qqq_residualizer": {
-      "intercept": -5.2673903517375035e-05,
-      "ret_SPY": 0.9622901820931837,
-      "ret_NEM": 0.0019429376500562645,
-      "ret_FCX": 0.03816398439872226,
-      "ret_EPU": -0.11228363985837803,
-      "ret_MCHI": -0.10467713812420029,
-      "ret_EEM": 0.4161354858801209,
-      "ret_USD_PEN": 0.09657418961211162
+      "intercept": -5.267390351737362e-05,
+      "ret_SPY": 0.9622901820931841,
+      "ret_NEM": 0.0019429376500562031,
+      "ret_FCX": 0.03816398439872261,
+      "ret_EPU": -0.11228363985837898,
+      "ret_MCHI": -0.10467713812420011,
+      "ret_EEM": 0.41613548588012045,
+      "ret_USD_PEN": 0.09657418961211184
     }
   },
   "performance_backtest": {
