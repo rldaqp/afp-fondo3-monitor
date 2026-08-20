@@ -1,5 +1,5 @@
 {
-  "generated_at_lima": "2026-08-20T06:15:54.828156-05:00",
+  "generated_at_lima": "2026-08-20T07:19:48.292687-05:00",
   "signal_date": "2026-08-19",
   "mode": "CIERRE DIARIO",
   "market_open": false,
@@ -13,13 +13,13 @@
   },
   "challenger": {
     "model": "OLS rolling 90 + QQQ incremental residualizado",
-    "return_estimated": 0.024675649478663134,
+    "return_estimated": 0.024622522478381266,
     "signal": "SUBE",
-    "vc_estimated": 71.71864961776438
+    "vc_estimated": 71.71493117601123
   },
   "qqq": {
     "return": -0.0019929933468779693,
-    "residual": -0.007980993714601526,
+    "residual": -0.00841588456121143,
     "previous_close": 717.510009765625,
     "current_price": 716.0800170898438,
     "source": "CIERRE DIARIO YAHOO",
@@ -35,36 +35,36 @@
   },
   "comparison": {
     "same_signal": true,
-    "vc_difference": -0.1974073003932233,
-    "return_difference_pp": -0.28204442612949737
+    "vc_difference": -0.2011257421463739,
+    "return_difference_pp": -0.28735712615768416
   },
   "training": {
     "window": 90,
     "n": 90,
-    "start": "2026-03-27",
+    "start": "2026-03-26",
     "end": "2026-08-17",
     "qqq_residualizer": {
-      "intercept": -0.0001024391564935491,
-      "ret_SPY": 0.9691694669400615,
-      "ret_NEM": 0.0004614496940096302,
-      "ret_FCX": 0.03486980472035761,
-      "ret_EPU": -0.11240057609530174,
-      "ret_MCHI": -0.09975436843568428,
-      "ret_EEM": 0.4182296157375814,
-      "ret_USD_PEN": 0.08608553962719198
+      "intercept": -5.2673903517375035e-05,
+      "ret_SPY": 0.9622901820931837,
+      "ret_NEM": 0.0019429376500562645,
+      "ret_FCX": 0.03816398439872226,
+      "ret_EPU": -0.11228363985837803,
+      "ret_MCHI": -0.10467713812420029,
+      "ret_EEM": 0.4161354858801209,
+      "ret_USD_PEN": 0.09657418961211162
     }
   },
   "performance_backtest": {
     "method": "OLS rolling 90. QQQ se residualiza dentro de cada ventana contra los 7 factores del OLS oficial; no usa información futura.",
-    "prediction_rows": 296,
+    "prediction_rows": 295,
     "first_prediction": "2025-05-19",
     "last_prediction": "2026-08-17",
     "windows": {
       "30": {
         "n": 30,
-        "official_mae": 0.004782282893386388,
-        "challenger_mae": 0.004556434638857114,
-        "mae_improvement_pct": 4.7226034001796275,
+        "official_mae": 0.004764471728834094,
+        "challenger_mae": 0.004582701186439054,
+        "mae_improvement_pct": 3.8151247974666984,
         "official_direction_accuracy": 0.7666666666666667,
         "challenger_direction_accuracy": 0.7666666666666667,
         "direction_delta_pp": 0.0,
@@ -74,9 +74,9 @@
       },
       "60": {
         "n": 60,
-        "official_mae": 0.004233883352645754,
-        "challenger_mae": 0.00405366414833932,
-        "mae_improvement_pct": 4.256593517008787,
+        "official_mae": 0.004159590659905317,
+        "challenger_mae": 0.003999056831414732,
+        "mae_improvement_pct": 3.8593660197861714,
         "official_direction_accuracy": 0.7833333333333333,
         "challenger_direction_accuracy": 0.8166666666666667,
         "direction_delta_pp": 3.3333333333333326,
@@ -86,9 +86,9 @@
       },
       "90": {
         "n": 90,
-        "official_mae": 0.0036710056134960905,
-        "challenger_mae": 0.0035651127603121193,
-        "mae_improvement_pct": 2.8845734475225684,
+        "official_mae": 0.0036426700662668394,
+        "challenger_mae": 0.0035488263036014063,
+        "mae_improvement_pct": 2.5762355897801124,
         "official_direction_accuracy": 0.8111111111111111,
         "challenger_direction_accuracy": 0.8444444444444444,
         "direction_delta_pp": 3.3333333333333326,
@@ -98,41 +98,41 @@
       },
       "180": {
         "n": 180,
-        "official_mae": 0.003166459415049692,
-        "challenger_mae": 0.003055999544327039,
-        "mae_improvement_pct": 3.4884347545291248,
+        "official_mae": 0.003135193268089242,
+        "challenger_mae": 0.003037155962623888,
+        "mae_improvement_pct": 3.1269940026728658,
         "official_direction_accuracy": 0.8333333333333334,
         "challenger_direction_accuracy": 0.8611111111111112,
         "direction_delta_pp": 2.777777777777779,
-        "challenger_win_days": 102,
-        "official_win_days": 78,
+        "challenger_win_days": 101,
+        "official_win_days": 79,
         "ties": 0
       },
       "ALL": {
-        "n": 296,
-        "official_mae": 0.0027228246473093563,
-        "challenger_mae": 0.002623674038440156,
-        "mae_improvement_pct": 3.6414614127714446,
-        "official_direction_accuracy": 0.7837837837837838,
-        "challenger_direction_accuracy": 0.8108108108108109,
-        "direction_delta_pp": 2.7027027027027084,
-        "challenger_win_days": 173,
+        "n": 295,
+        "official_mae": 0.0027106724642420627,
+        "challenger_mae": 0.0026161613942316674,
+        "mae_improvement_pct": 3.4866281801708476,
+        "official_direction_accuracy": 0.7830508474576271,
+        "challenger_direction_accuracy": 0.8101694915254237,
+        "direction_delta_pp": 2.7118644067796627,
+        "challenger_win_days": 172,
         "official_win_days": 123,
         "ties": 0
       }
     },
     "recent90_vif": {
       "by_feature": {
-        "ret_SPY": 3.2053503238429077,
-        "ret_NEM": 2.2120708870360293,
-        "ret_FCX": 3.137029966634759,
-        "ret_EPU": 4.400904827155884,
-        "ret_MCHI": 1.6020058604073897,
-        "ret_EEM": 3.766494052098808,
-        "ret_USD_PEN": 1.980601707078506,
-        "ret_QQQ_residual": 1.0
+        "ret_SPY": 3.3292296778073704,
+        "ret_NEM": 2.2183183537730757,
+        "ret_FCX": 3.1398557403227962,
+        "ret_EPU": 4.492427685603575,
+        "ret_MCHI": 1.6570515233533598,
+        "ret_EEM": 3.926809553972166,
+        "ret_USD_PEN": 2.0304267341851903,
+        "ret_QQQ_residual": 1.0000000000000002
       },
-      "max_vif": 4.400904827155884,
+      "max_vif": 4.492427685603575,
       "max_vif_feature": "ret_EPU"
     }
   },
