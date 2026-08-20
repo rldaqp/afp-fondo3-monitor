@@ -1,131 +1,131 @@
 {
-  "generated_at_utc": "2026-08-20T19:23:12.632303+00:00",
+  "generated_at_utc": "2026-08-20T21:16:28.824132+00:00",
   "fund": "PROFUTURO",
   "model_rule": "Mismo OLS rolling 90 del visor; EPU, EEM, NEM, FCX, MCHI y USD/PEN constantes. Único cambio: SPY versus QQQ. Las ventanas 30/60/90/180 son periodos recientes de evaluación fuera de muestra; el entrenamiento sigue siendo siempre 90.",
-  "common_complete_rows": 385,
-  "prediction_rows": 295,
+  "common_complete_rows": 386,
+  "prediction_rows": 296,
   "first_prediction": "2025-05-19",
-  "last_prediction": "2026-08-17",
+  "last_prediction": "2026-08-18",
   "windows": {
     "30": {
       "SPY": {
         "n": 30,
-        "start": "2026-06-25",
-        "end": "2026-08-17",
-        "mae": 0.004764471728834111,
-        "rmse": 0.0060340985876224254,
+        "start": "2026-06-26",
+        "end": "2026-08-18",
+        "mae": 0.004739182335459411,
+        "rmse": 0.006011449211620386,
         "direction_accuracy": 0.7666666666666667,
-        "pred_actual_corr": 0.9219374569588914
+        "pred_actual_corr": 0.9326311504352589
       },
       "QQQ": {
         "n": 30,
-        "start": "2026-06-25",
-        "end": "2026-08-17",
-        "mae": 0.00481807104751415,
-        "rmse": 0.0059304705299793245,
+        "start": "2026-06-26",
+        "end": "2026-08-18",
+        "mae": 0.004804329395148377,
+        "rmse": 0.0059175830715736955,
         "direction_accuracy": 0.7666666666666667,
-        "pred_actual_corr": 0.9236242609754328
+        "pred_actual_corr": 0.9340033251075204
       },
       "winner_mae": "SPY",
       "winner_direction": "EMPATE",
-      "qqq_mae_change_vs_spy": 0.011249792575252604,
+      "qqq_mae_change_vs_spy": 0.013746476729018076,
       "qqq_accuracy_delta_pp": 0.0
     },
     "60": {
       "SPY": {
         "n": 60,
-        "start": "2026-05-12",
-        "end": "2026-08-17",
-        "mae": 0.004159590659905375,
-        "rmse": 0.00551049069717991,
+        "start": "2026-05-13",
+        "end": "2026-08-18",
+        "mae": 0.004212333073682313,
+        "rmse": 0.005543246066856016,
         "direction_accuracy": 0.7833333333333333,
-        "pred_actual_corr": 0.9451449769932118
+        "pred_actual_corr": 0.9469797536798064
       },
       "QQQ": {
         "n": 60,
-        "start": "2026-05-12",
-        "end": "2026-08-17",
-        "mae": 0.004204002023265156,
-        "rmse": 0.005439129866346052,
+        "start": "2026-05-13",
+        "end": "2026-08-18",
+        "mae": 0.004264387366424373,
+        "rmse": 0.00547826909783192,
         "direction_accuracy": 0.7833333333333333,
-        "pred_actual_corr": 0.9463285596056041
+        "pred_actual_corr": 0.9479762260681495
       },
       "winner_mae": "SPY",
       "winner_direction": "EMPATE",
-      "qqq_mae_change_vs_spy": 0.010676859092858981,
+      "qqq_mae_change_vs_spy": 0.01235759182180618,
       "qqq_accuracy_delta_pp": 0.0
     },
     "90": {
       "SPY": {
         "n": 90,
-        "start": "2026-03-26",
-        "end": "2026-08-17",
-        "mae": 0.0036426700662668754,
-        "rmse": 0.0048468206756601545,
+        "start": "2026-03-27",
+        "end": "2026-08-18",
+        "mae": 0.0036566387608537956,
+        "rmse": 0.004859445147588061,
         "direction_accuracy": 0.8111111111111111,
-        "pred_actual_corr": 0.9539886345180498
+        "pred_actual_corr": 0.9541948112116252
       },
       "QQQ": {
         "n": 90,
-        "start": "2026-03-26",
-        "end": "2026-08-17",
-        "mae": 0.003685983331330776,
-        "rmse": 0.004803764909200571,
+        "start": "2026-03-27",
+        "end": "2026-08-18",
+        "mae": 0.0037085921736104747,
+        "rmse": 0.004824111536567855,
         "direction_accuracy": 0.8111111111111111,
-        "pred_actual_corr": 0.9546232008555043
+        "pred_actual_corr": 0.9546847946787076
       },
       "winner_mae": "SPY",
       "winner_direction": "EMPATE",
-      "qqq_mae_change_vs_spy": 0.0118905265302518,
+      "qqq_mae_change_vs_spy": 0.014207969710562374,
       "qqq_accuracy_delta_pp": 0.0
     },
     "180": {
       "SPY": {
         "n": 180,
-        "start": "2025-11-07",
-        "end": "2026-08-17",
-        "mae": 0.0031351932680892336,
-        "rmse": 0.004282913164005988,
+        "start": "2025-11-10",
+        "end": "2026-08-18",
+        "mae": 0.0031592759887285227,
+        "rmse": 0.004298893411447978,
         "direction_accuracy": 0.8333333333333334,
-        "pred_actual_corr": 0.9572601965086955
+        "pred_actual_corr": 0.9579199905698428
       },
       "QQQ": {
         "n": 180,
-        "start": "2025-11-07",
-        "end": "2026-08-17",
-        "mae": 0.0031173659462142593,
-        "rmse": 0.004215690152849274,
+        "start": "2025-11-10",
+        "end": "2026-08-18",
+        "mae": 0.0031387486411547033,
+        "rmse": 0.004233027779343297,
         "direction_accuracy": 0.85,
-        "pred_actual_corr": 0.9586201304716025
+        "pred_actual_corr": 0.9592262124772846
       },
       "winner_mae": "QQQ",
       "winner_direction": "QQQ",
-      "qqq_mae_change_vs_spy": -0.0056861955071240144,
+      "qqq_mae_change_vs_spy": -0.006497484755069061,
       "qqq_accuracy_delta_pp": 1.6666666666666607
     },
     "ALL": {
       "SPY": {
-        "n": 295,
+        "n": 296,
         "start": "2025-05-19",
-        "end": "2026-08-17",
-        "mae": 0.0027106724642420575,
-        "rmse": 0.003730764347758797,
-        "direction_accuracy": 0.7830508474576271,
-        "pred_actual_corr": 0.9513180586017626
+        "end": "2026-08-18",
+        "mae": 0.002718456347519453,
+        "rmse": 0.0037358449095677886,
+        "direction_accuracy": 0.7837837837837838,
+        "pred_actual_corr": 0.9520300496258667
       },
       "QQQ": {
-        "n": 295,
+        "n": 296,
         "start": "2025-05-19",
-        "end": "2026-08-17",
-        "mae": 0.0026625760565443307,
-        "rmse": 0.003658983134524667,
-        "direction_accuracy": 0.8,
-        "pred_actual_corr": 0.9531832852748985
+        "end": "2026-08-18",
+        "mae": 0.002671654039360436,
+        "rmse": 0.003666007722905676,
+        "direction_accuracy": 0.8006756756756757,
+        "pred_actual_corr": 0.9538181054386582
       },
       "winner_mae": "QQQ",
       "winner_direction": "QQQ",
-      "qqq_mae_change_vs_spy": -0.017743349051643986,
-      "qqq_accuracy_delta_pp": 1.6949152542372947
+      "qqq_mae_change_vs_spy": -0.017216501637675186,
+      "qqq_accuracy_delta_pp": 1.6891891891891886
     }
   },
   "stability": {
