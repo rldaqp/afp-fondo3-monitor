@@ -1,131 +1,131 @@
 {
-  "generated_at_utc": "2026-08-20T06:22:33.912669+00:00",
+  "generated_at_utc": "2026-08-20T07:31:21.019169+00:00",
   "fund": "PROFUTURO",
   "model_rule": "Mismo OLS rolling 90 del visor; EPU, EEM, NEM, FCX, MCHI y USD/PEN constantes. Único cambio: SPY versus QQQ. Las ventanas 30/60/90/180 son periodos recientes de evaluación fuera de muestra; el entrenamiento sigue siendo siempre 90.",
-  "common_complete_rows": 386,
-  "prediction_rows": 296,
+  "common_complete_rows": 385,
+  "prediction_rows": 295,
   "first_prediction": "2025-05-19",
   "last_prediction": "2026-08-17",
   "windows": {
     "30": {
       "SPY": {
         "n": 30,
-        "start": "2026-06-26",
+        "start": "2026-06-25",
         "end": "2026-08-17",
-        "mae": 0.004782282893386405,
-        "rmse": 0.006027430414050619,
+        "mae": 0.0047644717288341095,
+        "rmse": 0.006034098587622424,
         "direction_accuracy": 0.7666666666666667,
-        "pred_actual_corr": 0.9226471036269773
+        "pred_actual_corr": 0.9219374569588915
       },
       "QQQ": {
         "n": 30,
-        "start": "2026-06-26",
+        "start": "2026-06-25",
         "end": "2026-08-17",
-        "mae": 0.0048051793075307115,
-        "rmse": 0.005897798229895435,
+        "mae": 0.004818071047514149,
+        "rmse": 0.005930470529979324,
         "direction_accuracy": 0.7666666666666667,
-        "pred_actual_corr": 0.9251201976161424
+        "pred_actual_corr": 0.9236242609754328
       },
       "winner_mae": "SPY",
       "winner_direction": "EMPATE",
-      "qqq_mae_change_vs_spy": 0.0047877582014168585,
+      "qqq_mae_change_vs_spy": 0.011249792575252826,
       "qqq_accuracy_delta_pp": 0.0
     },
     "60": {
       "SPY": {
         "n": 60,
-        "start": "2026-05-13",
+        "start": "2026-05-12",
         "end": "2026-08-17",
-        "mae": 0.004233883352645811,
-        "rmse": 0.005551916321764966,
+        "mae": 0.004159590659905373,
+        "rmse": 0.005510490697179909,
         "direction_accuracy": 0.7833333333333333,
-        "pred_actual_corr": 0.943891864574004
+        "pred_actual_corr": 0.9451449769932118
       },
       "QQQ": {
         "n": 60,
-        "start": "2026-05-13",
+        "start": "2026-05-12",
         "end": "2026-08-17",
-        "mae": 0.004264812322615539,
-        "rmse": 0.005467590839122039,
+        "mae": 0.004204002023265155,
+        "rmse": 0.005439129866346051,
         "direction_accuracy": 0.7833333333333333,
-        "pred_actual_corr": 0.9453831280213324
+        "pred_actual_corr": 0.9463285596056041
       },
       "winner_mae": "SPY",
       "winner_direction": "EMPATE",
-      "qqq_mae_change_vs_spy": 0.007305106776359427,
+      "qqq_mae_change_vs_spy": 0.010676859092858981,
       "qqq_accuracy_delta_pp": 0.0
     },
     "90": {
       "SPY": {
         "n": 90,
-        "start": "2026-03-27",
+        "start": "2026-03-26",
         "end": "2026-08-17",
-        "mae": 0.003671005613496127,
-        "rmse": 0.004866039361382879,
+        "mae": 0.0036426700662668737,
+        "rmse": 0.0048468206756601545,
         "direction_accuracy": 0.8111111111111111,
-        "pred_actual_corr": 0.9521625091485167
+        "pred_actual_corr": 0.9539886345180497
       },
       "QQQ": {
         "n": 90,
-        "start": "2026-03-27",
+        "start": "2026-03-26",
         "end": "2026-08-17",
-        "mae": 0.0037088754777379186,
-        "rmse": 0.004816028478020847,
+        "mae": 0.003685983331330776,
+        "rmse": 0.00480376490920057,
         "direction_accuracy": 0.8111111111111111,
-        "pred_actual_corr": 0.9530016860154196
+        "pred_actual_corr": 0.9546232008555041
       },
       "winner_mae": "SPY",
       "winner_direction": "EMPATE",
-      "qqq_mae_change_vs_spy": 0.0103159374375692,
+      "qqq_mae_change_vs_spy": 0.011890526530252465,
       "qqq_accuracy_delta_pp": 0.0
     },
     "180": {
       "SPY": {
         "n": 180,
-        "start": "2025-11-10",
+        "start": "2025-11-07",
         "end": "2026-08-17",
-        "mae": 0.003166459415049688,
-        "rmse": 0.004302621355063214,
+        "mae": 0.003135193268089233,
+        "rmse": 0.004282913164005989,
         "direction_accuracy": 0.8333333333333334,
-        "pred_actual_corr": 0.9567619976920859
+        "pred_actual_corr": 0.9572601965086958
       },
       "QQQ": {
         "n": 180,
-        "start": "2025-11-10",
+        "start": "2025-11-07",
         "end": "2026-08-17",
-        "mae": 0.0031388902932184258,
-        "rmse": 0.0042284232608174885,
+        "mae": 0.0031173659462142597,
+        "rmse": 0.004215690152849273,
         "direction_accuracy": 0.85,
-        "pred_actual_corr": 0.9582763061488151
+        "pred_actual_corr": 0.958620130471603
       },
       "winner_mae": "QQQ",
       "winner_direction": "QQQ",
-      "qqq_mae_change_vs_spy": -0.008706608302077257,
+      "qqq_mae_change_vs_spy": -0.005686195507123681,
       "qqq_accuracy_delta_pp": 1.6666666666666607
     },
     "ALL": {
       "SPY": {
-        "n": 296,
+        "n": 295,
         "start": "2025-05-19",
         "end": "2026-08-17",
-        "mae": 0.0027228246473093506,
-        "rmse": 0.0037384537926612917,
-        "direction_accuracy": 0.7837837837837838,
-        "pred_actual_corr": 0.9508698130386296
+        "mae": 0.002710672464242057,
+        "rmse": 0.003730764347758797,
+        "direction_accuracy": 0.7830508474576271,
+        "pred_actual_corr": 0.9513180586017623
       },
       "QQQ": {
-        "n": 296,
+        "n": 295,
         "start": "2025-05-19",
         "end": "2026-08-17",
-        "mae": 0.002671740179128916,
-        "rmse": 0.0036627749289722482,
-        "direction_accuracy": 0.8006756756756757,
-        "pred_actual_corr": 0.952858520006895
+        "mae": 0.0026625760565443302,
+        "rmse": 0.0036589831345246668,
+        "direction_accuracy": 0.8,
+        "pred_actual_corr": 0.9531832852748989
       },
       "winner_mae": "QQQ",
       "winner_direction": "QQQ",
-      "qqq_mae_change_vs_spy": -0.01876157108791987,
-      "qqq_accuracy_delta_pp": 1.6891891891891886
+      "qqq_mae_change_vs_spy": -0.017743349051643986,
+      "qqq_accuracy_delta_pp": 1.6949152542372947
     }
   },
   "stability": {
