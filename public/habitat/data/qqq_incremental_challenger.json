@@ -1,29 +1,29 @@
 {
-  "generated_at_lima": "2026-08-20T08:13:07.062200-05:00",
-  "signal_date": "2026-08-19",
-  "mode": "CIERRE DIARIO",
-  "market_open": false,
+  "generated_at_lima": "2026-08-20T09:01:53.163073-05:00",
+  "signal_date": "2026-08-20",
+  "mode": "INTRADÍA PROVISIONAL",
+  "market_open": true,
   "fund": "HABITAT FONDO 3",
   "role": "CHALLENGER EN SOMBRA; no reemplaza el OLS oficial de Hábitat.",
-  "vc_base": 33.233916146419155,
+  "vc_base": 33.738545704129365,
   "official": {
     "model": "OLS rolling 90 oficial Hábitat",
-    "return_estimated": 0.015184173766550707,
+    "return_estimated": 0.003161416268876994,
     "signal": "SUBE",
-    "vc_estimated": 33.738545704129365
+    "vc_estimated": 33.845207291406645
   },
   "challenger": {
     "model": "OLS rolling 90 Hábitat + QQQ incremental residualizado",
-    "return_estimated": 0.02108856108722755,
+    "return_estimated": 0.0021213173106374135,
     "signal": "SUBE",
-    "vc_estimated": 33.93477161724071
+    "vc_estimated": 33.81011586516726
   },
   "qqq": {
-    "return": -0.0019929933468779693,
-    "residual": -0.008447676051929507,
-    "previous_close": 717.510009765625,
-    "current_price": 716.0800170898438,
-    "source": "CIERRE DIARIO YAHOO",
+    "return": -0.004971508034900318,
+    "residual": -0.005489105939631576,
+    "previous_close": 716.0800170898438,
+    "current_price": 712.52001953125,
+    "source": "INTRADÍA YAHOO",
     "residualized_against": [
       "ret_SPY",
       "ret_NEM",
@@ -36,8 +36,8 @@
   },
   "comparison": {
     "same_signal": true,
-    "vc_difference": 0.1962259131113484,
-    "return_difference_pp": 0.5904387320676843
+    "vc_difference": -0.035091426239382884,
+    "return_difference_pp": -0.10400989582395803
   },
   "training": {
     "window": 90,
@@ -139,7 +139,7 @@
   },
   "shadow_forward": {
     "n": 0,
-    "pending": 2,
+    "pending": 3,
     "start_date": "2026-08-18",
     "ledger": "data/rolling90/habitat_qqq_incremental_shadow.csv",
     "rule": "Solo cuenta como prueba futura cuando la SBS publique el VC real de Hábitat para la fecha guardada."
