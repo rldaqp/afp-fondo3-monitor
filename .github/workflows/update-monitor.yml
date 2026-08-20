@@ -13,6 +13,7 @@ on:
       - "scripts/finalize_notebook_parity_v4.py"
       - "scripts/finalize_notebook_parity_v5.py"
       - "scripts/finalize_fx_hybrid.py"
+      - "scripts/run_finalize_fx_hybrid_resilient.py"
       - "scripts/complete_profuturo_signal_calendar.py"
       - "scripts/build_model_insights.py"
       - "scripts/build_qqq_incremental_challenger.py"
@@ -78,7 +79,7 @@ jobs:
         run: |
           python scripts/run_rolling90_live_v2.py
           python scripts/apply_sbs_reference_corrections.py
-          python scripts/finalize_fx_hybrid.py
+          python scripts/run_finalize_fx_hybrid_resilient.py
           python scripts/complete_profuturo_signal_calendar.py
           python scripts/build_model_insights.py
           python scripts/build_vc_accuracy_1pct.py
@@ -237,12 +238,11 @@ jobs:
                       yahoo["ret_USD_PEN"], errors="coerce"
                   ).notna().all()
 
-          # El bloque explicativo y el challenger deben corresponder a la misma
-          # fecha que la señal OLS publicada; así evitamos volver a mostrar el día anterior.
+          # El bloque explicativo y QQQ deben corresponder a la misma fecha que
+          # la señal OLS publicada; Huber ya no forma parte del challenger operativo.
           assert str(insights.get("generated_for")) == str(latest.get("latest_estimate_date")), (insights.get("generated_for"), latest.get("latest_estimate_date"))
           assert str(insights.get("current_signal")) == str(latest.get("signal")), (insights.get("current_signal"), latest.get("signal"))
-          huber = (insights.get("challenger_huber") or {}).get("current") or {}
-          assert str(huber.get("fecha")) == str(latest.get("latest_estimate_date")), (huber, latest.get("latest_estimate_date"))
+          assert str(qqq.get("signal_date")) == str(latest.get("latest_estimate_date")), (qqq.get("signal_date"), latest.get("latest_estimate_date"))
 
           print(json.dumps(latest, ensure_ascii=False, indent=2))
           print(json.dumps(vc_accuracy, ensure_ascii=False, indent=2))
