@@ -1,5 +1,5 @@
 {
-  "generated_at_lima": "2026-08-20T11:00:34.765718-05:00",
+  "generated_at_lima": "2026-08-20T11:19:21.978237-05:00",
   "signal_date": "2026-08-20",
   "mode": "INTRADÍA PROVISIONAL",
   "market_open": true,
@@ -13,15 +13,15 @@
   },
   "challenger": {
     "model": "OLS rolling 90 + QQQ incremental residualizado",
-    "return_estimated": 0.004879756583213081,
+    "return_estimated": 0.004932258751698897,
     "signal": "SUBE",
-    "vc_estimated": 72.27860264722327
+    "vc_estimated": 72.2823790029009
   },
   "qqq": {
-    "return": -0.006807898396344103,
-    "residual": -0.004360841853484487,
+    "return": -0.00665413426489625,
+    "residual": -0.004207077722036634,
     "previous_close": 716.0800170898438,
-    "current_price": 711.2050170898438,
+    "current_price": 711.3151245117188,
     "source": "INTRADÍA YAHOO",
     "residualized_against": [
       "ret_SPY",
@@ -35,8 +35,8 @@
   },
   "comparison": {
     "same_signal": true,
-    "vc_difference": -0.10709968402622394,
-    "return_difference_pp": -0.14889925990917977
+    "vc_difference": -0.10332332834859415,
+    "return_difference_pp": -0.14364904306059817
   },
   "training": {
     "window": 90,
@@ -62,9 +62,9 @@
     "windows": {
       "30": {
         "n": 30,
-        "official_mae": 0.004764471728834095,
+        "official_mae": 0.004764471728834094,
         "challenger_mae": 0.004582701186439054,
-        "mae_improvement_pct": 3.8151247974667157,
+        "mae_improvement_pct": 3.8151247974666984,
         "official_direction_accuracy": 0.7666666666666667,
         "challenger_direction_accuracy": 0.7666666666666667,
         "direction_delta_pp": 0.0,
@@ -74,9 +74,9 @@
       },
       "60": {
         "n": 60,
-        "official_mae": 0.0041595906599053165,
-        "challenger_mae": 0.003999056831414735,
-        "mae_improvement_pct": 3.859366019786089,
+        "official_mae": 0.004159590659905317,
+        "challenger_mae": 0.003999056831414732,
+        "mae_improvement_pct": 3.8593660197861714,
         "official_direction_accuracy": 0.7833333333333333,
         "challenger_direction_accuracy": 0.8166666666666667,
         "direction_delta_pp": 3.3333333333333326,
@@ -86,9 +86,9 @@
       },
       "90": {
         "n": 90,
-        "official_mae": 0.0036426700662668386,
-        "challenger_mae": 0.0035488263036014076,
-        "mae_improvement_pct": 2.5762355897800533,
+        "official_mae": 0.0036426700662668394,
+        "challenger_mae": 0.0035488263036014063,
+        "mae_improvement_pct": 2.5762355897801124,
         "official_direction_accuracy": 0.8111111111111111,
         "challenger_direction_accuracy": 0.8444444444444444,
         "direction_delta_pp": 3.3333333333333326,
@@ -99,8 +99,8 @@
       "180": {
         "n": 180,
         "official_mae": 0.003135193268089242,
-        "challenger_mae": 0.00303715596262389,
-        "mae_improvement_pct": 3.1269940026727965,
+        "challenger_mae": 0.003037155962623888,
+        "mae_improvement_pct": 3.1269940026728658,
         "official_direction_accuracy": 0.8333333333333334,
         "challenger_direction_accuracy": 0.8611111111111112,
         "direction_delta_pp": 2.777777777777779,
@@ -110,9 +110,9 @@
       },
       "ALL": {
         "n": 295,
-        "official_mae": 0.002710672464242062,
-        "challenger_mae": 0.0026161613942316687,
-        "mae_improvement_pct": 3.4866281801707686,
+        "official_mae": 0.0027106724642420627,
+        "challenger_mae": 0.0026161613942316674,
+        "mae_improvement_pct": 3.4866281801708476,
         "official_direction_accuracy": 0.7830508474576271,
         "challenger_direction_accuracy": 0.8101694915254237,
         "direction_delta_pp": 2.7118644067796627,
@@ -124,13 +124,13 @@
     "recent90_vif": {
       "by_feature": {
         "ret_SPY": 3.3292296778073704,
-        "ret_NEM": 2.2183183537730766,
-        "ret_FCX": 3.1398557403227976,
+        "ret_NEM": 2.2183183537730757,
+        "ret_FCX": 3.1398557403227962,
         "ret_EPU": 4.492427685603575,
         "ret_MCHI": 1.6570515233533598,
         "ret_EEM": 3.926809553972166,
-        "ret_USD_PEN": 2.03042673418519,
-        "ret_QQQ_residual": 1.0
+        "ret_USD_PEN": 2.0304267341851903,
+        "ret_QQQ_residual": 1.0000000000000002
       },
       "max_vif": 4.492427685603575,
       "max_vif_feature": "ret_EPU"
