@@ -1,0 +1,49 @@
+name: Analizar aporte EPU FCX NEM Profuturo
+
+on:
+  push:
+    branches:
+      - research-epu-fcx-nem-ablation-20260819
+    paths:
+      - "scripts/analyze_profuturo_epu_fcx_nem_ablation.py"
+      - ".github/workflows/analyze-profuturo-epu-fcx-nem-ablation.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: profuturo-epu-fcx-nem-ablation-research
+  cancel-in-progress: true
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Descargar repositorio
+        uses: actions/checkout@v4
+        with:
+          ref: research-epu-fcx-nem-ablation-20260819
+          fetch-depth: 0
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Instalar dependencias
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Ejecutar prueba EPU FCX NEM
+        run: python scripts/analyze_profuturo_epu_fcx_nem_ablation.py
+
+      - name: Guardar resultado
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add analysis/epu_fcx_nem_ablation_profuturo.json
+          git commit -m "Guardar diagnóstico EPU FCX NEM" || exit 0
+          git push origin HEAD:research-epu-fcx-nem-ablation-20260819
