@@ -6,6 +6,7 @@ on:
       - research-epu-fcx-nem-ablation-20260819
     paths:
       - "scripts/analyze_profuturo_epu_fcx_nem_ablation.py"
+      - "scripts/analyze_profuturo_nem_qqq_test.py"
       - ".github/workflows/analyze-profuturo-epu-fcx-nem-ablation.yml"
   workflow_dispatch:
 
@@ -40,10 +41,14 @@ jobs:
       - name: Ejecutar prueba EPU FCX NEM
         run: python scripts/analyze_profuturo_epu_fcx_nem_ablation.py
 
-      - name: Guardar resultado
+      - name: Ejecutar prueba NEM y QQQ incremental
+        run: python scripts/analyze_profuturo_nem_qqq_test.py
+
+      - name: Guardar resultados
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add analysis/epu_fcx_nem_ablation_profuturo.json
-          git commit -m "Guardar diagnóstico EPU FCX NEM" || exit 0
+          git add analysis/epu_fcx_nem_ablation_profuturo.json analysis/nem_qqq_profuturo_test.json analysis/nem_qqq_profuturo_predictions.csv
+          git commit -m "Guardar diagnóstico EPU FCX NEM y prueba NEM QQQ" || exit 0
+          git pull --rebase origin research-epu-fcx-nem-ablation-20260819
           git push origin HEAD:research-epu-fcx-nem-ablation-20260819
