@@ -1,5 +1,5 @@
 {
-  "generated_at_lima": "2026-08-20T09:18:06.972255-05:00",
+  "generated_at_lima": "2026-08-20T09:24:07.210811-05:00",
   "signal_date": "2026-08-20",
   "mode": "INTRADÍA PROVISIONAL",
   "market_open": true,
@@ -13,15 +13,15 @@
   },
   "challenger": {
     "model": "OLS rolling 90 + QQQ incremental residualizado",
-    "return_estimated": 0.00193313977359182,
+    "return_estimated": 0.002862957833987371,
     "signal": "SUBE",
-    "vc_estimated": 72.06665953249637
+    "vc_estimated": 72.13353912647891
   },
   "qqq": {
-    "return": -0.006228384909806373,
-    "residual": -0.0028942408940799014,
+    "return": -0.0035052085042475145,
+    "residual": -0.00017106448852104335,
     "previous_close": 716.0800170898438,
-    "current_price": 711.6199951171875,
+    "current_price": 713.5700073242188,
     "source": "INTRADÍA YAHOO",
     "residualized_against": [
       "ret_SPY",
@@ -35,8 +35,8 @@
   },
   "comparison": {
     "same_signal": true,
-    "vc_difference": -0.07108083614727434,
-    "return_difference_pp": -0.09882273689494699
+    "vc_difference": -0.004201242164739938,
+    "return_difference_pp": -0.005840930855391868
   },
   "training": {
     "window": 90,
