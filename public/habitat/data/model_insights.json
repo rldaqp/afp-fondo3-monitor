@@ -2,19 +2,19 @@
   "generated_for": "2026-08-20",
   "current_signal": "SUBE",
   "confidence": {
-    "historical_accuracy": 0.9069767441860465,
-    "n": 43,
+    "historical_accuracy": 0.9047619047619048,
+    "n": 42,
     "label": "SUBE",
     "description": "Aciertos históricos de la misma clase de señal; no es garantía futura."
   },
   "performance": {
     "window_n": 90,
     "classification_accuracy": 0.7666666666666667,
-    "mae_return_pp": 0.32382536189810546,
-    "sube_n": 43,
-    "sube_accuracy": 0.9069767441860465,
-    "baja_n": 35,
-    "baja_accuracy": 0.8285714285714286,
+    "mae_return_pp": 0.32682998034196253,
+    "sube_n": 42,
+    "sube_accuracy": 0.9047619047619048,
+    "baja_n": 36,
+    "baja_accuracy": 0.8333333333333334,
     "neutro_n": 12,
     "neutro_accuracy": 0.08333333333333333
   },
@@ -23,66 +23,66 @@
     "label": "Banda empírica 80%"
   },
   "benchmarks": {
-    "zero_change_mae_pp": 0.9827985526411209,
-    "ols_mae_pp": 0.32382536189810546,
-    "ols_mae_improvement_vs_zero": 0.6705068795351048
+    "zero_change_mae_pp": 1.0013732376556208,
+    "ols_mae_pp": 0.32682998034196253,
+    "ols_mae_improvement_vs_zero": 0.6736182194092533
   },
   "contributions": [
     {
-      "feature": "ret_EPU",
-      "label": "EPU",
-      "value": 0.028574694948475532,
-      "coefficient": 0.2057857720113313,
-      "contribution_pp": 0.5880265659960326
-    },
-    {
       "feature": "ret_EEM",
       "label": "EEM",
-      "value": 0.011784577833139798,
-      "coefficient": 0.3847044660206544,
-      "contribution_pp": 0.45335797225768865
+      "value": 0.007714447610375874,
+      "coefficient": 0.3930329544101113,
+      "contribution_pp": 0.30320321359480534
+    },
+    {
+      "feature": "ret_EPU",
+      "label": "EPU",
+      "value": 0.00811866281865048,
+      "coefficient": 0.20178844173778976,
+      "contribution_pp": 0.1638252319170012
     },
     {
       "feature": "ret_NEM",
       "label": "NEM",
-      "value": 0.07846178833186834,
-      "coefficient": 0.043744740227118106,
-      "contribution_pp": 0.3432290548332707
+      "value": 0.02046688136486874,
+      "coefficient": 0.04722478621678938,
+      "contribution_pp": 0.09665440969803166
     },
     {
-      "feature": "ret_MCHI",
-      "label": "MCHI",
-      "value": 0.008925279602015168,
-      "coefficient": -0.06750731610866599,
-      "contribution_pp": -0.060252167145146654
+      "feature": "ret_SPY",
+      "label": "SPY",
+      "value": -0.008399893367440514,
+      "coefficient": 0.10416989946029287,
+      "contribution_pp": -0.08750160475634593
     },
     {
       "feature": "intercept",
       "label": "Base",
       "value": 1.0,
-      "coefficient": 0.0005574983330551876,
-      "contribution_pp": 0.05574983330551876
+      "coefficient": 0.0005342418079769798,
+      "contribution_pp": 0.05342418079769798
     },
     {
       "feature": "ret_FCX",
       "label": "FCX",
-      "value": 0.04176713895978179,
-      "coefficient": 0.010273267134947042,
-      "contribution_pp": 0.042908497599629246
-    },
-    {
-      "feature": "ret_SPY",
-      "label": "SPY",
-      "value": 0.00209783741736147,
-      "coefficient": 0.09903733995289996,
-      "contribution_pp": 0.020776423746914158
+      "value": 0.03082942532513,
+      "coefficient": 0.00852231457568009,
+      "contribution_pp": 0.02627380608081963
     },
     {
       "feature": "ret_USD_PEN",
       "label": "USD/PEN",
-      "value": -0.002971768202080338,
-      "coefficient": 0.036379028603516377,
-      "contribution_pp": -0.010811004042650106
+      "value": -0.004398238239038288,
+      "coefficient": 0.053066922666836235,
+      "contribution_pp": -0.02334009685013668
+    },
+    {
+      "feature": "ret_MCHI",
+      "label": "MCHI",
+      "value": 0.0021664367793292616,
+      "coefficient": -0.06807356446562464,
+      "contribution_pp": -0.014747707375837072
     }
   ],
   "quality": {
@@ -90,7 +90,7 @@
     "warnings": [],
     "critical": [],
     "training_n": 90,
-    "latest_sbs_date": "2026-08-17",
+    "latest_sbs_date": "2026-08-18",
     "fx_provisional": true
   },
   "challenger_huber": {

@@ -1,11 +1,11 @@
 {
-  "generated_at_lima": "2026-08-20T16:41:09.065737-05:00",
+  "generated_at_lima": "2026-08-20T16:45:51.680337-05:00",
   "mode": "CIERRE DIARIO",
   "market_open": false,
   "signal_date": "2026-08-20",
-  "vc_base": 33.71015323838482,
-  "vc_estimated": 33.88842084883492,
-  "return_estimated": 0.00528824681363686,
+  "vc_base": 33.549843877474345,
+  "vc_estimated": 33.72356209489236,
+  "return_estimated": 0.005177914331060362,
   "signal": "SUBE",
   "assets": [
     {
@@ -14,8 +14,8 @@
       "timestamp": "2026-08-20",
       "precio_anterior": 769.0599975585938,
       "precio_actual": 762.5999755859375,
-      "retorno": 0.00209783741736147,
-      "retorno_modelo": 0.00209783741736147,
+      "retorno": -0.008399893367440514,
+      "retorno_modelo": -0.008399893367440514,
       "estado": "CIERRE DIARIO YAHOO · USADO POR MODELO",
       "usado_modelo": true
     },
@@ -25,8 +25,8 @@
       "timestamp": "2026-08-20",
       "precio_anterior": 125.08000183105467,
       "precio_actual": 127.63999938964844,
-      "retorno": 0.07846178833186834,
-      "retorno_modelo": 0.07846178833186834,
+      "retorno": 0.02046688136486874,
+      "retorno_modelo": 0.02046688136486874,
       "estado": "CIERRE DIARIO YAHOO · USADO POR MODELO",
       "usado_modelo": true
     },
@@ -36,8 +36,8 @@
       "timestamp": "2026-08-20",
       "precio_anterior": 69.08999633789062,
       "precio_actual": 71.22000122070312,
-      "retorno": 0.04176713895978179,
-      "retorno_modelo": 0.04176713895978179,
+      "retorno": 0.03082942532513,
+      "retorno_modelo": 0.03082942532513,
       "estado": "CIERRE DIARIO YAHOO · USADO POR MODELO",
       "usado_modelo": true
     },
@@ -47,8 +47,8 @@
       "timestamp": "2026-08-20",
       "precio_anterior": 89.98999786376953,
       "precio_actual": 90.72059631347656,
-      "retorno": 0.028574694948475532,
-      "retorno_modelo": 0.028574694948475532,
+      "retorno": 0.00811866281865048,
+      "retorno_modelo": 0.00811866281865048,
       "estado": "CIERRE DIARIO YAHOO · USADO POR MODELO",
       "usado_modelo": true
     },
@@ -58,8 +58,8 @@
       "timestamp": "2026-08-20",
       "precio_anterior": 55.38999938964844,
       "precio_actual": 55.5099983215332,
-      "retorno": 0.008925279602015168,
-      "retorno_modelo": 0.008925279602015168,
+      "retorno": 0.0021664367793292616,
+      "retorno_modelo": 0.0021664367793292616,
       "estado": "CIERRE DIARIO YAHOO · USADO POR MODELO",
       "usado_modelo": true
     },
@@ -69,8 +69,8 @@
       "timestamp": "2026-08-20",
       "precio_anterior": 66.11000061035156,
       "precio_actual": 66.62000274658203,
-      "retorno": 0.011784577833139798,
-      "retorno_modelo": 0.011784577833139798,
+      "retorno": 0.007714447610375874,
+      "retorno_modelo": 0.007714447610375874,
       "estado": "CIERRE DIARIO YAHOO · USADO POR MODELO",
       "usado_modelo": true
     },
@@ -80,8 +80,8 @@
       "timestamp": "2026-08-19",
       "precio_anterior": null,
       "precio_actual": null,
-      "retorno": -0.002971768202080338,
-      "retorno_modelo": -0.002971768202080338,
+      "retorno": -0.004398238239038288,
+      "retorno_modelo": -0.004398238239038288,
       "estado": "YAHOO PEN=X · PROVISIONAL · USADO POR MODELO",
       "usado_modelo": true
     }
