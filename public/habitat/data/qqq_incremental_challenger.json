@@ -1,5 +1,5 @@
 {
-  "generated_at_lima": "2026-08-21T10:50:38.904521-05:00",
+  "generated_at_lima": "2026-08-21T11:55:49.116360-05:00",
   "signal_date": "2026-08-21",
   "mode": "INTRADÍA PROVISIONAL",
   "market_open": true,
@@ -8,21 +8,21 @@
   "vc_base": 33.73181313116001,
   "official": {
     "model": "OLS rolling 90 oficial Hábitat",
-    "return_estimated": 0.010578501745443841,
+    "return_estimated": 0.011877275991935835,
     "signal": "SUBE",
-    "vc_estimated": 34.08864517524497
+    "vc_estimated": 34.132455185427204
   },
   "challenger": {
     "model": "OLS rolling 90 Hábitat + QQQ incremental residualizado",
-    "return_estimated": 0.011003042291201862,
+    "return_estimated": 0.011999101207120406,
     "signal": "SUBE",
-    "vc_estimated": 34.102965697601086
+    "vc_estimated": 34.13656457082047
   },
   "qqq": {
-    "return": 0.005514738866146951,
-    "residual": -0.001329216357199895,
+    "return": 0.0032647151064524316,
+    "residual": -0.003113074883890847,
     "previous_close": 710.9299926757812,
-    "current_price": 714.8505859375,
+    "current_price": 713.2509765625,
     "source": "INTRADÍA YAHOO",
     "residualized_against": [
       "ret_SPY",
@@ -36,8 +36,8 @@
   },
   "comparison": {
     "same_signal": true,
-    "vc_difference": 0.014320522356115362,
-    "return_difference_pp": 0.04245405457580214
+    "vc_difference": 0.004109385393263665,
+    "return_difference_pp": 0.012182521518457057
   },
   "training": {
     "window": 90,
@@ -45,14 +45,14 @@
     "start": "2026-03-30",
     "end": "2026-08-18",
     "qqq_residualizer": {
-      "intercept": -5.637514254349624e-05,
-      "ret_SPY": 0.9540957100180121,
-      "ret_NEM": 0.0017470455711168416,
-      "ret_FCX": 0.03572238185216118,
-      "ret_EPU": -0.1134413382926875,
-      "ret_MCHI": -0.09896134266869824,
-      "ret_EEM": 0.42081236962981083,
-      "ret_USD_PEN": 0.0845339912940685
+      "intercept": -5.637514254349152e-05,
+      "ret_SPY": 0.954095710018011,
+      "ret_NEM": 0.0017470455711166566,
+      "ret_FCX": 0.0357223818521607,
+      "ret_EPU": -0.11344133829268671,
+      "ret_MCHI": -0.09896134266869852,
+      "ret_EEM": 0.42081236962981106,
+      "ret_USD_PEN": 0.0845339912940684
     }
   },
   "performance_backtest": {
@@ -64,8 +64,8 @@
       "30": {
         "n": 30,
         "official_mae": 0.0027163662089243045,
-        "challenger_mae": 0.0027219080660592964,
-        "mae_improvement_pct": -0.20401730505941099,
+        "challenger_mae": 0.0027219080660592985,
+        "mae_improvement_pct": -0.2040173050594908,
         "official_direction_accuracy": 0.8,
         "challenger_direction_accuracy": 0.8333333333333334,
         "direction_delta_pp": 3.3333333333333326,
@@ -76,8 +76,8 @@
       "60": {
         "n": 60,
         "official_mae": 0.0031071460041707825,
-        "challenger_mae": 0.003125291351592059,
-        "mae_improvement_pct": -0.5839876013846657,
+        "challenger_mae": 0.0031252913515920615,
+        "mae_improvement_pct": -0.5839876013847495,
         "official_direction_accuracy": 0.7833333333333333,
         "challenger_direction_accuracy": 0.8,
         "direction_delta_pp": 1.6666666666666718,
@@ -87,8 +87,8 @@
       },
       "90": {
         "n": 90,
-        "official_mae": 0.0030079615368304885,
-        "challenger_mae": 0.0030117510821324757,
+        "official_mae": 0.003007961536830489,
+        "challenger_mae": 0.003011751082132476,
         "mae_improvement_pct": -0.12598383508521743,
         "official_direction_accuracy": 0.8222222222222222,
         "challenger_direction_accuracy": 0.8333333333333334,
@@ -99,9 +99,9 @@
       },
       "180": {
         "n": 180,
-        "official_mae": 0.0031464638435653785,
+        "official_mae": 0.0031464638435653794,
         "challenger_mae": 0.003096169229031013,
-        "mae_improvement_pct": 1.5984488312878464,
+        "mae_improvement_pct": 1.5984488312878735,
         "official_direction_accuracy": 0.8388888888888889,
         "challenger_direction_accuracy": 0.8444444444444444,
         "direction_delta_pp": 0.5555555555555536,
