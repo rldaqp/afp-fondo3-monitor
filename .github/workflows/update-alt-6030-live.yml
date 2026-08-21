@@ -11,13 +11,18 @@ on:
       - "scripts/recheck_6030_exact20.py"
       - "data/analysis/googlefinance_alt_aligned_closes_20260402_20260820.csv"
       - "public/data/live_market.json"
+  schedule:
+    # Se ejecuta dos minutos después del corte principal de mercado (00,05,10...).
+    # Los commits hechos por otro workflow con GITHUB_TOKEN no disparan workflows
+    # dependientes; por eso este cron propio evita que el 60/30 experimental quede atrasado.
+    - cron: "2-59/5 13-22 * * 1-5"
 
 permissions:
   contents: write
 
 concurrency:
   group: alt-6030-live
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   build:
@@ -52,7 +57,8 @@ jobs:
           assert p['model']['features_display'] == ['.INX','CPER','EEM','NDX','SPBLSCUP','USD/PEN']
           assert int(p['cycle']['train_n']) == 60
           assert int(p['cycle']['freeze_horizon']) == 30
-          print(p['signal_date'], p['model']['signal'], p['model']['vc_estimated'])
+          assert p.get('market_snapshot_generated_at_lima'), p
+          print(p['signal_date'], p['model']['signal'], p['model']['vc_estimated'], p['market_snapshot_generated_at_lima'])
           PY
 
       - name: Guardar resultado
