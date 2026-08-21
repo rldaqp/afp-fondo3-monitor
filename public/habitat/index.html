@@ -41,7 +41,13 @@ h1{font-size:1.45rem;margin:5px 0}.sub,.note{color:var(--muted);font-size:.82rem
 </style>
 <!-- INVESTMENT_SIGNAL_1PCT_CSS END -->
 
-
+<!-- REDUCED_6030_CHALLENGER_CSS START -->
+<style id="reduced6030Styles">
+.r6030-panel{border-color:#334155}.r6030-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;margin-bottom:10px}.r6030-title{font-size:.98rem;font-weight:900}.r6030-kicker{font-size:.7rem;color:#94a3b8;margin-top:3px;line-height:1.4}.r6030-badge{padding:5px 9px;border:1px solid #475569;border-radius:999px;font-size:.7rem;font-weight:900;white-space:nowrap}.r6030-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}.r6030-card{background:#0b1728;border:1px solid #243244;border-radius:12px;padding:11px}.r6030-label{font-size:.72rem;color:#94a3b8;font-weight:800}.r6030-signal{font-size:1.15rem;font-weight:950;margin-top:5px}.r6030-vc{font-size:1.18rem;font-weight:950;margin-top:4px}.r6030-ret{font-size:.76rem;color:#cbd5e1;margin-top:3px}.r6030-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:9px}.r6030-mini{background:#101d31;border:1px solid #243244;border-radius:9px;padding:8px}.r6030-mini span{display:block;color:#94a3b8;font-size:.65rem}.r6030-mini b{display:block;margin-top:3px;font-size:.8rem}.r6030-note{font-size:.69rem;color:#94a3b8;line-height:1.45;margin-top:9px}.r6030-details{margin-top:9px}.r6030-details summary{cursor:pointer;color:#cbd5e1;font-size:.72rem;font-weight:800}.r6030-table{width:100%;border-collapse:collapse;font-size:.7rem;margin-top:7px}.r6030-table th,.r6030-table td{padding:6px 4px;border-top:1px solid #243244;text-align:right}.r6030-table th:first-child,.r6030-table td:first-child{text-align:left}
+@media(max-width:700px){.r6030-head{display:block}.r6030-badge{display:inline-block;margin-top:7px}.r6030-grid{grid-template-columns:1fr 1fr}.r6030-strip{grid-template-columns:1fr 1fr}.r6030-mini:last-child{grid-column:1/-1}.r6030-vc{font-size:1.08rem}}
+@media(max-width:390px){.r6030-grid{grid-template-columns:1fr}.r6030-strip{grid-template-columns:1fr 1fr}}
+</style>
+<!-- REDUCED_6030_CHALLENGER_CSS END -->
 <style>#huberChallengerBox{display:none!important}</style>
 <!-- HABITAT_QQQ_INCREMENTAL_UI_V1 START -->
 <style id="habitatQqqIncrementalStyles">
@@ -59,7 +65,41 @@ h1{font-size:1.45rem;margin:5px 0}.sub,.note{color:var(--muted);font-size:.82rem
 
 
 
-
+<!-- REDUCED_6030_CHALLENGER_PANEL START -->
+<section class="panel r6030-panel" id="reduced6030Panel">
+  <div class="r6030-head">
+    <div>
+      <div class="r6030-title">Comparación de VC estimado</div>
+      <div class="r6030-kicker">OLS oficial vs Challenger 60/30 · sin NEM ni FCX + QQQ · cadena ciega sin reanclaje SBS dentro del bloque</div>
+    </div>
+    <div id="r6030Badge" class="r6030-badge">Cargando…</div>
+  </div>
+  <div class="r6030-grid">
+    <div class="r6030-card">
+      <div class="r6030-label">OLS OFICIAL · ROLLING 90</div>
+      <div id="r6030OfficialSignal" class="r6030-signal">—</div>
+      <div id="r6030OfficialVc" class="r6030-vc">—</div>
+      <div id="r6030OfficialRet" class="r6030-ret">—</div>
+    </div>
+    <div class="r6030-card">
+      <div class="r6030-label">60/30 SIN NEM-FCX + QQQ · CHALLENGER</div>
+      <div id="r6030ChallengerSignal" class="r6030-signal">—</div>
+      <div id="r6030ChallengerVc" class="r6030-vc">—</div>
+      <div id="r6030ChallengerRet" class="r6030-ret">—</div>
+    </div>
+  </div>
+  <div class="r6030-strip">
+    <div class="r6030-mini"><span>Diferencia de VC</span><b id="r6030VcDiff">—</b></div>
+    <div class="r6030-mini"><span>Ciclo congelado</span><b id="r6030Cycle">—</b></div>
+    <div class="r6030-mini"><span>Backtest ciego · MAE VC</span><b id="r6030Backtest">—</b></div>
+  </div>
+  <details class="r6030-details"><summary>Ver validación y reglas del challenger</summary>
+    <div style="overflow-x:auto"><table class="r6030-table"><thead><tr><th>Modelo</th><th>MAE VC</th><th>RMSE VC</th><th>Error final medio</th></tr></thead><tbody id="r6030Rows"></tbody></table></div>
+    <div id="r6030Forward" class="r6030-note"></div>
+  </details>
+  <div id="r6030Note" class="r6030-note">El OLS rolling 90 continúa siendo oficial. El 60/30 es el único challenger y se contrasta en sombra contra SBS.</div>
+</section>
+<!-- REDUCED_6030_CHALLENGER_PANEL END -->
 
 
 <!-- HABITAT_QQQ_INCREMENTAL_PANEL_V1 START -->
@@ -301,19 +341,42 @@ Promise.all([fetch('data/latest.json?ts='+Date.now(),{cache:'no-store'}).then(r=
     (liveData.assets||[]).forEach(a=>{const k=map[a.serie],r=Number(a.retorno_modelo);if(k&&Number.isFinite(r)&&Number.isFinite(Number(beta[k])))out.push({label:a.serie==='USD_PEN'?'USD/PEN':a.serie,contribution_pp:Number(beta[k])*r*100})});
     return out.sort((a,b)=>Math.abs(b.contribution_pp)-Math.abs(a.contribution_pp));
   }
+  function classifyModelReturn(r){return Number(r)>.001?'SUBE':Number(r)<-.001?'BAJA':'NEUTRO'}
+  function currentHuber(){
+    const h=modelInsights&&modelInsights.challenger_huber;if(!h||h.status!=='CHALLENGER ACTIVO')return null;
+    if(liveData&&liveSnapshotActive()&&h.coefficients){
+      const beta=h.coefficients,map={SPY:'ret_SPY',NEM:'ret_NEM',FCX:'ret_FCX',EPU:'ret_EPU',MCHI:'ret_MCHI',EEM:'ret_EEM',USD_PEN:'ret_USD_PEN'};
+      let r=Number(beta.intercept||0),used=0;
+      (liveData.assets||[]).forEach(a=>{const k=map[a.serie],v=Number(a.retorno_modelo);if(k&&Number.isFinite(v)&&Number.isFinite(Number(beta[k]))){r+=Number(beta[k])*v;used+=1}});
+      if(used===7)return {fecha:liveData.signal_date,ret_estimado:r,senal:classifyModelReturn(r),live:true};
+    }
+    return h.current||null;
+  }
   function renderInsights(){
     if(!modelInsights)return;
-    const c=modelInsights.confidence||{},u=modelInsights.uncertainty||{},q=modelInsights.quality||{},b=modelInsights.benchmarks||{},p=modelInsights.performance||{};
+    const c=modelInsights.confidence||{},u=modelInsights.uncertainty||{},q=modelInsights.quality||{},b=modelInsights.benchmarks||{},p=modelInsights.performance||{},h=modelInsights.challenger_huber||{},hp=h.performance||{},hc=h.comparison_vs_ols||{};
     const acc=c.historical_accuracy;
     $('confidenceValue').textContent=acc==null?'—':(Number(acc)*100).toFixed(0)+'% · '+(c.label||'');
     $('confidenceSub').textContent=`${modelInsights.current_signal||'—'} · n=${c.n||0} · no es probabilidad garantizada`;
     $('bandValue').textContent=u.relative_q80==null?'—':'±'+(Number(u.relative_q80)*100).toFixed(2)+'%';
     $('qualityValue').textContent=q.status||'—';
-    $('qualitySub').textContent=`OLS ${q.training_n||0}/90 · FX ${q.fx_provisional?'provisional':'confirmado'}`;
+    $('qualitySub').textContent=`OLS ${q.training_n||0}/90 · Huber ${h.training&&h.training.n?h.training.n:0}/90 · FX ${q.fx_provisional?'provisional':'confirmado'}`;
     const qc=q.status==='OK'?'quality-ok':q.status==='REVISAR'?'quality-bad':'quality-warn';
     $('qualityValue').className='insight-value '+qc;$('qualityBadge').className='insight-badge '+qc;$('qualityBadge').textContent=q.status||'—';
     const imp=b.ols_mae_improvement_vs_zero;
     $('benchmarkValue').textContent=imp==null?'—':(imp>=0?'Mejor ':'Peor ')+(Math.abs(Number(imp))*100).toFixed(0)+'%';
+
+    const hub=currentHuber(),olsSignal=liveData&&liveSnapshotActive()?liveData.signal:(latestData?latestData.signal:modelInsights.current_signal);
+    if(hub){
+      const same=String(hub.senal)===String(olsSignal),hv=$('huberValue'),hs=$('huberSub');
+      hv.textContent=`${hub.senal} · ${(Number(hub.ret_estimado)*100).toFixed(3)}%`;
+      hv.className='challenger-value '+(hub.senal==='SUBE'?'up':hub.senal==='BAJA'?'down':'flat');
+      const score=hp.classification_accuracy==null?'—':`${hp.correct||0}/${hp.window_n||0} · ${(Number(hp.classification_accuracy)*100).toFixed(1)}%`;
+      hs.textContent=`${same?'Coincide':'Difiere'} con OLS · ${score}${hub.live?' · intradía':''} · OLS sigue oficial`;
+      hs.className='challenger-sub '+(same?'challenger-ok':'challenger-diff');
+    }else{
+      $('huberValue').textContent=h.status||'NO DISPONIBLE';$('huberValue').className='challenger-value challenger-warn';$('huberSub').textContent=h.error||'OLS continúa como señal principal.';
+    }
 
     const contrib=liveContributions()||(modelInsights.contributions||[]);
     const max=Math.max(...contrib.map(x=>Math.abs(Number(x.contribution_pp)||0)),0.0001);
@@ -321,11 +384,15 @@ Promise.all([fetch('data/latest.json?ts='+Date.now(),{cache:'no-store'}).then(r=
     const items=[
       ['Acierto OLS',insightPct(p.classification_accuracy,0)],
       ['MAE OLS',p.mae_return_pp==null?'—':Number(p.mae_return_pp).toFixed(2)+' pp'],
+      ['Acierto Huber',hp.classification_accuracy==null?'—':insightPct(hp.classification_accuracy,0)],
+      ['MAE Huber',hp.mae_return_pp==null?'—':Number(hp.mae_return_pp).toFixed(2)+' pp'],
+      ['Mejora Huber',hc.net_correct==null?'—':`${Number(hc.net_correct)>=0?'+':''}${Number(hc.net_correct)} aciertos`],
+      ['Errores corregidos',hc.corrected_errors==null?'—':`${hc.corrected_errors} · nuevos ${hc.new_errors||0}`],
       ['Acierto SUBE OLS',insightPct(p.sube_accuracy,0)+' · n='+Number(p.sube_n||0)],
       ['Acierto BAJA OLS',insightPct(p.baja_accuracy,0)+' · n='+Number(p.baja_n||0)]
     ];
     $('perfGrid').innerHTML=items.map(x=>`<div class="perf-item"><b>${x[1]}</b><span>${x[0]}</span></div>`).join('');
-    const notes=[...(q.critical||[]),...(q.warnings||[])];$('qualityNotes').textContent=notes.length?notes.join(' · '):'Controles de integridad sin alertas.';
+    const notes=[...(q.critical||[]),...(q.warnings||[])];$('qualityNotes').textContent=notes.length?notes.join(' · '):'Controles de integridad sin alertas. Huber se registra como challenger y no reemplaza la señal OLS.';
   }
 
   function renderMarket(){
@@ -695,7 +762,34 @@ Promise.all([fetch('data/latest.json?ts='+Date.now(),{cache:'no-store'}).then(r=
 </script>
 <!-- INVESTMENT_SIGNAL_1PCT_SCRIPT END -->
 
-
+<!-- REDUCED_6030_CHALLENGER_SCRIPT START -->
+<script id="reduced6030Script">
+(function(){
+  'use strict';
+  const $=id=>document.getElementById(id);
+  const pct=(x,d=3)=>x==null||!Number.isFinite(Number(x))?'—':(Number(x)*100).toFixed(d)+'%';
+  const vc=x=>x==null||!Number.isFinite(Number(x))?'—':Number(x).toFixed(7);
+  const num=x=>x==null||!Number.isFinite(Number(x))?'—':Number(x).toFixed(4);
+  const cls=s=>s==='SUBE'?'up':s==='BAJA'?'down':'flat';
+  function setSignal(id,s){const el=$(id);el.textContent=s||'—';el.className='r6030-signal '+cls(s)}
+  fetch('data/reduced_6030_challenger.json?v='+Date.now(),{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.json()}).then(d=>{
+    const o=d.official||{},c=d.challenger||{},cmp=d.comparison||{},cy=d.cycle||{},bt=d.blind_backtest||{},fw=d.forward_sbs||{};
+    setSignal('r6030OfficialSignal',o.signal);setSignal('r6030ChallengerSignal',c.signal);
+    $('r6030OfficialVc').textContent='VC '+vc(o.vc_estimated);$('r6030ChallengerVc').textContent='VC '+vc(c.vc_estimated);
+    $('r6030OfficialRet').textContent='Retorno '+pct(o.return_estimated);$('r6030ChallengerRet').textContent='Retorno '+pct(c.return_estimated);
+    const diff=Number(cmp.vc_difference);$('r6030VcDiff').textContent=Number.isFinite(diff)?(diff>=0?'+':'')+diff.toFixed(7):'—';
+    const same=!!cmp.same_signal;$('r6030Badge').textContent=same?'MISMA SEÑAL':'SEÑALES DISTINTAS';$('r6030Badge').className='r6030-badge '+(same?'challenger-ok':'challenger-diff');
+    $('r6030Cycle').textContent=`${cy.cycle_day||0}/${cy.freeze_horizon||30} · entrenó ${cy.train_n||60}`;
+    const bo=bt.official_current_7f||{},bc=bt.challenger_6030||{};
+    $('r6030Backtest').textContent=`${num(bo.vc_mae)} → ${num(bc.vc_mae)}`;
+    $('r6030Rows').innerHTML=`<tr><td>OLS actual</td><td>${num(bo.vc_mae)}</td><td>${num(bo.vc_rmse)}</td><td>${num(bo.mean_endpoint_abs_error)}</td></tr><tr><td>60/30 challenger</td><td>${num(bc.vc_mae)}</td><td>${num(bc.vc_rmse)}</td><td>${num(bc.mean_endpoint_abs_error)}</td></tr>`;
+    const imp=bt.mae_improvement_pct==null?'—':Number(bt.mae_improvement_pct).toFixed(1)+'%';
+    $('r6030Forward').textContent=`Backtest ciego: mejora MAE ${imp}; bloques ganados ${bt.challenger_better_blocks||0}/${bt.n_blocks||0}. Prueba futura SBS: ${fw.evaluated||0} evaluados · ${fw.pending||0} pendientes.`;
+    $('r6030Note').textContent=`Ciclo desde ${cy.cycle_start||'—'} · ancla SBS ${cy.anchor_date||'—'} VC ${vc(cy.anchor_vc)} · entrenamiento ${cy.train_start||'—'} a ${cy.train_end||'—'}. SPY, EEM, EPU, MCHI, USD/PEN y QQQ; NEM y FCX excluidos. Los coeficientes quedan congelados 30 sesiones y el VC no se reancla con SBS dentro del bloque.`;
+  }).catch(e=>{$('r6030Badge').textContent='NO DISPONIBLE';$('r6030Note').textContent='No se pudo cargar el challenger 60/30: '+e.message});
+})();
+</script>
+<!-- REDUCED_6030_CHALLENGER_SCRIPT END -->
 
 <!-- HABITAT_SBS_INDICATORS_JS_V1 START -->
 <script>
