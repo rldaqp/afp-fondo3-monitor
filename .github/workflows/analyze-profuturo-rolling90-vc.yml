@@ -7,6 +7,7 @@ on:
       - research-rolling90-vc-validation-20260820
     paths:
       - "scripts/analyze_profuturo_rolling90_vc.py"
+      - "scripts/analyze_static_180_blocks.py"
       - ".github/workflows/analyze-profuturo-rolling90-vc.yml"
 
 permissions:
@@ -40,15 +41,18 @@ jobs:
       - name: Run rolling90 validation
         run: python scripts/analyze_profuturo_rolling90_vc.py
 
+      - name: Run static 180-day block validation
+        run: python scripts/analyze_static_180_blocks.py
+
       - name: Save results
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add analysis/profuturo_rolling90_vc_validation.json analysis/profuturo_rolling90_vc_predictions.csv analysis/profuturo_blind_chain_validation.csv
+          git add analysis/profuturo_rolling90_vc_validation.json analysis/profuturo_rolling90_vc_predictions.csv analysis/profuturo_blind_chain_validation.csv analysis/profuturo_static_180_blocks.json analysis/profuturo_static_180_blocks.csv
           if git diff --cached --quiet; then
             echo "Sin cambios"
           else
-            git commit -m "Guardar validación rolling90 VC y detalle ciego"
+            git commit -m "Guardar validación rolling90 y prueba estática 180 días"
             git pull --rebase origin research-rolling90-vc-validation-20260820
             git push origin HEAD:research-rolling90-vc-validation-20260820
           fi
