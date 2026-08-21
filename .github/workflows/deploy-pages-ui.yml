@@ -8,56 +8,82 @@ on:
     paths:
       - ".github/workflows/deploy-pages-ui.yml"
       - "public/index.html"
-      - "public/data/alt_runtime_v4.js"
-      - "public/data/live_market.json"
-      - "public/data/alt_6030_experimental.json"
-      - "public/data/reduced_6030_challenger.json"
-      - "public/data/latest.json"
 
 permissions:
-  contents: write
+  contents: read
   pages: write
   id-token: write
 
 concurrency:
   group: pages-ui-fondo3
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    timeout-minutes: 8
     steps:
       - name: Descargar repositorio
         uses: actions/checkout@v4
         with:
           ref: migracion-github-actions
-          fetch-depth: 0
 
-      - name: Preparar visor sin recalcular modelos
+      - name: Reparar tarjeta SBS en el artefacto
         run: |
           python - <<'PY'
           from pathlib import Path
 
-          path = Path('public/index.html')
-          html = path.read_text(encoding='utf-8')
-          tag = '<script src="data/alt_runtime_v4.js?rev=ALT6030V4"></script>'
-          if tag not in html:
-              html = html.replace('</body>', tag + '\n</body>', 1)
-          path.write_text(html, encoding='utf-8')
+          path = Path("public/index.html")
+          html = path.read_text(encoding="utf-8")
+          marker = "SBS_TOP_CARD_DEPLOY_FIX_V2"
+          if marker not in html:
+              script = r'''
+          <!-- SBS_TOP_CARD_DEPLOY_FIX_V2 -->
+          <script>
+          (function(){
+            'use strict';
+            const $=id=>document.getElementById(id);
+            const fmt=d=>{if(!d)return '—';const p=String(d).slice(0,10).split('-');return p.length===3?`${p[2]}/${p[1]}/${p[0]}`:String(d)};
+            function paint(l){
+              if(!l)return;
+              const v=Number(l.latest_sbs_vc),sv=$('sbsVc'),sd=$('sbsDate'),sw=$('window');
+              if(sv)sv.textContent=Number.isFinite(v)?v.toFixed(7):'—';
+              if(sd)sd.textContent=fmt(l.latest_sbs_date);
+              if(sw)sw.textContent=`${fmt(l.training_start)} → ${fmt(l.training_end)}`;
+            }
+            function load(){
+              fetch('data/latest.json?ts='+Date.now(),{cache:'no-store'})
+                .then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.json()})
+                .then(paint)
+                .catch(()=>{});
+            }
+            if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',load,{once:true});else load();
+            setTimeout(load,600);
+            setTimeout(load,1800);
+          })();
+          </script>
+          '''
+              html = html.replace("</body>", script + "\n</body>", 1)
+              path.write_text(html, encoding="utf-8")
           PY
 
-      - name: Validar datos necesarios
+      - name: Validar visores y datos
         run: |
           test -s public/index.html
-          test -s public/data/alt_runtime_v4.js
-          test -s public/data/live_market.json
-          test -s public/data/alt_6030_experimental.json
-          test -s public/data/reduced_6030_challenger.json
           test -s public/data/latest.json
-          grep -q "alt_runtime_v4.js" public/index.html
-          grep -q '"experimental_assets"' public/data/live_market.json
-          grep -q '"vc_estimated"' public/data/alt_6030_experimental.json
+          test -s public/data/series.json
+          test -s public/data/signals.json
+          test -s public/data/operation_series.json
+          test -s public/data/live_market.json
+          test -s public/data/reduced_6030_challenger.json
+          test -s public/data/reduced_6030_history.json
+          test -s public/habitat/index.html
+          test -s public/habitat/data/live_market.json
+          grep -q "Mercado ahora" public/index.html
+          grep -q "60/30 SIN NEM-FCX + QQQ · CHALLENGER" public/index.html
+          grep -q "Ver Challenger 60/30 en otra fecha" public/index.html
+          grep -q "SBS_TOP_CARD_DEPLOY_FIX_V2" public/index.html
+          grep -q "raw.githubusercontent.com/rldaqp/afp-fondo3-monitor" public/index.html
+          grep -q "raw.githubusercontent.com/rldaqp/afp-fondo3-monitor" public/habitat/index.html
 
       - name: Configurar GitHub Pages
         uses: actions/configure-pages@v5
@@ -70,28 +96,3 @@ jobs:
       - name: Publicar visor
         id: deployment
         uses: actions/deploy-pages@v4
-
-      - name: Registrar despliegue verificado
-        if: success()
-        env:
-          DEPLOY_URL: ${{ steps.deployment.outputs.page_url }}
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git fetch origin migracion-github-actions
-          git reset --hard origin/migracion-github-actions
-          python - <<'PY'
-          import json, os
-          from datetime import datetime, timezone
-          from pathlib import Path
-          p=Path('public/data/pages_deploy_verified.json')
-          p.write_text(json.dumps({
-            'runtime':'ALT6030V4',
-            'deployed_at_utc':datetime.now(timezone.utc).isoformat(),
-            'commit':os.environ.get('GITHUB_SHA'),
-            'page_url':os.environ.get('DEPLOY_URL')
-          },ensure_ascii=False,indent=2),encoding='utf-8')
-          PY
-          git add public/data/pages_deploy_verified.json
-          git commit -m "Registrar despliegue Pages ALT6030V4" || true
-          git push origin HEAD:migracion-github-actions || true
