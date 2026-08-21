@@ -8,270 +8,56 @@ on:
     paths:
       - ".github/workflows/deploy-pages-ui.yml"
       - "public/index.html"
-      - "scripts/build_alt_6030_live.py"
+      - "public/data/alt_runtime_v4.js"
       - "public/data/live_market.json"
-      - "data/analysis/googlefinance_alt_aligned_closes_20260402_20260820.csv"
-      - "data/rolling90/sbs_profuturo_f3.csv"
+      - "public/data/alt_6030_experimental.json"
+      - "public/data/reduced_6030_challenger.json"
+      - "public/data/latest.json"
 
 permissions:
-  contents: read
+  contents: write
   pages: write
   id-token: write
 
 concurrency:
   group: pages-ui-fondo3
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    timeout-minutes: 8
     steps:
       - name: Descargar repositorio
         uses: actions/checkout@v4
         with:
           ref: migracion-github-actions
+          fetch-depth: 0
 
-      - name: Configurar Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
-
-      - name: Calcular 60/30 de nuevos tickers para el artefacto
-        run: |
-          pip install pandas numpy
-          python scripts/build_alt_6030_live.py
-          test -s public/data/alt_6030_experimental.json
-
-      - name: Completar visor Profuturo
+      - name: Preparar visor sin recalcular modelos
         run: |
           python - <<'PY'
           from pathlib import Path
-          import json
 
-          path = Path("public/index.html")
-          html = path.read_text(encoding="utf-8")
-          live = json.loads(Path("public/data/live_market.json").read_text(encoding="utf-8"))
-          assert live.get("experimental_assets"), "live_market.json no contiene experimental_assets"
-
-          # 1) Tarjeta SBS robusta.
-          sbs_script = r'''
-          <!-- SBS_TOP_CARD_DEPLOY_FIX_V3 -->
-          <script>
-          (function(){
-            const $=id=>document.getElementById(id);
-            const fmt=d=>{if(!d)return '—';const p=String(d).slice(0,10).split('-');return p.length===3?`${p[2]}/${p[1]}/${p[0]}`:String(d)};
-            function paint(l){
-              if(!l)return;
-              const v=Number(l.latest_sbs_vc),sv=$('sbsVc'),sd=$('sbsDate'),sw=$('window');
-              if(sv)sv.textContent=Number.isFinite(v)?v.toFixed(7):'—';
-              if(sd)sd.textContent=fmt(l.latest_sbs_date);
-              if(sw)sw.textContent=`${fmt(l.training_start)} → ${fmt(l.training_end)}`;
-            }
-            function load(){fetch('data/latest.json?ts='+Date.now(),{cache:'no-store'}).then(r=>r.json()).then(paint).catch(()=>{});}
-            if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',load,{once:true});else load();
-            setTimeout(load,700);
-          })();
-          </script>
-          '''
-          html = html.replace('</body>', sbs_script + '\n</body>', 1)
-
-          # 2) Panel de mercado de los seis nuevos tickers, con hora/fecha visible.
-          market_panel = r'''
-          <!-- EXPERIMENTAL_6030_MARKET_V2 -->
-          <section class="panel" id="marketExperimentalPanel">
-            <div class="market-head">
-              <div>
-                <div class="chart-title">Nuevos tickers 60/30</div>
-                <div class="market-mode" style="color:#93c5fd">EXPERIMENTAL · SEGUIMIENTO</div>
-              </div>
-              <div class="market-time" id="marketExperimentalTime">Cargando corte…</div>
-            </div>
-            <div id="marketExperimentalGrid" class="market-grid"></div>
-            <div class="note" style="margin-top:9px">.INX · CPER · EEM · NDX · SPBLSCUP · USD/PEN. El horario mostrado corresponde al dato usado en cada tarjeta.</div>
-          </section>
-          '''
-          audit_marker = '<section class="panel"><b>Auditoría</b>'
-          if audit_marker in html:
-              html = html.replace(audit_marker, market_panel + audit_marker, 1)
-          else:
-              html = html.replace('</main>', market_panel + '</main>', 1)
-
-          # 3) Tercer modelo en comparación de VC.
-          html = html.replace(
-              'OLS oficial vs Challenger 60/30 · sin NEM ni FCX + QQQ · cadena ciega sin reanclaje SBS dentro del bloque',
-              'OLS oficial vs dos modelos 60/30 · cadenas ciegas sin reanclaje SBS dentro del bloque',
-              1,
-          )
-          html = html.replace(
-              '.r6030-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}',
-              '.r6030-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}',
-              1,
-          )
-          html = html.replace(
-              '@media(max-width:700px){.r6030-head{display:block}.r6030-badge{display:inline-block;margin-top:7px}.r6030-grid{grid-template-columns:1fr 1fr}',
-              '@media(max-width:700px){.r6030-head{display:block}.r6030-badge{display:inline-block;margin-top:7px}.r6030-grid{grid-template-columns:1fr}',
-              1,
-          )
-          third_card = r'''
-              <!-- ALT_6030_COMPARE_V2 -->
-              <div class="r6030-card" id="r6030AltCard" style="border-color:#3b82f6">
-                <div class="r6030-label">60/30 NUEVOS TICKERS · EXPERIMENTAL</div>
-                <div id="r6030AltSignal" class="r6030-signal">CARGANDO…</div>
-                <div id="r6030AltVc" class="r6030-vc">VC —</div>
-                <div id="r6030AltRet" class="r6030-ret">Retorno —</div>
-                <div class="r6030-note">.INX · CPER · EEM · NDX · SPBLSCUP · USD/PEN</div>
-              </div>
-          '''
-          grid_end = '  </div>\n  <div class="r6030-strip">'
-          if grid_end not in html:
-              raise RuntimeError("No se encontró la grilla 60/30")
-          html = html.replace(grid_end, third_card + '  </div>\n  <div class="r6030-strip">', 1)
-
-          alt_history = r'''
-          <!-- ALT_6030_HISTORY_V2 -->
-          <div class="r6030-history" id="r6030AltHistory">
-            <div class="r6030-history-title">Ver nuevos tickers 60/30 en otra fecha</div>
-            <div class="r6030-history-controls"><input type="date" id="r6030AltDate"><button type="button" id="r6030AltDateBtn">Ver fecha</button></div>
-            <div id="r6030AltDateResult" class="r6030-history-result">Cargando histórico…</div>
-          </div>
-          '''
-          details_marker = '  <details class="r6030-details"><summary>Ver validación y reglas del challenger</summary>'
-          if details_marker in html:
-              html = html.replace(details_marker, alt_history + details_marker, 1)
-
-          # 4) Runtime independiente: mercado experimental, modelo, histórico y auditoría.
-          runtime = r'''
-          <!-- ALT_6030_RUNTIME_V3 -->
-          <script id="alt6030RuntimeV3">
-          (function(){
-            'use strict';
-            const $=id=>document.getElementById(id);
-            const wanted=['.INX','CPER','EEM','NDX','SPBLSCUP','USD/PEN'];
-            const finite=x=>x!==null&&x!==undefined&&x!==''&&Number.isFinite(Number(x));
-            const vc=x=>finite(x)?Number(x).toFixed(7):'—';
-            const pct=x=>finite(x)?`${Number(x)>=0?'+':''}${(Number(x)*100).toFixed(3)}%`:'—';
-            const pct2=x=>finite(x)?`${Number(x)>=0?'+':''}${(Number(x)*100).toFixed(2)}%`:'—';
-            const fmt=d=>{if(!d)return '—';const p=String(d).slice(0,10).split('-');return p.length===3?`${p[2]}/${p[1]}/${p[0]}`:String(d)};
-            const cls=s=>s==='SUBE'?'up':s==='BAJA'?'down':'flat';
-            const clock=(iso,tz)=>{try{return new Intl.DateTimeFormat('es-PE',{timeZone:tz,hour:'2-digit',minute:'2-digit',hour12:false}).format(new Date(iso))}catch(e){return '—'}};
-            let altData=null;
-
-            function stampLabel(stamp){
-              if(!stamp)return 'Hora no disponible';
-              const s=String(stamp);
-              if(s.includes('T'))return `Corte ${clock(s,'America/New_York')} NY · ${clock(s,'America/Lima')} Lima`;
-              return `Cierre ${fmt(s)}`;
-            }
-
-            function renderExperimentalMarket(live){
-              const rows=Array.isArray(live.experimental_assets)?live.experimental_assets:[];
-              const by=new Map(rows.map(x=>[x.serie,x]));
-              const grid=$('marketExperimentalGrid');
-              if(grid){
-                grid.innerHTML=wanted.map(name=>{
-                  const a=by.get(name)||{serie:name};
-                  const price=finite(a.precio_actual)?Number(a.precio_actual).toFixed(name==='USD/PEN'?4:2):'—';
-                  const ret=finite(a.retorno)?`<span class="${Number(a.retorno)>0?'pos':Number(a.retorno)<0?'neg':'zero'}">${pct2(a.retorno)}</span>`:'<span class="zero">—</span>';
-                  return `<div class="market-item"><div class="market-symbol">${name}</div><div class="market-price">${price}</div><div class="market-ret">${ret}</div><div class="market-source">${a.estado||'Dato pendiente'}<br><b>${stampLabel(a.timestamp)}</b></div></div>`;
-                }).join('');
-              }
-              const timed=rows.map(x=>x.timestamp).filter(x=>String(x||'').includes('T')).sort();
-              const head=$('marketExperimentalTime');
-              if(head){
-                const cut=timed.length?timed.at(-1):null;
-                head.innerHTML=`${cut?stampLabel(cut):'Sin corte intradía'}<br>Visor: ${clock(live.generated_at_lima,'America/Lima')} Lima`;
-              }
-            }
-
-            function renderAltModel(){
-              if(!altData)return;
-              const m=altData.model||{},s=m.signal||'—';
-              if($('r6030AltSignal')){$('r6030AltSignal').textContent=s;$('r6030AltSignal').className='r6030-signal '+cls(s);}
-              if($('r6030AltVc'))$('r6030AltVc').textContent='VC '+vc(m.vc_estimated);
-              if($('r6030AltRet'))$('r6030AltRet').textContent='Retorno '+pct(m.return_estimated);
-              const input=$('r6030AltDate');
-              if(input){input.min=altData.history_min_date||'';input.max=altData.history_max_date||altData.signal_date||'';if(!input.value)input.value=altData.signal_date||altData.history_max_date||'';}
-              renderAltHistory();
-            }
-
-            function renderAltHistory(){
-              const input=$('r6030AltDate'),box=$('r6030AltDateResult');
-              if(!input||!box||!altData)return;
-              const d=input.value;
-              const op=(altData.operational_history||[]).find(x=>x.fecha===d);
-              const bt=((altData.backtest_exact20||{}).rows||[]).find(x=>x.fecha===d);
-              const r=op||bt;
-              if(!r){box.textContent='No hay una observación del nuevo 60/30 para esa fecha.';return;}
-              if(String(r.source||'').includes('ANCLA')){
-                box.textContent=`Fecha ${fmt(d)} · ANCLA SBS DEL CICLO · VC ${vc(r.vc)} · punto de partida, no predicción.`;
-                return;
-              }
-              const parts=[`Fecha ${fmt(d)} · ${r.source||'60/30 nuevos tickers'}`,`VC ${vc(r.vc)}`,`retorno ${pct(r.return)}`,`señal ${r.signal||'—'}`];
-              if(finite(r.actual_vc))parts.push(`SBS real ${vc(r.actual_vc)} · error ${Number(r.abs_error).toFixed(4)}`);else parts.push('SBS real pendiente');
-              box.textContent=parts.join(' · ');
-            }
-
-            function renderAudit(latest,live,challenger,alt){
-              const box=$('audit');if(!box)return;
-              const issues=[];
-              if(!live||!live.generated_at_lima)issues.push('snapshot OLS sin hora');
-              if(!challenger||challenger.signal_date!==live.signal_date)issues.push('challenger 60/30 desalineado');
-              if(!alt||alt.signal_date!==live.signal_date)issues.push('nuevos tickers 60/30 desalineados');
-              const exp=live&&Array.isArray(live.experimental_assets)?live.experimental_assets:[];
-              if(exp.length!==6)issues.push(`tickers experimentales ${exp.length}/6`);
-              const status=issues.length?'REVISAR':'OK';
-              const cut=live&&live.generated_at_lima?clock(live.generated_at_lima,'America/Lima')+' Lima':'—';
-              box.innerHTML=`<b class="${issues.length?'neg':'pos'}">${status}</b> · corte ${cut} · OLS ${fmt(live&&live.signal_date)} · Challenger ${fmt(challenger&&challenger.signal_date)} · Nuevos tickers ${fmt(alt&&alt.signal_date)} · SBS último ${fmt(latest&&latest.latest_sbs_date)}${issues.length?'<br>'+issues.join(' · '):'<br>3 modelos y 6 tickers experimentales cargados.'}`;
-            }
-
-            async function loadAll(){
-              const ts=Date.now();
-              const j=async url=>{const r=await fetch(url,{cache:'no-store'});if(!r.ok)throw new Error(url+' '+r.status);return r.json();};
-              let latest=null,live=null,challenger=null,alt=null;
-              try{live=await j('data/live_market.json?ts='+ts);renderExperimentalMarket(live);}catch(e){}
-              try{alt=await j('data/alt_6030_experimental.json?ts='+ts);altData=alt;renderAltModel();}catch(e){const s=$('r6030AltSignal');if(s){s.textContent='NO DISPONIBLE';s.className='r6030-signal down'};if($('r6030AltDateResult'))$('r6030AltDateResult').textContent='No se pudo cargar el histórico del nuevo 60/30.';}
-              try{challenger=await j('data/reduced_6030_challenger.json?ts='+ts);}catch(e){}
-              try{latest=await j('data/latest.json?ts='+ts);}catch(e){}
-              renderAudit(latest,live,challenger,alt);
-              if(challenger&&alt){
-                const sigs=[challenger.official&&challenger.official.signal,challenger.challenger&&challenger.challenger.signal,alt.model&&alt.model.signal].filter(Boolean);
-                const b=$('r6030Badge');if(b&&sigs.length===3)b.textContent=(new Set(sigs).size===1)?'3 MODELOS · MISMA SEÑAL':'3 MODELOS · SEÑALES DISTINTAS';
-              }
-            }
-
-            if($('r6030AltDateBtn'))$('r6030AltDateBtn').onclick=renderAltHistory;
-            if($('r6030AltDate'))$('r6030AltDate').onchange=renderAltHistory;
-            if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',loadAll,{once:true});else loadAll();
-            setTimeout(loadAll,1200);
-            setInterval(loadAll,60000);
-          })();
-          </script>
-          '''
-          html = html.replace('</body>', runtime + '\n</body>', 1)
-
-          path.write_text(html, encoding="utf-8")
+          path = Path('public/index.html')
+          html = path.read_text(encoding='utf-8')
+          tag = '<script src="data/alt_runtime_v4.js?rev=ALT6030V4"></script>'
+          if tag not in html:
+              html = html.replace('</body>', tag + '\n</body>', 1)
+          path.write_text(html, encoding='utf-8')
           PY
 
-      - name: Validar visores y datos
+      - name: Validar datos necesarios
         run: |
           test -s public/index.html
-          test -s public/data/latest.json
-          test -s public/data/series.json
-          test -s public/data/signals.json
-          test -s public/data/operation_series.json
+          test -s public/data/alt_runtime_v4.js
           test -s public/data/live_market.json
-          test -s public/data/reduced_6030_challenger.json
-          test -s public/data/reduced_6030_history.json
           test -s public/data/alt_6030_experimental.json
-          test -s public/habitat/index.html
-          test -s public/habitat/data/live_market.json
-          grep -q "Mercado ahora" public/index.html
-          grep -q "60/30 SIN NEM-FCX + QQQ · CHALLENGER" public/index.html
-          grep -q "60/30 NUEVOS TICKERS · EXPERIMENTAL" public/index.html
-          grep -q "Ver nuevos tickers 60/30 en otra fecha" public/index.html
-          grep -q "EXPERIMENTAL_6030_MARKET_V2" public/index.html
-          grep -q "ALT_6030_RUNTIME_V3" public/index.html
+          test -s public/data/reduced_6030_challenger.json
+          test -s public/data/latest.json
+          grep -q "alt_runtime_v4.js" public/index.html
           grep -q '"experimental_assets"' public/data/live_market.json
+          grep -q '"vc_estimated"' public/data/alt_6030_experimental.json
 
       - name: Configurar GitHub Pages
         uses: actions/configure-pages@v5
@@ -284,3 +70,28 @@ jobs:
       - name: Publicar visor
         id: deployment
         uses: actions/deploy-pages@v4
+
+      - name: Registrar despliegue verificado
+        if: success()
+        env:
+          DEPLOY_URL: ${{ steps.deployment.outputs.page_url }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git fetch origin migracion-github-actions
+          git reset --hard origin/migracion-github-actions
+          python - <<'PY'
+          import json, os
+          from datetime import datetime, timezone
+          from pathlib import Path
+          p=Path('public/data/pages_deploy_verified.json')
+          p.write_text(json.dumps({
+            'runtime':'ALT6030V4',
+            'deployed_at_utc':datetime.now(timezone.utc).isoformat(),
+            'commit':os.environ.get('GITHUB_SHA'),
+            'page_url':os.environ.get('DEPLOY_URL')
+          },ensure_ascii=False,indent=2),encoding='utf-8')
+          PY
+          git add public/data/pages_deploy_verified.json
+          git commit -m "Registrar despliegue Pages ALT6030V4" || true
+          git push origin HEAD:migracion-github-actions || true
