@@ -27,6 +27,45 @@ jobs:
         with:
           ref: migracion-github-actions
 
+      - name: Reparar tarjeta SBS en el artefacto
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path("public/index.html")
+          html = path.read_text(encoding="utf-8")
+          marker = "SBS_TOP_CARD_DEPLOY_FIX_V2"
+          if marker not in html:
+              script = r'''
+          <!-- SBS_TOP_CARD_DEPLOY_FIX_V2 -->
+          <script>
+          (function(){
+            'use strict';
+            const $=id=>document.getElementById(id);
+            const fmt=d=>{if(!d)return '—';const p=String(d).slice(0,10).split('-');return p.length===3?`${p[2]}/${p[1]}/${p[0]}`:String(d)};
+            function paint(l){
+              if(!l)return;
+              const v=Number(l.latest_sbs_vc),sv=$('sbsVc'),sd=$('sbsDate'),sw=$('window');
+              if(sv)sv.textContent=Number.isFinite(v)?v.toFixed(7):'—';
+              if(sd)sd.textContent=fmt(l.latest_sbs_date);
+              if(sw)sw.textContent=`${fmt(l.training_start)} → ${fmt(l.training_end)}`;
+            }
+            function load(){
+              fetch('data/latest.json?ts='+Date.now(),{cache:'no-store'})
+                .then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.json()})
+                .then(paint)
+                .catch(()=>{});
+            }
+            if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',load,{once:true});else load();
+            setTimeout(load,600);
+            setTimeout(load,1800);
+          })();
+          </script>
+          '''
+              html = html.replace("</body>", script + "\n</body>", 1)
+              path.write_text(html, encoding="utf-8")
+          PY
+
       - name: Validar visores y datos
         run: |
           test -s public/index.html
@@ -42,7 +81,7 @@ jobs:
           grep -q "Mercado ahora" public/index.html
           grep -q "60/30 SIN NEM-FCX + QQQ · CHALLENGER" public/index.html
           grep -q "Ver Challenger 60/30 en otra fecha" public/index.html
-          grep -q "TOP_SBS_REPAIR_6030" public/index.html
+          grep -q "SBS_TOP_CARD_DEPLOY_FIX_V2" public/index.html
           grep -q "raw.githubusercontent.com/rldaqp/afp-fondo3-monitor" public/index.html
           grep -q "raw.githubusercontent.com/rldaqp/afp-fondo3-monitor" public/habitat/index.html
 
