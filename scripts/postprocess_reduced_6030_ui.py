@@ -3,8 +3,13 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
+import build_reduced_6030_history as history_builder
+
 ROOT = Path(__file__).resolve().parents[1]
 HTML_PATH = ROOT / "public" / "index.html"
+
+# El historial se genera en el mismo paso de UI para no crear otro workflow.
+history_builder.main()
 html = HTML_PATH.read_text(encoding="utf-8")
 
 # Retira challengers visibles anteriores. El visor debe mostrar solo el 60/30.
