@@ -14,8 +14,18 @@ PRED_OUT = ROOT / "analysis" / "profuturo_rolling90_vc_predictions.csv"
 
 WINDOW = 90
 THRESHOLD = 0.001
+BLIND_CUTOFF = pd.Timestamp("2026-08-06")
 TARGET_END = pd.Timestamp("2026-08-20")
-FEATURES = ["ret_SPY", "ret_EEM", "ret_EPU", "ret_MCHI", "ret_USD_PEN", "ret_QQQ"]
+KNOWN_SBS_19 = 70.327
+
+OFFICIAL_FEATURES = [
+    "ret_SPY", "ret_EEM", "ret_EPU", "ret_MCHI",
+    "ret_NEM", "ret_FCX", "ret_USD_PEN",
+]
+ALT_FEATURES = [
+    "ret_SPY", "ret_EEM", "ret_EPU", "ret_MCHI",
+    "ret_USD_PEN", "ret_QQQ",
+]
 
 
 def classify(x: float) -> str:
@@ -59,6 +69,8 @@ def load_qqq(start: pd.Timestamp, end: pd.Timestamp) -> pd.DataFrame:
         threads=False,
     )
     close = extract_close(raw, "QQQ")
+    if close.empty:
+        raise RuntimeError("No se pudo descargar QQQ")
     idx = pd.to_datetime(close.index)
     if getattr(idx, "tz", None) is not None:
         idx = idx.tz_localize(None)
@@ -68,62 +80,116 @@ def load_qqq(start: pd.Timestamp, end: pd.Timestamp) -> pd.DataFrame:
     return q[["fecha", "QQQ", "ret_QQQ"]]
 
 
-def fit_ols(train: pd.DataFrame) -> np.ndarray:
-    x = train[FEATURES].to_numpy(float)
+def fit_ols(train: pd.DataFrame, features: list[str]) -> np.ndarray:
+    x = train[features].to_numpy(float)
     y = train["ret_target"].to_numpy(float)
     return np.linalg.lstsq(np.c_[np.ones(len(x)), x], y, rcond=None)[0]
 
 
-def predict(beta: np.ndarray, row: pd.Series) -> float:
-    return float(np.r_[1.0, row[FEATURES].to_numpy(float)] @ beta)
+def predict(beta: np.ndarray, row: pd.Series, features: list[str]) -> float:
+    return float(np.r_[1.0, row[features].to_numpy(float)] @ beta)
 
 
-def vif_table(train: pd.DataFrame) -> dict:
-    x = train[FEATURES].to_numpy(float)
-    out = {}
-    for j, name in enumerate(FEATURES):
-        y = x[:, j]
-        others = np.delete(x, j, axis=1)
-        d = np.c_[np.ones(len(others)), others]
-        b = np.linalg.lstsq(d, y, rcond=None)[0]
-        fitted = d @ b
-        ss_res = float(np.sum((y - fitted) ** 2))
-        ss_tot = float(np.sum((y - y.mean()) ** 2))
-        r2 = 1.0 - ss_res / ss_tot if ss_tot > 1e-20 else 1.0
-        out[name] = float(1.0 / max(1e-12, 1.0 - r2))
-    return {"by_feature": out, "max_vif": max(out.values()), "max_vif_feature": max(out, key=out.get)}
+def coefficient_dict(beta: np.ndarray, features: list[str]) -> dict[str, float]:
+    out = {"intercept": float(beta[0])}
+    out.update({features[i]: float(beta[i + 1]) for i in range(len(features))})
+    return out
 
 
-def metric_block(pred: pd.DataFrame) -> dict:
-    actual_ret = pred["actual_return"].to_numpy(float)
-    pred_ret = pred["pred_return"].to_numpy(float)
-    actual_vc = pred["actual_vc"].to_numpy(float)
-    est_vc = pred["pred_vc"].to_numpy(float)
-    prev_vc = pred["prev_vc"].to_numpy(float)
-    err_vc = est_vc - actual_vc
-    rel = np.abs(err_vc) / actual_vc
-    naive_rmse = float(np.sqrt(np.mean((prev_vc - actual_vc) ** 2)))
-    rmse = float(np.sqrt(np.mean(err_vc ** 2)))
-    den = float(np.sum((actual_ret - actual_ret.mean()) ** 2))
-    r2 = None if den <= 1e-20 else float(1.0 - np.sum((pred_ret - actual_ret) ** 2) / den)
-    corr = None if np.std(pred_ret) == 0 or np.std(actual_ret) == 0 else float(np.corrcoef(pred_ret, actual_ret)[0, 1])
+def prepare_train(
+    sbs: pd.DataFrame,
+    marketq: pd.DataFrame,
+    features: list[str],
+    cutoff: pd.Timestamp,
+) -> pd.DataFrame:
+    frame = sbs[["fecha", "valor_cuota", "ret_target"]].merge(
+        marketq[["fecha", *features]], on="fecha", how="inner"
+    )
+    frame = frame.loc[frame["fecha"] <= cutoff]
+    frame = frame.dropna(subset=["valor_cuota", "ret_target", *features])
+    frame = frame.sort_values("fecha").drop_duplicates("fecha", keep="last")
+    if len(frame) < WINDOW:
+        raise RuntimeError(f"Muestra insuficiente para {features}: {len(frame)}")
+    return frame.tail(WINDOW).reset_index(drop=True)
+
+
+def fill_pending_fx(marketq: pd.DataFrame) -> tuple[pd.DataFrame, dict[str, object]]:
+    pending_path = DATA / "pending_predictions.csv"
+    info: dict[str, object] = {"used": False}
+    if not pending_path.exists():
+        return marketq, info
+    pending = read_csv(pending_path)
+    if "ret_USD_PEN" not in pending.columns:
+        return marketq, info
+    pending["ret_USD_PEN"] = pd.to_numeric(pending["ret_USD_PEN"], errors="coerce")
+    out = marketq.copy()
+    for _, p in pending.loc[(pending["fecha"] > BLIND_CUTOFF) & (pending["fecha"] <= TARGET_END)].iterrows():
+        if pd.isna(p["ret_USD_PEN"]):
+            continue
+        mask = out["fecha"].eq(p["fecha"])
+        if mask.any() and out.loc[mask, "ret_USD_PEN"].isna().all():
+            out.loc[mask, "ret_USD_PEN"] = float(p["ret_USD_PEN"])
+            info = {
+                "used": True,
+                "date": pd.Timestamp(p["fecha"]).strftime("%Y-%m-%d"),
+                "ret_USD_PEN": float(p["ret_USD_PEN"]),
+                "source": str(p.get("usd_pen_fuente", "pending_predictions.csv")),
+                "provisional": bool(p.get("usd_pen_provisional", True)),
+            }
+    return out, info
+
+
+def blind_path(
+    name: str,
+    beta: np.ndarray,
+    features: list[str],
+    marketq: pd.DataFrame,
+    anchor_vc: float,
+    actual_map: dict[pd.Timestamp, float],
+) -> pd.DataFrame:
+    needed = sorted(set(OFFICIAL_FEATURES + ALT_FEATURES))
+    future = marketq.loc[(marketq["fecha"] > BLIND_CUTOFF) & (marketq["fecha"] <= TARGET_END)].copy()
+    # En este tramo 7-20 agosto no hay feriados bursátiles de EE.UU.; exigimos solo las variables del modelo.
+    future = future.dropna(subset=features).sort_values("fecha").drop_duplicates("fecha", keep="last")
+    vc = float(anchor_vc)
+    rows: list[dict[str, object]] = []
+    for _, row in future.iterrows():
+        pred_ret = predict(beta, row, features)
+        base = vc
+        vc = float(vc * (1.0 + pred_ret))
+        fecha = pd.Timestamp(row["fecha"])
+        actual_vc = actual_map.get(fecha)
+        rows.append({
+            "fecha": fecha,
+            "model": name,
+            "base_blind_vc": base,
+            "pred_return": pred_ret,
+            "pred_signal": classify(pred_ret),
+            "pred_vc_blind": vc,
+            "actual_vc": actual_vc,
+            "error_signed": None if actual_vc is None else float(vc - actual_vc),
+            "error_abs": None if actual_vc is None else float(abs(vc - actual_vc)),
+        })
+    return pd.DataFrame(rows)
+
+
+def path_metrics(path: pd.DataFrame) -> dict[str, object]:
+    v = path.dropna(subset=["actual_vc"]).copy()
+    err = v["pred_vc_blind"].to_numpy(float) - v["actual_vc"].to_numpy(float)
+    rel = np.abs(err) / v["actual_vc"].to_numpy(float)
     return {
-        "n": int(len(pred)),
-        "start": pred.iloc[0]["fecha"].strftime("%Y-%m-%d"),
-        "end": pred.iloc[-1]["fecha"].strftime("%Y-%m-%d"),
-        "vc_mae": float(np.mean(np.abs(err_vc))),
-        "vc_rmse": rmse,
+        "n": int(len(v)),
+        "start": v.iloc[0]["fecha"].strftime("%Y-%m-%d"),
+        "end": v.iloc[-1]["fecha"].strftime("%Y-%m-%d"),
+        "vc_mae": float(np.mean(np.abs(err))),
+        "vc_rmse": float(np.sqrt(np.mean(err ** 2))),
         "vc_mape_pct": float(np.mean(rel) * 100.0),
-        "vc_bias": float(np.mean(err_vc)),
+        "vc_bias": float(np.mean(err)),
         "within_0_5pct": float(np.mean(rel <= 0.005)),
         "within_1pct": float(np.mean(rel <= 0.01)),
-        "direction_accuracy": float(np.mean(pred["pred_signal"].to_numpy() == pred["actual_signal"].to_numpy())),
-        "return_mae": float(np.mean(np.abs(pred_ret - actual_ret))),
-        "return_rmse": float(np.sqrt(np.mean((pred_ret - actual_ret) ** 2))),
-        "oos_r2_return": r2,
-        "pred_actual_return_corr": corr,
-        "naive_vc_rmse": naive_rmse,
-        "theil_u_vs_no_change": None if naive_rmse <= 0 else float(rmse / naive_rmse),
+        "final_actual_vc": float(v.iloc[-1]["actual_vc"]),
+        "final_pred_vc": float(v.iloc[-1]["pred_vc_blind"]),
+        "final_error": float(v.iloc[-1]["pred_vc_blind"] - v.iloc[-1]["actual_vc"]),
     }
 
 
@@ -132,109 +198,108 @@ def main() -> None:
     sbs = read_csv(DATA / "sbs_profuturo_f3.csv")
     sbs["valor_cuota"] = pd.to_numeric(sbs["valor_cuota"], errors="coerce")
     sbs = sbs.dropna(subset=["valor_cuota"]).copy()
-    sbs["prev_vc"] = sbs["valor_cuota"].shift(1)
     sbs["ret_target"] = sbs["valor_cuota"].pct_change(fill_method=None)
 
     qqq = load_qqq(markets["fecha"].min(), TARGET_END)
-    marketq = markets.merge(qqq[["fecha", "QQQ", "ret_QQQ"]], on="fecha", how="left")
+    marketq = markets.merge(qqq, on="fecha", how="left")
+    marketq, fx_info = fill_pending_fx(marketq)
 
-    real = sbs[["fecha", "valor_cuota", "prev_vc", "ret_target"]].merge(
-        marketq[["fecha", "ret_SPY", "ret_EEM", "ret_EPU", "ret_MCHI", "ret_USD_PEN", "ret_QQQ"]],
-        on="fecha", how="inner"
-    )
-    real = real.loc[real["fecha"] >= pd.Timestamp("2025-01-01")]
-    real = real.dropna(subset=["valor_cuota", "prev_vc", "ret_target", *FEATURES]).sort_values("fecha").drop_duplicates("fecha", keep="last").reset_index(drop=True)
-    if len(real) <= WINDOW:
-        raise RuntimeError("Muestra insuficiente")
+    anchor_row = sbs.loc[sbs["fecha"].eq(BLIND_CUTOFF)]
+    if anchor_row.empty:
+        raise RuntimeError("No existe VC SBS del 2026-08-06 para anclar la prueba ciega")
+    anchor_vc = float(anchor_row.iloc[-1]["valor_cuota"])
 
-    rows = []
-    for i in range(WINDOW, len(real)):
-        train = real.iloc[i-WINDOW:i].copy()
-        current = real.iloc[i]
-        beta = fit_ols(train)
-        pred_ret = predict(beta, current)
-        pred_vc = float(current["prev_vc"] * (1.0 + pred_ret))
-        actual_ret = float(current["ret_target"])
-        rows.append({
-            "fecha": current["fecha"],
-            "prev_vc": float(current["prev_vc"]),
-            "actual_vc": float(current["valor_cuota"]),
-            "pred_vc": pred_vc,
-            "actual_return": actual_ret,
-            "pred_return": pred_ret,
-            "actual_signal": classify(actual_ret),
-            "pred_signal": classify(pred_ret),
-            "train_start": train.iloc[0]["fecha"],
-            "train_end": train.iloc[-1]["fecha"],
-        })
-    preds = pd.DataFrame(rows)
+    train_official = prepare_train(sbs, marketq, OFFICIAL_FEATURES, BLIND_CUTOFF)
+    train_alt = prepare_train(sbs, marketq, ALT_FEATURES, BLIND_CUTOFF)
+    beta_official = fit_ols(train_official, OFFICIAL_FEATURES)
+    beta_alt = fit_ols(train_alt, ALT_FEATURES)
 
-    metrics = {
-        "recent_60": metric_block(preds.tail(60).reset_index(drop=True)),
-        "recent_90": metric_block(preds.tail(90).reset_index(drop=True)),
-        "all_oos": metric_block(preds.reset_index(drop=True)),
+    actual_map = {
+        pd.Timestamp(r["fecha"]): float(r["valor_cuota"])
+        for _, r in sbs.loc[(sbs["fecha"] > BLIND_CUTOFF) & (sbs["fecha"] <= TARGET_END)].iterrows()
     }
+    # El 19 se usa exclusivamente para evaluar después de pronosticar; nunca entra al entrenamiento.
+    actual_map[pd.Timestamp("2026-08-19")] = KNOWN_SBS_19
 
-    last_sbs = sbs.dropna(subset=["valor_cuota"]).sort_values("fecha").iloc[-1]
-    last_sbs_date = pd.Timestamp(last_sbs["fecha"])
-    chained_vc = float(last_sbs["valor_cuota"])
-    projection_rows = []
+    official = blind_path(
+        "ACTUAL_GITHUB_7F", beta_official, OFFICIAL_FEATURES, marketq, anchor_vc, actual_map
+    )
+    alt = blind_path(
+        "SIN_NEM_FCX_MAS_QQQ", beta_alt, ALT_FEATURES, marketq, anchor_vc, actual_map
+    )
 
-    # Con SBS aún sin publicar, no inventamos targets para 19/20: el entrenamiento permanece
-    # en las últimas 90 observaciones reales disponibles y el VC se encadena desde el último SBS.
-    train_current = real.tail(WINDOW).copy()
-    beta_current = fit_ols(train_current)
-    current_market = marketq.loc[(marketq["fecha"] > last_sbs_date) & (marketq["fecha"] <= TARGET_END)].copy()
-    current_market = current_market.dropna(subset=FEATURES).sort_values("fecha")
-    for _, row in current_market.iterrows():
-        pred_ret = predict(beta_current, row)
-        base = chained_vc
-        chained_vc = float(base * (1.0 + pred_ret))
-        projection_rows.append({
-            "fecha": row["fecha"].strftime("%Y-%m-%d"),
-            "base_vc": base,
-            "base_type": "SBS real" if len(projection_rows) == 0 else "VC estimado previo",
-            "pred_return": pred_ret,
-            "signal": classify(pred_ret),
-            "pred_vc": chained_vc,
-            "qqq_close": float(row["QQQ"]) if pd.notna(row.get("QQQ")) else None,
-            "qqq_return": float(row["ret_QQQ"]),
-            "fx_return": float(row["ret_USD_PEN"]),
-        })
+    common_dates = sorted(set(official["fecha"]).intersection(set(alt["fecha"])))
+    official = official.loc[official["fecha"].isin(common_dates)].reset_index(drop=True)
+    alt = alt.loc[alt["fecha"].isin(common_dates)].reset_index(drop=True)
 
-    coef = {"intercept": float(beta_current[0])}
-    coef.update({FEATURES[i]: float(beta_current[i+1]) for i in range(len(FEATURES))})
+    comp = official[["fecha", "actual_vc", "pred_vc_blind", "pred_return", "error_abs", "error_signed"]].rename(columns={
+        "pred_vc_blind": "vc_actual_model_blind",
+        "pred_return": "ret_actual_model",
+        "error_abs": "abs_err_actual_model",
+        "error_signed": "err_actual_model",
+    }).merge(
+        alt[["fecha", "pred_vc_blind", "pred_return", "error_abs", "error_signed"]].rename(columns={
+            "pred_vc_blind": "vc_alt_blind",
+            "pred_return": "ret_alt",
+            "error_abs": "abs_err_alt",
+            "error_signed": "err_alt",
+        }), on="fecha", how="inner"
+    )
+    comp["alt_minus_actual_model"] = comp["vc_alt_blind"] - comp["vc_actual_model_blind"]
+    comp["winner"] = np.where(
+        comp["actual_vc"].isna(),
+        "SIN SBS",
+        np.where(comp["abs_err_alt"] < comp["abs_err_actual_model"], "SIN NEM/FCX + QQQ", "ACTUAL GITHUB"),
+    )
 
     payload = {
         "generated_at_utc": pd.Timestamp.now(tz="UTC").isoformat(),
         "fund": "PROFUTURO Fondo 3",
-        "purpose": "Rolling 90 real-vs-estimado y proyección hasta cierre 2026-08-20; investigación, no cambia producción.",
-        "features": FEATURES,
-        "excluded": ["ret_NEM", "ret_FCX"],
-        "qqq_representation": "retorno QQQ directo; predictivamente equivalente a QQQ residualizado en OLS con los mismos otros factores.",
-        "common_real_rows": int(len(real)),
-        "oos_prediction_rows": int(len(preds)),
-        "first_oos": preds.iloc[0]["fecha"].strftime("%Y-%m-%d"),
-        "last_oos": preds.iloc[-1]["fecha"].strftime("%Y-%m-%d"),
-        "metrics": metrics,
-        "current_training": {
-            "n": WINDOW,
-            "start": train_current.iloc[0]["fecha"].strftime("%Y-%m-%d"),
-            "end": train_current.iloc[-1]["fecha"].strftime("%Y-%m-%d"),
-            "coefficients": coef,
-            "vif": vif_table(train_current),
+        "purpose": "Prueba ciega estricta: después del VC SBS del 06/08 no se usa ningún VC SBS para reanclar el nivel ni para recalibrar los coeficientes. Solo entran retornos observados de indicadores.",
+        "blind_cutoff": BLIND_CUTOFF.strftime("%Y-%m-%d"),
+        "anchor_vc_sbs": anchor_vc,
+        "target_end": TARGET_END.strftime("%Y-%m-%d"),
+        "important_method_note": "Una vez que se prohíbe usar nuevos VC SBS, un rolling90 genuino ya no puede recalibrarse porque falta la variable objetivo. Por eso esta es la prueba sin fuga de información correcta: ambos modelos se estiman una sola vez con las últimas 90 observaciones conocidas al 06/08, se congelan y desde el 07/08 se encadena el VC usando únicamente los indicadores. El VC SBS posterior se revela solo al final para medir error.",
+        "models": {
+            "ACTUAL_GITHUB_7F": {
+                "features": OFFICIAL_FEATURES,
+                "train_n": int(len(train_official)),
+                "train_start": train_official.iloc[0]["fecha"].strftime("%Y-%m-%d"),
+                "train_end": train_official.iloc[-1]["fecha"].strftime("%Y-%m-%d"),
+                "coefficients": coefficient_dict(beta_official, OFFICIAL_FEATURES),
+                "metrics_blind": path_metrics(official),
+            },
+            "SIN_NEM_FCX_MAS_QQQ": {
+                "features": ALT_FEATURES,
+                "train_n": int(len(train_alt)),
+                "train_start": train_alt.iloc[0]["fecha"].strftime("%Y-%m-%d"),
+                "train_end": train_alt.iloc[-1]["fecha"].strftime("%Y-%m-%d"),
+                "coefficients": coefficient_dict(beta_alt, ALT_FEATURES),
+                "metrics_blind": path_metrics(alt),
+            },
         },
-        "last_sbs": {"fecha": last_sbs_date.strftime("%Y-%m-%d"), "valor_cuota": float(last_sbs["valor_cuota"])},
-        "projection_to_close": projection_rows,
-        "projection_note": "19/20 se proyectan con coeficientes rolling90 estimados sobre las últimas 90 observaciones SBS reales. Al no existir todavía VC SBS posterior al 18, el entrenamiento no incorpora retornos estimados como si fueran reales; solo se encadena el nivel del VC para obtener el 20.",
+        "fx_pending_fill": fx_info,
+        "sbs_19_used_only_for_evaluation": KNOWN_SBS_19,
+        "comparison": [
+            {
+                "fecha": r["fecha"].strftime("%Y-%m-%d"),
+                "actual_vc": None if pd.isna(r["actual_vc"]) else float(r["actual_vc"]),
+                "vc_actual_model_blind": float(r["vc_actual_model_blind"]),
+                "vc_alt_blind": float(r["vc_alt_blind"]),
+                "abs_err_actual_model": None if pd.isna(r["abs_err_actual_model"]) else float(r["abs_err_actual_model"]),
+                "abs_err_alt": None if pd.isna(r["abs_err_alt"]) else float(r["abs_err_alt"]),
+                "alt_minus_actual_model": float(r["alt_minus_actual_model"]),
+                "winner": str(r["winner"]),
+            }
+            for _, r in comp.iterrows()
+        ],
     }
 
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
-    p = preds.copy()
-    for c in ["fecha", "train_start", "train_end"]:
-        p[c] = pd.to_datetime(p[c]).dt.strftime("%Y-%m-%d")
-    p.to_csv(PRED_OUT, index=False)
+    out_csv = comp.copy()
+    out_csv["fecha"] = pd.to_datetime(out_csv["fecha"]).dt.strftime("%Y-%m-%d")
+    out_csv.to_csv(PRED_OUT, index=False)
     print(json.dumps(payload, ensure_ascii=False, indent=2))
 
 
