@@ -1,0 +1,33 @@
+name: Calcular variantes QQQ 18-20 agosto
+on:
+  push:
+    branches: [migracion-github-actions]
+    paths:
+      - 'scripts/calc_custom_qqq_variants_18_20.py'
+      - '.github/workflows/calc-custom-qqq-variants-18-20.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  calculate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: migracion-github-actions
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+      - run: pip install -r requirements.txt
+      - run: python scripts/calc_custom_qqq_variants_18_20.py
+      - run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add analysis/custom_qqq_variants_20260818_20.json
+          if ! git diff --cached --quiet; then
+            git commit -m 'Guardar variantes QQQ 18-20 agosto'
+            git pull --rebase origin migracion-github-actions
+            git push origin HEAD:migracion-github-actions
+          fi
