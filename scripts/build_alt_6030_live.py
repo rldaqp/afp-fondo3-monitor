@@ -312,3 +312,5 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+
+# MANUAL_TRIGGER_20260821_1313_LIMA
