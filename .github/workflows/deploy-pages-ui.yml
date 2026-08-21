@@ -140,6 +140,110 @@ jobs:
               index.write_text(html, encoding="utf-8")
           PY
 
+      - name: Inyectar tercer modelo en comparación de VC
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          index = Path("public/index.html")
+          html = index.read_text(encoding="utf-8")
+          marker = "ALT_6030_COMPARE_DEPLOY_V1"
+          if marker not in html:
+              html = html.replace(
+                  "OLS oficial vs Challenger 60/30 · sin NEM ni FCX + QQQ · cadena ciega sin reanclaje SBS dentro del bloque",
+                  "OLS oficial vs dos modelos 60/30 · cadenas ciegas sin reanclaje SBS dentro del bloque",
+                  1,
+              )
+              html = html.replace(
+                  ".r6030-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}",
+                  ".r6030-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}",
+                  1,
+              )
+              html = html.replace(
+                  ".r6030-grid{grid-template-columns:1fr 1fr}",
+                  ".r6030-grid{grid-template-columns:1fr}",
+                  1,
+              )
+              third_card = r'''
+              <!-- ALT_6030_COMPARE_DEPLOY_V1 -->
+              <div class="r6030-card" id="r6030AltCard" style="border-color:#3b82f6">
+                <div class="r6030-label">60/30 NUEVOS TICKERS · EXPERIMENTAL</div>
+                <div id="r6030AltSignal" class="r6030-signal">CARGANDO…</div>
+                <div id="r6030AltVc" class="r6030-vc">VC —</div>
+                <div id="r6030AltRet" class="r6030-ret">Retorno —</div>
+                <div class="r6030-note">.INX · CPER · EEM · NDX · SPBLSCUP · USD/PEN</div>
+              </div>
+          '''
+              needle = '  </div>\n  <div class="r6030-strip">'
+              if needle not in html:
+                  raise RuntimeError("No se encontró la grilla de comparación 60/30")
+              html = html.replace(needle, third_card + '  </div>\n  <div class="r6030-strip">', 1)
+
+              alt_date = '<div id="r6030AltDateResult" class="r6030-history-result" style="color:#93c5fd"></div>'
+              date_needle = '<div id="r6030DateResult" class="r6030-history-result">Elige una fecha para comparar VC estimado, VC SBS y error.</div>'
+              if date_needle in html:
+                  html = html.replace(date_needle, date_needle + alt_date, 1)
+
+              html = html.replace(
+                  'El OLS rolling 90 continúa siendo oficial. El 60/30 es el único challenger y se contrasta en sombra contra SBS.',
+                  'El OLS rolling 90 continúa siendo oficial. Se muestran en paralelo el challenger 60/30 vigente y el 60/30 experimental con nuevos tickers.',
+                  1,
+              )
+
+              script = r'''
+          <script id="alt6030CompareScript">
+          (function(){
+            'use strict';
+            const $=id=>document.getElementById(id);
+            const vc=x=>x==null||!Number.isFinite(Number(x))?'—':Number(x).toFixed(7);
+            const pct=x=>x==null||!Number.isFinite(Number(x))?'—':(Number(x)*100).toFixed(3)+'%';
+            const fmt=d=>{if(!d)return '—';const p=String(d).slice(0,10).split('-');return p.length===3?`${p[2]}/${p[1]}/${p[0]}`:String(d)};
+            const cls=s=>s==='SUBE'?'up':s==='BAJA'?'down':'flat';
+            let altData=null,currentData=null;
+            function renderDate(){
+              const input=$('r6030Date'),box=$('r6030AltDateResult');if(!input||!box||!altData)return;
+              const date=input.value;
+              const op=(altData.operational_history||[]).find(x=>x.fecha===date);
+              const hist=((altData.backtest_exact20||{}).rows||[]).find(x=>x.fecha===date);
+              const r=op||hist;
+              if(!r){box.textContent='Nuevos tickers: no hay observación para esa fecha.';return;}
+              const actual=r.actual_vc;
+              box.textContent=`Nuevos tickers 60/30 · VC ${vc(r.vc)} · retorno ${pct(r.return)}${actual!=null?' · SBS real '+vc(actual)+' · error '+Math.abs(Number(r.vc)-Number(actual)).toFixed(4):' · SBS real pendiente'}`;
+            }
+            function paint(){
+              if(!altData)return;
+              const m=altData.model||{},signal=m.signal||'—';
+              const s=$('r6030AltSignal'),v=$('r6030AltVc'),r=$('r6030AltRet');
+              if(s){s.textContent=signal;s.className='r6030-signal '+cls(signal)}
+              if(v)v.textContent='VC '+vc(m.vc_estimated);
+              if(r)r.textContent='Retorno '+pct(m.return_estimated);
+              if(currentData){
+                const sigs=[currentData.official&&currentData.official.signal,currentData.challenger&&currentData.challenger.signal,signal].filter(Boolean);
+                const badge=$('r6030Badge');
+                if(badge&&sigs.length===3)badge.textContent=(new Set(sigs).size===1)?'3 MODELOS · MISMA SEÑAL':'3 MODELOS · SEÑALES DISTINTAS';
+              }
+              renderDate();
+            }
+            function load(){
+              Promise.all([
+                fetch('data/alt_6030_experimental.json?ts='+Date.now(),{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error('ALT '+r.status);return r.json()}),
+                fetch('data/reduced_6030_challenger.json?ts='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():null).catch(()=>null)
+              ]).then(([a,c])=>{altData=a;currentData=c;paint();}).catch(()=>{
+                const s=$('r6030AltSignal');if(s){s.textContent='DATOS EN PROCESO';s.className='r6030-signal flat'}
+              });
+            }
+            const btn=$('r6030DateBtn'),input=$('r6030Date');
+            if(btn)btn.addEventListener('click',()=>setTimeout(renderDate,0));
+            if(input)input.addEventListener('change',renderDate);
+            if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',load,{once:true});else load();
+            setTimeout(load,1500);setInterval(load,60000);
+          })();
+          </script>
+          '''
+              html = html.replace('</body>', script + '\n</body>', 1)
+              index.write_text(html, encoding="utf-8")
+          PY
+
       - name: Validar visores y datos
         run: |
           test -s public/index.html
@@ -154,6 +258,8 @@ jobs:
           test -s public/habitat/data/live_market.json
           grep -q "Mercado ahora" public/index.html
           grep -q "60/30 SIN NEM-FCX + QQQ · CHALLENGER" public/index.html
+          grep -q "60/30 NUEVOS TICKERS · EXPERIMENTAL" public/index.html
+          grep -q "ALT_6030_COMPARE_DEPLOY_V1" public/index.html
           grep -q "Ver Challenger 60/30 en otra fecha" public/index.html
           grep -q "SBS_TOP_CARD_DEPLOY_FIX_V2" public/index.html
           grep -q "EXPERIMENTAL_6030_DEPLOY_PANEL_V1" public/index.html
