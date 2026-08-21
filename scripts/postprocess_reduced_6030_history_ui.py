@@ -18,6 +18,8 @@ html = re.sub(
     count=1,
     flags=re.S,
 )
+# Si quedara una definición auxiliar heredada, puede permanecer mientras no
+# escriba en DOM. Pero ninguna referencia a elementos eliminados es válida.
 html = html.replace("$('huberValue').textContent", "void 0 && $('huberValue').textContent")
 html = html.replace("$('huberSub').textContent", "void 0 && $('huberSub').textContent")
 
@@ -42,6 +44,7 @@ if needle not in html:
     raise RuntimeError("No se encontro el panel 60/30 para insertar selector historico")
 html = html.replace(needle, selector + "\n" + needle, 1)
 
+# CSS móvil mínimo para el selector.
 if "REDUCED_6030_HISTORY_CSS" not in html:
     css = r'''
 <!-- REDUCED_6030_HISTORY_CSS -->
@@ -52,6 +55,7 @@ if "REDUCED_6030_HISTORY_CSS" not in html:
 '''
     html = html.replace("</head>", css + "</head>", 1)
 
+# Script histórico independiente del script principal del panel.
 SSTART = "<!-- REDUCED_6030_HISTORY_SCRIPT START -->"
 SEND = "<!-- REDUCED_6030_HISTORY_SCRIPT END -->"
 html = re.sub(re.escape(SSTART) + r".*?" + re.escape(SEND), "", html, flags=re.S)
@@ -83,6 +87,8 @@ script = r'''
     .then(d=>{
       const back=Array.isArray(d.backtest_history)?d.backtest_history:[],op=Array.isArray(d.operational_history)?d.operational_history:[];
       const map=new Map();back.forEach(r=>map.set(r.fecha,r));
+      // El registro operativo real tiene prioridad desde el inicio del ciclo.
+      // El ancla (p.ej. 18/08) no tapa un backtest ciego existente de esa fecha.
       op.forEach(r=>{if(!String(r.source||'').includes('ANCLA')||!map.has(r.fecha))map.set(r.fecha,r)});
       rows=[...map.values()].filter(r=>r&&r.fecha&&Number.isFinite(Number(r.challenger_vc))).sort((a,b)=>a.fecha.localeCompare(b.fecha));
       const input=$('r6030HistoryDate'),status=$('r6030HistoryStatus');if(!input||!status)return;
@@ -97,23 +103,13 @@ script = r'''
 '''
 html = html.replace("</body>", script + "</body>", 1)
 
-# 3) Runtime permanente del 60/30 experimental. Esta etiqueta se añade desde el
-# último postproceso del visor para que ninguna reconstrucción horaria del OLS la
-# vuelva a borrar. El propio runtime crea la tercera tarjeta, el histórico, las
-# horas de los tickers y reemplaza el texto estático de Auditoría.
-RUNTIME_TAG = '<script src="data/alt_runtime_v4.js?rev=ALT6030V4-PERSIST"></script>'
-html = re.sub(r'\n?<script src="data/alt_runtime_v4\.js\?rev=[^"]+"></script>', '', html)
-html = html.replace("</body>", RUNTIME_TAG + "\n</body>", 1)
-
 if "r6030HistoryDate" not in html:
     raise RuntimeError("No quedo insertado selector historico 60/30")
 if "$('huberValue').textContent" in html or "$('huberSub').textContent" in html:
     raise RuntimeError("Persistieron referencias DOM Huber que pueden romper el visor")
-if "alt_runtime_v4.js?rev=ALT6030V4-PERSIST" not in html:
-    raise RuntimeError("No quedo fijado el runtime del 60/30 experimental")
 
 HTML_PATH.write_text(html, encoding="utf-8")
-print("Selector historico 60/30 y runtime experimental permanente insertados.")
+print("Selector historico 60/30 insertado y referencias Huber nulas eliminadas.")
 
 # Genera también la auditoría comparativa exacta de los últimos 20 VC SBS.
 subprocess.run([sys.executable, str(ROOT / "scripts" / "recheck_6030_exact20.py")], check=True)
