@@ -18,9 +18,13 @@ THRESHOLD = 0.001
 TARGET_END = pd.Timestamp("2026-08-20")
 FEATURES_CURRENT = ["ret_SPY", "ret_EEM", "ret_EPU", "ret_MCHI", "ret_NEM", "ret_FCX", "ret_USD_PEN"]
 FEATURES_ALT = ["ret_SPY", "ret_EEM", "ret_EPU", "ret_MCHI", "ret_USD_PEN", "ret_QQQ"]
-ALL_FEATURES = sorted(set(FEATURES_CURRENT + FEATURES_ALT))
+FEATURES_FULL8 = ["ret_SPY", "ret_EEM", "ret_EPU", "ret_MCHI", "ret_NEM", "ret_FCX", "ret_USD_PEN", "ret_QQQ"]
+BASE_RESID = ["ret_SPY", "ret_EEM", "ret_EPU", "ret_MCHI", "ret_USD_PEN"]
+FEATURES_RESID_MODEL = BASE_RESID + ["resid_QQQ", "resid_FCX", "resid_NEM"]
+ALL_FEATURES = sorted(set(FEATURES_FULL8))
 BLIND_HORIZONS = [5, 10, 20]
 MANUAL_VALIDATION = {pd.Timestamp("2026-08-19"): 70.327}
+MODEL_NAMES = ["current", "alt", "resid", "combo"]
 
 
 def classify(x: float) -> str:
@@ -73,14 +77,46 @@ def load_qqq(start: pd.Timestamp, end: pd.Timestamp) -> pd.DataFrame:
     return q[["fecha", "QQQ", "ret_QQQ"]]
 
 
-def fit_ols(train: pd.DataFrame, features: list[str]) -> np.ndarray:
+def fit_ols(train: pd.DataFrame, features: list[str], target: str = "ret_target") -> np.ndarray:
     x = train[features].to_numpy(float)
-    y = train["ret_target"].to_numpy(float)
+    y = train[target].to_numpy(float)
     return np.linalg.lstsq(np.c_[np.ones(len(x)), x], y, rcond=None)[0]
 
 
 def predict(beta: np.ndarray, row: pd.Series, features: list[str]) -> float:
     return float(np.r_[1.0, row[features].to_numpy(float)] @ beta)
+
+
+def residualize_fit(train: pd.DataFrame, target: str, regressors: list[str]) -> np.ndarray:
+    return fit_ols(train, regressors, target=target)
+
+
+def residual_value(beta: np.ndarray, row: pd.Series, target: str, regressors: list[str]) -> float:
+    expected = float(np.r_[1.0, row[regressors].to_numpy(float)] @ beta)
+    return float(row[target] - expected)
+
+
+def fit_residual_mining_model(train: pd.DataFrame) -> dict:
+    # QQQ se ortogonaliza contra los cinco factores base; FCX y NEM contra EPU.
+    # Con OLS puro y los factores base presentes, esto es una reparametrización del modelo 8F.
+    # Se conserva para comprobar empíricamente si la residualización por sí sola cambia la predicción.
+    bq = residualize_fit(train, "ret_QQQ", BASE_RESID)
+    bf = residualize_fit(train, "ret_FCX", ["ret_EPU"])
+    bn = residualize_fit(train, "ret_NEM", ["ret_EPU"])
+    aug = train.copy()
+    aug["resid_QQQ"] = [residual_value(bq, r, "ret_QQQ", BASE_RESID) for _, r in train.iterrows()]
+    aug["resid_FCX"] = [residual_value(bf, r, "ret_FCX", ["ret_EPU"]) for _, r in train.iterrows()]
+    aug["resid_NEM"] = [residual_value(bn, r, "ret_NEM", ["ret_EPU"]) for _, r in train.iterrows()]
+    beta = fit_ols(aug, FEATURES_RESID_MODEL)
+    return {"beta": beta, "bq": bq, "bf": bf, "bn": bn}
+
+
+def predict_residual_mining(model: dict, row: pd.Series) -> float:
+    r = row.copy()
+    r["resid_QQQ"] = residual_value(model["bq"], row, "ret_QQQ", BASE_RESID)
+    r["resid_FCX"] = residual_value(model["bf"], row, "ret_FCX", ["ret_EPU"])
+    r["resid_NEM"] = residual_value(model["bn"], row, "ret_NEM", ["ret_EPU"])
+    return predict(model["beta"], r, FEATURES_RESID_MODEL)
 
 
 def metric_block(pred: pd.DataFrame) -> dict:
@@ -116,9 +152,42 @@ def metric_block(pred: pd.DataFrame) -> dict:
     }
 
 
+def summarize_origins(o: pd.DataFrame) -> dict:
+    out = {
+        "n_origins": int(len(o)),
+        "first_origin": o.iloc[0]["origin_date"].strftime("%Y-%m-%d") if len(o) else None,
+        "last_origin": o.iloc[-1]["origin_date"].strftime("%Y-%m-%d") if len(o) else None,
+        "models": {},
+    }
+    if o.empty:
+        return out
+    for m in MODEL_NAMES:
+        out["models"][m] = {
+            "endpoint_mae": float(o[f"endpoint_abs_{m}"].mean()),
+            "endpoint_median_abs": float(o[f"endpoint_abs_{m}"].median()),
+            "endpoint_bias": float(o[f"endpoint_bias_{m}"].mean()),
+            "path_mae": float(o[f"path_mae_{m}"].mean()),
+        }
+    cur_ep = out["models"]["current"]["endpoint_mae"]
+    cur_path = out["models"]["current"]["path_mae"]
+    out["vs_current"] = {}
+    for m in ["alt", "resid", "combo"]:
+        ep = out["models"][m]["endpoint_mae"]
+        pa = out["models"][m]["path_mae"]
+        out["vs_current"][m] = {
+            "endpoint_win_pct": float((o[f"endpoint_abs_{m}"] < o["endpoint_abs_current"]).mean() * 100.0),
+            "path_win_pct": float((o[f"path_mae_{m}"] < o["path_mae_current"]).mean() * 100.0),
+            "endpoint_mae_improvement_pct": float((cur_ep - ep) / cur_ep * 100.0),
+            "path_mae_improvement_pct": float((cur_path - pa) / cur_path * 100.0),
+        }
+    return out
+
+
 def blind_chain_backtest(frame: pd.DataFrame) -> tuple[dict, pd.DataFrame]:
     rows: list[dict] = []
-    summaries: dict[str, dict] = {}
+    summaries_all: dict[str, dict] = {}
+    summaries_recent90: dict[str, dict] = {}
+    residual_equivalence_diffs: list[float] = []
 
     for horizon in BLIND_HORIZONS:
         origins = []
@@ -132,69 +201,69 @@ def blind_chain_backtest(frame: pd.DataFrame) -> tuple[dict, pd.DataFrame]:
 
             b_cur = fit_ols(train, FEATURES_CURRENT)
             b_alt = fit_ols(train, FEATURES_ALT)
+            b_full8 = fit_ols(train, FEATURES_FULL8)
+            m_resid = fit_residual_mining_model(train)
+
             vc0 = float(frame.iloc[origin_i]["valor_cuota"])
             cur_vc = vc0
             alt_vc = vc0
-            path_abs_cur = []
-            path_abs_alt = []
+            resid_vc = vc0
+            path_abs = {m: [] for m in MODEL_NAMES}
 
             for step, (_, r) in enumerate(future.iterrows(), start=1):
                 pr_cur = predict(b_cur, r, FEATURES_CURRENT)
                 pr_alt = predict(b_alt, r, FEATURES_ALT)
-                cur_vc *= (1.0 + pr_cur)
-                alt_vc *= (1.0 + pr_alt)
+                pr_resid = predict_residual_mining(m_resid, r)
+                pr_full8 = predict(b_full8, r, FEATURES_FULL8)
+                residual_equivalence_diffs.append(abs(pr_resid - pr_full8))
+
+                cur_vc *= 1.0 + pr_cur
+                alt_vc *= 1.0 + pr_alt
+                resid_vc *= 1.0 + pr_resid
+                combo_vc = 0.5 * cur_vc + 0.5 * alt_vc
+
                 actual = float(r["valor_cuota"])
-                err_cur = cur_vc - actual
-                err_alt = alt_vc - actual
-                path_abs_cur.append(abs(err_cur))
-                path_abs_alt.append(abs(err_alt))
-                rows.append({
+                values = {"current": cur_vc, "alt": alt_vc, "resid": resid_vc, "combo": combo_vc}
+                row_out = {
                     "horizon": horizon,
                     "origin_date": frame.iloc[origin_i]["fecha"],
                     "origin_vc": vc0,
                     "step": step,
                     "fecha": r["fecha"],
                     "actual_vc": actual,
-                    "current_pred_vc": cur_vc,
-                    "alt_pred_vc": alt_vc,
-                    "current_error": err_cur,
-                    "alt_error": err_alt,
-                    "current_abs_error": abs(err_cur),
-                    "alt_abs_error": abs(err_alt),
                     "current_pred_return": pr_cur,
                     "alt_pred_return": pr_alt,
-                })
+                    "resid_pred_return": pr_resid,
+                    "full8_pred_return_check": pr_full8,
+                }
+                for m, val in values.items():
+                    err = val - actual
+                    path_abs[m].append(abs(err))
+                    row_out[f"{m}_pred_vc"] = val
+                    row_out[f"{m}_error"] = err
+                    row_out[f"{m}_abs_error"] = abs(err)
+                rows.append(row_out)
 
             endpoint_actual = float(future.iloc[-1]["valor_cuota"])
-            origins.append({
+            endpoint_values = {
+                "current": cur_vc,
+                "alt": alt_vc,
+                "resid": resid_vc,
+                "combo": 0.5 * cur_vc + 0.5 * alt_vc,
+            }
+            origin_row = {
                 "origin_date": frame.iloc[origin_i]["fecha"],
                 "end_date": future.iloc[-1]["fecha"],
-                "endpoint_abs_current": abs(cur_vc - endpoint_actual),
-                "endpoint_abs_alt": abs(alt_vc - endpoint_actual),
-                "endpoint_bias_current": cur_vc - endpoint_actual,
-                "endpoint_bias_alt": alt_vc - endpoint_actual,
-                "path_mae_current": float(np.mean(path_abs_cur)),
-                "path_mae_alt": float(np.mean(path_abs_alt)),
-            })
+            }
+            for m, val in endpoint_values.items():
+                origin_row[f"endpoint_abs_{m}"] = abs(val - endpoint_actual)
+                origin_row[f"endpoint_bias_{m}"] = val - endpoint_actual
+                origin_row[f"path_mae_{m}"] = float(np.mean(path_abs[m]))
+            origins.append(origin_row)
 
         o = pd.DataFrame(origins)
-        summaries[str(horizon)] = {
-            "n_origins": int(len(o)),
-            "first_origin": o.iloc[0]["origin_date"].strftime("%Y-%m-%d") if len(o) else None,
-            "last_origin": o.iloc[-1]["origin_date"].strftime("%Y-%m-%d") if len(o) else None,
-            "endpoint_mae_current": float(o["endpoint_abs_current"].mean()),
-            "endpoint_mae_alt": float(o["endpoint_abs_alt"].mean()),
-            "endpoint_median_abs_current": float(o["endpoint_abs_current"].median()),
-            "endpoint_median_abs_alt": float(o["endpoint_abs_alt"].median()),
-            "endpoint_bias_current": float(o["endpoint_bias_current"].mean()),
-            "endpoint_bias_alt": float(o["endpoint_bias_alt"].mean()),
-            "path_mae_current": float(o["path_mae_current"].mean()),
-            "path_mae_alt": float(o["path_mae_alt"].mean()),
-            "alt_beats_current_endpoint_pct": float((o["endpoint_abs_alt"] < o["endpoint_abs_current"]).mean() * 100.0),
-            "alt_beats_current_path_pct": float((o["path_mae_alt"] < o["path_mae_current"]).mean() * 100.0),
-            "endpoint_mae_improvement_alt_pct": float((o["endpoint_abs_current"].mean() - o["endpoint_abs_alt"].mean()) / o["endpoint_abs_current"].mean() * 100.0),
-            "path_mae_improvement_alt_pct": float((o["path_mae_current"].mean() - o["path_mae_alt"].mean()) / o["path_mae_current"].mean() * 100.0),
-        }
+        summaries_all[str(horizon)] = summarize_origins(o)
+        summaries_recent90[str(horizon)] = summarize_origins(o.tail(min(90, len(o))).reset_index(drop=True))
 
     all_rows = pd.DataFrame(rows)
 
@@ -216,13 +285,26 @@ def blind_chain_backtest(frame: pd.DataFrame) -> tuple[dict, pd.DataFrame]:
                     "actual_vc": float(x.actual_vc),
                     "current_pred_vc": float(x.current_pred_vc),
                     "alt_pred_vc": float(x.alt_pred_vc),
+                    "resid_pred_vc": float(x.resid_pred_vc),
+                    "combo_pred_vc": float(x.combo_pred_vc),
                     "current_abs_error": float(x.current_abs_error),
                     "alt_abs_error": float(x.alt_abs_error),
+                    "resid_abs_error": float(x.resid_abs_error),
+                    "combo_abs_error": float(x.combo_abs_error),
                 }
                 for x in rp.itertuples(index=False)
             ],
         }
-    return {"summary": summaries, "recent_paths": recent_paths}, all_rows
+
+    return {
+        "summary_all_origins": summaries_all,
+        "summary_recent_90_origins": summaries_recent90,
+        "recent_paths": recent_paths,
+        "residual_model_equivalence_check": {
+            "max_abs_daily_return_difference_vs_raw_full8": float(max(residual_equivalence_diffs)) if residual_equivalence_diffs else None,
+            "note": "Con OLS puro, residualizar QQQ/FCX/NEM contra factores que siguen dentro del modelo es una reparametrización; por eso debe ser predictivamente equivalente al OLS raw de 8 factores. Si se quiere reducir realmente la amplificación minera hace falta shrinkage/capping o excluir/reponderar factores, no solo residualizar.",
+        },
+    }, all_rows
 
 
 def main() -> None:
@@ -244,7 +326,7 @@ def main() -> None:
     if len(real) <= WINDOW:
         raise RuntimeError("Muestra insuficiente")
 
-    # One-step del modelo alternativo, para conservar la comparación anterior.
+    # One-step del modelo alternativo para conservar la comparación previa.
     rows = []
     for i in range(WINDOW, len(real)):
         train = real.iloc[i-WINDOW:i].copy()
@@ -280,36 +362,50 @@ def main() -> None:
     train_current = real.tail(WINDOW).copy()
     b_cur = fit_ols(train_current, FEATURES_CURRENT)
     b_alt = fit_ols(train_current, FEATURES_ALT)
+    m_resid = fit_residual_mining_model(train_current)
     current_market = marketq.loc[(marketq["fecha"] > last_sbs_date) & (marketq["fecha"] <= TARGET_END)].copy()
     current_market = current_market.dropna(subset=ALL_FEATURES).sort_values("fecha")
+
     cur_vc = float(last_sbs["valor_cuota"])
     alt_vc = float(last_sbs["valor_cuota"])
+    resid_vc = float(last_sbs["valor_cuota"])
     live_chain = []
     for _, row in current_market.iterrows():
         pr_cur = predict(b_cur, row, FEATURES_CURRENT)
         pr_alt = predict(b_alt, row, FEATURES_ALT)
+        pr_resid = predict_residual_mining(m_resid, row)
         cur_vc *= 1.0 + pr_cur
         alt_vc *= 1.0 + pr_alt
+        resid_vc *= 1.0 + pr_resid
+        combo_vc = 0.5 * cur_vc + 0.5 * alt_vc
         actual_manual = MANUAL_VALIDATION.get(pd.Timestamp(row["fecha"]))
         live_chain.append({
             "fecha": row["fecha"].strftime("%Y-%m-%d"),
             "actual_vc_manual_validation": actual_manual,
             "current_pred_return": pr_cur,
             "current_pred_vc": cur_vc,
-            "current_abs_error_if_known": None if actual_manual is None else abs(cur_vc - actual_manual),
             "alt_pred_return": pr_alt,
             "alt_pred_vc": alt_vc,
+            "resid_pred_return": pr_resid,
+            "resid_pred_vc": resid_vc,
+            "combo_pred_vc": combo_vc,
+            "current_abs_error_if_known": None if actual_manual is None else abs(cur_vc - actual_manual),
             "alt_abs_error_if_known": None if actual_manual is None else abs(alt_vc - actual_manual),
+            "resid_abs_error_if_known": None if actual_manual is None else abs(resid_vc - actual_manual),
+            "combo_abs_error_if_known": None if actual_manual is None else abs(combo_vc - actual_manual),
         })
 
     payload = {
         "generated_at_utc": pd.Timestamp.now(tz="UTC").isoformat(),
         "fund": "PROFUTURO Fondo 3",
-        "purpose": "Validación ciega: después del corte no se usa ningún VC SBS para reanclar nivel ni recalibrar coeficientes; solo retornos observados de los indicadores.",
+        "purpose": "Backtest ciego rolling90: después de cada corte se congelan coeficientes y no se usa ningún VC SBS futuro para reanclar o recalibrar; solo se observan retornos de indicadores.",
         "window": WINDOW,
-        "current_model_features": FEATURES_CURRENT,
-        "alternative_model_features": FEATURES_ALT,
-        "alternative_excluded": ["ret_NEM", "ret_FCX"],
+        "models": {
+            "current": {"features": FEATURES_CURRENT, "description": "Modelo actual GitHub 7 factores"},
+            "alt": {"features": FEATURES_ALT, "description": "Sin NEM/FCX + QQQ"},
+            "resid": {"features": FEATURES_RESID_MODEL, "description": "Minería y QQQ residualizados; OLS puro"},
+            "combo": {"description": "Promedio 50/50 de los niveles VC ciegos de current y alt"},
+        },
         "common_real_rows": int(len(real)),
         "first_real_date": real.iloc[0]["fecha"].strftime("%Y-%m-%d"),
         "last_real_date": real.iloc[-1]["fecha"].strftime("%Y-%m-%d"),
@@ -321,7 +417,7 @@ def main() -> None:
             "manual_validation_note": "70.327 del 19/08 fue informado por el usuario y se usa solo para medir error; no entra al entrenamiento ni reancla la cadena.",
             "rows": live_chain,
         },
-        "method_note": "Para cada origen histórico se ajustan ambos OLS una sola vez con las 90 observaciones reales anteriores, se congelan coeficientes y se encadena el VC durante 5, 10 o 20 observaciones futuras usando solo precios/retornos de indicadores. Los VC SBS futuros se consultan únicamente después para medir error.",
+        "method_note": "Cada origen usa exactamente 90 observaciones reales previas. Se ajustan los modelos una sola vez, luego se congelan y se encadena el VC durante 5, 10 o 20 observaciones futuras usando solo retornos de mercado. Los VC SBS futuros se revelan únicamente al final para medir error. summary_recent_90_origins restringe la comparación a los 90 orígenes más recientes de cada horizonte.",
     }
 
     OUT.parent.mkdir(parents=True, exist_ok=True)
