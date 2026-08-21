@@ -2,6 +2,12 @@ name: Publicar visor móvil Fondo 3
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - migracion-github-actions
+    paths:
+      - ".github/workflows/deploy-pages-ui.yml"
+      - "public/index.html"
 
 permissions:
   contents: read
@@ -29,9 +35,14 @@ jobs:
           test -s public/data/signals.json
           test -s public/data/operation_series.json
           test -s public/data/live_market.json
+          test -s public/data/reduced_6030_challenger.json
+          test -s public/data/reduced_6030_history.json
           test -s public/habitat/index.html
           test -s public/habitat/data/live_market.json
           grep -q "Mercado ahora" public/index.html
+          grep -q "60/30 SIN NEM-FCX + QQQ · CHALLENGER" public/index.html
+          grep -q "Ver Challenger 60/30 en otra fecha" public/index.html
+          grep -q "TOP_SBS_REPAIR_6030" public/index.html
           grep -q "raw.githubusercontent.com/rldaqp/afp-fondo3-monitor" public/index.html
           grep -q "raw.githubusercontent.com/rldaqp/afp-fondo3-monitor" public/habitat/index.html
 
