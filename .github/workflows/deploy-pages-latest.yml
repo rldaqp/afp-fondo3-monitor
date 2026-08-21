@@ -2,6 +2,16 @@ name: Publicar estado más reciente en GitHub Pages
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - migracion-github-actions
+    paths:
+      - ".github/workflows/deploy-pages-latest.yml"
+      - "public/index.html"
+      - "public/data/reduced_6030_challenger.json"
+      - "public/data/reduced_6030_history.json"
+      - "scripts/postprocess_reduced_6030_ui.py"
+      - "scripts/build_reduced_6030_history.py"
 
 permissions:
   contents: read
@@ -27,8 +37,13 @@ jobs:
         run: |
           test -s public/index.html
           test -s public/data/latest.json
+          test -s public/data/reduced_6030_challenger.json
+          test -s public/data/reduced_6030_history.json
           test -s public/habitat/index.html
           test -s public/habitat/data/series.json
+          grep -q "60/30 SIN NEM-FCX + QQQ · CHALLENGER" public/index.html
+          grep -q "Ver Challenger 60/30 en otra fecha" public/index.html
+          grep -q "TOP_SBS_REPAIR_6030" public/index.html
           grep -q "HABITAT_CHART_OFFICIAL_VS_OLS_V6" public/habitat/index.html
           grep -q "VC SBS real (oficial)" public/habitat/index.html
           grep -q "VC estimado OLS" public/habitat/index.html
@@ -37,6 +52,11 @@ jobs:
           python - <<'PY'
           import json
           from pathlib import Path
+
+          challenger = json.loads(Path("public/data/reduced_6030_challenger.json").read_text(encoding="utf-8"))
+          history = json.loads(Path("public/data/reduced_6030_history.json").read_text(encoding="utf-8"))
+          assert challenger.get("challenger",{}).get("vc_estimated")
+          assert history.get("backtest_history")
 
           series = json.loads(Path("public/habitat/data/series.json").read_text(encoding="utf-8"))
           by_date = {row["fecha"]: row for row in series}
