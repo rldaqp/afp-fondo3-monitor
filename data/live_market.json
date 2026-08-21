@@ -1,7 +1,7 @@
 {
   "generated_at_lima": "2026-08-21T15:09:07.663131-05:00",
-  "mode": "INTRADÍA PROVISIONAL",
-  "market_open": true,
+  "mode": "INTRADIA PROVISIONAL - ULTIMO CORTE",
+  "market_open": false,
   "signal_date": "2026-08-21",
   "vc_base": 71.41435514610457,
   "vc_estimated": 72.79700228468487,
@@ -86,11 +86,11 @@
       "usado_modelo": true
     }
   ],
-  "action": "ESPERAR",
+  "action": "ULTIMO_CORTE",
   "engine": "LIVE INDEPENDIENTE",
   "fx_fresh": false,
   "fx_rule": "Histórico/entrenamiento: BCRP. Predicción: BCRP si existe; si está rezagado, Yahoo PEN=X provisional; 0 % solo si ambas fuentes faltan.",
-  "note": "Snapshot intradía independiente del modelo pesado; puede cambiar hasta el cierre.",
+  "note": "Se conserva el ultimo snapshot intradia de hoy porque el cierre diario de hoy aun no esta disponible.",
   "fx_source": "YAHOO PEN=X PROVISIONAL",
   "fx_provisional": true,
   "experimental_assets": [
@@ -110,8 +110,8 @@
       "ticker": "CPER:NYSEARCA",
       "timestamp": "2026-08-21T15:55:00-04:00",
       "precio_anterior": null,
-      "precio_actual": 39.97999954223633,
-      "retorno": 0.016010192949043267,
+      "precio_actual": 39.98500061035156,
+      "retorno": 0.01613728490099131,
       "retorno_modelo": null,
       "estado": "YAHOO CPER · RESPALDO EQUIVALENTE · NUEVO 60/30 EXPERIMENTAL",
       "usado_modelo": false
@@ -121,8 +121,8 @@
       "ticker": "EEM:NYSEARCA",
       "timestamp": "2026-08-21T15:55:00-04:00",
       "precio_anterior": null,
-      "precio_actual": 67.11499786376953,
-      "retorno": 0.007430127540979381,
+      "precio_actual": 67.11000061035156,
+      "retorno": 0.007355116234885939,
       "retorno_modelo": null,
       "estado": "YAHOO EEM · RESPALDO EQUIVALENTE · NUEVO 60/30 EXPERIMENTAL",
       "usado_modelo": false
@@ -169,5 +169,6 @@
     "SPBLSCUP",
     "USD/PEN"
   ],
-  "experimental_note": "Seguimiento del nuevo 60/30. No modifica el OLS principal ni el challenger 60/30 vigente."
+  "experimental_note": "Seguimiento del nuevo 60/30. No modifica el OLS principal ni el challenger 60/30 vigente.",
+  "checked_at_lima": "2026-08-21T15:37:03.115378-05:00"
 }
