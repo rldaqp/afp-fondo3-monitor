@@ -1,0 +1,72 @@
+name: Comparar 60/30 con tickers Google Finance
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - migracion-github-actions
+    paths:
+      - ".github/workflows/compare-6030-google-tickers.yml"
+      - "scripts/compare_6030_google_tickers.py"
+      - "data/analysis/googlefinance_alt_6030_returns_20260303_20260820.csv"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: compare-6030-google-tickers
+  cancel-in-progress: true
+
+jobs:
+  compare:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Descargar repositorio
+        uses: actions/checkout@v4
+        with:
+          ref: migracion-github-actions
+          fetch-depth: 0
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Instalar dependencias
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Ejecutar comparación homogénea 60/30
+        run: |
+          python scripts/compare_6030_google_tickers.py
+
+      - name: Validar resultados
+        run: |
+          test -s data/analysis/compare_6030_google_tickers_20260818.json
+          test -s data/analysis/compare_6030_google_tickers_20260818.csv
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p = json.loads(Path('data/analysis/compare_6030_google_tickers_20260818.json').read_text(encoding='utf-8'))
+          assert p['train_n'] == 60
+          assert p['test_n'] == 20
+          assert p['alternative_features_display'] == ['.INX','CPER','EEM','NDX','SPBLSCUP','USD/PEN']
+          assert len(p['rows']) == 20
+          print(json.dumps(p['metrics'], ensure_ascii=False, indent=2))
+          PY
+
+      - name: Guardar resultados
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/analysis/compare_6030_google_tickers_20260818.json data/analysis/compare_6030_google_tickers_20260818.csv
+          if git diff --cached --quiet; then
+            echo "No hubo cambios en la comparación."
+          else
+            git commit -m "Guardar comparación 60/30 tickers Google Finance"
+            git pull --rebase origin migracion-github-actions
+            git push origin HEAD:migracion-github-actions
+          fi
