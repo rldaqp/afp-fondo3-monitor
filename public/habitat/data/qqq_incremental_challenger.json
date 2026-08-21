@@ -1,28 +1,28 @@
 {
-  "generated_at_lima": "2026-08-21T11:55:49.116360-05:00",
+  "generated_at_lima": "2026-08-21T12:44:27.591876-05:00",
   "signal_date": "2026-08-21",
   "mode": "INTRADÍA PROVISIONAL",
   "market_open": true,
   "fund": "HABITAT FONDO 3",
   "role": "CHALLENGER EN SOMBRA; no reemplaza el OLS oficial de Hábitat.",
-  "vc_base": 33.73181313116001,
+  "vc_base": 33.73123520353359,
   "official": {
     "model": "OLS rolling 90 oficial Hábitat",
-    "return_estimated": 0.011877275991935835,
+    "return_estimated": 0.012097682124049962,
     "signal": "SUBE",
-    "vc_estimated": 34.132455185427204
+    "vc_estimated": 34.13930496467751
   },
   "challenger": {
     "model": "OLS rolling 90 Hábitat + QQQ incremental residualizado",
-    "return_estimated": 0.011999101207120406,
+    "return_estimated": 0.013104401120394906,
     "signal": "SUBE",
-    "vc_estimated": 34.13656457082047
+    "vc_estimated": 34.173262839927084
   },
   "qqq": {
-    "return": 0.0032647151064524316,
-    "residual": -0.003113074883890847,
+    "return": 0.003474367045599891,
+    "residual": -0.002613984650151447,
     "previous_close": 710.9299926757812,
-    "current_price": 713.2509765625,
+    "current_price": 713.4000244140625,
     "source": "INTRADÍA YAHOO",
     "residualized_against": [
       "ret_SPY",
@@ -36,8 +36,8 @@
   },
   "comparison": {
     "same_signal": true,
-    "vc_difference": 0.004109385393263665,
-    "return_difference_pp": 0.012182521518457057
+    "vc_difference": 0.03395787524957683,
+    "return_difference_pp": 0.10067189963449442
   },
   "training": {
     "window": 90,
