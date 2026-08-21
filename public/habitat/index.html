@@ -43,9 +43,9 @@ h1{font-size:1.45rem;margin:5px 0}.sub,.note{color:var(--muted);font-size:.82rem
 
 <!-- REDUCED_6030_CHALLENGER_CSS START -->
 <style id="reduced6030Styles">
-.r6030-panel{border-color:#334155}.r6030-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;margin-bottom:10px}.r6030-title{font-size:.98rem;font-weight:900}.r6030-kicker{font-size:.7rem;color:#94a3b8;margin-top:3px;line-height:1.4}.r6030-badge{padding:5px 9px;border:1px solid #475569;border-radius:999px;font-size:.7rem;font-weight:900;white-space:nowrap}.r6030-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}.r6030-card{background:#0b1728;border:1px solid #243244;border-radius:12px;padding:11px}.r6030-label{font-size:.72rem;color:#94a3b8;font-weight:800}.r6030-signal{font-size:1.15rem;font-weight:950;margin-top:5px}.r6030-vc{font-size:1.18rem;font-weight:950;margin-top:4px}.r6030-ret{font-size:.76rem;color:#cbd5e1;margin-top:3px}.r6030-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:9px}.r6030-mini{background:#101d31;border:1px solid #243244;border-radius:9px;padding:8px}.r6030-mini span{display:block;color:#94a3b8;font-size:.65rem}.r6030-mini b{display:block;margin-top:3px;font-size:.8rem}.r6030-note{font-size:.69rem;color:#94a3b8;line-height:1.45;margin-top:9px}.r6030-details{margin-top:9px}.r6030-details summary{cursor:pointer;color:#cbd5e1;font-size:.72rem;font-weight:800}.r6030-table{width:100%;border-collapse:collapse;font-size:.7rem;margin-top:7px}.r6030-table th,.r6030-table td{padding:6px 4px;border-top:1px solid #243244;text-align:right}.r6030-table th:first-child,.r6030-table td:first-child{text-align:left}
+.r6030-panel{border-color:#334155}.r6030-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;margin-bottom:10px}.r6030-title{font-size:.98rem;font-weight:900}.r6030-kicker{font-size:.7rem;color:#94a3b8;margin-top:3px;line-height:1.4}.r6030-badge{padding:5px 9px;border:1px solid #475569;border-radius:999px;font-size:.7rem;font-weight:900;white-space:nowrap}.r6030-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}.r6030-card{background:#0b1728;border:1px solid #243244;border-radius:12px;padding:11px}.r6030-label{font-size:.72rem;color:#94a3b8;font-weight:800}.r6030-signal{font-size:1.15rem;font-weight:950;margin-top:5px}.r6030-vc{font-size:1.18rem;font-weight:950;margin-top:4px}.r6030-ret{font-size:.76rem;color:#cbd5e1;margin-top:3px}.r6030-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:9px}.r6030-mini{background:#101d31;border:1px solid #243244;border-radius:9px;padding:8px}.r6030-mini span{display:block;color:#94a3b8;font-size:.65rem}.r6030-mini b{display:block;margin-top:3px;font-size:.8rem}.r6030-note{font-size:.69rem;color:#94a3b8;line-height:1.45;margin-top:9px}.r6030-details{margin-top:9px}.r6030-details summary{cursor:pointer;color:#cbd5e1;font-size:.72rem;font-weight:800}.r6030-table{width:100%;border-collapse:collapse;font-size:.7rem;margin-top:7px}.r6030-table th,.r6030-table td{padding:6px 4px;border-top:1px solid #243244;text-align:right}.r6030-table th:first-child,.r6030-table td:first-child{text-align:left}.r6030-history{margin-top:10px;padding:10px;border:1px solid #243244;border-radius:11px;background:#0b1728}.r6030-history-title{font-size:.73rem;font-weight:850;color:#cbd5e1;margin-bottom:7px}.r6030-history-controls{display:grid;grid-template-columns:1fr auto;gap:7px}.r6030-history input{background:#07111f;color:#fff;border:1px solid #334155;border-radius:9px;padding:9px}.r6030-history button{border:1px solid #334155;background:#132238;color:#fff;border-radius:9px;padding:9px 12px;font-weight:800}.r6030-history-result{margin-top:8px;font-size:.72rem;line-height:1.45;color:#cbd5e1}
 @media(max-width:700px){.r6030-head{display:block}.r6030-badge{display:inline-block;margin-top:7px}.r6030-grid{grid-template-columns:1fr 1fr}.r6030-strip{grid-template-columns:1fr 1fr}.r6030-mini:last-child{grid-column:1/-1}.r6030-vc{font-size:1.08rem}}
-@media(max-width:390px){.r6030-grid{grid-template-columns:1fr}.r6030-strip{grid-template-columns:1fr 1fr}}
+@media(max-width:390px){.r6030-grid{grid-template-columns:1fr}.r6030-strip{grid-template-columns:1fr 1fr}.r6030-history-controls{grid-template-columns:1fr}}
 </style>
 <!-- REDUCED_6030_CHALLENGER_CSS END -->
 <style>#huberChallengerBox{display:none!important}</style>
@@ -64,7 +64,7 @@ h1{font-size:1.45rem;margin:5px 0}.sub,.note{color:var(--muted);font-size:.82rem
 <div class="card"><div class="label">Ventana vigente</div><div class="value">90</div><div class="sub" id="window">—</div></div></section><div id="monitorHelp" class="monitor-help"><b>Retorno estimado del VC:</b> variación diaria estimada por el OLS. Cada punto se dibuja desde el eje 0. Durante mercado abierto es provisional; al cierre usa cierres diarios.</div>
 
 
-
+<div id="huberValue" style="display:none"></div><div id="huberSub" style="display:none"></div>
 <!-- REDUCED_6030_CHALLENGER_PANEL START -->
 <section class="panel r6030-panel" id="reduced6030Panel">
   <div class="r6030-head">
@@ -92,6 +92,11 @@ h1{font-size:1.45rem;margin:5px 0}.sub,.note{color:var(--muted);font-size:.82rem
     <div class="r6030-mini"><span>Diferencia de VC</span><b id="r6030VcDiff">—</b></div>
     <div class="r6030-mini"><span>Ciclo congelado</span><b id="r6030Cycle">—</b></div>
     <div class="r6030-mini"><span>Backtest ciego · MAE VC</span><b id="r6030Backtest">—</b></div>
+  </div>
+  <div class="r6030-history">
+    <div class="r6030-history-title">Ver Challenger 60/30 en otra fecha</div>
+    <div class="r6030-history-controls"><input type="date" id="r6030Date"><button type="button" id="r6030DateBtn">Ver fecha</button></div>
+    <div id="r6030DateResult" class="r6030-history-result">Elige una fecha para comparar VC estimado, VC SBS y error.</div>
   </div>
   <details class="r6030-details"><summary>Ver validación y reglas del challenger</summary>
     <div style="overflow-x:auto"><table class="r6030-table"><thead><tr><th>Modelo</th><th>MAE VC</th><th>RMSE VC</th><th>Error final medio</th></tr></thead><tbody id="r6030Rows"></tbody></table></div>
@@ -229,13 +234,7 @@ h1{font-size:1.45rem;margin:5px 0}.sub,.note{color:var(--muted);font-size:.82rem
   <div class="note" style="margin-top:9px">SPY, NEM, FCX, EPU y MCHI: Yahoo Finance. USD/PEN: BCRP para histórico y entrenamiento. Si BCRP aún no publicó la fecha, el modelo usa Yahoo PEN=X de forma provisional; solo usa 0 % cuando ninguna de las dos fuentes está disponible.</div>
 </section>
 <section class="panel"><b>Auditoría</b><div class="note" id="audit">Cargando…</div></section>
-<script>
-let latest,series=[],mode='monitor';const money=x=>new Intl.NumberFormat('es-PE',{style:'currency',currency:'PEN'}).format(x),pct=x=>(x*100).toFixed(2)+'%',fmt=x=>{if(!x)return'—';let[y,m,d]=x.slice(0,10).split('-');return d+'/'+m+'/'+y};
-const after=d=>series.find(x=>x.fecha>=d),before=d=>[...series].reverse().find(x=>x.fecha<=d);
-function calc(){if(mode==='monitor')return;let a=after(entry.value),b=before(mode==='closed'?exit.value:series.at(-1).fecha),c=Number(capital.value);if(!a||!b||b.fecha<a.fecha||!c){detail.textContent='No existe información válida para ese periodo.';return}let u=c/a.vc,f=u*b.vc,g=f-c,r=f/c-1;mCapital.textContent=money(c);mFinal.textContent=money(f);mGain.textContent=money(g);mRent.textContent=pct(r);detail.textContent=`Entrada usada ${fmt(a.fecha)} · VC ${a.vc.toFixed(7)} · ${a.fuente}. Salida/valoración ${fmt(b.fecha)} · VC ${b.vc.toFixed(7)} · ${b.fuente}.`;let p=series.filter(x=>x.fecha>=a.fecha&&x.fecha<=b.fecha);Plotly.newPlot('opChart',[{x:p.map(x=>x.fecha),y:p.map(x=>x.vc),mode:'lines+markers',name:'VC'},{x:p.map(x=>x.fecha),y:p.map(x=>u*x.vc-c),mode:'lines+markers',name:'Ganancia',yaxis:'y2'}],{title:'Valor cuota y ganancia/pérdida',paper_bgcolor:'#0f1b2d',plot_bgcolor:'#0f1b2d',font:{color:'#fff'},yaxis2:{overlaying:'y',side:'right'},legend:{orientation:'h'}},{responsive:true})}
-document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{mode=b.dataset.mode;document.querySelectorAll('.tabs button').forEach(x=>x.classList.toggle('active',x===b));operation.classList.toggle('hidden',mode==='monitor');exitBox.classList.toggle('hidden',mode!=='closed')});document.getElementById('calc').onclick=calc;
-Promise.all([fetch('data/latest.json?ts='+Date.now(),{cache:'no-store'}).then(r=>r.json()),fetch('data/series.json?ts='+Date.now(),{cache:'no-store'}).then(r=>r.json())]).then(([l,s])=>{latest=l;series=s.sort((a,b)=>a.fecha.localeCompare(b.fecha));sbsVc.textContent=Number(l.latest_sbs_vc).toFixed(7);sbsDate.textContent=fmt(l.latest_sbs_date);estVc.textContent=Number(l.latest_estimated_vc).toFixed(7);estDate.textContent=fmt(l.latest_estimate_date)+' · '+l.estimate_type;signal.textContent=l.signal;signal.className='value signal '+(l.signal==='SUBE'?'up':l.signal==='BAJA'?'down':'flat');ret.textContent=(l.latest_return_estimated*100).toFixed(3)+'%';window.textContent=fmt(l.training_start)+' → '+fmt(l.training_end);audit.innerHTML=`Actualizado: ${new Date(l.generated_at_lima).toLocaleString('es-PE')}<br>Último mercado completo: ${fmt(l.latest_market_date)}<br>Fuentes: ${l.sources.market} · ${l.sources.sbs}<br>El OLS se recalibra con las últimas 90 observaciones completas cada vez que entra un nuevo VC oficial SBS.`;entry.min=series[0].fecha;entry.max=series.at(-1).fecha;entry.value=l.latest_sbs_date;exit.min=series[0].fecha;exit.max=series.at(-1).fecha;exit.value=series.at(-1).fecha;let off=series.filter(x=>x.fuente==='SBS OFICIAL'),mod=series.filter(x=>x.fuente==='MODELO OLS');Plotly.newPlot('vcChart',[{x:off.map(x=>x.fecha),y:off.map(x=>x.vc),mode:'lines',name:'VC SBS'},{x:mod.map(x=>x.fecha),y:mod.map(x=>x.vc),mode:'lines+markers',name:'VC modelo'}],{title:'Valor cuota oficial y estimado',paper_bgcolor:'#0f1b2d',plot_bgcolor:'#0f1b2d',font:{color:'#fff'},legend:{orientation:'h'}},{responsive:true});Plotly.newPlot('signalChart',[{x:mod.map(x=>x.fecha),y:mod.map(x=>x.ret_estimado*100),mode:'lines+markers',name:'Retorno OLS'}],{title:'Retorno estimado',paper_bgcolor:'#0f1b2d',plot_bgcolor:'#0f1b2d',font:{color:'#fff'},shapes:[{type:'line',xref:'paper',x0:0,x1:1,y0:.1,y1:.1,line:{dash:'dot'}},{type:'line',xref:'paper',x0:0,x1:1,y0:-.1,y1:-.1,line:{dash:'dot'}}]},{responsive:true})}).catch(e=>error.innerHTML='<div class="error">No se pudieron cargar resultados: '+e+'</div>');
-</script><div class="note" style="margin:12px 0">El modelo de Hábitat se entrena por separado y no reutiliza coeficientes de Profuturo. Usa la misma metodología de Profuturo: OLS, siete factores, ventana móvil de 90 observaciones y las mismas reglas de fuentes.</div></main>
+<div class="note" style="margin:12px 0">El modelo de Hábitat se entrena por separado y no reutiliza coeficientes de Profuturo. Usa la misma metodología de Profuturo: OLS, siete factores, ventana móvil de 90 observaciones y las mismas reglas de fuentes.</div></main>
 <script>
 (function(){
   let richSignals=[],allSeries=[],operationSeries=[],latestData=null,liveData=null,modelInsights=null,vcDays=90,retDays=90;
@@ -771,8 +770,29 @@ Promise.all([fetch('data/latest.json?ts='+Date.now(),{cache:'no-store'}).then(r=
   const vc=x=>x==null||!Number.isFinite(Number(x))?'—':Number(x).toFixed(7);
   const num=x=>x==null||!Number.isFinite(Number(x))?'—':Number(x).toFixed(4);
   const cls=s=>s==='SUBE'?'up':s==='BAJA'?'down':'flat';
-  function setSignal(id,s){const el=$(id);el.textContent=s||'—';el.className='r6030-signal '+cls(s)}
-  fetch('data/reduced_6030_challenger.json?v='+Date.now(),{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.json()}).then(d=>{
+  const fmt=d=>{if(!d)return '—';const p=String(d).slice(0,10).split('-');return p.length===3?`${p[2]}/${p[1]}/${p[0]}`:String(d)};
+  function setSignal(id,s){const el=$(id);if(!el)return;el.textContent=s||'—';el.className='r6030-signal '+cls(s)}
+  function renderDate(history,date){
+    const box=$('r6030DateResult');if(!box)return;
+    const operational=(history.operational_history||[]).find(x=>x.fecha===date);
+    const backtest=(history.backtest_history||[]).find(x=>x.fecha===date);
+    const r=operational||backtest;
+    if(!r){box.textContent='No hay una observación 60/30 para esa fecha.';return}
+    const isAnchor=String(r.source||'').includes('ANCLA');
+    const parts=[`Fecha ${fmt(r.fecha)} · ${r.source||'60/30'}`];
+    if(isAnchor){parts.push(`VC ancla SBS ${vc(r.actual_vc||r.challenger_vc)}. Es el punto de partida del ciclo, no una predicción.`)}
+    else{
+      parts.push(`Challenger VC ${vc(r.challenger_vc)} · retorno ${pct(r.challenger_return)}`);
+      if(r.actual_vc!=null)parts.push(`SBS real ${vc(r.actual_vc)} · error ${num(r.challenger_abs_error)}`);
+      else parts.push('SBS real pendiente');
+      if(r.official_vc!=null)parts.push(`OLS comparativo ${vc(r.official_vc)}`);
+    }
+    box.textContent=parts.join(' · ');
+  }
+  Promise.all([
+    fetch('data/reduced_6030_challenger.json?v='+Date.now(),{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.json()}),
+    fetch('data/reduced_6030_history.json?v='+Date.now(),{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.json()}).catch(()=>({backtest_history:[],operational_history:[]}))
+  ]).then(([d,history])=>{
     const o=d.official||{},c=d.challenger||{},cmp=d.comparison||{},cy=d.cycle||{},bt=d.blind_backtest||{},fw=d.forward_sbs||{};
     setSignal('r6030OfficialSignal',o.signal);setSignal('r6030ChallengerSignal',c.signal);
     $('r6030OfficialVc').textContent='VC '+vc(o.vc_estimated);$('r6030ChallengerVc').textContent='VC '+vc(c.vc_estimated);
@@ -786,7 +806,12 @@ Promise.all([fetch('data/latest.json?ts='+Date.now(),{cache:'no-store'}).then(r=
     const imp=bt.mae_improvement_pct==null?'—':Number(bt.mae_improvement_pct).toFixed(1)+'%';
     $('r6030Forward').textContent=`Backtest ciego: mejora MAE ${imp}; bloques ganados ${bt.challenger_better_blocks||0}/${bt.n_blocks||0}. Prueba futura SBS: ${fw.evaluated||0} evaluados · ${fw.pending||0} pendientes.`;
     $('r6030Note').textContent=`Ciclo desde ${cy.cycle_start||'—'} · ancla SBS ${cy.anchor_date||'—'} VC ${vc(cy.anchor_vc)} · entrenamiento ${cy.train_start||'—'} a ${cy.train_end||'—'}. SPY, EEM, EPU, MCHI, USD/PEN y QQQ; NEM y FCX excluidos. Los coeficientes quedan congelados 30 sesiones y el VC no se reancla con SBS dentro del bloque.`;
-  }).catch(e=>{$('r6030Badge').textContent='NO DISPONIBLE';$('r6030Note').textContent='No se pudo cargar el challenger 60/30: '+e.message});
+    const input=$('r6030Date');
+    const dates=[...(history.backtest_history||[]),...(history.operational_history||[])].map(x=>x.fecha).filter(Boolean).sort();
+    if(input&&dates.length){input.min=dates[0];input.max=dates.at(-1);input.value=d.signal_date||dates.at(-1)}
+    const show=()=>renderDate(history,input&&input.value?input.value:(d.signal_date||''));
+    if($('r6030DateBtn'))$('r6030DateBtn').onclick=show;if(input)input.onchange=show;show();
+  }).catch(e=>{const b=$('r6030Badge'),n=$('r6030Note');if(b)b.textContent='NO DISPONIBLE';if(n)n.textContent='No se pudo cargar el challenger 60/30: '+e.message});
 })();
 </script>
 <!-- REDUCED_6030_CHALLENGER_SCRIPT END -->
