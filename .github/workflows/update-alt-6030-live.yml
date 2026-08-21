@@ -1,0 +1,84 @@
+name: Actualizar 60/30 nuevos tickers
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - migracion-github-actions
+    paths:
+      - ".github/workflows/update-alt-6030-live.yml"
+      - "scripts/build_alt_6030_live.py"
+      - "scripts/recheck_6030_exact20.py"
+      - "data/analysis/googlefinance_alt_aligned_closes_20260402_20260820.csv"
+      - "public/data/live_market.json"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: alt-6030-live
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Descargar repositorio
+        uses: actions/checkout@v4
+        with:
+          ref: migracion-github-actions
+          fetch-depth: 0
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Instalar dependencias
+        run: pip install pandas numpy yfinance
+
+      - name: Calcular 60/30 nuevos tickers
+        run: |
+          git fetch origin migracion-github-actions
+          git reset --hard origin/migracion-github-actions
+          python scripts/build_alt_6030_live.py
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=json.loads(Path('public/data/alt_6030_experimental.json').read_text(encoding='utf-8'))
+          assert p['model']['signal'] in {'SUBE','NEUTRO','BAJA'}
+          assert float(p['model']['vc_estimated']) > 0
+          assert p['model']['features_display'] == ['.INX','CPER','EEM','NDX','SPBLSCUP','USD/PEN']
+          assert int(p['cycle']['train_n']) == 60
+          assert int(p['cycle']['freeze_horizon']) == 30
+          print(p['signal_date'], p['model']['signal'], p['model']['vc_estimated'])
+          PY
+
+      - name: Guardar resultado
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/data/alt_6030_experimental.json data/rolling90/alt_6030_shadow.csv
+          if ! git diff --cached --quiet; then
+            git commit -m "Actualizar 60/30 nuevos tickers"
+            if ! git push origin HEAD:migracion-github-actions; then
+              git pull --rebase origin migracion-github-actions
+              git push origin HEAD:migracion-github-actions
+            fi
+          fi
+
+          tmp="$(mktemp -d)"
+          git clone --depth 1 --branch gh-pages "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" "$tmp/gh-pages"
+          mkdir -p "$tmp/gh-pages/data"
+          cp public/data/alt_6030_experimental.json "$tmp/gh-pages/data/alt_6030_experimental.json"
+          cd "$tmp/gh-pages"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/alt_6030_experimental.json
+          if ! git diff --cached --quiet; then
+            git commit -m "Publicar 60/30 nuevos tickers"
+            git push origin HEAD:gh-pages
+          fi
