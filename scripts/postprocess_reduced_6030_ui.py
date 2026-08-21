@@ -51,8 +51,7 @@ if 'id="huberValue"' not in html:
         html = html.replace(marker, hidden + marker, 1)
 
 # El HTML heredado trae un arranque antiguo que duplica la carga y puede intentar
-# escribir en elementos ya retirados (audit, etc.). El arranque moderno posterior
-# ya cubre toda la funcionalidad, por lo que se elimina este bloque duplicado.
+# escribir en elementos ya retirados. El arranque moderno posterior ya cubre todo.
 html = re.sub(
     r"<script>\s*let latest,series=\[\],mode='monitor';.*?</script>",
     "",
@@ -60,6 +59,20 @@ html = re.sub(
     count=1,
     flags=re.S,
 )
+
+# Reparación estructural: la tarjeta SBS debe ser responsabilidad del renderTop
+# moderno, no de un script heredado. Así nunca queda en blanco aunque cambie el
+# resto del visor o exista una carrera entre fetches asíncronos.
+needle = "function renderTop(){if(!latestData)return;"
+if needle in html and "TOP_SBS_REPAIR_6030" not in html:
+    patch = (
+        "function renderTop(){if(!latestData)return;/* TOP_SBS_REPAIR_6030 */"
+        "const _sv=$('sbsVc'),_sd=$('sbsDate'),_sw=$('window');"
+        "if(_sv&&Number.isFinite(Number(latestData.latest_sbs_vc)))_sv.textContent=Number(latestData.latest_sbs_vc).toFixed(7);"
+        "if(_sd)_sd.textContent=fmt(latestData.latest_sbs_date);"
+        "if(_sw)_sw.textContent=fmt(latestData.training_start)+' → '+fmt(latestData.training_end);"
+    )
+    html = html.replace(needle, patch, 1)
 
 css = r'''
 <!-- REDUCED_6030_CHALLENGER_CSS START -->
@@ -135,6 +148,13 @@ script = r'''
   const cls=s=>s==='SUBE'?'up':s==='BAJA'?'down':'flat';
   const fmt=d=>{if(!d)return '—';const p=String(d).slice(0,10).split('-');return p.length===3?`${p[2]}/${p[1]}/${p[0]}`:String(d)};
   function setSignal(id,s){const el=$(id);if(!el)return;el.textContent=s||'—';el.className='r6030-signal '+cls(s)}
+  function repairTopSbs(l){
+    if(!l)return;
+    const sv=$('sbsVc'),sd=$('sbsDate'),sw=$('window');
+    if(sv&&Number.isFinite(Number(l.latest_sbs_vc)))sv.textContent=vc(l.latest_sbs_vc);
+    if(sd)sd.textContent=fmt(l.latest_sbs_date);
+    if(sw)sw.textContent=`${fmt(l.training_start)} → ${fmt(l.training_end)}`;
+  }
   function renderDate(history,date){
     const box=$('r6030DateResult');if(!box)return;
     const operational=(history.operational_history||[]).find(x=>x.fecha===date);
@@ -146,35 +166,33 @@ script = r'''
     if(isAnchor){parts.push(`VC ancla SBS ${vc(r.actual_vc||r.challenger_vc)}. Es el punto de partida del ciclo, no una predicción.`)}
     else{
       parts.push(`Challenger VC ${vc(r.challenger_vc)} · retorno ${pct(r.challenger_return)}`);
-      if(r.actual_vc!=null)parts.push(`SBS real ${vc(r.actual_vc)} · error ${num(r.challenger_abs_error)}`);
-      else parts.push('SBS real pendiente');
+      if(r.actual_vc!=null)parts.push(`SBS real ${vc(r.actual_vc)} · error ${num(r.challenger_abs_error)}`);else parts.push('SBS real pendiente');
       if(r.official_vc!=null)parts.push(`OLS comparativo ${vc(r.official_vc)}`);
     }
     box.textContent=parts.join(' · ');
   }
   Promise.all([
     fetch('data/reduced_6030_challenger.json?v='+Date.now(),{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.json()}),
-    fetch('data/reduced_6030_history.json?v='+Date.now(),{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.json()}).catch(()=>({backtest_history:[],operational_history:[]}))
-  ]).then(([d,history])=>{
+    fetch('data/reduced_6030_history.json?v='+Date.now(),{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.json()}).catch(()=>({backtest_history:[],operational_history:[]})),
+    fetch('data/latest.json?v='+Date.now(),{cache:'no-store'}).then(r=>r.json()).catch(()=>null)
+  ]).then(([d,history,l])=>{
+    repairTopSbs(l);
     const o=d.official||{},c=d.challenger||{},cmp=d.comparison||{},cy=d.cycle||{},bt=d.blind_backtest||{},fw=d.forward_sbs||{};
     setSignal('r6030OfficialSignal',o.signal);setSignal('r6030ChallengerSignal',c.signal);
     $('r6030OfficialVc').textContent='VC '+vc(o.vc_estimated);$('r6030ChallengerVc').textContent='VC '+vc(c.vc_estimated);
     $('r6030OfficialRet').textContent='Retorno '+pct(o.return_estimated);$('r6030ChallengerRet').textContent='Retorno '+pct(c.return_estimated);
     const diff=Number(cmp.vc_difference);$('r6030VcDiff').textContent=Number.isFinite(diff)?(diff>=0?'+':'')+diff.toFixed(7):'—';
-    const same=!!cmp.same_signal;$('r6030Badge').textContent=same?'MISMA SEÑAL':'SEÑALES DISTINTAS';$('r6030Badge').className='r6030-badge '+(same?'challenger-ok':'challenger-diff');
+    const same=!!cmp.same_signal;$('r6030Badge').textContent=same?'MISMA SEÑAL':'SEÑALES DISTINTAS';
     $('r6030Cycle').textContent=`${cy.cycle_day||0}/${cy.freeze_horizon||30} · entrenó ${cy.train_n||60}`;
-    const bo=bt.official_current_7f||{},bc=bt.challenger_6030||{};
-    $('r6030Backtest').textContent=`${num(bo.vc_mae)} → ${num(bc.vc_mae)}`;
+    const bo=bt.official_current_7f||{},bc=bt.challenger_6030||{};$('r6030Backtest').textContent=`${num(bo.vc_mae)} → ${num(bc.vc_mae)}`;
     $('r6030Rows').innerHTML=`<tr><td>OLS actual</td><td>${num(bo.vc_mae)}</td><td>${num(bo.vc_rmse)}</td><td>${num(bo.mean_endpoint_abs_error)}</td></tr><tr><td>60/30 challenger</td><td>${num(bc.vc_mae)}</td><td>${num(bc.vc_rmse)}</td><td>${num(bc.mean_endpoint_abs_error)}</td></tr>`;
-    const imp=bt.mae_improvement_pct==null?'—':Number(bt.mae_improvement_pct).toFixed(1)+'%';
-    $('r6030Forward').textContent=`Backtest ciego: mejora MAE ${imp}; bloques ganados ${bt.challenger_better_blocks||0}/${bt.n_blocks||0}. Prueba futura SBS: ${fw.evaluated||0} evaluados · ${fw.pending||0} pendientes.`;
+    const imp=bt.mae_improvement_pct==null?'—':Number(bt.mae_improvement_pct).toFixed(1)+'%';$('r6030Forward').textContent=`Backtest ciego: mejora MAE ${imp}; bloques ganados ${bt.challenger_better_blocks||0}/${bt.n_blocks||0}. Prueba futura SBS: ${fw.evaluated||0} evaluados · ${fw.pending||0} pendientes.`;
     $('r6030Note').textContent=`Ciclo desde ${cy.cycle_start||'—'} · ancla SBS ${cy.anchor_date||'—'} VC ${vc(cy.anchor_vc)} · entrenamiento ${cy.train_start||'—'} a ${cy.train_end||'—'}. SPY, EEM, EPU, MCHI, USD/PEN y QQQ; NEM y FCX excluidos. Los coeficientes quedan congelados 30 sesiones y el VC no se reancla con SBS dentro del bloque.`;
-    const input=$('r6030Date');
-    const dates=[...(history.backtest_history||[]),...(history.operational_history||[])].map(x=>x.fecha).filter(Boolean).sort();
-    if(input&&dates.length){input.min=dates[0];input.max=dates.at(-1);input.value=d.signal_date||dates.at(-1)}
-    const show=()=>renderDate(history,input&&input.value?input.value:(d.signal_date||''));
-    if($('r6030DateBtn'))$('r6030DateBtn').onclick=show;if(input)input.onchange=show;show();
-  }).catch(e=>{const b=$('r6030Badge'),n=$('r6030Note');if(b)b.textContent='NO DISPONIBLE';if(n)n.textContent='No se pudo cargar el challenger 60/30: '+e.message});
+    const input=$('r6030Date'),btn=$('r6030DateBtn');if(input){input.min=history.min_date||'';input.max=history.max_date||'';input.value=d.signal_date||history.max_date||''}if(btn)btn.onclick=()=>renderDate(history,input.value);
+  }).catch(e=>{const badge=$('r6030Badge'),note=$('r6030Note');if(badge)badge.textContent='NO DISPONIBLE';if(note)note.textContent='No se pudo cargar el challenger 60/30: '+e.message});
+  // Refuerzo independiente: si cualquier otro fetch tarda, esta tarjeta se repone.
+  const refreshSbs=()=>fetch('data/latest.json?v='+Date.now(),{cache:'no-store'}).then(r=>r.json()).then(repairTopSbs).catch(()=>{});
+  refreshSbs();setTimeout(refreshSbs,500);setTimeout(refreshSbs,1800);
 })();
 </script>
 <!-- REDUCED_6030_CHALLENGER_SCRIPT END -->
@@ -187,8 +205,8 @@ if "QQQ INCREMENTAL · CHALLENGER" in html:
     raise RuntimeError("Persistio visible el challenger QQQ incremental anterior")
 if "Challenger Huber · paralelo" in html or 'id="huberChallengerBox"' in html:
     raise RuntimeError("Persistio Huber visible")
-if "r6030Date" not in html:
-    raise RuntimeError("No quedo disponible el selector historico 60/30")
+if "TOP_SBS_REPAIR_6030" not in html:
+    raise RuntimeError("No quedo aplicada la reparacion del ultimo VC SBS")
 
 HTML_PATH.write_text(html, encoding="utf-8")
-print("UI 60/30 aplicada: unico challenger visible, historial por fecha y arranque sin errores de elementos retirados.")
+print("UI 60/30 aplicada: SBS robusto, historial por fecha y unico challenger visible.")
