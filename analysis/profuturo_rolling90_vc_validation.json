@@ -1,0 +1,122 @@
+{
+  "generated_at_utc": "2026-08-21T02:58:27.554814+00:00",
+  "fund": "PROFUTURO Fondo 3",
+  "purpose": "Rolling 90 real-vs-estimado y proyección hasta cierre 2026-08-20; investigación, no cambia producción.",
+  "features": [
+    "ret_SPY",
+    "ret_EEM",
+    "ret_EPU",
+    "ret_MCHI",
+    "ret_USD_PEN",
+    "ret_QQQ"
+  ],
+  "excluded": [
+    "ret_NEM",
+    "ret_FCX"
+  ],
+  "qqq_representation": "retorno QQQ directo; predictivamente equivalente a QQQ residualizado en OLS con los mismos otros factores.",
+  "common_real_rows": 386,
+  "oos_prediction_rows": 296,
+  "first_oos": "2025-05-19",
+  "last_oos": "2026-08-18",
+  "metrics": {
+    "recent_60": {
+      "n": 60,
+      "start": "2026-05-13",
+      "end": "2026-08-18",
+      "vc_mae": 0.30211693939531703,
+      "vc_rmse": 0.3909370163741804,
+      "vc_mape_pct": 0.4299737099310672,
+      "vc_bias": 0.006072171983311847,
+      "within_0_5pct": 0.7,
+      "within_1pct": 0.9333333333333333,
+      "direction_accuracy": 0.8333333333333334,
+      "return_mae": 0.0043100611296915895,
+      "return_rmse": 0.005561125514613252,
+      "oos_r2_return": 0.8935382931107226,
+      "pred_actual_return_corr": 0.9454619583350435,
+      "naive_vc_rmse": 1.1821118096730783,
+      "theil_u_vs_no_change": 0.33071069350224735
+    },
+    "recent_90": {
+      "n": 90,
+      "start": "2026-03-27",
+      "end": "2026-08-18",
+      "vc_mae": 0.27044786948442817,
+      "vc_rmse": 0.35723005631696897,
+      "vc_mape_pct": 0.38765293283499,
+      "vc_bias": -0.00686031703275884,
+      "within_0_5pct": 0.7333333333333333,
+      "within_1pct": 0.9444444444444444,
+      "direction_accuracy": 0.8444444444444444,
+      "return_mae": 0.003888857225343973,
+      "return_rmse": 0.005107328901046579,
+      "oos_r2_return": 0.8998886735864402,
+      "pred_actual_return_corr": 0.9487711357348997,
+      "naive_vc_rmse": 1.11676550651034,
+      "theil_u_vs_no_change": 0.3198791995584092
+    },
+    "all_oos": {
+      "n": 296,
+      "start": "2025-05-19",
+      "end": "2026-08-18",
+      "vc_mae": 0.18024760387078856,
+      "vc_rmse": 0.2597504708019239,
+      "vc_mape_pct": 0.27890749433973616,
+      "vc_bias": -0.010111561650496885,
+      "within_0_5pct": 0.8581081081081081,
+      "within_1pct": 0.9763513513513513,
+      "direction_accuracy": 0.8074324324324325,
+      "return_mae": 0.0027912090871628483,
+      "return_rmse": 0.0038834204009590974,
+      "oos_r2_return": 0.8953189640293597,
+      "pred_actual_return_corr": 0.9472751772588605,
+      "naive_vc_rmse": 0.8087279790077857,
+      "theil_u_vs_no_change": 0.32118397971170387
+    }
+  },
+  "current_training": {
+    "n": 90,
+    "start": "2026-03-27",
+    "end": "2026-08-18",
+    "coefficients": {
+      "intercept": -0.0003808605578903003,
+      "ret_SPY": -0.32350846504773795,
+      "ret_EEM": 0.2862413101588867,
+      "ret_EPU": 0.44386545356520135,
+      "ret_MCHI": -0.058677613044351706,
+      "ret_USD_PEN": 0.4144532346436057,
+      "ret_QQQ": 0.3992138119573978
+    },
+    "vif": {
+      "by_feature": {
+        "ret_SPY": 8.085921548865498,
+        "ret_EEM": 8.582000439209615,
+        "ret_EPU": 3.2826228969659725,
+        "ret_MCHI": 1.6733852016252686,
+        "ret_USD_PEN": 1.9744384748168788,
+        "ret_QQQ": 14.749094280539692
+      },
+      "max_vif": 14.749094280539692,
+      "max_vif_feature": "ret_QQQ"
+    }
+  },
+  "last_sbs": {
+    "fecha": "2026-08-18",
+    "valor_cuota": 69.6328126
+  },
+  "projection_to_close": [
+    {
+      "fecha": "2026-08-19",
+      "base_vc": 69.6328126,
+      "base_type": "SBS real",
+      "pred_return": 0.012446020693743263,
+      "signal": "SUBE",
+      "pred_vc": 70.49946402658314,
+      "qqq_close": 716.0800170898438,
+      "qqq_return": -0.0019929933468779693,
+      "fx_return": -0.0029717682020803
+    }
+  ],
+  "projection_note": "19/20 se proyectan con coeficientes rolling90 estimados sobre las últimas 90 observaciones SBS reales. Al no existir todavía VC SBS posterior al 18, el entrenamiento no incorpora retornos estimados como si fueran reales; solo se encadena el nivel del VC para obtener el 20."
+}
