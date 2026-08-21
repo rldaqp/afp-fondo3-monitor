@@ -11,6 +11,7 @@
   const clsSignal=s=>s==='SUBE'?'up':s==='BAJA'?'down':'flat';
   const clsNum=x=>Number(x)>0?'pos':Number(x)<0?'neg':'zero';
   const clock=(iso,tz)=>{try{return new Intl.DateTimeFormat('es-PE',{timeZone:tz,hour:'2-digit',minute:'2-digit',hour12:false}).format(new Date(iso))}catch(e){return'—'}};
+  const ageMinutes=iso=>{try{return Math.max(0,(Date.now()-new Date(iso).getTime())/60000)}catch(e){return NaN}};
   let altData=null;
 
   function stampLabel(stamp){
@@ -51,8 +52,10 @@
     if(grid&&!$('r6030AltCard')){
       const card=document.createElement('div');
       card.className='r6030-card';card.id='r6030AltCard';card.style.borderColor='#3b82f6';
-      card.innerHTML='<div class="r6030-label">60/30 NUEVOS TICKERS · EXPERIMENTAL</div><div id="r6030AltSignal" class="r6030-signal">CARGANDO…</div><div id="r6030AltVc" class="r6030-vc">VC —</div><div id="r6030AltRet" class="r6030-ret">Retorno —</div><div class="r6030-note">.INX · CPER · EEM · NDX · SPBLSCUP · USD/PEN</div>';
+      card.innerHTML='<div class="r6030-label">60/30 NUEVOS TICKERS · EXPERIMENTAL</div><div id="r6030AltSignal" class="r6030-signal">CARGANDO…</div><div id="r6030AltVc" class="r6030-vc">VC —</div><div id="r6030AltRet" class="r6030-ret">Retorno —</div><div id="r6030AltMeta" class="r6030-note">.INX · CPER · EEM · NDX · SPBLSCUP · USD/PEN</div>';
       grid.appendChild(card);
+    }else if($('r6030AltCard')&&!$('r6030AltMeta')){
+      const note=$('r6030AltCard').querySelector('.r6030-note');if(note)note.id='r6030AltMeta';
     }
     if(!$('r6030AltHistory')){
       const currentHistory=panel.querySelector('.r6030-history');
@@ -82,7 +85,10 @@
     }
   }
 
-  function ensureUi(){ensureStyles();ensureCompareUi();ensureMarketUi();}
+  function ensureUi(){
+    ensureStyles();ensureCompareUi();ensureMarketUi();
+    if($('audit')&&$('audit').textContent.trim()==='Cargando...')$('audit').textContent='Verificando datos…';
+  }
 
   function repairTop(latest){
     if(!latest)return;
@@ -105,7 +111,7 @@
     }).join('');
     const timed=rows.map(x=>x.timestamp).filter(x=>String(x||'').includes('T')).sort();
     const head=$('marketExperimentalTime');
-    if(head){const cut=timed.length?timed.at(-1):null;head.innerHTML=`${cut?stampLabel(cut):'Sin corte intradía'}<br>Visor: ${clock(live&&live.generated_at_lima,'America/Lima')} Lima`;}
+    if(head){const cut=timed.length?timed.at(-1):null;const age=ageMinutes(live&&live.generated_at_lima);head.innerHTML=`${cut?stampLabel(cut):'Sin corte intradía'}<br>Visor: ${clock(live&&live.generated_at_lima,'America/Lima')} Lima${Number.isFinite(age)?` · hace ${Math.round(age)} min`:''}`;}
   }
 
   function renderAltModel(){
@@ -115,6 +121,12 @@
     if($('r6030AltSignal')){$('r6030AltSignal').textContent=s;$('r6030AltSignal').className='r6030-signal '+clsSignal(s);}
     if($('r6030AltVc'))$('r6030AltVc').textContent='VC '+vc(m.vc_estimated);
     if($('r6030AltRet'))$('r6030AltRet').textContent='Retorno '+pct(m.return_estimated);
+    const row=(altData.operational_history||[]).find(x=>x.fecha===altData.signal_date)||{};
+    const meta=$('r6030AltMeta')||($('r6030AltCard')&&$('r6030AltCard').querySelector('.r6030-note'));
+    if(meta){
+      const snap=altData.market_snapshot_generated_at_lima||altData.generated_at_lima;
+      meta.textContent=`.INX · CPER · EEM · NDX · SPBLSCUP · USD/PEN · base cadena ${vc(row.base_vc)} · corte ${clock(snap,'America/Lima')} Lima`;
+    }
     const input=$('r6030AltDate');
     if(input){input.min=altData.history_min_date||'';input.max=altData.history_max_date||altData.signal_date||'';if(!input.value)input.value=altData.signal_date||altData.history_max_date||'';}
     renderAltHistory();
@@ -129,7 +141,7 @@
     const r=op||bt;
     if(!r){box.textContent='No hay una observación del nuevo 60/30 para esa fecha.';return;}
     if(String(r.source||'').includes('ANCLA')){box.textContent=`Fecha ${fmt(d)} · ANCLA SBS DEL CICLO · VC ${vc(r.vc)} · punto de partida, no predicción.`;return;}
-    const parts=[`Fecha ${fmt(d)} · ${r.source||'60/30 nuevos tickers'}`,`VC ${vc(r.vc)}`,`retorno ${pct(r.return)}`,`señal ${r.signal||'—'}`];
+    const parts=[`Fecha ${fmt(d)} · ${r.source||'60/30 nuevos tickers'}`,`base ${vc(r.base_vc)}`,`VC ${vc(r.vc)}`,`retorno ${pct(r.return)}`,`señal ${r.signal||'—'}`];
     if(finite(r.actual_vc))parts.push(`SBS real ${vc(r.actual_vc)} · error ${finite(r.abs_error)?Number(r.abs_error).toFixed(4):Math.abs(Number(r.vc)-Number(r.actual_vc)).toFixed(4)}`);else parts.push('SBS real pendiente');
     box.textContent=parts.join(' · ');
   }
@@ -137,14 +149,20 @@
   function renderAudit(latest,live,challenger,alt){
     const box=$('audit');if(!box)return;
     const issues=[];
+    const liveAge=ageMinutes(live&&live.generated_at_lima);
+    const altStamp=alt&&(alt.market_snapshot_generated_at_lima||alt.generated_at_lima);
+    const altAge=ageMinutes(altStamp);
     if(!live||!live.generated_at_lima)issues.push('snapshot OLS sin hora');
+    if(Number.isFinite(liveAge)&&liveAge>12)issues.push(`mercado atrasado ${Math.round(liveAge)} min`);
     if(!challenger||!live||challenger.signal_date!==live.signal_date)issues.push('challenger 60/30 desalineado');
     if(!alt||!live||alt.signal_date!==live.signal_date)issues.push('nuevos tickers 60/30 desalineados');
+    if(Number.isFinite(altAge)&&altAge>12)issues.push(`nuevo 60/30 atrasado ${Math.round(altAge)} min`);
     const exp=live&&Array.isArray(live.experimental_assets)?live.experimental_assets:[];
     if(exp.length!==6)issues.push(`tickers experimentales ${exp.length}/6`);
     const status=issues.length?'REVISAR':'OK';
     const cut=live&&live.generated_at_lima?clock(live.generated_at_lima,'America/Lima')+' Lima':'—';
-    box.innerHTML=`<b class="${issues.length?'neg':'pos'}">${status}</b> · corte ${cut} · OLS ${fmt(live&&live.signal_date)} · Challenger ${fmt(challenger&&challenger.signal_date)} · Nuevos tickers ${fmt(alt&&alt.signal_date)} · SBS último ${fmt(latest&&latest.latest_sbs_date)}${issues.length?'<br>'+issues.join(' · '):'<br>3 modelos y 6 tickers experimentales cargados.'}`;
+    const altCut=altStamp?clock(altStamp,'America/Lima')+' Lima':'—';
+    box.innerHTML=`<b class="${issues.length?'neg':'pos'}">${status}</b> · mercado ${cut} · nuevo 60/30 ${altCut}<br>OLS ${fmt(live&&live.signal_date)} · Challenger ${fmt(challenger&&challenger.signal_date)} · Nuevos tickers ${fmt(alt&&alt.signal_date)} · SBS último ${fmt(latest&&latest.latest_sbs_date)}${issues.length?'<br>'+issues.join(' · '):'<br>3 modelos y 6 tickers experimentales cargados y alineados.'}`;
   }
 
   async function loadAll(){
