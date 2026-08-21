@@ -66,6 +66,80 @@ jobs:
               path.write_text(html, encoding="utf-8")
           PY
 
+      - name: Inyectar nuevos tickers 60/30 en el artefacto
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import json
+
+          index = Path("public/index.html")
+          live_path = Path("public/data/live_market.json")
+          html = index.read_text(encoding="utf-8")
+          live = json.loads(live_path.read_text(encoding="utf-8"))
+          assert live.get("experimental_assets"), "live_market.json no contiene experimental_assets"
+
+          marker = "EXPERIMENTAL_6030_DEPLOY_PANEL_V1"
+          if marker not in html:
+              panel = r'''
+          <!-- EXPERIMENTAL_6030_DEPLOY_PANEL_V1 -->
+          <section class="panel" id="marketExperimentalPanel">
+            <div class="market-head">
+              <div>
+                <div class="chart-title">Nuevos tickers 60/30</div>
+                <div class="market-mode" style="color:#93c5fd">EXPERIMENTAL · SEGUIMIENTO</div>
+              </div>
+              <div class="market-time">.INX · CPER · EEM · NDX · SPBLSCUP · USD/PEN</div>
+            </div>
+            <div id="marketExperimentalGrid" class="market-grid"></div>
+            <div class="note" style="margin-top:9px">Seguimiento del nuevo 60/30. Estos tickers no reemplazan todavía al OLS principal ni al challenger vigente.</div>
+          </section>
+          '''
+              audit = '<section class="panel"><b>Auditoría</b>'
+              if audit in html:
+                  html = html.replace(audit, panel + audit, 1)
+              else:
+                  html = html.replace('</main>', panel + '</main>', 1)
+
+              script = r'''
+          <script id="experimental6030DeployScript">
+          (function(){
+            'use strict';
+            const wanted=['.INX','CPER','EEM','NDX','SPBLSCUP','USD/PEN'];
+            const cls=x=>Number(x)>0?'pos':Number(x)<0?'neg':'zero';
+            const price=a=>{
+              if(a.precio_actual===null||a.precio_actual===undefined||!Number.isFinite(Number(a.precio_actual)))return '—';
+              return Number(a.precio_actual).toFixed(a.serie==='USD/PEN'?4:2);
+            };
+            const ret=a=>{
+              if(a.retorno===null||a.retorno===undefined||!Number.isFinite(Number(a.retorno)))return '<span class="zero">—</span>';
+              const n=Number(a.retorno);
+              return `<span class="${cls(n)}">${n>=0?'+':''}${(n*100).toFixed(2)}%</span>`;
+            };
+            function render(rows){
+              const el=document.getElementById('marketExperimentalGrid');
+              if(!el)return;
+              const by=new Map((Array.isArray(rows)?rows:[]).map(x=>[x.serie,x]));
+              el.innerHTML=wanted.map(name=>{
+                const a=by.get(name)||{serie:name,precio_actual:null,retorno:null,estado:'Dato pendiente'};
+                return `<div class="market-item"><div class="market-symbol">${a.serie}</div><div class="market-price">${price(a)}</div><div class="market-ret">${ret(a)}</div><div class="market-source">${a.estado||'Seguimiento experimental'}</div></div>`;
+              }).join('');
+            }
+            function load(){
+              fetch('data/live_market.json?exp6030='+Date.now(),{cache:'no-store'})
+                .then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.json()})
+                .then(d=>render(d.experimental_assets))
+                .catch(()=>render([]));
+            }
+            if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',load,{once:true});else load();
+            setTimeout(load,800);
+            setInterval(load,60000);
+          })();
+          </script>
+          '''
+              html = html.replace('</body>', script + '\n</body>', 1)
+              index.write_text(html, encoding="utf-8")
+          PY
+
       - name: Validar visores y datos
         run: |
           test -s public/index.html
@@ -82,6 +156,9 @@ jobs:
           grep -q "60/30 SIN NEM-FCX + QQQ · CHALLENGER" public/index.html
           grep -q "Ver Challenger 60/30 en otra fecha" public/index.html
           grep -q "SBS_TOP_CARD_DEPLOY_FIX_V2" public/index.html
+          grep -q "EXPERIMENTAL_6030_DEPLOY_PANEL_V1" public/index.html
+          grep -q "Nuevos tickers 60/30" public/index.html
+          grep -q '"experimental_assets"' public/data/live_market.json
           grep -q "raw.githubusercontent.com/rldaqp/afp-fondo3-monitor" public/index.html
           grep -q "raw.githubusercontent.com/rldaqp/afp-fondo3-monitor" public/habitat/index.html
 
