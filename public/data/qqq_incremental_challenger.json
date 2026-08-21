@@ -1,0 +1,146 @@
+{
+  "generated_at_lima": "2026-08-21T08:36:26.667366-05:00",
+  "signal_date": "2026-08-21",
+  "mode": "INTRADÍA PROVISIONAL",
+  "market_open": true,
+  "role": "CHALLENGER EN SOMBRA; no reemplaza el OLS oficial.",
+  "vc_base": 71.41435514610457,
+  "official": {
+    "model": "OLS rolling 90 oficial",
+    "return_estimated": 0.015118508192860135,
+    "signal": "SUBE",
+    "vc_estimated": 72.49403365946878
+  },
+  "challenger": {
+    "model": "OLS rolling 90 + QQQ incremental residualizado",
+    "return_estimated": 0.013787607929030386,
+    "signal": "SUBE",
+    "vc_estimated": 72.39898827536359
+  },
+  "qqq": {
+    "return": 0.0016597874445274385,
+    "residual": -0.0037159771307240345,
+    "previous_close": 710.9299926757812,
+    "current_price": 712.1099853515625,
+    "source": "INTRADÍA YAHOO",
+    "residualized_against": [
+      "ret_SPY",
+      "ret_NEM",
+      "ret_FCX",
+      "ret_EPU",
+      "ret_MCHI",
+      "ret_EEM",
+      "ret_USD_PEN"
+    ]
+  },
+  "comparison": {
+    "same_signal": true,
+    "vc_difference": -0.09504538410519103,
+    "return_difference_pp": -0.1330900263829749
+  },
+  "training": {
+    "window": 90,
+    "n": 90,
+    "start": "2026-03-30",
+    "end": "2026-08-18",
+    "qqq_residualizer": {
+      "intercept": -5.637514254349152e-05,
+      "ret_SPY": 0.954095710018011,
+      "ret_NEM": 0.0017470455711166566,
+      "ret_FCX": 0.0357223818521607,
+      "ret_EPU": -0.11344133829268671,
+      "ret_MCHI": -0.09896134266869852,
+      "ret_EEM": 0.42081236962981106,
+      "ret_USD_PEN": 0.0845339912940684
+    }
+  },
+  "performance_backtest": {
+    "method": "OLS rolling 90. QQQ se residualiza dentro de cada ventana contra los 7 factores del OLS oficial; no usa información futura.",
+    "prediction_rows": 297,
+    "first_prediction": "2025-05-19",
+    "last_prediction": "2026-08-18",
+    "windows": {
+      "30": {
+        "n": 30,
+        "official_mae": 0.004785147083314223,
+        "challenger_mae": 0.004579637246449262,
+        "mae_improvement_pct": 4.294744409875551,
+        "official_direction_accuracy": 0.8,
+        "challenger_direction_accuracy": 0.8,
+        "direction_delta_pp": 0.0,
+        "challenger_win_days": 18,
+        "official_win_days": 12,
+        "ties": 0
+      },
+      "60": {
+        "n": 60,
+        "official_mae": 0.004296799999440223,
+        "challenger_mae": 0.004115733706496012,
+        "mae_improvement_pct": 4.213980007628933,
+        "official_direction_accuracy": 0.7833333333333333,
+        "challenger_direction_accuracy": 0.8166666666666667,
+        "direction_delta_pp": 3.3333333333333326,
+        "challenger_win_days": 38,
+        "official_win_days": 22,
+        "ties": 0
+      },
+      "90": {
+        "n": 90,
+        "official_mae": 0.0036941127465433547,
+        "challenger_mae": 0.003595070933665776,
+        "mae_improvement_pct": 2.68107173962825,
+        "official_direction_accuracy": 0.8222222222222222,
+        "challenger_direction_accuracy": 0.8444444444444444,
+        "direction_delta_pp": 2.2222222222222254,
+        "challenger_win_days": 52,
+        "official_win_days": 38,
+        "ties": 0
+      },
+      "180": {
+        "n": 180,
+        "official_mae": 0.0031780747728039215,
+        "challenger_mae": 0.0030725495672125915,
+        "mae_improvement_pct": 3.3204129271706275,
+        "official_direction_accuracy": 0.8333333333333334,
+        "challenger_direction_accuracy": 0.8611111111111112,
+        "direction_delta_pp": 2.777777777777779,
+        "challenger_win_days": 101,
+        "official_win_days": 79,
+        "ties": 0
+      },
+      "ALL": {
+        "n": 297,
+        "official_mae": 0.002730604749332747,
+        "challenger_mae": 0.0026323804198619956,
+        "mae_improvement_pct": 3.5971639430698894,
+        "official_direction_accuracy": 0.7845117845117845,
+        "challenger_direction_accuracy": 0.8114478114478114,
+        "direction_delta_pp": 2.6936026936026924,
+        "challenger_win_days": 173,
+        "official_win_days": 124,
+        "ties": 0
+      }
+    },
+    "recent90_vif": {
+      "by_feature": {
+        "ret_SPY": 3.573450127201987,
+        "ret_NEM": 2.287542549109489,
+        "ret_FCX": 3.192720148426848,
+        "ret_EPU": 4.463048104554238,
+        "ret_MCHI": 1.5894759243601713,
+        "ret_EEM": 3.9175976898774905,
+        "ret_USD_PEN": 1.9820588650068067,
+        "ret_QQQ_residual": 1.0
+      },
+      "max_vif": 4.463048104554238,
+      "max_vif_feature": "ret_EPU"
+    }
+  },
+  "shadow_forward": {
+    "n": 0,
+    "pending": 1,
+    "start_date": "2026-08-21",
+    "ledger": "data/rolling90/qqq_incremental_shadow.csv",
+    "rule": "Solo cuenta como prueba futura cuando la SBS publique el VC real de la fecha guardada."
+  }
+}
