@@ -1,0 +1,41 @@
+name: Calcular VC sin NEM ni FCX 2026-08-18
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - migracion-github-actions
+    paths:
+      - "scripts/calc_custom_no_nem_fcx_20260818.py"
+      - ".github/workflows/calc-custom-no-nem-fcx-20260818.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: calc-custom-no-nem-fcx-20260818
+  cancel-in-progress: true
+
+jobs:
+  calculate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: migracion-github-actions
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Instalar mínimo
+        run: pip install -q numpy pandas yfinance
+      - name: Calcular
+        run: python scripts/calc_custom_no_nem_fcx_20260818.py
+      - name: Guardar
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add analysis/custom_no_nem_fcx_20260818.json
+          git commit -m "Guardar cálculo VC 18/08 sin NEM ni FCX" || exit 0
+          git pull --rebase origin migracion-github-actions
+          git push origin HEAD:migracion-github-actions
