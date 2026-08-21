@@ -114,6 +114,63 @@
     if(head){const cut=timed.length?timed.at(-1):null;const age=ageMinutes(live&&live.generated_at_lima);head.innerHTML=`${cut?stampLabel(cut):'Sin corte intradía'}<br>Visor: ${clock(live&&live.generated_at_lima,'America/Lima')} Lima${Number.isFinite(age)?` · hace ${Math.round(age)} min`:''}`;}
   }
 
+  function recalcAltWithLive(alt,live){
+    if(!alt||!live||!alt.cycle||!alt.cycle.coefficients)return alt;
+    const coeff=alt.cycle.coefficients||{};
+    const map={
+      'ret_.INX':'.INX',
+      'ret_CPER':'CPER',
+      'ret_EEM_alt':'EEM',
+      'ret_NDX':'NDX',
+      'ret_SPBLSCUP':'SPBLSCUP',
+      'ret_USD_PEN_alt':'USD/PEN'
+    };
+    const assets=new Map((live.experimental_assets||[]).map(x=>[x.serie,x]));
+    const values={};
+    for(const [feature,serie] of Object.entries(map)){
+      const a=assets.get(serie)||{};
+      if(finite(a.retorno))values[feature]=Number(a.retorno);
+      else if(serie==='SPBLSCUP')values[feature]=0;
+      else return alt;
+    }
+    let ret=Number(coeff.intercept||0);
+    for(const [feature,value] of Object.entries(values)){
+      if(!finite(coeff[feature]))return alt;
+      ret+=Number(coeff[feature])*value;
+    }
+    const date=String(live.signal_date||alt.signal_date||'').slice(0,10);
+    const ops=Array.isArray(alt.operational_history)?alt.operational_history:[];
+    let row=ops.find(x=>x.fecha===date)||null;
+    let base=row&&finite(row.base_vc)?Number(row.base_vc):null;
+    if(!finite(base)){
+      const prev=ops.filter(x=>x.fecha<date&&finite(x.vc)).sort((a,b)=>a.fecha.localeCompare(b.fecha)).at(-1);
+      if(prev)base=Number(prev.vc);
+    }
+    if(!finite(base))return alt;
+    const estimate=Number(base)*(1+ret);
+    const signal=ret>.001?'SUBE':ret<-.001?'BAJA':'NEUTRO';
+    alt.signal_date=date;
+    alt.mode=live.mode;
+    alt.market_open=!!live.market_open;
+    alt.market_snapshot_generated_at_lima=live.generated_at_lima;
+    alt.model={...(alt.model||{}),return_estimated:ret,signal,vc_estimated:estimate,live_recalculated:true};
+    const fresh={
+      ...(row||{}),
+      fecha:date,
+      base_vc:Number(base),
+      return:ret,
+      signal,
+      vc:estimate,
+      source:live.market_open?'INTRADÍA RECALCULADA CON CORTE VIGENTE':'CIERRE RECALCULADO CON CORTE VIGENTE',
+      factor_returns:values,
+      updated_at_lima:live.generated_at_lima
+    };
+    if(row){Object.assign(row,fresh);}else ops.push(fresh);
+    alt.operational_history=ops;
+    alt.history_max_date=date;
+    return alt;
+  }
+
   function renderAltModel(){
     ensureCompareUi();
     if(!altData)return;
@@ -125,7 +182,7 @@
     const meta=$('r6030AltMeta')||($('r6030AltCard')&&$('r6030AltCard').querySelector('.r6030-note'));
     if(meta){
       const snap=altData.market_snapshot_generated_at_lima||altData.generated_at_lima;
-      meta.textContent=`.INX · CPER · EEM · NDX · SPBLSCUP · USD/PEN · base cadena ${vc(row.base_vc)} · corte ${clock(snap,'America/Lima')} Lima`;
+      meta.textContent=`.INX · CPER · EEM · NDX · SPBLSCUP · USD/PEN · base cadena ${vc(row.base_vc)} · corte ${clock(snap,'America/Lima')} Lima${m.live_recalculated?' · RECALCULADO CON MERCADO VIGENTE':''}`;
     }
     const input=$('r6030AltDate');
     if(input){input.min=altData.history_min_date||'';input.max=altData.history_max_date||altData.signal_date||'';if(!input.value)input.value=altData.signal_date||altData.history_max_date||'';}
@@ -169,7 +226,15 @@
     ensureUi();
     let latest=null,live=null,challenger=null,alt=null;
     try{live=await getJson('live_market.json');renderMarket(live);}catch(e){}
-    try{alt=await getJson('alt_6030_experimental.json');altData=alt;renderAltModel();}catch(e){if($('r6030AltSignal')){$('r6030AltSignal').textContent='NO DISPONIBLE';$('r6030AltSignal').className='r6030-signal down';}if($('r6030AltDateResult'))$('r6030AltDateResult').textContent='No se pudo cargar el histórico del nuevo 60/30.';}
+    try{
+      alt=await getJson('alt_6030_experimental.json');
+      alt=recalcAltWithLive(alt,live);
+      altData=alt;
+      renderAltModel();
+    }catch(e){
+      if($('r6030AltSignal')){$('r6030AltSignal').textContent='NO DISPONIBLE';$('r6030AltSignal').className='r6030-signal down';}
+      if($('r6030AltDateResult'))$('r6030AltDateResult').textContent='No se pudo cargar el histórico del nuevo 60/30.';
+    }
     try{challenger=await getJson('reduced_6030_challenger.json');}catch(e){}
     try{latest=await getJson('latest.json');repairTop(latest);}catch(e){}
     renderAudit(latest,live,challenger,alt);
