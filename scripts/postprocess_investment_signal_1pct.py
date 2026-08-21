@@ -94,6 +94,38 @@ def main() -> None:
   new MutationObserver(render).observe(retNode,{childList:true,subtree:true,characterData:true});
   render();
 })();
+
+// SBS_TOP_CARD_RUNTIME_V1
+// La tarjeta SBS no depende del resto del visor: lee directamente latest.json.
+// Esto evita que quede en "—" si otro postproceso retira o cambia el arranque legado.
+(function(){
+  'use strict';
+  const byId=id=>document.getElementById(id);
+  const fmt=d=>{
+    if(!d)return '—';
+    const p=String(d).slice(0,10).split('-');
+    return p.length===3?`${p[2]}/${p[1]}/${p[0]}`:String(d);
+  };
+  function paintSbs(l){
+    if(!l)return;
+    const value=Number(l.latest_sbs_vc);
+    const vcNode=byId('sbsVc'),dateNode=byId('sbsDate'),windowNode=byId('window');
+    if(vcNode)vcNode.textContent=Number.isFinite(value)?value.toFixed(7):'—';
+    if(dateNode)dateNode.textContent=fmt(l.latest_sbs_date);
+    if(windowNode)windowNode.textContent=`${fmt(l.training_start)} → ${fmt(l.training_end)}`;
+  }
+  const loadSbs=()=>fetch('data/latest.json?ts='+Date.now(),{cache:'no-store'})
+    .then(r=>{if(!r.ok)throw new Error(String(r.status));return r.json()})
+    .then(paintSbs)
+    .catch(()=>{});
+  if(document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded',loadSbs,{once:true});
+  }else{
+    loadSbs();
+  }
+  setTimeout(loadSbs,700);
+  setTimeout(loadSbs,1800);
+})();
 </script>
 <!-- INVESTMENT_SIGNAL_1PCT_SCRIPT END -->
 '''
@@ -105,6 +137,8 @@ def main() -> None:
         "data/vc_accuracy_1pct.json",
         "THRESHOLD_PCT=1.0",
         "Constante",
+        "SBS_TOP_CARD_RUNTIME_V1",
+        "latest_sbs_vc",
     ]
     missing = [item for item in required if item not in html]
     if missing:
@@ -113,7 +147,7 @@ def main() -> None:
         raise AssertionError("El panel grande de señal de inversión no fue retirado")
 
     HTML_PATH.write_text(html, encoding="utf-8")
-    print("Profuturo: precisión VC compacta junto a la señal; Base visible renombrada a Constante.")
+    print("Profuturo: precisión VC compacta y carga independiente del último VC SBS activadas.")
 
 
 if __name__ == "__main__":
