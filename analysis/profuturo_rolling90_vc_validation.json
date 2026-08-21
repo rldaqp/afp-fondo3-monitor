@@ -1,195 +1,445 @@
 {
-  "generated_at_utc": "2026-08-21T03:29:40.060096+00:00",
+  "generated_at_utc": "2026-08-21T03:39:42.659960+00:00",
   "fund": "PROFUTURO Fondo 3",
-  "purpose": "Prueba ciega estricta: después del VC SBS del 06/08 no se usa ningún VC SBS para reanclar el nivel ni para recalibrar los coeficientes. Solo entran retornos observados de indicadores.",
-  "blind_cutoff": "2026-08-06",
-  "anchor_vc_sbs": 69.2016742,
-  "target_end": "2026-08-20",
-  "important_method_note": "Una vez que se prohíbe usar nuevos VC SBS, un rolling90 genuino ya no puede recalibrarse porque falta la variable objetivo. Por eso esta es la prueba sin fuga de información correcta: ambos modelos se estiman una sola vez con las últimas 90 observaciones conocidas al 06/08, se congelan y desde el 07/08 se encadena el VC usando únicamente los indicadores. El VC SBS posterior se revela solo al final para medir error.",
-  "models": {
-    "ACTUAL_GITHUB_7F": {
-      "features": [
-        "ret_SPY",
-        "ret_EEM",
-        "ret_EPU",
-        "ret_MCHI",
-        "ret_NEM",
-        "ret_FCX",
-        "ret_USD_PEN"
-      ],
-      "train_n": 90,
-      "train_start": "2026-03-17",
-      "train_end": "2026-08-05",
-      "coefficients": {
-        "intercept": -0.00034710928556026805,
-        "ret_SPY": 0.015612607637183473,
-        "ret_EEM": 0.36553865974776006,
-        "ret_EPU": 0.29926170121105666,
-        "ret_MCHI": -0.05262238580265247,
-        "ret_NEM": 0.08810454195658413,
-        "ret_FCX": 0.06470427289126503,
-        "ret_USD_PEN": 0.38873115656686
+  "purpose": "Validación ciega: después del corte no se usa ningún VC SBS para reanclar nivel ni recalibrar coeficientes; solo retornos observados de los indicadores.",
+  "window": 90,
+  "current_model_features": [
+    "ret_SPY",
+    "ret_EEM",
+    "ret_EPU",
+    "ret_MCHI",
+    "ret_NEM",
+    "ret_FCX",
+    "ret_USD_PEN"
+  ],
+  "alternative_model_features": [
+    "ret_SPY",
+    "ret_EEM",
+    "ret_EPU",
+    "ret_MCHI",
+    "ret_USD_PEN",
+    "ret_QQQ"
+  ],
+  "alternative_excluded": [
+    "ret_NEM",
+    "ret_FCX"
+  ],
+  "common_real_rows": 386,
+  "first_real_date": "2025-01-03",
+  "last_real_date": "2026-08-18",
+  "one_step_alt_metrics": {
+    "recent_60": {
+      "n": 60,
+      "start": "2026-05-13",
+      "end": "2026-08-18",
+      "vc_mae": 0.302116939395318,
+      "vc_rmse": 0.39093701637418277,
+      "vc_mape_pct": 0.42997370993106854,
+      "vc_bias": 0.0060721719833109,
+      "within_0_5pct": 0.7,
+      "within_1pct": 0.9333333333333333,
+      "direction_accuracy": 0.8333333333333334,
+      "return_mae": 0.0043100611296915895,
+      "return_rmse": 0.005561125514613254,
+      "oos_r2_return": 0.8935382931107226,
+      "pred_actual_return_corr": 0.9454619583350439,
+      "naive_vc_rmse": 1.1821118096730783,
+      "theil_u_vs_no_change": 0.3307106935022494
+    },
+    "recent_90": {
+      "n": 90,
+      "start": "2026-03-27",
+      "end": "2026-08-18",
+      "vc_mae": 0.2704478694844291,
+      "vc_rmse": 0.3572300563169709,
+      "vc_mape_pct": 0.38765293283499136,
+      "vc_bias": -0.006860317032759472,
+      "within_0_5pct": 0.7333333333333333,
+      "within_1pct": 0.9444444444444444,
+      "direction_accuracy": 0.8444444444444444,
+      "return_mae": 0.003888857225343973,
+      "return_rmse": 0.00510732890104658,
+      "oos_r2_return": 0.8998886735864401,
+      "pred_actual_return_corr": 0.9487711357348999,
+      "naive_vc_rmse": 1.11676550651034,
+      "theil_u_vs_no_change": 0.319879199558411
+    },
+    "all_oos": {
+      "n": 296,
+      "start": "2025-05-19",
+      "end": "2026-08-18",
+      "vc_mae": 0.18024760387078878,
+      "vc_rmse": 0.25975047080192465,
+      "vc_mape_pct": 0.2789074943397364,
+      "vc_bias": -0.010111561650497005,
+      "within_0_5pct": 0.8581081081081081,
+      "within_1pct": 0.9763513513513513,
+      "direction_accuracy": 0.8074324324324325,
+      "return_mae": 0.0027912090871628483,
+      "return_rmse": 0.003883420400959098,
+      "oos_r2_return": 0.8953189640293597,
+      "pred_actual_return_corr": 0.9472751772588599,
+      "naive_vc_rmse": 0.8087279790077857,
+      "theil_u_vs_no_change": 0.32118397971170476
+    }
+  },
+  "blind_chain": {
+    "summary": {
+      "5": {
+        "n_origins": 292,
+        "first_origin": "2025-05-16",
+        "last_origin": "2026-08-11",
+        "endpoint_mae_current": 0.5263812688173256,
+        "endpoint_mae_alt": 0.5406313139247325,
+        "endpoint_median_abs_current": 0.3771432732811384,
+        "endpoint_median_abs_alt": 0.3951783684923953,
+        "endpoint_bias_current": -0.04361722823915806,
+        "endpoint_bias_alt": -0.025075035495697534,
+        "path_mae_current": 0.3665433008838682,
+        "path_mae_alt": 0.38021771489598205,
+        "alt_beats_current_endpoint_pct": 50.68493150684932,
+        "alt_beats_current_path_pct": 52.73972602739726,
+        "endpoint_mae_improvement_alt_pct": -2.7071717691292343,
+        "path_mae_improvement_alt_pct": -3.7306408217364457
       },
-      "metrics_blind": {
-        "n": 9,
-        "start": "2026-08-07",
-        "end": "2026-08-19",
-        "vc_mae": 0.6153569544723594,
-        "vc_rmse": 0.6850335846343519,
-        "vc_mape_pct": 0.8753256329980132,
-        "vc_bias": -0.17452173731926418,
-        "within_0_5pct": 0.2222222222222222,
-        "within_1pct": 0.5555555555555556,
-        "final_actual_vc": 70.327,
-        "final_pred_vc": 70.47371802986595,
-        "final_error": 0.1467180298659514
+      "10": {
+        "n_origins": 287,
+        "first_origin": "2025-05-16",
+        "last_origin": "2026-08-03",
+        "endpoint_mae_current": 0.8127748346157218,
+        "endpoint_mae_alt": 0.7987502696611237,
+        "endpoint_median_abs_current": 0.5907470022781709,
+        "endpoint_median_abs_alt": 0.5647246243326549,
+        "endpoint_bias_current": -0.08516983495923933,
+        "endpoint_bias_alt": -0.042474152786435564,
+        "path_mae_current": 0.526437319464482,
+        "path_mae_alt": 0.5339516189936359,
+        "alt_beats_current_endpoint_pct": 52.613240418118465,
+        "alt_beats_current_path_pct": 54.35540069686411,
+        "endpoint_mae_improvement_alt_pct": 1.7255166323190623,
+        "path_mae_improvement_alt_pct": -1.4273873168410154
+      },
+      "20": {
+        "n_origins": 277,
+        "first_origin": "2025-05-16",
+        "last_origin": "2026-07-13",
+        "endpoint_mae_current": 1.1909413381483707,
+        "endpoint_mae_alt": 1.1682814405857673,
+        "endpoint_median_abs_current": 0.7727676671566712,
+        "endpoint_median_abs_alt": 0.869857934361292,
+        "endpoint_bias_current": -0.30495346864578055,
+        "endpoint_bias_alt": -0.1661625001770327,
+        "path_mae_current": 0.7311081642195513,
+        "path_mae_alt": 0.7347861764250972,
+        "alt_beats_current_endpoint_pct": 52.34657039711191,
+        "alt_beats_current_path_pct": 53.79061371841155,
+        "endpoint_mae_improvement_alt_pct": 1.9026879693196366,
+        "path_mae_improvement_alt_pct": -0.50307360600633
       }
     },
-    "SIN_NEM_FCX_MAS_QQQ": {
-      "features": [
-        "ret_SPY",
-        "ret_EEM",
-        "ret_EPU",
-        "ret_MCHI",
-        "ret_USD_PEN",
-        "ret_QQQ"
-      ],
-      "train_n": 90,
-      "train_start": "2026-03-17",
-      "train_end": "2026-08-05",
-      "coefficients": {
-        "intercept": -0.000573301798841362,
-        "ret_SPY": -0.35775783594315647,
-        "ret_EEM": 0.18168433996485345,
-        "ret_EPU": 0.4776188748873326,
-        "ret_MCHI": 0.009600702466123975,
-        "ret_USD_PEN": 0.4268901829707062,
-        "ret_QQQ": 0.4841164939687502
+    "recent_paths": {
+      "10": {
+        "origin_date": "2026-08-03",
+        "origin_vc": 68.1332558,
+        "end_date": "2026-08-18",
+        "rows": [
+          {
+            "step": 1,
+            "fecha": "2026-08-04",
+            "actual_vc": 69.7841504,
+            "current_pred_vc": 69.53364663517137,
+            "alt_pred_vc": 69.73721105382918,
+            "current_abs_error": 0.2505037648286361,
+            "alt_abs_error": 0.04693934617081652
+          },
+          {
+            "step": 2,
+            "fecha": "2026-08-05",
+            "actual_vc": 69.8102662,
+            "current_pred_vc": 70.36521895986589,
+            "alt_pred_vc": 69.90227232495938,
+            "current_abs_error": 0.5549527598658841,
+            "alt_abs_error": 0.09200612495938287
+          },
+          {
+            "step": 3,
+            "fecha": "2026-08-07",
+            "actual_vc": 69.6836293,
+            "current_pred_vc": 71.38588041907227,
+            "alt_pred_vc": 70.6234496544788,
+            "current_abs_error": 1.7022511190722582,
+            "alt_abs_error": 0.9398203544787975
+          },
+          {
+            "step": 4,
+            "fecha": "2026-08-10",
+            "actual_vc": 69.2112776,
+            "current_pred_vc": 71.48033444114154,
+            "alt_pred_vc": 70.35991747733772,
+            "current_abs_error": 2.269056841141534,
+            "alt_abs_error": 1.1486398773377147
+          },
+          {
+            "step": 5,
+            "fecha": "2026-08-11",
+            "actual_vc": 69.498597,
+            "current_pred_vc": 71.26028369043259,
+            "alt_pred_vc": 69.91014697784435,
+            "current_abs_error": 1.7616866904325832,
+            "alt_abs_error": 0.411549977844345
+          },
+          {
+            "step": 6,
+            "fecha": "2026-08-12",
+            "actual_vc": 70.5338688,
+            "current_pred_vc": 71.62965105069775,
+            "alt_pred_vc": 70.07732786382039,
+            "current_abs_error": 1.0957822506977521,
+            "alt_abs_error": 0.4565409361796071
+          },
+          {
+            "step": 7,
+            "fecha": "2026-08-13",
+            "actual_vc": 70.6649381,
+            "current_pred_vc": 71.03340543344237,
+            "alt_pred_vc": 69.79614917286688,
+            "current_abs_error": 0.3684673334423678,
+            "alt_abs_error": 0.8687889271331244
+          },
+          {
+            "step": 8,
+            "fecha": "2026-08-14",
+            "actual_vc": 70.8740985,
+            "current_pred_vc": 71.34401792930439,
+            "alt_pred_vc": 69.98714928893338,
+            "current_abs_error": 0.46991942930438313,
+            "alt_abs_error": 0.8869492110666215
+          },
+          {
+            "step": 9,
+            "fecha": "2026-08-17",
+            "actual_vc": 71.5395979,
+            "current_pred_vc": 71.92834432990286,
+            "alt_pred_vc": 70.25908577511247,
+            "current_abs_error": 0.38874642990285224,
+            "alt_abs_error": 1.2805121248875366
+          },
+          {
+            "step": 10,
+            "fecha": "2026-08-18",
+            "actual_vc": 69.6328126,
+            "current_pred_vc": 70.401586764429,
+            "alt_pred_vc": 68.84634664996122,
+            "current_abs_error": 0.7687741644290043,
+            "alt_abs_error": 0.7864659500387745
+          }
+        ]
       },
-      "metrics_blind": {
-        "n": 9,
-        "start": "2026-08-07",
-        "end": "2026-08-19",
-        "vc_mae": 1.098513676389435,
-        "vc_rmse": 1.2466310091138704,
-        "vc_mape_pct": 1.5574733912462693,
-        "vc_bias": -0.945653396837533,
-        "within_0_5pct": 0.2222222222222222,
-        "within_1pct": 0.3333333333333333,
-        "final_actual_vc": 70.327,
-        "final_pred_vc": 69.03454851097646,
-        "final_error": -1.2924514890235344
+      "20": {
+        "origin_date": "2026-07-13",
+        "origin_vc": 69.4242724,
+        "end_date": "2026-08-18",
+        "rows": [
+          {
+            "step": 1,
+            "fecha": "2026-07-14",
+            "actual_vc": 70.5044231,
+            "current_pred_vc": 70.3395641438967,
+            "alt_pred_vc": 70.35831388375213,
+            "current_abs_error": 0.16485895610330203,
+            "alt_abs_error": 0.146109216247865
+          },
+          {
+            "step": 2,
+            "fecha": "2026-07-15",
+            "actual_vc": 69.9080824,
+            "current_pred_vc": 70.22267176043964,
+            "alt_pred_vc": 70.16569367802003,
+            "current_abs_error": 0.3145893604396406,
+            "alt_abs_error": 0.25761127802003614
+          },
+          {
+            "step": 3,
+            "fecha": "2026-07-16",
+            "actual_vc": 68.4036329,
+            "current_pred_vc": 68.8343120918994,
+            "alt_pred_vc": 68.81938789342747,
+            "current_abs_error": 0.43067919189940085,
+            "alt_abs_error": 0.4157549934274698
+          },
+          {
+            "step": 4,
+            "fecha": "2026-07-17",
+            "actual_vc": 68.2147702,
+            "current_pred_vc": 68.48832037825848,
+            "alt_pred_vc": 68.38914439636193,
+            "current_abs_error": 0.27355017825847483,
+            "alt_abs_error": 0.1743741963619243
+          },
+          {
+            "step": 5,
+            "fecha": "2026-07-20",
+            "actual_vc": 68.06385,
+            "current_pred_vc": 68.5030295527141,
+            "alt_pred_vc": 68.46971939493712,
+            "current_abs_error": 0.43917955271409426,
+            "alt_abs_error": 0.40586939493711327
+          },
+          {
+            "step": 6,
+            "fecha": "2026-07-21",
+            "actual_vc": 70.02189279999999,
+            "current_pred_vc": 70.21439701693716,
+            "alt_pred_vc": 70.06307598190797,
+            "current_abs_error": 0.19250421693716646,
+            "alt_abs_error": 0.0411831819079822
+          },
+          {
+            "step": 7,
+            "fecha": "2026-07-24",
+            "actual_vc": 68.3626543,
+            "current_pred_vc": 69.58344769030488,
+            "alt_pred_vc": 69.41670443901076,
+            "current_abs_error": 1.2207933903048769,
+            "alt_abs_error": 1.054050139010755
+          },
+          {
+            "step": 8,
+            "fecha": "2026-07-30",
+            "actual_vc": 68.2721906,
+            "current_pred_vc": 71.84938928644148,
+            "alt_pred_vc": 71.76065978853846,
+            "current_abs_error": 3.577198686441477,
+            "alt_abs_error": 3.4884691885384598
+          },
+          {
+            "step": 9,
+            "fecha": "2026-07-31",
+            "actual_vc": 67.7685784,
+            "current_pred_vc": 71.6412279023995,
+            "alt_pred_vc": 71.61453937568113,
+            "current_abs_error": 3.8726495023995113,
+            "alt_abs_error": 3.8459609756811375
+          },
+          {
+            "step": 10,
+            "fecha": "2026-08-03",
+            "actual_vc": 68.1332558,
+            "current_pred_vc": 72.09642803241537,
+            "alt_pred_vc": 72.09380927760655,
+            "current_abs_error": 3.963172232415374,
+            "alt_abs_error": 3.9605534776065525
+          },
+          {
+            "step": 11,
+            "fecha": "2026-08-04",
+            "actual_vc": 69.7841504,
+            "current_pred_vc": 73.53366194226986,
+            "alt_pred_vc": 73.66298972088225,
+            "current_abs_error": 3.7495115422698575,
+            "alt_abs_error": 3.87883932088225
+          },
+          {
+            "step": 12,
+            "fecha": "2026-08-05",
+            "actual_vc": 69.8102662,
+            "current_pred_vc": 74.38134356282207,
+            "alt_pred_vc": 73.85819813260225,
+            "current_abs_error": 4.5710773628220664,
+            "alt_abs_error": 4.047931932602253
+          },
+          {
+            "step": 13,
+            "fecha": "2026-08-07",
+            "actual_vc": 69.6836293,
+            "current_pred_vc": 75.48026448074336,
+            "alt_pred_vc": 74.60403617705337,
+            "current_abs_error": 5.796635180743351,
+            "alt_abs_error": 4.920406877053367
+          },
+          {
+            "step": 14,
+            "fecha": "2026-08-10",
+            "actual_vc": 69.2112776,
+            "current_pred_vc": 75.63061820288834,
+            "alt_pred_vc": 74.37429413057427,
+            "current_abs_error": 6.41934060288834,
+            "alt_abs_error": 5.163016530574268
+          },
+          {
+            "step": 15,
+            "fecha": "2026-08-11",
+            "actual_vc": 69.498597,
+            "current_pred_vc": 75.34502714433107,
+            "alt_pred_vc": 73.89551713632137,
+            "current_abs_error": 5.846430144331066,
+            "alt_abs_error": 4.39692013632137
+          },
+          {
+            "step": 16,
+            "fecha": "2026-08-12",
+            "actual_vc": 70.5338688,
+            "current_pred_vc": 75.67176603126921,
+            "alt_pred_vc": 74.04829859065295,
+            "current_abs_error": 5.137897231269221,
+            "alt_abs_error": 3.5144297906529545
+          },
+          {
+            "step": 17,
+            "fecha": "2026-08-13",
+            "actual_vc": 70.6649381,
+            "current_pred_vc": 75.06741701550503,
+            "alt_pred_vc": 73.7338051105174,
+            "current_abs_error": 4.402478915505029,
+            "alt_abs_error": 3.068867010517394
+          },
+          {
+            "step": 18,
+            "fecha": "2026-08-14",
+            "actual_vc": 70.8740985,
+            "current_pred_vc": 75.40008952194333,
+            "alt_pred_vc": 73.92058316184017,
+            "current_abs_error": 4.525991021943327,
+            "alt_abs_error": 3.046484661840168
+          },
+          {
+            "step": 19,
+            "fecha": "2026-08-17",
+            "actual_vc": 71.5395979,
+            "current_pred_vc": 75.98539164716651,
+            "alt_pred_vc": 74.21530418807521,
+            "current_abs_error": 4.445793747166505,
+            "alt_abs_error": 2.6757062880752045
+          },
+          {
+            "step": 20,
+            "fecha": "2026-08-18",
+            "actual_vc": 69.6328126,
+            "current_pred_vc": 74.49234619776088,
+            "alt_pred_vc": 72.82081544166738,
+            "current_abs_error": 4.859533597760887,
+            "alt_abs_error": 3.188002841667384
+          }
+        ]
       }
     }
   },
-  "fx_pending_fill": {
-    "used": true,
-    "date": "2026-08-20",
-    "ret_USD_PEN": -0.0005943814129018,
-    "source": "YAHOO PEN=X PROVISIONAL",
-    "provisional": true
+  "live_blind_chain_after_last_sbs": {
+    "last_sbs_date": "2026-08-18",
+    "last_sbs_vc": 69.6328126,
+    "manual_validation_note": "70.327 del 19/08 fue informado por el usuario y se usa solo para medir error; no entra al entrenamiento ni reancla la cadena.",
+    "rows": [
+      {
+        "fecha": "2026-08-19",
+        "actual_vc_manual_validation": 70.327,
+        "current_pred_return": 0.018989093298145104,
+        "current_pred_vc": 70.95507657507365,
+        "current_abs_error_if_known": 0.6280765750736492,
+        "alt_pred_return": 0.012446020693743268,
+        "alt_pred_vc": 70.49946402658314,
+        "alt_abs_error_if_known": 0.17246402658314253
+      }
+    ]
   },
-  "sbs_19_used_only_for_evaluation": 70.327,
-  "comparison": [
-    {
-      "fecha": "2026-08-07",
-      "actual_vc": 69.6836293,
-      "vc_actual_model_blind": 70.13130617423937,
-      "vc_alt_blind": 69.92002546552325,
-      "abs_err_actual_model": 0.4476768742393631,
-      "abs_err_alt": 0.23639616552324583,
-      "alt_minus_actual_model": -0.21128070871611726,
-      "winner": "SIN NEM/FCX + QQQ"
-    },
-    {
-      "fecha": "2026-08-10",
-      "actual_vc": 69.2112776,
-      "vc_actual_model_blind": 70.16224477078676,
-      "vc_alt_blind": 69.66275269246032,
-      "abs_err_actual_model": 0.950967170786754,
-      "abs_err_alt": 0.4514750924603135,
-      "alt_minus_actual_model": -0.4994920783264405,
-      "winner": "SIN NEM/FCX + QQQ"
-    },
-    {
-      "fecha": "2026-08-11",
-      "actual_vc": 69.498597,
-      "vc_actual_model_blind": 69.93699340229686,
-      "vc_alt_blind": 69.22221890597463,
-      "abs_err_actual_model": 0.43839640229685983,
-      "abs_err_alt": 0.2763780940253753,
-      "alt_minus_actual_model": -0.7147744963222351,
-      "winner": "SIN NEM/FCX + QQQ"
-    },
-    {
-      "fecha": "2026-08-12",
-      "actual_vc": 70.5338688,
-      "vc_actual_model_blind": 70.29929129178764,
-      "vc_alt_blind": 69.3943859778994,
-      "abs_err_actual_model": 0.2345775082123538,
-      "abs_err_alt": 1.1394828221005895,
-      "alt_minus_actual_model": -0.9049053138882357,
-      "winner": "ACTUAL GITHUB"
-    },
-    {
-      "fecha": "2026-08-13",
-      "actual_vc": 70.6649381,
-      "vc_actual_model_blind": 69.76520800694784,
-      "vc_alt_blind": 69.12247341077193,
-      "abs_err_actual_model": 0.8997300930521561,
-      "abs_err_alt": 1.5424646892280691,
-      "alt_minus_actual_model": -0.642734596175913,
-      "winner": "ACTUAL GITHUB"
-    },
-    {
-      "fecha": "2026-08-14",
-      "actual_vc": 70.8740985,
-      "vc_actual_model_blind": 70.01974604046187,
-      "vc_alt_blind": 69.31287567716461,
-      "abs_err_actual_model": 0.8543524595381342,
-      "abs_err_alt": 1.56122282283539,
-      "alt_minus_actual_model": -0.7068703632972557,
-      "winner": "ACTUAL GITHUB"
-    },
-    {
-      "fecha": "2026-08-17",
-      "actual_vc": 71.5395979,
-      "vc_actual_model_blind": 70.55096572939073,
-      "vc_alt_blind": 69.59108289572318,
-      "abs_err_actual_model": 0.9886321706092787,
-      "abs_err_alt": 1.9485150042768282,
-      "alt_minus_actual_model": -0.9598828336675496,
-      "winner": "ACTUAL GITHUB"
-    },
-    {
-      "fecha": "2026-08-18",
-      "actual_vc": 69.6328126,
-      "vc_actual_model_blind": 69.05565071834961,
-      "vc_alt_blind": 68.19457569196842,
-      "abs_err_actual_model": 0.5771618816503832,
-      "abs_err_alt": 1.4382369080315698,
-      "alt_minus_actual_model": -0.8610750263811866,
-      "winner": "ACTUAL GITHUB"
-    },
-    {
-      "fecha": "2026-08-19",
-      "actual_vc": 70.327,
-      "vc_actual_model_blind": 70.47371802986595,
-      "vc_alt_blind": 69.03454851097646,
-      "abs_err_actual_model": 0.1467180298659514,
-      "abs_err_alt": 1.2924514890235344,
-      "alt_minus_actual_model": -1.4391695188894857,
-      "winner": "ACTUAL GITHUB"
-    },
-    {
-      "fecha": "2026-08-20",
-      "actual_vc": null,
-      "vc_actual_model_blind": 71.05331103130416,
-      "vc_alt_blind": 69.31043543955995,
-      "abs_err_actual_model": null,
-      "abs_err_alt": null,
-      "alt_minus_actual_model": -1.742875591744209,
-      "winner": "SIN SBS"
-    }
-  ]
+  "method_note": "Para cada origen histórico se ajustan ambos OLS una sola vez con las 90 observaciones reales anteriores, se congelan coeficientes y se encadena el VC durante 5, 10 o 20 observaciones futuras usando solo precios/retornos de indicadores. Los VC SBS futuros se consultan únicamente después para medir error."
 }
