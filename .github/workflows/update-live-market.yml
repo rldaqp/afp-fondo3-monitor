@@ -9,7 +9,8 @@ on:
       - ".github/workflows/update-live-market.yml"
       - "scripts/update_live_market_only.py"
       - "scripts/update_live_market_hybrid.py"
-      - "scripts/build_qqq_incremental_challenger.py"
+      - "scripts/build_reduced_6030_challenger.py"
+      - "scripts/build_reduced_6030_history.py"
       - "scripts/update_habitat_live_market.py"
       - "scripts/postprocess_live_consistency.py"
       - "requirements-live.txt"
@@ -56,7 +57,7 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
         run: |
           git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config user.email "4189828+github-actions[bot]@users.noreply.github.com"
           git fetch origin migracion-github-actions
           git reset --hard origin/migracion-github-actions
 
@@ -146,8 +147,6 @@ jobs:
               live["model_snapshot_source"] = source
               live["model_snapshot_date"] = signal_date
 
-              # Regla anti-regresión: nunca publicar CIERRE con fecha T y un
-              # modelo explícitamente identificado como de otra fecha.
               assert live["model_snapshot_date"] == signal_date
               assert live.get("signal") in {"SUBE", "NEUTRO", "BAJA"}
 
@@ -155,23 +154,32 @@ jobs:
           print("Profuturo cierre coherente:", signal_date, live.get("signal"), live.get("return_estimated"), source)
           PY
 
-          python scripts/build_qqq_incremental_challenger.py --live-only
+          # Único challenger Profuturo: 60/30 sin NEM ni FCX + QQQ.
+          # Se recalcula también en intradía con los coeficientes congelados del
+          # ciclo vigente y sin reanclar con SBS dentro del bloque.
+          python scripts/build_reduced_6030_challenger.py
+          python scripts/build_reduced_6030_history.py
 
           python - <<'PY'
           import json
           from pathlib import Path
 
           prof = json.loads(Path("public/data/live_market.json").read_text(encoding="utf-8"))
-          qqq = json.loads(Path("public/data/qqq_incremental_challenger.json").read_text(encoding="utf-8"))
+          challenger = json.loads(Path("public/data/reduced_6030_challenger.json").read_text(encoding="utf-8"))
+          history = json.loads(Path("public/data/reduced_6030_history.json").read_text(encoding="utf-8"))
           hab = json.loads(Path("public/habitat/data/live_market.json").read_text(encoding="utf-8"))
           prof_latest = json.loads(Path("public/data/latest.json").read_text(encoding="utf-8"))
           hab_latest = json.loads(Path("public/habitat/data/latest.json").read_text(encoding="utf-8"))
 
           assert prof.get("engine") == "LIVE INDEPENDIENTE", prof
           assert "HABITAT" in str(hab.get("engine", "")).upper(), hab
-          assert qqq.get("signal_date") == prof.get("signal_date"), (qqq, prof)
-          assert qqq.get("challenger", {}).get("signal") in {"SUBE", "NEUTRO", "BAJA"}, qqq
-          assert float(qqq.get("challenger", {}).get("vc_estimated")) > 0, qqq
+          assert challenger.get("signal_date") == prof.get("signal_date"), (challenger, prof)
+          assert challenger.get("challenger", {}).get("signal") in {"SUBE", "NEUTRO", "BAJA"}, challenger
+          assert float(challenger.get("challenger", {}).get("vc_estimated")) > 0, challenger
+          features = set(challenger.get("cycle", {}).get("features", []))
+          assert "ret_QQQ" in features, challenger
+          assert "ret_NEM" not in features and "ret_FCX" not in features, challenger
+          assert history.get("operational_history"), history
 
           for name, live, latest in (
               ("Profuturo", prof, prof_latest),
@@ -203,11 +211,11 @@ jobs:
               assert hab.get("signal_date") == prof.get("signal_date"), (prof, hab, hab_latest)
 
           print("Profuturo", prof.get("generated_at_lima"), prof.get("mode"), prof.get("signal"))
-          print("QQQ incremental", qqq.get("challenger"))
+          print("60/30 challenger", challenger.get("challenger"))
           print("Habitat", hab.get("generated_at_lima"), hab.get("mode"), hab.get("signal"))
           PY
 
-          git add public/data/live_market.json public/data/qqq_incremental_challenger.json data/rolling90/qqq_incremental_shadow.csv public/habitat/data/live_market.json public/habitat/data/latest.json public/habitat/data/signals.json public/habitat/data/series.json public/habitat/data/operation_series.json public/habitat/data/model_insights.json
+          git add public/data/live_market.json public/data/reduced_6030_challenger.json public/data/reduced_6030_history.json data/rolling90/reduced_6030_shadow.csv data/rolling90/reduced_6030_state.json public/habitat/data/live_market.json public/habitat/data/latest.json public/habitat/data/signals.json public/habitat/data/series.json public/habitat/data/operation_series.json public/habitat/data/model_insights.json
           if git diff --cached --quiet; then
             echo "No hubo cambios en el snapshot."
           else
@@ -222,7 +230,8 @@ jobs:
           git clone --depth 1 --branch gh-pages "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" "$tmp/gh-pages"
           mkdir -p "$tmp/gh-pages/data" "$tmp/gh-pages/habitat/data"
           cp public/data/live_market.json "$tmp/gh-pages/data/live_market.json"
-          cp public/data/qqq_incremental_challenger.json "$tmp/gh-pages/data/qqq_incremental_challenger.json"
+          cp public/data/reduced_6030_challenger.json "$tmp/gh-pages/data/reduced_6030_challenger.json"
+          cp public/data/reduced_6030_history.json "$tmp/gh-pages/data/reduced_6030_history.json"
           cp public/habitat/data/live_market.json "$tmp/gh-pages/habitat/data/live_market.json"
           cp public/habitat/data/latest.json "$tmp/gh-pages/habitat/data/latest.json"
           cp public/habitat/data/signals.json "$tmp/gh-pages/habitat/data/signals.json"
@@ -232,7 +241,7 @@ jobs:
           cd "$tmp/gh-pages"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/live_market.json data/qqq_incremental_challenger.json habitat/data/live_market.json
+          git add data/live_market.json data/reduced_6030_challenger.json data/reduced_6030_history.json habitat/data/live_market.json
           if git diff --cached --quiet; then
             echo "gh-pages ya tiene los snapshots intradia vigentes."
           else
