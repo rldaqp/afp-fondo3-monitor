@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import re
+import subprocess
+import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -108,3 +110,6 @@ if "$('huberValue').textContent" in html or "$('huberSub').textContent" in html:
 
 HTML_PATH.write_text(html, encoding="utf-8")
 print("Selector historico 60/30 insertado y referencias Huber nulas eliminadas.")
+
+# Genera también la auditoría comparativa exacta de los últimos 20 VC SBS.
+subprocess.run([sys.executable, str(ROOT / "scripts" / "recheck_6030_exact20.py")], check=True)
