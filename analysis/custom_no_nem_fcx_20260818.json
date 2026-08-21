@@ -1,0 +1,49 @@
+{
+  "fund": "PROFUTURO Fondo 3",
+  "target_date": "2026-08-18",
+  "base_vc_date": "2026-08-17",
+  "base_vc": 71.5395979,
+  "training": {
+    "n": 90,
+    "start": "2026-03-25",
+    "end": "2026-08-17",
+    "features_common": [
+      "ret_SPY",
+      "ret_EEM",
+      "ret_EPU",
+      "ret_MCHI",
+      "ret_USD_PEN"
+    ],
+    "excluded": [
+      "ret_NEM",
+      "ret_FCX"
+    ]
+  },
+  "market_returns_target_date": {
+    "ret_SPY": -0.0067557570742746,
+    "ret_EEM": -0.029411814704536,
+    "ret_EPU": -0.0190604835867511,
+    "ret_MCHI": -0.0029059179698771,
+    "ret_USD_PEN": 0.0017862459065198
+  },
+  "qqq": {
+    "return": -0.01693450262957852,
+    "expected_from_base_factors": -0.017443145075307028,
+    "residual_incremental": 0.0005086424457285098
+  },
+  "without_qqq": {
+    "return_estimated": -0.02087203500063104,
+    "signal": "BAJA",
+    "vc_estimated": 70.04642090870013
+  },
+  "with_qqq_incremental": {
+    "return_estimated": -0.02067447989291539,
+    "signal": "BAJA",
+    "vc_estimated": 70.0605539216692
+  },
+  "difference_with_minus_without": {
+    "return_pp": 0.019755510771565093,
+    "vc": 0.014133012969068659
+  },
+  "method": "OLS rolling 90. Ambas variantes excluyen NEM y FCX. La variante QQQ usa QQQ residualizado dentro de la misma ventana de 90 contra SPY, EEM, EPU, MCHI y USD/PEN."
+}
