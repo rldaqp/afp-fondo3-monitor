@@ -12,5 +12,6 @@ xlrd>=2.0.1
 openpyxl>=3.1
 
 # Dependencias de validación y diagnóstico de modelos.
+# Trigger manual del visor para publicar los nuevos tickers 60/30.
 yfinance>=1.5
 plotly>=6.0
