@@ -1,0 +1,92 @@
+{
+  "fund": "PROFUTURO Fondo 3",
+  "method": "OLS rolling 90 + QQQ incremental residualizado. Variante A excluye NEM/FCX. Variante B excluye NEM/FCX/MCHI. Histórico FX BCRP; 20/08 usa PEN=X provisional si BCRP falta.",
+  "exclude_nem_fcx_keep_qqq": [
+    {
+      "fecha": "2026-08-18",
+      "base_vc": 71.5395979,
+      "base_date": "2026-08-17",
+      "return_estimated": -0.02067447989291539,
+      "signal": "BAJA",
+      "vc_estimated": 70.0605539216692,
+      "qqq_return": -0.01693450262957852,
+      "qqq_expected": -0.017443145075307018,
+      "qqq_residual": 0.0005086424457284994,
+      "fx_return_used": 0.0017862459065198,
+      "training_start": "2026-03-25",
+      "training_end": "2026-08-17"
+    },
+    {
+      "fecha": "2026-08-19",
+      "base_vc": 69.6328126,
+      "base_date": "2026-08-18",
+      "return_estimated": 0.012574842196318032,
+      "signal": "SUBE",
+      "vc_estimated": 70.50843423013079,
+      "qqq_return": -0.0019929933468779693,
+      "qqq_expected": 0.003696426932766052,
+      "qqq_residual": -0.005689420279644021,
+      "fx_return_used": -0.0029717682020803,
+      "training_start": "2026-03-26",
+      "training_end": "2026-08-18"
+    },
+    {
+      "fecha": "2026-08-20",
+      "base_vc": 70.50843423013079,
+      "base_date": "2026-08-19 estimado",
+      "return_estimated": 0.0049606037000295335,
+      "signal": "SUBE",
+      "vc_estimated": 70.85819862985606,
+      "qqq_return": -0.007191967784539344,
+      "qqq_expected": -0.005815679540407318,
+      "qqq_residual": -0.001376288244132026,
+      "fx_return_used": -0.000594381412901801,
+      "training_start": "2026-03-26",
+      "training_end": "2026-08-18"
+    }
+  ],
+  "exclude_nem_fcx_mchi_keep_qqq": [
+    {
+      "fecha": "2026-08-18",
+      "base_vc": 71.5395979,
+      "base_date": "2026-08-17",
+      "return_estimated": -0.020302253614707506,
+      "signal": "BAJA",
+      "vc_estimated": 70.08718283994001,
+      "qqq_return": -0.01693450262957852,
+      "qqq_expected": -0.01663696703884061,
+      "qqq_residual": -0.00029753559073790806,
+      "fx_return_used": 0.0017862459065198,
+      "training_start": "2026-03-25",
+      "training_end": "2026-08-17"
+    },
+    {
+      "fecha": "2026-08-19",
+      "base_vc": 69.6328126,
+      "base_date": "2026-08-18",
+      "return_estimated": 0.012625389602792546,
+      "signal": "SUBE",
+      "vc_estimated": 70.51195398821324,
+      "qqq_return": -0.0019929933468779693,
+      "qqq_expected": 0.0041121833372008585,
+      "qqq_residual": -0.006105176684078828,
+      "fx_return_used": -0.0029717682020803,
+      "training_start": "2026-03-26",
+      "training_end": "2026-08-18"
+    },
+    {
+      "fecha": "2026-08-20",
+      "base_vc": 70.51195398821324,
+      "base_date": "2026-08-19 estimado",
+      "return_estimated": 0.005135089113784142,
+      "signal": "SUBE",
+      "vc_estimated": 70.87403915552977,
+      "qqq_return": -0.007191967784539344,
+      "qqq_expected": -0.005409219725855794,
+      "qqq_residual": -0.00178274805868355,
+      "fx_return_used": -0.000594381412901801,
+      "training_start": "2026-03-26",
+      "training_end": "2026-08-18"
+    }
+  ]
+}
