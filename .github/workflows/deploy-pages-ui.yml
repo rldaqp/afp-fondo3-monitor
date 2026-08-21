@@ -10,7 +10,7 @@ on:
       - "public/index.html"
 
 permissions:
-  contents: read
+  contents: write
   pages: write
   id-token: write
 
@@ -26,6 +26,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: migracion-github-actions
+          fetch-depth: 0
 
       - name: Reparar tarjeta SBS en el artefacto
         run: |
@@ -66,7 +67,7 @@ jobs:
               path.write_text(html, encoding="utf-8")
           PY
 
-      - name: Validar visores y datos
+      - name: Validar visor estable
         run: |
           test -s public/index.html
           test -s public/data/latest.json
@@ -82,8 +83,9 @@ jobs:
           grep -q "60/30 SIN NEM-FCX + QQQ · CHALLENGER" public/index.html
           grep -q "Ver Challenger 60/30 en otra fecha" public/index.html
           grep -q "SBS_TOP_CARD_DEPLOY_FIX_V2" public/index.html
-          grep -q "raw.githubusercontent.com/rldaqp/afp-fondo3-monitor" public/index.html
-          grep -q "raw.githubusercontent.com/rldaqp/afp-fondo3-monitor" public/habitat/index.html
+          ! grep -q "alt_runtime_v4" public/index.html
+          ! grep -q "60/30 NUEVOS TICKERS" public/index.html
+          ! grep -q "Nuevos tickers 60/30" public/index.html
 
       - name: Configurar GitHub Pages
         uses: actions/configure-pages@v5
@@ -96,3 +98,29 @@ jobs:
       - name: Publicar visor
         id: deployment
         uses: actions/deploy-pages@v4
+
+      - name: Registrar despliegue estable verificado
+        if: success()
+        env:
+          DEPLOY_URL: ${{ steps.deployment.outputs.page_url }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git fetch origin migracion-github-actions
+          git reset --hard origin/migracion-github-actions
+          python - <<'PY'
+          import json, os
+          from datetime import datetime, timezone
+          from pathlib import Path
+          p=Path('public/data/pages_deploy_verified.json')
+          p.write_text(json.dumps({
+            'runtime':'STABLE_OLS_R90_PLUS_6030',
+            'experimental_ui':False,
+            'deployed_at_utc':datetime.now(timezone.utc).isoformat(),
+            'source_commit':os.environ.get('GITHUB_SHA'),
+            'page_url':os.environ.get('DEPLOY_URL')
+          },ensure_ascii=False,indent=2),encoding='utf-8')
+          PY
+          git add public/data/pages_deploy_verified.json
+          git commit -m "Registrar despliegue estable Profuturo" || true
+          git push origin HEAD:migracion-github-actions || true
