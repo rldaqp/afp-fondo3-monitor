@@ -1,0 +1,276 @@
+{
+  "method": "Comparación ciega homogénea 60/30: mismas 60 fechas de entrenamiento y 20 fechas de prueba dentro del horizonte congelado de 30; sin reanclaje SBS durante la prueba.",
+  "train_start": "2026-04-15",
+  "train_end": "2026-07-14",
+  "train_n": 60,
+  "anchor_date": "2026-07-14",
+  "anchor_vc": 70.5044231,
+  "test_start": "2026-07-15",
+  "test_end": "2026-08-18",
+  "test_n": 20,
+  "current_features": [
+    "ret_SPY",
+    "ret_EEM",
+    "ret_EPU",
+    "ret_MCHI",
+    "ret_USD_PEN",
+    "ret_QQQ"
+  ],
+  "alternative_features_display": [
+    ".INX",
+    "CPER",
+    "EEM",
+    "NDX",
+    "SPBLSCUP",
+    "USD/PEN"
+  ],
+  "alternative_source": "Google Finance exact symbols supplied by user; historical daily closes converted to daily returns.",
+  "current_coefficients": {
+    "intercept": -0.0006721267336377164,
+    "ret_SPY": 0.02178534778446889,
+    "ret_EEM": 0.1343675793148561,
+    "ret_EPU": 0.41773576353055614,
+    "ret_MCHI": 0.056891253812415915,
+    "ret_USD_PEN": 0.2934127073453124,
+    "ret_QQQ": 0.35448977600789877
+  },
+  "alternative_coefficients": {
+    "intercept": -0.0013039498638612091,
+    "ret_.INX": -0.02788834341359614,
+    "ret_CPER": 0.028525688012143224,
+    "ret_EEM_alt": 0.17302211137680784,
+    "ret_NDX": 0.4127168516870464,
+    "ret_SPBLSCUP": 0.3784699461696692,
+    "ret_USD_PEN_alt": 0.09121530348343003
+  },
+  "metrics": {
+    "mae_vc_current": 3.000396699410954,
+    "mae_vc_alternative": 1.4741085768992903,
+    "rmse_vc_current": 3.5872377940352096,
+    "rmse_vc_alternative": 1.7976685160931607,
+    "alternative_better_days": 17,
+    "current_better_days": 3
+  },
+  "rows": [
+    {
+      "fecha": "2026-07-15",
+      "vc_6030_actual": 70.39334174137345,
+      "ret_6030_actual": -0.0015755232614129118,
+      "vc_6030_tickers_google": 70.2498466110354,
+      "ret_6030_tickers_google": -0.0036107874906447,
+      "vc_sbs_real": 69.9080824,
+      "error_abs_actual": 0.4852593413734496,
+      "error_abs_tickers_google": 0.34176421103539667,
+      "mejor": "TICKERS GOOGLE"
+    },
+    {
+      "fecha": "2026-07-16",
+      "vc_6030_actual": 69.06486730242563,
+      "ret_6030_actual": -0.01887216043569387,
+      "vc_6030_tickers_google": 69.10636167290576,
+      "ret_6030_tickers_google": -0.016277401208588664,
+      "vc_sbs_real": 68.4036329,
+      "error_abs_actual": 0.6612344024256203,
+      "error_abs_tickers_google": 0.7027287729057576,
+      "mejor": "ACTUAL"
+    },
+    {
+      "fecha": "2026-07-17",
+      "vc_6030_actual": 68.4898133444724,
+      "ret_6030_actual": -0.00832628774098915,
+      "vc_6030_tickers_google": 68.20061232945007,
+      "ret_6030_tickers_google": -0.013106598604377236,
+      "vc_sbs_real": 68.2147702,
+      "error_abs_actual": 0.27504314447239153,
+      "error_abs_tickers_google": 0.014157870549937002,
+      "mejor": "TICKERS GOOGLE"
+    },
+    {
+      "fecha": "2026-07-20",
+      "vc_6030_actual": 68.54552567526764,
+      "ret_6030_actual": 0.0008134396645971553,
+      "vc_6030_tickers_google": 68.17524912936892,
+      "ret_6030_tickers_google": -0.00037189109034138623,
+      "vc_sbs_real": 68.06385,
+      "error_abs_actual": 0.4816756752676383,
+      "error_abs_tickers_google": 0.1113991293689196,
+      "mejor": "TICKERS GOOGLE"
+    },
+    {
+      "fecha": "2026-07-21",
+      "vc_6030_actual": 70.09306150739775,
+      "ret_6030_actual": 0.02257675926889092,
+      "vc_6030_tickers_google": 69.7144011439752,
+      "ret_6030_tickers_google": 0.022576404696161668,
+      "vc_sbs_real": 70.02189279999999,
+      "error_abs_actual": 0.07116870739776004,
+      "error_abs_tickers_google": 0.3074916560247942,
+      "mejor": "ACTUAL"
+    },
+    {
+      "fecha": "2026-07-22",
+      "vc_6030_actual": 70.18123904922106,
+      "ret_6030_actual": 0.0012580067117487028,
+      "vc_6030_tickers_google": 69.7279984236514,
+      "ret_6030_tickers_google": 0.00019504262323252292,
+      "vc_sbs_real": 70.0996577,
+      "error_abs_actual": 0.08158134922106797,
+      "error_abs_tickers_google": 0.37165927634859486,
+      "mejor": "ACTUAL"
+    },
+    {
+      "fecha": "2026-07-24",
+      "vc_6030_actual": 69.62132680938888,
+      "ret_6030_actual": -0.007978089977002088,
+      "vc_6030_tickers_google": 68.54673786900555,
+      "ret_6030_tickers_google": -0.016940978966135972,
+      "vc_sbs_real": 68.3626543,
+      "error_abs_actual": 1.258672509388873,
+      "error_abs_tickers_google": 0.18408356900555134,
+      "mejor": "TICKERS GOOGLE"
+    },
+    {
+      "fecha": "2026-07-30",
+      "vc_6030_actual": 72.00046924542444,
+      "ret_6030_actual": 0.03417260981752389,
+      "vc_6030_tickers_google": 70.0755066387814,
+      "ret_6030_tickers_google": 0.022302575108641347,
+      "vc_sbs_real": 68.2721906,
+      "error_abs_actual": 3.7282786454244388,
+      "error_abs_tickers_google": 1.8033160387814036,
+      "mejor": "TICKERS GOOGLE"
+    },
+    {
+      "fecha": "2026-07-31",
+      "vc_6030_actual": 71.94816969689585,
+      "ret_6030_actual": -0.0007263778844319702,
+      "vc_6030_tickers_google": 69.8961608993026,
+      "ret_6030_tickers_google": -0.0025593213389561724,
+      "vc_sbs_real": 67.7685784,
+      "error_abs_actual": 4.17959129689585,
+      "error_abs_tickers_google": 2.127582499302605,
+      "mejor": "TICKERS GOOGLE"
+    },
+    {
+      "fecha": "2026-08-03",
+      "vc_6030_actual": 72.62871829469134,
+      "ret_6030_actual": 0.009458872972898567,
+      "vc_6030_tickers_google": 70.48717198544533,
+      "ret_6030_tickers_google": 0.008455558624946173,
+      "vc_sbs_real": 68.1332558,
+      "error_abs_actual": 4.495462494691338,
+      "error_abs_tickers_google": 2.3539161854453283,
+      "mejor": "TICKERS GOOGLE"
+    },
+    {
+      "fecha": "2026-08-04",
+      "vc_6030_actual": 74.36040343652876,
+      "ret_6030_actual": 0.023842980882728695,
+      "vc_6030_tickers_google": 72.22703484143953,
+      "ret_6030_tickers_google": 0.024683397091792365,
+      "vc_sbs_real": 69.7841504,
+      "error_abs_actual": 4.576253036528755,
+      "error_abs_tickers_google": 2.4428844414395314,
+      "mejor": "TICKERS GOOGLE"
+    },
+    {
+      "fecha": "2026-08-05",
+      "vc_6030_actual": 74.49946144629392,
+      "ret_6030_actual": 0.0018700545362674687,
+      "vc_6030_tickers_google": 72.09103869447895,
+      "ret_6030_tickers_google": -0.0018828981040013195,
+      "vc_sbs_real": 69.8102662,
+      "error_abs_actual": 4.68919524629392,
+      "error_abs_tickers_google": 2.2807724944789527,
+      "mejor": "TICKERS GOOGLE"
+    },
+    {
+      "fecha": "2026-08-07",
+      "vc_6030_actual": 75.29907099618175,
+      "ret_6030_actual": 0.010733091680995226,
+      "vc_6030_tickers_google": 72.73043756868778,
+      "ret_6030_tickers_google": 0.008869325311271995,
+      "vc_sbs_real": 69.6836293,
+      "error_abs_actual": 5.6154416961817475,
+      "error_abs_tickers_google": 3.0468082686877693,
+      "mejor": "TICKERS GOOGLE"
+    },
+    {
+      "fecha": "2026-08-10",
+      "vc_6030_actual": 75.09282434404658,
+      "ret_6030_actual": -0.0027390331568053657,
+      "vc_6030_tickers_google": 72.50526838665355,
+      "ret_6030_tickers_google": -0.003095941528215976,
+      "vc_sbs_real": 69.2112776,
+      "error_abs_actual": 5.881546744046574,
+      "error_abs_tickers_google": 3.293990786653552,
+      "mejor": "TICKERS GOOGLE"
+    },
+    {
+      "fecha": "2026-08-11",
+      "vc_6030_actual": 74.52660700520794,
+      "ret_6030_actual": -0.0075402322896320146,
+      "vc_6030_tickers_google": 72.31000269791119,
+      "ret_6030_tickers_google": -0.0026931241423872616,
+      "vc_sbs_real": 69.498597,
+      "error_abs_actual": 5.028010005207932,
+      "error_abs_tickers_google": 2.8114056979111837,
+      "mejor": "TICKERS GOOGLE"
+    },
+    {
+      "fecha": "2026-08-12",
+      "vc_6030_actual": 74.64237584363156,
+      "ret_6030_actual": 0.0015533893608698425,
+      "vc_6030_tickers_google": 72.40900325137325,
+      "ret_6030_tickers_google": 0.0013691128442584444,
+      "vc_sbs_real": 70.5338688,
+      "error_abs_actual": 4.108507043631562,
+      "error_abs_tickers_google": 1.8751344513732562,
+      "mejor": "TICKERS GOOGLE"
+    },
+    {
+      "fecha": "2026-08-13",
+      "vc_6030_actual": 74.4338726875619,
+      "ret_6030_actual": -0.002793361729353857,
+      "vc_6030_tickers_google": 72.3097356463228,
+      "ret_6030_tickers_google": -0.0013709290363495788,
+      "vc_sbs_real": 70.6649381,
+      "error_abs_actual": 3.768934587561901,
+      "error_abs_tickers_google": 1.6447975463228062,
+      "mejor": "TICKERS GOOGLE"
+    },
+    {
+      "fecha": "2026-08-14",
+      "vc_6030_actual": 74.57226074667288,
+      "ret_6030_actual": 0.0018592081012882293,
+      "vc_6030_tickers_google": 72.28646038231206,
+      "ret_6030_tickers_google": -0.0003218828530171452,
+      "vc_sbs_real": 70.8740985,
+      "error_abs_actual": 3.6981622466728794,
+      "error_abs_tickers_google": 1.4123618823120552,
+      "mejor": "TICKERS GOOGLE"
+    },
+    {
+      "fecha": "2026-08-17",
+      "vc_6030_actual": 74.73489709655244,
+      "ret_6030_actual": 0.0021809228827331874,
+      "vc_6030_tickers_google": 72.38251629795656,
+      "ret_6030_tickers_google": 0.001328823062250815,
+      "vc_sbs_real": 71.5395979,
+      "error_abs_actual": 3.1952991965524404,
+      "error_abs_tickers_google": 0.8429183979565522,
+      "mejor": "TICKERS GOOGLE"
+    },
+    {
+      "fecha": "2026-08-18",
+      "vc_6030_actual": 73.36142921898293,
+      "ret_6030_actual": -0.018377865373857213,
+      "vc_6030_tickers_google": 71.14581096208185,
+      "ret_6030_tickers_google": -0.01708569139519704,
+      "vc_sbs_real": 69.6328126,
+      "error_abs_actual": 3.72861661898294,
+      "error_abs_tickers_google": 1.5129983620818592,
+      "mejor": "TICKERS GOOGLE"
+    }
+  ]
+}
