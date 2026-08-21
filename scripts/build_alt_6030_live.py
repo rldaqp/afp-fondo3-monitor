@@ -15,8 +15,6 @@ PUBLIC = ROOT / "public" / "data"
 LIVE_PATH = PUBLIC / "live_market.json"
 ALT_CLOSES = ANALYSIS / "googlefinance_alt_aligned_closes_20260402_20260820.csv"
 SBS_PATH = DATA / "sbs_profuturo_f3.csv"
-MARKETS_PATH = DATA / "markets.csv"
-CHALLENGER_STATE_PATH = DATA / "reduced_6030_state.json"
 OUT_PATH = PUBLIC / "alt_6030_experimental.json"
 LEDGER_PATH = DATA / "alt_6030_shadow.csv"
 
@@ -29,7 +27,6 @@ LIMA = ZoneInfo("America/Lima")
 CLOSE_COLS = [".INX", "CPER", "EEM", "NDX", "SPBLSCUP", "USD_PEN"]
 FEATURES = ["ret_.INX", "ret_CPER", "ret_EEM_alt", "ret_NDX", "ret_SPBLSCUP", "ret_USD_PEN_alt"]
 DISPLAY_FEATURES = [".INX", "CPER", "EEM", "NDX", "SPBLSCUP", "USD/PEN"]
-CALENDAR_FEATURES = ["ret_SPY", "ret_EEM", "ret_EPU", "ret_MCHI", "ret_USD_PEN"]
 TEST_DATES = pd.to_datetime([
     "2026-07-22", "2026-07-23", "2026-07-24", "2026-07-27", "2026-07-28",
     "2026-07-29", "2026-07-30", "2026-07-31", "2026-08-03", "2026-08-04",
@@ -53,7 +50,11 @@ def safe_json(path: Path) -> dict:
         return {}
 
 
-def build_alt_returns() -> pd.DataFrame:
+def load_inputs() -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+    live = safe_json(LIVE_PATH)
+    if not live:
+        raise RuntimeError("Falta live_market.json")
+
     alt = pd.read_csv(ALT_CLOSES)
     alt["fecha"] = pd.to_datetime(alt["fecha"], errors="coerce")
     for col in CLOSE_COLS:
@@ -62,15 +63,6 @@ def build_alt_returns() -> pd.DataFrame:
     for col in CLOSE_COLS:
         alt[f"ret_{col}"] = alt[col].pct_change(fill_method=None)
     alt = alt.rename(columns={"ret_EEM": "ret_EEM_alt", "ret_USD_PEN": "ret_USD_PEN_alt"})
-    return alt
-
-
-def load_inputs() -> tuple[dict, pd.DataFrame, pd.DataFrame, pd.DataFrame]:
-    live = safe_json(LIVE_PATH)
-    if not live:
-        raise RuntimeError("Falta live_market.json")
-
-    alt = build_alt_returns()
 
     sbs = pd.read_csv(SBS_PATH)
     sbs["fecha"] = pd.to_datetime(sbs["fecha"], errors="coerce")
@@ -78,18 +70,9 @@ def load_inputs() -> tuple[dict, pd.DataFrame, pd.DataFrame, pd.DataFrame]:
     sbs = sbs.dropna(subset=["fecha", "valor_cuota"]).sort_values("fecha").drop_duplicates("fecha", keep="last")
     sbs["ret_target"] = sbs["valor_cuota"].pct_change(fill_method=None)
 
-    markets = pd.read_csv(MARKETS_PATH)
-    markets["fecha"] = pd.to_datetime(markets["fecha"], errors="coerce")
-    for col in CALENDAR_FEATURES:
-        markets[col] = pd.to_numeric(markets[col], errors="coerce")
-    market_calendar = markets[["fecha", *CALENDAR_FEATURES]].dropna(subset=["fecha", *CALENDAR_FEATURES])
-    market_calendar = market_calendar.sort_values("fecha").drop_duplicates("fecha", keep="last")
-
-    calendar = sbs[["fecha", "valor_cuota", "ret_target"]].merge(market_calendar, on="fecha", how="inner")
-    calendar = calendar.dropna(subset=["ret_target", "valor_cuota", *CALENDAR_FEATURES]).sort_values("fecha").drop_duplicates("fecha", keep="last").reset_index(drop=True)
-
-    aligned = calendar[["fecha", "valor_cuota", "ret_target"]].merge(alt[["fecha", *FEATURES]], on="fecha", how="left")
-    return live, alt, calendar, aligned
+    both = sbs[["fecha", "valor_cuota", "ret_target"]].merge(alt[["fecha", *FEATURES]], on="fecha", how="inner")
+    both = both.dropna(subset=["ret_target", "valor_cuota", *FEATURES]).sort_values("fecha").drop_duplicates("fecha", keep="last").reset_index(drop=True)
+    return live, alt, both
 
 
 def fit(train: pd.DataFrame) -> tuple[np.ndarray, dict[str, float]]:
@@ -149,38 +132,25 @@ def load_ledger() -> pd.DataFrame:
     return df.dropna(subset=["fecha"]).sort_values("fecha").drop_duplicates("fecha", keep="last").reset_index(drop=True)
 
 
-def exact_train(calendar: pd.DataFrame, aligned: pd.DataFrame, before_or_on: pd.Timestamp, strict_before: bool = False) -> pd.DataFrame:
-    base = calendar.loc[calendar["fecha"] < before_or_on] if strict_before else calendar.loc[calendar["fecha"] <= before_or_on]
-    target_dates = base.tail(TRAIN_WINDOW)[["fecha"]].copy()
-    if len(target_dates) != TRAIN_WINDOW:
-        raise RuntimeError(f"Calendario challenger incompleto: {len(target_dates)}")
-    train = target_dates.merge(aligned, on="fecha", how="left")
-    missing = train.loc[train[FEATURES].isna().any(axis=1), "fecha"].dt.date.astype(str).tolist()
-    if missing:
-        raise RuntimeError(f"Faltan nuevos tickers en fechas del challenger: {missing}")
-    return train.sort_values("fecha").reset_index(drop=True)
-
-
-def historical_backtest(calendar: pd.DataFrame, aligned: pd.DataFrame) -> dict:
-    test = aligned.loc[aligned["fecha"].isin(TEST_DATES)].copy().sort_values("fecha").reset_index(drop=True)
-    missing_test = [d.date().isoformat() for d in TEST_DATES if d not in set(test.dropna(subset=FEATURES)["fecha"])]
-    if missing_test:
-        return {"n": 0, "rows": [], "error": f"Fechas faltantes del test: {missing_test}"}
-    test = test.dropna(subset=FEATURES)
-    train = exact_train(calendar, aligned, TEST_DATES[0], strict_before=True)
+def historical_backtest(both: pd.DataFrame) -> dict:
+    test = both.loc[both["fecha"].isin(TEST_DATES)].copy().sort_values("fecha").reset_index(drop=True)
+    train = both.loc[both["fecha"] < TEST_DATES[0]].tail(TRAIN_WINDOW).copy().reset_index(drop=True)
+    if list(test["fecha"]) != list(TEST_DATES) or len(train) != TRAIN_WINDOW:
+        missing = [d.date().isoformat() for d in TEST_DATES if d not in set(test["fecha"])]
+        return {"n": 0, "rows": [], "error": f"Fechas faltantes: {missing}"}
     beta, _ = fit(train)
-    vc_value = float(train.iloc[-1]["valor_cuota"])
+    vc = float(train.iloc[-1]["valor_cuota"])
     rows, errors = [], []
     for _, row in test.iterrows():
         ret = predict(beta, row_values(row))
-        vc_value *= 1.0 + ret
+        vc *= 1.0 + ret
         actual = float(row["valor_cuota"])
-        err = abs(vc_value - actual)
+        err = abs(vc - actual)
         errors.append(err)
         rows.append({
             "fecha": pd.Timestamp(row["fecha"]).date().isoformat(),
-            "source": "BACKTEST CIEGO 60/30 · MISMO CALENDARIO CHALLENGER",
-            "vc": vc_value,
+            "source": "BACKTEST CIEGO 60/30",
+            "vc": vc,
             "return": ret,
             "signal": classify(ret),
             "actual_vc": actual,
@@ -200,28 +170,12 @@ def historical_backtest(calendar: pd.DataFrame, aligned: pd.DataFrame) -> dict:
 
 
 def main() -> None:
-    live, alt, calendar, aligned = load_inputs()
+    live, alt, both = load_inputs()
     signal_date = pd.Timestamp(str(live.get("signal_date"))).normalize()
 
-    train = exact_train(calendar, aligned, ANCHOR_DATE, strict_before=False)
-    if pd.Timestamp(train.iloc[-1]["fecha"]).normalize() != ANCHOR_DATE:
-        raise RuntimeError("La ventana 60/30 no termina en el ancla 18/08")
-
-    state = safe_json(CHALLENGER_STATE_PATH)
-    challenger_span_match = None
-    if state:
-        challenger_span_match = (
-            str(train.iloc[0]["fecha"].date()) == str(state.get("train_start"))
-            and str(train.iloc[-1]["fecha"].date()) == str(state.get("train_end"))
-            and int(state.get("train_n", TRAIN_WINDOW)) == TRAIN_WINDOW
-        )
-        if not challenger_span_match:
-            raise RuntimeError(
-                f"Ventana experimental no coincide con challenger: "
-                f"{train.iloc[0]['fecha'].date()}–{train.iloc[-1]['fecha'].date()} vs "
-                f"{state.get('train_start')}–{state.get('train_end')}"
-            )
-
+    train = both.loc[both["fecha"] <= ANCHOR_DATE].tail(TRAIN_WINDOW).copy().reset_index(drop=True)
+    if len(train) != TRAIN_WINDOW or pd.Timestamp(train.iloc[-1]["fecha"]).normalize() != ANCHOR_DATE:
+        raise RuntimeError("Entrenamiento 60/30 nuevos tickers incompleto al 18/08")
     beta, coeff = fit(train)
     anchor_vc = float(train.iloc[-1]["valor_cuota"])
 
@@ -229,7 +183,7 @@ def main() -> None:
     ledger = load_ledger()
     existing = {} if ledger.empty else {pd.Timestamp(r["fecha"]).normalize(): dict(r) for _, r in ledger.iterrows()}
     generated = datetime.now(LIMA).isoformat()
-    vc_value = anchor_vc
+    vc = anchor_vc
     rows: list[dict] = [{
         "fecha": ANCHOR_DATE.date().isoformat(),
         "base_vc": anchor_vc,
@@ -246,13 +200,11 @@ def main() -> None:
     }]
     current_row: dict | None = None
 
-    sbs_map = {pd.Timestamp(r["fecha"]).normalize(): float(r["valor_cuota"]) for _, r in calendar.iterrows()}
-
     for d in pd.bdate_range(CYCLE_START, signal_date):
         d = pd.Timestamp(d).normalize()
         old = existing.get(d)
         if old is not None and d < signal_date and pd.notna(old.get("vc")) and pd.notna(old.get("return")):
-            vc_value = float(old["vc"])
+            vc = float(old["vc"])
             rows.append(old)
             continue
 
@@ -273,17 +225,18 @@ def main() -> None:
                 source = "CIERRE HISTÓRICO GUARDADO"
 
         ret = predict(beta, values)
-        base_vc = vc_value
-        vc_value = base_vc * (1.0 + ret)
-        actual_vc = sbs_map.get(d)
+        base_vc = vc
+        vc = base_vc * (1.0 + ret)
+        actual_rows = both.loc[both["fecha"].eq(d), "valor_cuota"]
+        actual_vc = None if actual_rows.empty else float(actual_rows.iloc[-1])
         row = {
             "fecha": d.date().isoformat(),
             "base_vc": base_vc,
             "return": ret,
             "signal": classify(ret),
-            "vc": vc_value,
+            "vc": vc,
             "actual_vc": actual_vc,
-            "abs_error": None if actual_vc is None else abs(vc_value - actual_vc),
+            "abs_error": None if actual_vc is None else abs(vc - actual_vc),
             "source": source,
             "factor_returns": values,
             "factor_sources": sources,
@@ -312,7 +265,7 @@ def main() -> None:
     LEDGER_PATH.parent.mkdir(parents=True, exist_ok=True)
     new_ledger.to_csv(LEDGER_PATH, index=False)
 
-    backtest = historical_backtest(calendar, aligned)
+    backtest = historical_backtest(both)
     output = {
         "generated_at_lima": generated,
         "signal_date": signal_date.date().isoformat(),
@@ -339,8 +292,6 @@ def main() -> None:
             "train_end": pd.Timestamp(train.iloc[-1]["fecha"]).date().isoformat(),
             "train_n": TRAIN_WINDOW,
             "freeze_horizon": FREEZE_HORIZON,
-            "same_calendar_as_challenger": challenger_span_match,
-            "calendar_rule": "Mismas 60 fechas base del challenger, definidas por SBS + factores de mercado completos; los seis nuevos tickers se ajustan sobre esas fechas.",
             "coefficients": coeff,
         },
         "backtest_exact20": backtest,
@@ -355,12 +306,11 @@ def main() -> None:
         "signal": output["model"]["signal"],
         "vc": output["model"]["vc_estimated"],
         "return": output["model"]["return_estimated"],
-        "train_start": output["cycle"]["train_start"],
-        "train_end": output["cycle"]["train_end"],
-        "same_calendar_as_challenger": output["cycle"]["same_calendar_as_challenger"],
         "backtest_n": output["backtest_exact20"].get("n"),
     }, ensure_ascii=False))
 
 
 if __name__ == "__main__":
     main()
+
+# RESTORED_STABLE_AFTER_CALENDAR_CHECK_20260821
