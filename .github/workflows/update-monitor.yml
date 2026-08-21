@@ -17,7 +17,9 @@ on:
       - "scripts/complete_profuturo_signal_calendar.py"
       - "scripts/build_model_insights.py"
       - "scripts/build_reduced_6030_challenger.py"
+      - "scripts/build_reduced_6030_history.py"
       - "scripts/postprocess_reduced_6030_ui.py"
+      - "scripts/postprocess_reduced_6030_history_ui.py"
       - "scripts/build_vc_accuracy_1pct.py"
       - "scripts/build_operation_series.py"
       - "scripts/postprocess_mobile_ui_v3.py"
@@ -83,7 +85,8 @@ jobs:
           python scripts/complete_profuturo_signal_calendar.py
           python scripts/build_model_insights.py
           python scripts/build_vc_accuracy_1pct.py
-          git restore --source=HEAD -- public/data/live_market.json || true
+          # IMPORTANTE: el challenger debe leer el live_market recién generado.
+          # No restaurar live_market antes de construirlo, porque eso lo deja un día atrás.
           python scripts/build_reduced_6030_challenger.py
           python scripts/build_operation_series.py
           sed -i "s/calc.onclick=calc;/document.getElementById('calc').onclick=calc;/" public/index.html
@@ -102,6 +105,7 @@ jobs:
           python scripts/postprocess_trade_runtime_fixes.py profuturo
           python scripts/postprocess_investment_signal_1pct.py
           python scripts/postprocess_reduced_6030_ui.py
+          python scripts/postprocess_reduced_6030_history_ui.py
 
       - name: Validar modelo y visor Profuturo
         run: |
@@ -112,6 +116,7 @@ jobs:
           test -s public/data/operation_series.json
           test -s public/data/model_insights.json
           test -s public/data/reduced_6030_challenger.json
+          test -s public/data/reduced_6030_history.json
           test -s data/rolling90/reduced_6030_state.json
           test -s data/rolling90/reduced_6030_shadow.csv
           test -s public/data/vc_accuracy_1pct.json
@@ -132,6 +137,8 @@ jobs:
           grep -q "Fórmula notebook" public/index.html
           grep -q "Confianza y calidad del modelo" public/index.html
           grep -q "60/30 SIN NEM-FCX + QQQ · CHALLENGER" public/index.html
+          grep -q "r6030HistoryDate" public/index.html
+          grep -q "reduced_6030_history.json" public/index.html
           ! grep -q "QQQ INCREMENTAL · CHALLENGER" public/index.html
           ! grep -q "Challenger Huber · paralelo" public/index.html
           grep -q "Histórico de entradas y salidas" public/index.html
@@ -154,11 +161,13 @@ jobs:
           import pandas as pd
 
           latest = json.loads(Path("public/data/latest.json").read_text(encoding="utf-8"))
+          live = json.loads(Path("public/data/live_market.json").read_text(encoding="utf-8"))
           signals = json.loads(Path("public/data/signals.json").read_text(encoding="utf-8"))
           operation = json.loads(Path("public/data/operation_series.json").read_text(encoding="utf-8"))
           insights = json.loads(Path("public/data/model_insights.json").read_text(encoding="utf-8"))
           vc_accuracy = json.loads(Path("public/data/vc_accuracy_1pct.json").read_text(encoding="utf-8"))
           challenger = json.loads(Path("public/data/reduced_6030_challenger.json").read_text(encoding="utf-8"))
+          history = json.loads(Path("public/data/reduced_6030_history.json").read_text(encoding="utf-8"))
           pending = pd.read_csv("data/rolling90/pending_predictions.csv")
           sbs = pd.read_csv("data/rolling90/sbs_profuturo_f3.csv")
 
@@ -208,6 +217,7 @@ jobs:
           assert "ret_NEM" not in features
           assert "ret_FCX" not in features
           assert int(challenger["blind_backtest"]["n_blocks"]) > 0
+          assert history.get("backtest_history"), "Historial ciego 60/30 vacío"
 
           sbs["fecha"] = pd.to_datetime(sbs["fecha"], errors="coerce")
           historical_signals = {
@@ -251,11 +261,13 @@ jobs:
                       yahoo["ret_USD_PEN"], errors="coerce"
                   ).notna().all()
 
-          # El panel explicativo y el unico challenger deben corresponder al
-          # mismo corte publicado por el OLS oficial.
           assert str(insights.get("generated_for")) == str(latest.get("latest_estimate_date")), (insights.get("generated_for"), latest.get("latest_estimate_date"))
           assert str(insights.get("current_signal")) == str(latest.get("signal")), (insights.get("current_signal"), latest.get("signal"))
-          assert str(challenger.get("signal_date")) == str(latest.get("latest_estimate_date")), (challenger.get("signal_date"), latest.get("latest_estimate_date"))
+
+          # El challenger sigue el corte intradía cuando el mercado está abierto;
+          # fuera de mercado debe coincidir con el último cierre publicado.
+          expected_challenger_date = str(live.get("signal_date")) if bool(live.get("market_open")) else str(latest.get("latest_estimate_date"))
+          assert str(challenger.get("signal_date")) == expected_challenger_date, (challenger.get("signal_date"), expected_challenger_date)
 
           print(json.dumps(latest, ensure_ascii=False, indent=2))
           print(json.dumps(vc_accuracy, ensure_ascii=False, indent=2))
