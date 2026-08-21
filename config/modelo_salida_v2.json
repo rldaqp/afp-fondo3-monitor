@@ -1,0 +1,27 @@
+{
+  "version": "modelo_salida_v2_rebote",
+  "episodio": {
+    "cuantil_shock_entrenamiento": 0.25,
+    "amplitud_negativa_minima": 0.55,
+    "max_dias_desde_shock": 10,
+    "rebote_acumulado_minimo": 0.004,
+    "min_dias_positivos": 1
+  },
+  "objetivo": {
+    "caida_absoluta_minima": 0.0025,
+    "multiplicador_volatilidad": 0.75
+  },
+  "seleccion": {
+    "umbrales_probabilidad": [0.45, 0.50, 0.55, 0.60, 0.65, 0.70],
+    "min_alertas_validacion": 15
+  },
+  "walk_forward": {
+    "reentrenar_cada_observaciones": 60,
+    "minimo_eventos_historial": 500
+  },
+  "criterio": {
+    "descripcion": "La version 2 solo evalua episodios de rebote posteriores a un shock y exige utilidad economica neta positiva.",
+    "estado_inicial": "EXPERIMENTAL"
+  },
+  "advertencia": "No elimina el riesgo de mercado ni constituye una recomendacion financiera."
+}

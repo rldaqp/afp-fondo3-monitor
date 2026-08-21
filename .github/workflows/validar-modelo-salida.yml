@@ -1,0 +1,200 @@
+name: Ejecutar modelo de salida 60-20-20
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - modelo-salida-60-20-20
+    paths:
+      - "src/modelo_salida/**"
+      - "config/modelo_salida.json"
+      - "docs/modelo_salida_60_20_20.md"
+      - ".github/workflows/validar-modelo-salida.yml"
+  pull_request:
+    branches:
+      - migracion-github-actions
+    paths:
+      - "src/modelo_salida/**"
+      - "config/modelo_salida.json"
+      - "docs/modelo_salida_60_20_20.md"
+      - ".github/workflows/validar-modelo-salida.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: modelo-salida-60-20-20
+  cancel-in-progress: true
+
+jobs:
+  ejecutar:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Descargar repositorio
+        uses: actions/checkout@v4
+        with:
+          ref: modelo-salida-60-20-20
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Instalar dependencias
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Validar configuracion JSON
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          ruta = Path("config/modelo_salida.json")
+          datos = json.loads(ruta.read_text(encoding="utf-8"))
+          division = datos["division_temporal"]
+          total = (
+              float(division["entrenamiento"])
+              + float(division["validacion"])
+              + float(division["test_reservado"])
+          )
+          if abs(total - 1.0) > 1e-12:
+              raise SystemExit(f"La division temporal suma {total}, no 1.0")
+          if division.get("barajar_fechas") is not False:
+              raise SystemExit("Las fechas no deben barajarse")
+          print("Configuracion valida:", datos["version"])
+          PY
+
+      - name: Validar sintaxis y reglas temporales
+        run: |
+          python -m py_compile \
+            src/modelo_salida/00_ejecutar_constructor_seguro.py \
+            src/modelo_salida/01_construir_base_salida.py \
+            src/modelo_salida/02_entrenar_modelos_60_20_20.py \
+            src/modelo_salida/03_walk_forward_salida.py
+          grep -q 'cuota_sbs_conocida.*shift(1)' src/modelo_salida/01_construir_base_salida.py
+          grep -q 'retorno_real_t1.*shift(-1)' src/modelo_salida/01_construir_base_salida.py
+          grep -q 'bloque_60_20_20' src/modelo_salida/01_construir_base_salida.py
+          grep -q 'test_reservado' src/modelo_salida/02_entrenar_modelos_60_20_20.py
+          grep -q 'puntaje_control_riesgo' src/modelo_salida/02_entrenar_modelos_60_20_20.py
+          grep -q 'fecha_objetivo_t1.*lt(fecha_decision)' src/modelo_salida/03_walk_forward_salida.py
+
+      - name: Construir base T+1
+        env:
+          PYTHONUTF8: "1"
+          PYTHONIOENCODING: "utf-8"
+        run: |
+          python src/modelo_salida/00_ejecutar_constructor_seguro.py
+
+      - name: Entrenar y evaluar 60-20-20
+        env:
+          PYTHONUTF8: "1"
+          PYTHONIOENCODING: "utf-8"
+        run: |
+          python src/modelo_salida/02_entrenar_modelos_60_20_20.py
+
+      - name: Ejecutar auditoria walk-forward
+        env:
+          PYTHONUTF8: "1"
+          PYTHONIOENCODING: "utf-8"
+        run: |
+          python src/modelo_salida/03_walk_forward_salida.py
+
+      - name: Auditar resultados y ausencia de fuga temporal
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          import pandas as pd
+
+          raiz = Path("data/processed/modelo_salida")
+          requeridos = [
+              "base_modelo_salida.csv",
+              "division_temporal.csv",
+              "resumen_base.csv",
+              "manifiesto_base.json",
+              "resumen_modelos.csv",
+              "candidatos_validacion.csv",
+              "predicciones_test_reservado.csv",
+              "seleccion_modelos.json",
+              "walk_forward_resumen.csv",
+              "walk_forward_predicciones.csv",
+              "walk_forward_manifiesto.json",
+          ]
+          faltantes = [x for x in requeridos if not (raiz / x).is_file() or (raiz / x).stat().st_size == 0]
+          if faltantes:
+              raise SystemExit(f"Faltan resultados: {faltantes}")
+
+          division = pd.read_csv(raiz / "division_temporal.csv")
+          division["fecha_cuota"] = pd.to_datetime(division["fecha_cuota"], errors="coerce")
+          division["fecha_objetivo_t1"] = pd.to_datetime(division["fecha_objetivo_t1"], errors="coerce")
+          if division[["fecha_cuota", "fecha_objetivo_t1"]].isna().any().any():
+              raise SystemExit("Hay fechas invalidas en la division temporal")
+          if not (division["fecha_objetivo_t1"] > division["fecha_cuota"]).all():
+              raise SystemExit("Se detecto un objetivo que no pertenece al futuro")
+
+          bloques_esperados = {"entrenamiento", "validacion", "test_reservado"}
+          if set(division["bloque_60_20_20"].unique()) != bloques_esperados:
+              raise SystemExit("No aparecen los tres bloques 60/20/20")
+
+          afps = {"Habitat", "Integra", "Prima", "Profuturo"}
+          resumen = pd.read_csv(raiz / "resumen_modelos.csv")
+          walk = pd.read_csv(raiz / "walk_forward_resumen.csv")
+          if set(resumen["afp"].astype(str)) != afps or set(walk["afp"].astype(str)) != afps:
+              raise SystemExit("Los resultados no contienen las cuatro AFP")
+          if (resumen[["n_train", "n_valid", "n_test"]].min(axis=1) < 50).any():
+              raise SystemExit("Alguna AFP tiene un bloque demasiado pequeno")
+          if (walk["n_predicciones_walk_forward"] < walk["n_test_original"] * 0.90).any():
+              raise SystemExit("El walk-forward no cubre al menos 90% del test")
+
+          seleccion = json.loads((raiz / "seleccion_modelos.json").read_text(encoding="utf-8"))
+          prohibidas = {
+              "cuota_sbs", "retorno_cuota", "retorno_real_t1", "caida_t1",
+              "fecha_objetivo_t1", "bloque_60_20_20"
+          }
+          for afp, datos in seleccion.items():
+              usadas = set(datos.get("columnas", []))
+              fuga = sorted(usadas & prohibidas)
+              if fuga:
+                  raise SystemExit(f"Variables prohibidas en {afp}: {fuga}")
+
+          pred_walk = pd.read_csv(raiz / "walk_forward_predicciones.csv")
+          pred_walk["fecha_decision"] = pd.to_datetime(pred_walk["fecha_decision"], errors="coerce")
+          pred_walk["fecha_objetivo_t1"] = pd.to_datetime(pred_walk["fecha_objetivo_t1"], errors="coerce")
+          if not (pred_walk["fecha_objetivo_t1"] > pred_walk["fecha_decision"]).all():
+              raise SystemExit("El walk-forward contiene un objetivo no futuro")
+          if not pred_walk["regla_publicacion"].astype(str).eq(
+              "fecha_objetivo_entrenamiento < fecha_decision"
+          ).all():
+              raise SystemExit("La regla de publicación del walk-forward no es consistente")
+
+          print("Auditoria temporal correcta")
+          print("Resultado 60/20/20:")
+          print(resumen.to_string(index=False))
+          print("Resultado walk-forward:")
+          print(walk.to_string(index=False))
+          PY
+
+      - name: Subir resultados como artefacto
+        uses: actions/upload-artifact@v4
+        with:
+          name: modelo-salida-60-20-20
+          path: data/processed/modelo_salida
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Guardar resultados en la rama experimental
+        if: github.event_name != 'pull_request'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- data/processed/modelo_salida
+          if git diff --cached --quiet; then
+            echo "No hay resultados nuevos para confirmar."
+          else
+            git commit -m "Actualizar auditoria walk-forward del modelo de salida"
+            git push origin HEAD:modelo-salida-60-20-20
+          fi

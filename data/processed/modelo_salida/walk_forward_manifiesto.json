@@ -1,0 +1,17 @@
+{
+  "version": "modelo_salida_walk_forward_v1",
+  "generado_utc": "2026-07-15T04:28:01.724614+00:00",
+  "objetivo": "Auditar la probabilidad de caída T+1 con reentrenamiento expansivo y retraso de publicación.",
+  "regla_temporal": "Para decidir en t se entrena solo con filas cuya fecha_objetivo_t1 sea estrictamente anterior a t.",
+  "reentrenamiento": "Cada 20 observaciones del test reservado.",
+  "seleccion_congelada": "Familia, parámetros, variables y umbral proceden exclusivamente de validación.",
+  "criterios_aprobacion": [
+    "Cobertura de predicciones de al menos 90% del test",
+    "Al menos 20 alertas",
+    "AUC de al menos 0.55",
+    "Brier menor que el pronóstico base por prevalencia",
+    "Precisión al menos 5 puntos porcentuales sobre la prevalencia",
+    "Cobertura de caídas de al menos 20%"
+  ],
+  "advertencia": "Una aprobación estadística no elimina el riesgo de mercado ni constituye recomendación financiera."
+}
