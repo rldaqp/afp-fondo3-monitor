@@ -16,8 +16,8 @@ on:
       - "scripts/run_finalize_fx_hybrid_resilient.py"
       - "scripts/complete_profuturo_signal_calendar.py"
       - "scripts/build_model_insights.py"
-      - "scripts/build_qqq_incremental_challenger.py"
-      - "scripts/postprocess_qqq_incremental_ui.py"
+      - "scripts/build_reduced_6030_challenger.py"
+      - "scripts/postprocess_reduced_6030_ui.py"
       - "scripts/build_vc_accuracy_1pct.py"
       - "scripts/build_operation_series.py"
       - "scripts/postprocess_mobile_ui_v3.py"
@@ -84,7 +84,7 @@ jobs:
           python scripts/build_model_insights.py
           python scripts/build_vc_accuracy_1pct.py
           git restore --source=HEAD -- public/data/live_market.json || true
-          python scripts/build_qqq_incremental_challenger.py
+          python scripts/build_reduced_6030_challenger.py
           python scripts/build_operation_series.py
           sed -i "s/calc.onclick=calc;/document.getElementById('calc').onclick=calc;/" public/index.html
           python scripts/postprocess_mobile_ui_v3.py
@@ -101,7 +101,7 @@ jobs:
           python scripts/postprocess_live_consistency.py profuturo
           python scripts/postprocess_trade_runtime_fixes.py profuturo
           python scripts/postprocess_investment_signal_1pct.py
-          python scripts/postprocess_qqq_incremental_ui.py
+          python scripts/postprocess_reduced_6030_ui.py
 
       - name: Validar modelo y visor Profuturo
         run: |
@@ -111,7 +111,9 @@ jobs:
           test -s public/data/signals.json
           test -s public/data/operation_series.json
           test -s public/data/model_insights.json
-          test -s public/data/qqq_incremental_challenger.json
+          test -s public/data/reduced_6030_challenger.json
+          test -s data/rolling90/reduced_6030_state.json
+          test -s data/rolling90/reduced_6030_shadow.csv
           test -s public/data/vc_accuracy_1pct.json
           test -s data/rolling90/vc_accuracy_1pct.json
           test -s data/rolling90/historical_calendar_predictions.csv
@@ -129,13 +131,15 @@ jobs:
           grep -q "model_insights.json" public/index.html
           grep -q "Fórmula notebook" public/index.html
           grep -q "Confianza y calidad del modelo" public/index.html
-          grep -q "QQQ INCREMENTAL · CHALLENGER" public/index.html
+          grep -q "60/30 SIN NEM-FCX + QQQ · CHALLENGER" public/index.html
+          ! grep -q "QQQ INCREMENTAL · CHALLENGER" public/index.html
           ! grep -q "Challenger Huber · paralelo" public/index.html
           grep -q "Histórico de entradas y salidas" public/index.html
           grep -q "Respaldo y sincronización en Google Drive" public/index.html
           grep -q "vcPrecisionCompact" public/index.html
           grep -q "Precisión VC:" public/index.html
           grep -q "data/vc_accuracy_1pct.json" public/index.html
+          grep -q "data/reduced_6030_challenger.json" public/index.html
           ! grep -q "investmentSignal1PctPanel" public/index.html
           grep -q "MARKET_INDICATORS_PRESERVED_V2" public/index.html
           grep -q "raw.githubusercontent.com/rldaqp/afp-fondo3-monitor/migracion-github-actions/public/data/live_market.json" public/index.html
@@ -154,7 +158,7 @@ jobs:
           operation = json.loads(Path("public/data/operation_series.json").read_text(encoding="utf-8"))
           insights = json.loads(Path("public/data/model_insights.json").read_text(encoding="utf-8"))
           vc_accuracy = json.loads(Path("public/data/vc_accuracy_1pct.json").read_text(encoding="utf-8"))
-          qqq = json.loads(Path("public/data/qqq_incremental_challenger.json").read_text(encoding="utf-8"))
+          challenger = json.loads(Path("public/data/reduced_6030_challenger.json").read_text(encoding="utf-8"))
           pending = pd.read_csv("data/rolling90/pending_predictions.csv")
           sbs = pd.read_csv("data/rolling90/sbs_profuturo_f3.csv")
 
@@ -191,10 +195,19 @@ jobs:
           assert abs(float(vc_accuracy["threshold_vc_error_abs"]) - 0.01) < 1e-12
           assert int(vc_accuracy["n"]) > 0
           assert 0 <= float(vc_accuracy["accuracy"]) <= 1
-          assert qqq["challenger"]["signal"] in {"SUBE", "NEUTRO", "BAJA"}
-          assert float(qqq["challenger"]["vc_estimated"]) > 0
-          assert float(qqq["official"]["vc_estimated"]) > 0
-          assert int(qqq["training"]["n"]) == 90
+
+          assert challenger["challenger"]["signal"] in {"SUBE", "NEUTRO", "BAJA"}
+          assert float(challenger["challenger"]["vc_estimated"]) > 0
+          assert float(challenger["official"]["vc_estimated"]) > 0
+          assert int(challenger["cycle"]["train_n"]) == 60
+          assert int(challenger["cycle"]["freeze_horizon"]) == 30
+          assert challenger["challenger"].get("blind_chain") is True
+          assert challenger["challenger"].get("reanchored_with_latest_sbs") is False
+          features = set(challenger["cycle"]["features"])
+          assert "ret_QQQ" in features
+          assert "ret_NEM" not in features
+          assert "ret_FCX" not in features
+          assert int(challenger["blind_backtest"]["n_blocks"]) > 0
 
           sbs["fecha"] = pd.to_datetime(sbs["fecha"], errors="coerce")
           historical_signals = {
@@ -238,15 +251,15 @@ jobs:
                       yahoo["ret_USD_PEN"], errors="coerce"
                   ).notna().all()
 
-          # El bloque explicativo y QQQ deben corresponder a la misma fecha que
-          # la señal OLS publicada; Huber ya no forma parte del challenger operativo.
+          # El panel explicativo y el unico challenger deben corresponder al
+          # mismo corte publicado por el OLS oficial.
           assert str(insights.get("generated_for")) == str(latest.get("latest_estimate_date")), (insights.get("generated_for"), latest.get("latest_estimate_date"))
           assert str(insights.get("current_signal")) == str(latest.get("signal")), (insights.get("current_signal"), latest.get("signal"))
-          assert str(qqq.get("signal_date")) == str(latest.get("latest_estimate_date")), (qqq.get("signal_date"), latest.get("latest_estimate_date"))
+          assert str(challenger.get("signal_date")) == str(latest.get("latest_estimate_date")), (challenger.get("signal_date"), latest.get("latest_estimate_date"))
 
           print(json.dumps(latest, ensure_ascii=False, indent=2))
           print(json.dumps(vc_accuracy, ensure_ascii=False, indent=2))
-          print(json.dumps(qqq, ensure_ascii=False, indent=2))
+          print(json.dumps(challenger, ensure_ascii=False, indent=2))
           print(f"Puntos de señal Profuturo: {len(signals)}")
           print(f"Fechas oficiales con OLS completo: {len(official_dates)}")
           PY
