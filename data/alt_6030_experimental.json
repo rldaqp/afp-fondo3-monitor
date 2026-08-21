@@ -1,12 +1,12 @@
 {
-  "generated_at_lima": "2026-08-21T13:07:30.702637-05:00",
+  "generated_at_lima": "2026-08-21T14:34:36.704278-05:00",
   "signal_date": "2026-08-21",
   "mode": "INTRADÍA PROVISIONAL",
   "market_open": true,
-  "market_snapshot_generated_at_lima": "2026-08-21T13:03:17.634365-05:00",
+  "market_snapshot_generated_at_lima": "2026-08-21T14:15:26.425350-05:00",
   "role": "EXPERIMENTAL; no reemplaza OLS oficial ni challenger 60/30 vigente.",
   "model": {
-    "name": "OLS 60/30 · nuevos tickers",
+    "name": "RIDGE 60/30 · nuevos tickers · monotónico",
     "features_display": [
       ".INX",
       "CPER",
@@ -23,11 +23,20 @@
       "ret_SPBLSCUP",
       "ret_USD_PEN_alt"
     ],
-    "return_estimated": 0.0025107060639789494,
+    "return_estimated": 0.0029951152332942537,
     "signal": "SUBE",
-    "vc_estimated": 70.35810195221185,
+    "vc_estimated": 70.43128467011516,
     "blind_chain": true,
-    "reanchored_with_latest_sbs": false
+    "reanchored_with_latest_sbs": false,
+    "model_version": "CONSTRAINED_RIDGE_V2",
+    "estimator": "RIDGE CON RESTRICCIONES DE SIGNO",
+    "ridge_lambda": 0.1,
+    "positive_constraints": [
+      "ret_.INX",
+      "ret_NDX",
+      "ret_SPBLSCUP"
+    ],
+    "rule": "Se mantienen .INX, CPER, EEM, NDX, SPBLSCUP y USD/PEN. Ridge reduce la inestabilidad por colinealidad .INX/NDX y se exige beta >= 0 para .INX, NDX y SPBLSCUP. La cadena 60/30 sigue sin reanclaje SBS dentro del bloque."
   },
   "cycle": {
     "cycle_start": "2026-08-19",
@@ -39,14 +48,42 @@
     "train_n": 60,
     "freeze_horizon": 30,
     "coefficients": {
-      "intercept": -0.00018950705283186635,
-      "ret_.INX": -0.3987140612930248,
-      "ret_CPER": -0.00036993856667552963,
-      "ret_EEM_alt": 0.3008151770139247,
-      "ret_NDX": 0.5396699551791349,
-      "ret_SPBLSCUP": 0.33531966559134974,
-      "ret_USD_PEN_alt": 0.03418404363112179
-    }
+      "intercept": -0.0003224031852647233,
+      "ret_.INX": 0.0,
+      "ret_CPER": -0.031416062634573166,
+      "ret_EEM_alt": 0.37760707157664036,
+      "ret_NDX": 0.28748172901678737,
+      "ret_SPBLSCUP": 0.31405761334692056,
+      "ret_USD_PEN_alt": 0.02869030075887736
+    },
+    "fit": {
+      "model_version": "CONSTRAINED_RIDGE_V2",
+      "estimator": "RIDGE CON RESTRICCIONES DE SIGNO",
+      "ridge_lambda": 0.1,
+      "positive_constraints": [
+        "ret_.INX",
+        "ret_NDX",
+        "ret_SPBLSCUP"
+      ],
+      "cv_mse_by_lambda": {
+        "0.01": 5.3326977102867784e-05,
+        "0.03": 5.332640374477603e-05,
+        "0.1": 5.33258960113009e-05,
+        "0.3": 5.333625802957117e-05,
+        "1.0": 5.37119918857517e-05,
+        "3.0": 5.552538722771988e-05,
+        "10.0": 6.317298885500184e-05
+      },
+      "train_start": "2026-05-22",
+      "train_end": "2026-08-18",
+      "train_n": 60
+    },
+    "model_version": "CONSTRAINED_RIDGE_V2",
+    "monotonic_positive_features": [
+      "ret_.INX",
+      "ret_NDX",
+      "ret_SPBLSCUP"
+    ]
   },
   "backtest_exact20": {
     "n": 20,
@@ -54,188 +91,208 @@
     "train_end": "2026-07-21",
     "anchor_date": "2026-07-21",
     "anchor_vc": 70.02189279999999,
-    "mae_vc": 0.5755552517817947,
-    "rmse_vc": 0.8392605091139502,
+    "mae_vc": 0.6116188072791345,
+    "rmse_vc": 0.7602834993692181,
     "rows": [
       {
         "fecha": "2026-07-22",
         "source": "BACKTEST CIEGO 60/30",
-        "vc": 70.0465734975647,
-        "return": 0.00035247115691641826,
+        "vc": 70.05917300500867,
+        "return": 0.000532407844431759,
         "signal": "NEUTRO",
         "actual_vc": 70.0996577,
-        "abs_error": 0.053084202435300654
+        "abs_error": 0.04048469499132068,
+        "model_version": "CONSTRAINED_RIDGE_V2"
       },
       {
         "fecha": "2026-07-23",
         "source": "BACKTEST CIEGO 60/30",
-        "vc": 69.36568166475651,
-        "return": -0.00972055874841417,
+        "vc": 69.35520211994042,
+        "return": -0.010048232870489717,
         "signal": "BAJA",
         "actual_vc": 69.6767473,
-        "abs_error": 0.3110656352434944
+        "abs_error": 0.3215451800595872,
+        "model_version": "CONSTRAINED_RIDGE_V2"
       },
       {
         "fecha": "2026-07-24",
         "source": "BACKTEST CIEGO 60/30",
-        "vc": 68.06093927137913,
-        "return": -0.018809624039783677,
+        "vc": 68.14970971323062,
+        "return": -0.017381427345926535,
         "signal": "BAJA",
         "actual_vc": 68.3626543,
-        "abs_error": 0.30171502862087607
+        "abs_error": 0.21294458676938177,
+        "model_version": "CONSTRAINED_RIDGE_V2"
       },
       {
         "fecha": "2026-07-27",
         "source": "BACKTEST CIEGO 60/30",
-        "vc": 68.16563340043675,
-        "return": 0.0015382410260336246,
+        "vc": 68.2665857368248,
+        "return": 0.00171498930935991,
         "signal": "SUBE",
         "actual_vc": 68.2402784,
-        "abs_error": 0.07464499956324744
+        "abs_error": 0.02630733682480013,
+        "model_version": "CONSTRAINED_RIDGE_V2"
       },
       {
         "fecha": "2026-07-28",
         "source": "BACKTEST CIEGO 60/30",
-        "vc": 67.43643731954701,
-        "return": -0.010697415171162484,
+        "vc": 67.65645852165123,
+        "return": -0.00893742097379338,
         "signal": "BAJA",
         "actual_vc": 66.6628135,
-        "abs_error": 0.7736238195470122
+        "abs_error": 0.9936450216512327,
+        "model_version": "CONSTRAINED_RIDGE_V2"
       },
       {
         "fecha": "2026-07-29",
         "source": "BACKTEST CIEGO 60/30",
-        "vc": 66.75754562420997,
-        "return": -0.01006713465778333,
+        "vc": 66.84171304671351,
+        "return": -0.01204239022763788,
         "signal": "BAJA",
         "actual_vc": 65.3231046,
-        "abs_error": 1.434441024209974
+        "abs_error": 1.5186084467135146,
+        "model_version": "CONSTRAINED_RIDGE_V2"
       },
       {
         "fecha": "2026-07-30",
         "source": "BACKTEST CIEGO 60/30",
-        "vc": 68.23034618005548,
-        "return": 0.022061933854431406,
+        "vc": 68.34139115966477,
+        "return": 0.022436260900482764,
         "signal": "SUBE",
         "actual_vc": 68.2721906,
-        "abs_error": 0.0418444199445247
+        "abs_error": 0.06920055966476468,
+        "model_version": "CONSTRAINED_RIDGE_V2"
       },
       {
         "fecha": "2026-07-31",
         "source": "BACKTEST CIEGO 60/30",
-        "vc": 67.97535128538608,
-        "return": -0.003737265145870325,
+        "vc": 68.18083198960808,
+        "return": -0.0023493693548259763,
         "signal": "BAJA",
         "actual_vc": 67.7685784,
-        "abs_error": 0.20677288538608707
+        "abs_error": 0.4122535896080848,
+        "model_version": "CONSTRAINED_RIDGE_V2"
       },
       {
         "fecha": "2026-08-03",
         "source": "BACKTEST CIEGO 60/30",
-        "vc": 68.34896425689652,
-        "return": 0.005496300709677424,
+        "vc": 68.67369763125741,
+        "return": 0.007228800635997678,
         "signal": "SUBE",
         "actual_vc": 68.1332558,
-        "abs_error": 0.21570845689652174
+        "abs_error": 0.5404418312574109,
+        "model_version": "CONSTRAINED_RIDGE_V2"
       },
       {
         "fecha": "2026-08-04",
         "source": "BACKTEST CIEGO 60/30",
-        "vc": 69.82922669500583,
-        "return": 0.02165742311098648,
+        "vc": 70.19185102831999,
+        "return": 0.02210676648306139,
         "signal": "SUBE",
         "actual_vc": 69.7841504,
-        "abs_error": 0.04507629500582766
+        "abs_error": 0.40770062831998644,
+        "model_version": "CONSTRAINED_RIDGE_V2"
       },
       {
         "fecha": "2026-08-05",
         "source": "BACKTEST CIEGO 60/30",
-        "vc": 69.76770505990046,
-        "return": -0.000881029878421568,
+        "vc": 70.1292552629175,
+        "return": -0.0008917810897627158,
         "signal": "NEUTRO",
         "actual_vc": 69.8102662,
-        "abs_error": 0.04256114009953649
+        "abs_error": 0.3189890629174954,
+        "model_version": "CONSTRAINED_RIDGE_V2"
       },
       {
         "fecha": "2026-08-06",
         "source": "BACKTEST CIEGO 60/30",
-        "vc": 69.35767517436044,
-        "return": -0.005877072854667957,
+        "vc": 69.7163831937072,
+        "return": -0.0058873014929705205,
         "signal": "BAJA",
         "actual_vc": 69.2016742,
-        "abs_error": 0.15600097436043825
+        "abs_error": 0.5147089937072025,
+        "model_version": "CONSTRAINED_RIDGE_V2"
       },
       {
         "fecha": "2026-08-07",
         "source": "BACKTEST CIEGO 60/30",
-        "vc": 69.82742149816178,
-        "return": 0.006772809535793102,
+        "vc": 70.2300192393119,
+        "return": 0.007367508497644735,
         "signal": "SUBE",
         "actual_vc": 69.6836293,
-        "abs_error": 0.14379219816177624
+        "abs_error": 0.5463899393118936,
+        "model_version": "CONSTRAINED_RIDGE_V2"
       },
       {
         "fecha": "2026-08-10",
         "source": "BACKTEST CIEGO 60/30",
-        "vc": 69.53710333585933,
-        "return": -0.004157652625195407,
+        "vc": 69.94374067028532,
+        "return": -0.004076299168466168,
         "signal": "BAJA",
         "actual_vc": 69.2112776,
-        "abs_error": 0.3258257358593255
+        "abs_error": 0.7324630702853199,
+        "model_version": "CONSTRAINED_RIDGE_V2"
       },
       {
         "fecha": "2026-08-11",
         "source": "BACKTEST CIEGO 60/30",
-        "vc": 69.36549314342005,
-        "return": -0.002467893889833289,
+        "vc": 69.73812702719732,
+        "return": -0.0029397004094656675,
         "signal": "BAJA",
         "actual_vc": 69.498597,
-        "abs_error": 0.13310385657995027
+        "abs_error": 0.23953002719731842,
+        "model_version": "CONSTRAINED_RIDGE_V2"
       },
       {
         "fecha": "2026-08-12",
         "source": "BACKTEST CIEGO 60/30",
-        "vc": 69.46841138777343,
-        "return": 0.001483709546194441,
+        "vc": 69.86226676232191,
+        "return": 0.0017800841579265327,
         "signal": "SUBE",
         "actual_vc": 70.5338688,
-        "abs_error": 1.0654574122265643
+        "abs_error": 0.6716020376780847,
+        "model_version": "CONSTRAINED_RIDGE_V2"
       },
       {
         "fecha": "2026-08-13",
         "source": "BACKTEST CIEGO 60/30",
-        "vc": 69.31046724506145,
-        "return": -0.0022736109773742394,
+        "vc": 69.75275192735702,
+        "return": -0.0015675820445029175,
         "signal": "BAJA",
         "actual_vc": 70.6649381,
-        "abs_error": 1.3544708549385547
+        "abs_error": 0.9121861726429756,
+        "model_version": "CONSTRAINED_RIDGE_V2"
       },
       {
         "fecha": "2026-08-14",
         "source": "BACKTEST CIEGO 60/30",
-        "vc": 69.34160256928803,
-        "return": 0.0004492153272678764,
+        "vc": 69.74935077753688,
+        "return": -4.876008080224913e-05,
         "signal": "NEUTRO",
         "actual_vc": 70.8740985,
-        "abs_error": 1.532495930711974
+        "abs_error": 1.1247477224631268,
+        "model_version": "CONSTRAINED_RIDGE_V2"
       },
       {
         "fecha": "2026-08-17",
         "source": "BACKTEST CIEGO 60/30",
-        "vc": 69.56610293216764,
-        "return": 0.003237599861573478,
+        "vc": 69.89295749511382,
+        "return": 0.002058896835254835,
         "signal": "SUBE",
         "actual_vc": 71.5395979,
-        "abs_error": 1.9734949678323659
+        "abs_error": 1.6466404048861847,
+        "model_version": "CONSTRAINED_RIDGE_V2"
       },
       {
         "fecha": "2026-08-18",
         "source": "BACKTEST CIEGO 60/30",
-        "vc": 68.30688740198745,
-        "return": -0.018100992827038392,
+        "vc": 68.65082576136699,
+        "return": -0.01777191548710284,
         "signal": "BAJA",
         "actual_vc": 69.6328126,
-        "abs_error": 1.3259251980125413
+        "abs_error": 0.9819868386330057,
+        "model_version": "CONSTRAINED_RIDGE_V2"
       }
     ]
   },
@@ -252,14 +309,15 @@
       "factor_returns": {},
       "factor_sources": {},
       "factor_timestamps": {},
-      "updated_at_lima": "2026-08-21T13:07:30.702637-05:00"
+      "updated_at_lima": "2026-08-21T14:34:36.704278-05:00",
+      "model_version": "CONSTRAINED_RIDGE_V2"
     },
     {
       "fecha": "2026-08-19",
       "base_vc": 69.6328126,
-      "return": 0.004625575246481705,
+      "return": 0.00641999465330646,
       "signal": "SUBE",
-      "vc": 69.95490441430545,
+      "vc": 70.0798548845867,
       "actual_vc": null,
       "abs_error": null,
       "source": "CIERRE HISTÓRICO GUARDADO",
@@ -287,14 +345,15 @@
         "ret_SPBLSCUP": "2026-08-19",
         "ret_USD_PEN_alt": "2026-08-19"
       },
-      "updated_at_lima": "2026-08-21T13:07:30.702637-05:00"
+      "updated_at_lima": "2026-08-21T14:34:36.704278-05:00",
+      "model_version": "CONSTRAINED_RIDGE_V2"
     },
     {
       "fecha": "2026-08-20",
-      "base_vc": 69.95490441430545,
-      "return": 0.0032448250531967333,
+      "base_vc": 70.0798548845867,
+      "return": 0.002013558738461455,
       "signal": "SUBE",
-      "vc": 70.18189584074297,
+      "vc": 70.22096478877967,
       "actual_vc": null,
       "abs_error": null,
       "source": "CIERRE HISTÓRICO GUARDADO",
@@ -322,24 +381,25 @@
         "ret_SPBLSCUP": "2026-08-20",
         "ret_USD_PEN_alt": "2026-08-20"
       },
-      "updated_at_lima": "2026-08-21T13:07:30.702637-05:00"
+      "updated_at_lima": "2026-08-21T14:34:36.704278-05:00",
+      "model_version": "CONSTRAINED_RIDGE_V2"
     },
     {
       "fecha": "2026-08-21",
-      "base_vc": 70.18189584074297,
-      "return": 0.0025107060639789494,
+      "base_vc": 70.22096478877967,
+      "return": 0.0029951152332942537,
       "signal": "SUBE",
-      "vc": 70.35810195221185,
+      "vc": 70.43128467011516,
       "actual_vc": null,
       "abs_error": null,
       "source": "INTRADÍA EXPERIMENTAL",
       "factor_returns": {
-        "ret_.INX": 0.0044888215907168405,
-        "ret_CPER": 0.016645555766028997,
-        "ret_EEM_alt": 0.008632484338956248,
-        "ret_NDX": 0.003648024107285819,
+        "ret_.INX": 0.004836956716221863,
+        "ret_CPER": 0.016518463814080953,
+        "ret_EEM_alt": 0.007655275980337661,
+        "ret_NDX": 0.003230297133047788,
         "ret_SPBLSCUP": 0.0,
-        "ret_USD_PEN_alt": -0.0020297210887679773
+        "ret_USD_PEN_alt": 0.0005969181857017336
       },
       "factor_sources": {
         "ret_.INX": "YAHOO ^GSPC · RESPALDO EQUIVALENTE · NUEVO 60/30 EXPERIMENTAL",
@@ -350,14 +410,15 @@
         "ret_USD_PEN_alt": "YAHOO PEN=X · PROVISIONAL · USADO POR MODELO · NUEVO 60/30 EXPERIMENTAL"
       },
       "factor_timestamps": {
-        "ret_.INX": "2026-08-21T14:00:00-04:00",
-        "ret_CPER": "2026-08-21T14:00:00-04:00",
-        "ret_EEM_alt": "2026-08-21T14:00:00-04:00",
-        "ret_NDX": "2026-08-21T14:00:00-04:00",
+        "ret_.INX": "2026-08-21T15:15:00-04:00",
+        "ret_CPER": "2026-08-21T15:15:00-04:00",
+        "ret_EEM_alt": "2026-08-21T15:15:00-04:00",
+        "ret_NDX": "2026-08-21T15:15:00-04:00",
         "ret_SPBLSCUP": "2026-08-20",
-        "ret_USD_PEN_alt": "2026-08-21T14:00:00-04:00"
+        "ret_USD_PEN_alt": "2026-08-21T15:05:00-04:00"
       },
-      "updated_at_lima": "2026-08-21T13:07:30.702637-05:00"
+      "updated_at_lima": "2026-08-21T14:34:36.704278-05:00",
+      "model_version": "CONSTRAINED_RIDGE_V2"
     }
   ],
   "history_min_date": "2026-07-22",
