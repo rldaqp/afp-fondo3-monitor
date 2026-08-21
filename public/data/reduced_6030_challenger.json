@@ -1,33 +1,33 @@
 {
-  "generated_at_lima": "2026-08-21T08:36:33.884115-05:00",
-  "signal_date": "2026-08-20",
-  "mode": "CIERRE DIARIO",
-  "market_open": false,
+  "generated_at_lima": "2026-08-21T10:32:29.214516-05:00",
+  "signal_date": "2026-08-21",
+  "mode": "INTRADÍA PROVISIONAL",
+  "market_open": true,
   "role": "UNICO CHALLENGER EN SOMBRA; no reemplaza el OLS rolling 90 oficial.",
   "official": {
     "model": "OLS rolling 90 oficial · SPY EEM EPU MCHI NEM FCX USD/PEN",
-    "return_estimated": 0.006641793401751122,
+    "return_estimated": 0.014083822448526021,
     "signal": "SUBE",
-    "vc_estimated": 71.42634553449071
+    "vc_estimated": 72.42014224425829
   },
   "challenger": {
     "model": "OLS 60/30 · sin NEM ni FCX + QQQ",
-    "return_estimated": 0.002293070802529933,
+    "return_estimated": 0.010036411960717412,
     "signal": "SUBE",
-    "vc_estimated": 70.57551899275661,
+    "vc_estimated": 71.28384397570936,
     "blind_chain": true,
     "reanchored_with_latest_sbs": false
   },
   "comparison": {
     "same_signal": true,
-    "vc_difference": -0.8508265417340937,
-    "return_difference_pp": -0.4348722599221189
+    "vc_difference": -1.1362982685489271,
+    "return_difference_pp": -0.4047410487808609
   },
   "cycle": {
     "train_window": 60,
     "freeze_horizon": 30,
     "cycle_start": "2026-08-19",
-    "cycle_day": 2,
+    "cycle_day": 3,
     "anchor_date": "2026-08-18",
     "anchor_vc": 69.6328126,
     "train_start": "2026-05-14",
@@ -44,8 +44,8 @@
     "rule": "Coeficientes congelados 30 sesiones. El VC se encadena desde el ancla del ciclo y no se corrige con SBS dentro del bloque."
   },
   "qqq": {
-    "return": -0.007191967784539344,
-    "source": "CIERRE DIARIO YAHOO"
+    "return": 0.0027714921783601465,
+    "source": "INTRADIA YAHOO"
   },
   "blind_backtest": {
     "design": "Bloques no superpuestos: entrenar 60 observaciones, congelar 30, un solo VC SBS como ancla al inicio; dentro del bloque SBS solo evalua y nunca corrige.",
@@ -67,7 +67,7 @@
   },
   "forward_sbs": {
     "evaluated": 0,
-    "pending": 2
+    "pending": 3
   },
   "ledger": "data/rolling90/reduced_6030_shadow.csv"
 }
