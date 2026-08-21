@@ -8,13 +8,13 @@ from zoneinfo import ZoneInfo
 import numpy as np
 import pandas as pd
 
-import build_reduced_6030_challenger as current
-import recheck_6030_exact20 as exact
-
 ROOT = Path(__file__).resolve().parents[1]
 DATA = ROOT / "data" / "rolling90"
+ANALYSIS = ROOT / "data" / "analysis"
 PUBLIC = ROOT / "public" / "data"
 LIVE_PATH = PUBLIC / "live_market.json"
+ALT_CLOSES = ANALYSIS / "googlefinance_alt_aligned_closes_20260402_20260820.csv"
+SBS_PATH = DATA / "sbs_profuturo_f3.csv"
 OUT_PATH = PUBLIC / "alt_6030_experimental.json"
 LEDGER_PATH = DATA / "alt_6030_shadow.csv"
 
@@ -24,8 +24,15 @@ TRAIN_WINDOW = 60
 FREEZE_HORIZON = 30
 THRESHOLD = 0.001
 LIMA = ZoneInfo("America/Lima")
-FEATURES = exact.ALT_FEATURES
+CLOSE_COLS = [".INX", "CPER", "EEM", "NDX", "SPBLSCUP", "USD_PEN"]
+FEATURES = ["ret_.INX", "ret_CPER", "ret_EEM_alt", "ret_NDX", "ret_SPBLSCUP", "ret_USD_PEN_alt"]
 DISPLAY_FEATURES = [".INX", "CPER", "EEM", "NDX", "SPBLSCUP", "USD/PEN"]
+TEST_DATES = pd.to_datetime([
+    "2026-07-22", "2026-07-23", "2026-07-24", "2026-07-27", "2026-07-28",
+    "2026-07-29", "2026-07-30", "2026-07-31", "2026-08-03", "2026-08-04",
+    "2026-08-05", "2026-08-06", "2026-08-07", "2026-08-10", "2026-08-11",
+    "2026-08-12", "2026-08-13", "2026-08-14", "2026-08-17", "2026-08-18",
+])
 
 
 def classify(value: float) -> str:
@@ -36,14 +43,39 @@ def classify(value: float) -> str:
     return "NEUTRO"
 
 
-def _safe_json(path: Path) -> dict:
+def safe_json(path: Path) -> dict:
     try:
         return json.loads(path.read_text(encoding="utf-8")) if path.exists() else {}
     except Exception:
         return {}
 
 
-def _fit(train: pd.DataFrame) -> tuple[np.ndarray, dict[str, float]]:
+def load_inputs() -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+    live = safe_json(LIVE_PATH)
+    if not live:
+        raise RuntimeError("Falta live_market.json")
+
+    alt = pd.read_csv(ALT_CLOSES)
+    alt["fecha"] = pd.to_datetime(alt["fecha"], errors="coerce")
+    for col in CLOSE_COLS:
+        alt[col] = pd.to_numeric(alt[col], errors="coerce")
+    alt = alt.dropna(subset=["fecha", *CLOSE_COLS]).sort_values("fecha").drop_duplicates("fecha", keep="last")
+    for col in CLOSE_COLS:
+        alt[f"ret_{col}"] = alt[col].pct_change(fill_method=None)
+    alt = alt.rename(columns={"ret_EEM": "ret_EEM_alt", "ret_USD_PEN": "ret_USD_PEN_alt"})
+
+    sbs = pd.read_csv(SBS_PATH)
+    sbs["fecha"] = pd.to_datetime(sbs["fecha"], errors="coerce")
+    sbs["valor_cuota"] = pd.to_numeric(sbs["valor_cuota"], errors="coerce")
+    sbs = sbs.dropna(subset=["fecha", "valor_cuota"]).sort_values("fecha").drop_duplicates("fecha", keep="last")
+    sbs["ret_target"] = sbs["valor_cuota"].pct_change(fill_method=None)
+
+    both = sbs[["fecha", "valor_cuota", "ret_target"]].merge(alt[["fecha", *FEATURES]], on="fecha", how="inner")
+    both = both.dropna(subset=["ret_target", "valor_cuota", *FEATURES]).sort_values("fecha").drop_duplicates("fecha", keep="last").reset_index(drop=True)
+    return live, alt, both
+
+
+def fit(train: pd.DataFrame) -> tuple[np.ndarray, dict[str, float]]:
     x = train[FEATURES].to_numpy(float)
     y = train["ret_target"].to_numpy(float)
     beta = np.linalg.lstsq(np.c_[np.ones(len(x)), x], y, rcond=None)[0]
@@ -51,21 +83,21 @@ def _fit(train: pd.DataFrame) -> tuple[np.ndarray, dict[str, float]]:
     return beta, {name: float(value) for name, value in zip(names, beta)}
 
 
-def _predict(beta: np.ndarray, values: dict[str, float]) -> float:
+def predict(beta: np.ndarray, values: dict[str, float]) -> float:
     return float(beta[0] + sum(float(beta[i + 1]) * float(values[f]) for i, f in enumerate(FEATURES)))
 
 
-def _row_values(row: pd.Series) -> dict[str, float]:
-    out: dict[str, float] = {}
-    for f in FEATURES:
-        value = pd.to_numeric(pd.Series([row.get(f)]), errors="coerce").iloc[0]
+def row_values(row: pd.Series) -> dict[str, float]:
+    values = {}
+    for feature in FEATURES:
+        value = pd.to_numeric(pd.Series([row.get(feature)]), errors="coerce").iloc[0]
         if pd.isna(value):
-            raise RuntimeError(f"Falta {f} en fecha histórica")
-        out[f] = float(value)
-    return out
+            raise RuntimeError(f"Falta {feature} en fecha histórica")
+        values[feature] = float(value)
+    return values
 
 
-def _live_values(live: dict) -> tuple[dict[str, float], dict[str, str]]:
+def live_values(live: dict) -> tuple[dict[str, float], dict[str, str], dict[str, str]]:
     rows = {str(x.get("serie", "")): x for x in live.get("experimental_assets", [])}
     mapping = {
         "ret_.INX": ".INX",
@@ -75,14 +107,11 @@ def _live_values(live: dict) -> tuple[dict[str, float], dict[str, str]]:
         "ret_SPBLSCUP": "SPBLSCUP",
         "ret_USD_PEN_alt": "USD/PEN",
     }
-    values: dict[str, float] = {}
-    sources: dict[str, str] = {}
+    values, sources, stamps = {}, {}, {}
     for feature, serie in mapping.items():
         row = rows.get(serie, {})
         raw = row.get("retorno")
         value = pd.to_numeric(pd.Series([raw]), errors="coerce").iloc[0]
-        # SPBLSCUP puede no negociar una sesión peruana aunque NY sí esté abierto.
-        # En ese caso se mantiene el último cierre: retorno 0, igual que en el backtest.
         if pd.isna(value) and serie == "SPBLSCUP":
             value = 0.0
             sources[feature] = "SIN NUEVO CIERRE · RETORNO 0"
@@ -91,10 +120,11 @@ def _live_values(live: dict) -> tuple[dict[str, float], dict[str, str]]:
         else:
             sources[feature] = str(row.get("estado", ""))
         values[feature] = float(value)
-    return values, sources
+        stamps[feature] = str(row.get("timestamp", ""))
+    return values, sources, stamps
 
 
-def _load_ledger() -> pd.DataFrame:
+def load_ledger() -> pd.DataFrame:
     if not LEDGER_PATH.exists() or LEDGER_PATH.stat().st_size == 0:
         return pd.DataFrame()
     df = pd.read_csv(LEDGER_PATH)
@@ -102,31 +132,37 @@ def _load_ledger() -> pd.DataFrame:
     return df.dropna(subset=["fecha"]).sort_values("fecha").drop_duplicates("fecha", keep="last").reset_index(drop=True)
 
 
-def _historical_backtest(both: pd.DataFrame) -> dict:
-    test = both.loc[both["fecha"].isin(exact.TEST_DATES)].copy().sort_values("fecha").reset_index(drop=True)
-    train = both.loc[both["fecha"] < exact.TEST_DATES[0]].tail(TRAIN_WINDOW).copy().reset_index(drop=True)
-    if len(test) != len(exact.TEST_DATES) or len(train) != TRAIN_WINDOW:
-        return {"n": 0, "rows": []}
-    beta, _ = _fit(train)
+def historical_backtest(both: pd.DataFrame) -> dict:
+    test = both.loc[both["fecha"].isin(TEST_DATES)].copy().sort_values("fecha").reset_index(drop=True)
+    train = both.loc[both["fecha"] < TEST_DATES[0]].tail(TRAIN_WINDOW).copy().reset_index(drop=True)
+    if list(test["fecha"]) != list(TEST_DATES) or len(train) != TRAIN_WINDOW:
+        missing = [d.date().isoformat() for d in TEST_DATES if d not in set(test["fecha"])]
+        return {"n": 0, "rows": [], "error": f"Fechas faltantes: {missing}"}
+    beta, _ = fit(train)
     vc = float(train.iloc[-1]["valor_cuota"])
-    rows: list[dict] = []
-    errors: list[float] = []
+    rows, errors = [], []
     for _, row in test.iterrows():
-        ret = _predict(beta, _row_values(row))
+        ret = predict(beta, row_values(row))
         vc *= 1.0 + ret
         actual = float(row["valor_cuota"])
         err = abs(vc - actual)
         errors.append(err)
         rows.append({
             "fecha": pd.Timestamp(row["fecha"]).date().isoformat(),
+            "source": "BACKTEST CIEGO 60/30",
             "vc": vc,
             "return": ret,
+            "signal": classify(ret),
             "actual_vc": actual,
             "abs_error": err,
         })
     arr = np.asarray(errors, dtype=float)
     return {
         "n": len(rows),
+        "train_start": pd.Timestamp(train.iloc[0]["fecha"]).date().isoformat(),
+        "train_end": pd.Timestamp(train.iloc[-1]["fecha"]).date().isoformat(),
+        "anchor_date": pd.Timestamp(train.iloc[-1]["fecha"]).date().isoformat(),
+        "anchor_vc": float(train.iloc[-1]["valor_cuota"]),
         "mae_vc": float(arr.mean()),
         "rmse_vc": float(np.sqrt(np.mean(arr ** 2))),
         "rows": rows,
@@ -134,46 +170,37 @@ def _historical_backtest(both: pd.DataFrame) -> dict:
 
 
 def main() -> None:
-    live = _safe_json(LIVE_PATH)
-    markets = current.read_csv(DATA / "markets.csv")
-    sbs_raw = current.read_csv(DATA / "sbs_profuturo_f3.csv")
-    if not live or markets.empty or sbs_raw.empty:
-        raise RuntimeError("Faltan datos base para 60/30 nuevos tickers")
-
+    live, alt, both = load_inputs()
     signal_date = pd.Timestamp(str(live.get("signal_date"))).normalize()
-    markets["fecha"] = pd.to_datetime(markets["fecha"], errors="coerce")
-
-    # La misma muestra común que se usó al comparar el challenger vigente y los
-    # nuevos tickers. Así los coeficientes de 19-20/08 reproducen la prueba previa.
-    qqq = current.download_qqq(pd.Timestamp("2026-04-01"), max(signal_date, pd.Timestamp("2026-08-20")))
-    common, sbs, _ = current.prepare_frames(markets, sbs_raw, qqq)
-    alt = exact.build_alt()
-    both = common.merge(alt, on="fecha", how="inner")
-    both = both.dropna(subset=[*current.REDUCED_FEATURES, *FEATURES, "ret_target", "valor_cuota"]).sort_values("fecha").drop_duplicates("fecha", keep="last").reset_index(drop=True)
 
     train = both.loc[both["fecha"] <= ANCHOR_DATE].tail(TRAIN_WINDOW).copy().reset_index(drop=True)
     if len(train) != TRAIN_WINDOW or pd.Timestamp(train.iloc[-1]["fecha"]).normalize() != ANCHOR_DATE:
         raise RuntimeError("Entrenamiento 60/30 nuevos tickers incompleto al 18/08")
-    beta, coeff = _fit(train)
+    beta, coeff = fit(train)
+    anchor_vc = float(train.iloc[-1]["valor_cuota"])
 
-    anchor_rows = sbs.loc[sbs["fecha"].eq(ANCHOR_DATE), "valor_cuota"]
-    if anchor_rows.empty:
-        raise RuntimeError("No existe ancla SBS 18/08")
-    anchor_vc = float(anchor_rows.iloc[-1])
-
-    ledger = _load_ledger()
-    existing = {} if ledger.empty else {pd.Timestamp(r["fecha"]).normalize(): dict(r) for _, r in ledger.iterrows()}
-    vc = anchor_vc
-    rows: list[dict] = []
-    generated = datetime.now(LIMA).isoformat()
-
-    # Recorremos desde el inicio del ciclo hasta el corte actual. 19 y 20 salen de
-    # cierres Google Finance guardados; días anteriores al actual que ya pasaron se
-    # conservan desde el ledger, evitando reescribir la sombra operativa.
-    calendar = pd.bdate_range(CYCLE_START, signal_date)
     alt_by_date = {pd.Timestamp(r["fecha"]).normalize(): r for _, r in alt.iterrows()}
+    ledger = load_ledger()
+    existing = {} if ledger.empty else {pd.Timestamp(r["fecha"]).normalize(): dict(r) for _, r in ledger.iterrows()}
+    generated = datetime.now(LIMA).isoformat()
+    vc = anchor_vc
+    rows: list[dict] = [{
+        "fecha": ANCHOR_DATE.date().isoformat(),
+        "base_vc": anchor_vc,
+        "return": None,
+        "signal": "ANCLA",
+        "vc": anchor_vc,
+        "actual_vc": anchor_vc,
+        "abs_error": 0.0,
+        "source": "ANCLA SBS DEL CICLO",
+        "factor_returns": {},
+        "factor_sources": {},
+        "factor_timestamps": {},
+        "updated_at_lima": generated,
+    }]
     current_row: dict | None = None
-    for d in calendar:
+
+    for d in pd.bdate_range(CYCLE_START, signal_date):
         d = pd.Timestamp(d).normalize()
         old = existing.get(d)
         if old is not None and d < signal_date and pd.notna(old.get("vc")) and pd.notna(old.get("return")):
@@ -182,25 +209,26 @@ def main() -> None:
             continue
 
         if d == signal_date:
-            values, sources = _live_values(live)
+            values, sources, stamps = live_values(live)
             source = "INTRADÍA EXPERIMENTAL" if bool(live.get("market_open")) else "CIERRE/ÚLTIMO CORTE EXPERIMENTAL"
         else:
             hist = alt_by_date.get(d)
             if hist is None:
-                # Feriado o sesión sin cierre conjunto: no inventamos movimiento.
                 values = {f: 0.0 for f in FEATURES}
-                sources = {f: "SIN SESIÓN · 0" for f in FEATURES}
+                sources = {f: "SIN SESIÓN · RETORNO 0" for f in FEATURES}
+                stamps = {f: d.date().isoformat() for f in FEATURES}
                 source = "SIN SESIÓN · RETORNO 0"
             else:
-                values = _row_values(hist)
-                sources = {f: "GOOGLE FINANCE CIERRE" for f in FEATURES}
-                source = "GOOGLE FINANCE CIERRE"
+                values = row_values(hist)
+                sources = {f: "CIERRE HISTÓRICO GUARDADO" for f in FEATURES}
+                stamps = {f: d.date().isoformat() for f in FEATURES}
+                source = "CIERRE HISTÓRICO GUARDADO"
 
-        ret = _predict(beta, values)
+        ret = predict(beta, values)
         base_vc = vc
         vc = base_vc * (1.0 + ret)
-        actual = sbs.loc[sbs["fecha"].eq(d), "valor_cuota"]
-        actual_vc = None if actual.empty else float(actual.iloc[-1])
+        actual_rows = both.loc[both["fecha"].eq(d), "valor_cuota"]
+        actual_vc = None if actual_rows.empty else float(actual_rows.iloc[-1])
         row = {
             "fecha": d.date().isoformat(),
             "base_vc": base_vc,
@@ -212,6 +240,7 @@ def main() -> None:
             "source": source,
             "factor_returns": values,
             "factor_sources": sources,
+            "factor_timestamps": stamps,
             "updated_at_lima": generated,
         }
         rows.append(row)
@@ -219,12 +248,16 @@ def main() -> None:
             current_row = row
 
     if current_row is None:
-        same = [r for r in rows if str(r.get("fecha")) == signal_date.date().isoformat()]
-        current_row = same[-1] if same else None
+        if signal_date == ANCHOR_DATE:
+            current_row = rows[0]
+        else:
+            same = [r for r in rows if str(r.get("fecha")) == signal_date.date().isoformat()]
+            current_row = same[-1] if same else None
     if current_row is None:
         raise RuntimeError("No se pudo calcular el 60/30 de nuevos tickers")
 
-    new_ledger = pd.DataFrame(rows)
+    ledger_rows = [r for r in rows if r.get("source") != "ANCLA SBS DEL CICLO"]
+    new_ledger = pd.DataFrame(ledger_rows)
     if not ledger.empty:
         before = ledger.loc[ledger["fecha"] < CYCLE_START].copy()
         new_ledger = pd.concat([before, new_ledger], ignore_index=True, sort=False)
@@ -232,19 +265,19 @@ def main() -> None:
     LEDGER_PATH.parent.mkdir(parents=True, exist_ok=True)
     new_ledger.to_csv(LEDGER_PATH, index=False)
 
-    backtest = _historical_backtest(both)
-    cycle_day = int(len([r for r in rows if str(r.get("fecha", "")) >= CYCLE_START.date().isoformat()]))
+    backtest = historical_backtest(both)
     output = {
         "generated_at_lima": generated,
         "signal_date": signal_date.date().isoformat(),
         "mode": live.get("mode"),
         "market_open": bool(live.get("market_open")),
+        "market_snapshot_generated_at_lima": live.get("generated_at_lima"),
         "role": "EXPERIMENTAL; no reemplaza OLS oficial ni challenger 60/30 vigente.",
         "model": {
             "name": "OLS 60/30 · nuevos tickers",
             "features_display": DISPLAY_FEATURES,
             "features": FEATURES,
-            "return_estimated": float(current_row["return"]),
+            "return_estimated": None if current_row.get("return") is None else float(current_row["return"]),
             "signal": str(current_row["signal"]),
             "vc_estimated": float(current_row["vc"]),
             "blind_chain": True,
@@ -252,7 +285,7 @@ def main() -> None:
         },
         "cycle": {
             "cycle_start": CYCLE_START.date().isoformat(),
-            "cycle_day": cycle_day,
+            "cycle_day": int(max(0, len([r for r in rows if str(r.get("fecha", "")) >= CYCLE_START.date().isoformat()]))),
             "anchor_date": ANCHOR_DATE.date().isoformat(),
             "anchor_vc": anchor_vc,
             "train_start": pd.Timestamp(train.iloc[0]["fecha"]).date().isoformat(),
@@ -263,10 +296,18 @@ def main() -> None:
         },
         "backtest_exact20": backtest,
         "operational_history": rows,
+        "history_min_date": backtest.get("rows", [{}])[0].get("fecha") if backtest.get("rows") else ANCHOR_DATE.date().isoformat(),
+        "history_max_date": signal_date.date().isoformat(),
     }
     OUT_PATH.parent.mkdir(parents=True, exist_ok=True)
     OUT_PATH.write_text(json.dumps(output, ensure_ascii=False, indent=2), encoding="utf-8")
-    print(json.dumps(output, ensure_ascii=False, indent=2))
+    print(json.dumps({
+        "signal_date": output["signal_date"],
+        "signal": output["model"]["signal"],
+        "vc": output["model"]["vc_estimated"],
+        "return": output["model"]["return_estimated"],
+        "backtest_n": output["backtest_exact20"].get("n"),
+    }, ensure_ascii=False))
 
 
 if __name__ == "__main__":
