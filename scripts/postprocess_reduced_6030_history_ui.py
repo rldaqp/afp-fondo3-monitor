@@ -21,7 +21,8 @@ html = re.sub(
 html = html.replace("$('huberValue').textContent", "void 0 && $('huberValue').textContent")
 html = html.replace("$('huberSub').textContent", "void 0 && $('huberSub').textContent")
 
-# 2) Selector histórico del challenger 60/30. Se inserta una sola vez.
+# 2) Selector histórico del challenger 60/30. Se conserva en el HTML legado
+# porque otros validadores lo esperan, aunque el runtime dual lo oculta en pantalla.
 START = "<!-- REDUCED_6030_HISTORY_SELECTOR START -->"
 END = "<!-- REDUCED_6030_HISTORY_SELECTOR END -->"
 html = re.sub(re.escape(START) + r".*?" + re.escape(END), "", html, flags=re.S)
@@ -97,18 +98,23 @@ script = r'''
 '''
 html = html.replace("</body>", script + "</body>", 1)
 
-# 3) Runtime permanente del nuevo 60/30 y hotfix operativo del visor.
-# Se eliminan runtimes antiguos para evitar que una publicación pesada vuelva
-# a dejar activo ALT6030V4 o quite los controles de operaciones.
-html = re.sub(r'\n?<script src="data/alt_runtime_v4\.js\?rev=[^"]+"></script>', '', html)
-html = re.sub(r'\n?<script src="data/alt_runtime_v5\.js\?rev=[^"]+"></script>', '', html)
-html = re.sub(r'\n?<script src="data/spblscup_stale_fix\.js\?rev=[^"]+"></script>', '', html)
-html = re.sub(r'\n?<script src="data/visor_hotfix_v1\.js\?rev=[^"]+"></script>', '', html)
+# 3) Runtimes permanentes. Los runtimes anteriores se conservan para compatibilidad
+# de operaciones/datos, pero el runtime dual se carga al final y deja visibles solo
+# los dos modelos Rolling 30 aprobados para seguimiento.
+for pattern in (
+    r'\n?<script src="data/alt_runtime_v4\.js\?rev=[^"]+"></script>',
+    r'\n?<script src="data/alt_runtime_v5\.js\?rev=[^"]+"></script>',
+    r'\n?<script src="data/spblscup_stale_fix\.js\?rev=[^"]+"></script>',
+    r'\n?<script src="data/visor_hotfix_v1\.js\?rev=[^"]+"></script>',
+    r'\n?<script src="data/dual_rolling30_runtime_v1\.js\?rev=[^"]+"></script>',
+):
+    html = re.sub(pattern, '', html)
 
 runtime_tags = [
     '<script src="data/alt_runtime_v5.js?rev=ALT6030V5"></script>',
     '<script src="data/spblscup_stale_fix.js?rev=SPBLCLOSEV1"></script>',
     '<script src="data/visor_hotfix_v1.js?rev=VISORHOTFIX1"></script>',
+    '<script src="data/dual_rolling30_runtime_v1.js?rev=DUALROLL30V1"></script>',
 ]
 html = html.replace("</body>", "\n".join(runtime_tags) + "\n</body>", 1)
 
@@ -116,12 +122,17 @@ if "r6030HistoryDate" not in html:
     raise RuntimeError("No quedo insertado selector historico 60/30")
 if "$('huberValue').textContent" in html or "$('huberSub').textContent" in html:
     raise RuntimeError("Persistieron referencias DOM Huber que pueden romper el visor")
-for required in ("alt_runtime_v5.js?rev=ALT6030V5", "spblscup_stale_fix.js?rev=SPBLCLOSEV1", "visor_hotfix_v1.js?rev=VISORHOTFIX1"):
+for required in (
+    "alt_runtime_v5.js?rev=ALT6030V5",
+    "spblscup_stale_fix.js?rev=SPBLCLOSEV1",
+    "visor_hotfix_v1.js?rev=VISORHOTFIX1",
+    "dual_rolling30_runtime_v1.js?rev=DUALROLL30V1",
+):
     if required not in html:
         raise RuntimeError(f"No quedo fijado el runtime requerido: {required}")
 
 HTML_PATH.write_text(html, encoding="utf-8")
-print("Selector historico 60/30, runtime V5 y hotfix de operaciones insertados.")
+print("Runtime dual Rolling30 fijado al final del visor.")
 
 # Genera también la auditoría comparativa exacta de los últimos 20 VC SBS.
 subprocess.run([sys.executable, str(ROOT / "scripts" / "recheck_6030_exact20.py")], check=True)
