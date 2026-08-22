@@ -1,11 +1,39 @@
 {
-  "verified_at_utc": "2026-08-22T05:04:59.580320+00:00",
+  "verified_at_utc": "2026-08-22T05:05:46.522413+00:00",
   "page_url": "https://rldaqp.github.io/afp-fondo3-monitor/",
   "history_qqq": 78,
   "history_new_tickers": 78,
   "history_start": "2026-04-20",
   "history_end": "2026-08-19",
-  "intraday_qqq": 6,
-  "intraday_new_tickers": 6,
+  "range_counts_qqq": {
+    "7": 6,
+    "15": 11,
+    "30": 18,
+    "90": 56,
+    "all": 80
+  },
+  "range_counts_new_tickers": {
+    "7": 6,
+    "15": 11,
+    "30": 18,
+    "90": 56,
+    "all": 80
+  },
+  "tickers_qqq": [
+    "SPY",
+    "EEM",
+    "EPU",
+    "MCHI",
+    "USD_PEN",
+    "QQQ"
+  ],
+  "tickers_new_tickers": [
+    ".INX",
+    "CPER",
+    "EEM",
+    "NDX",
+    "SPBLSCUP",
+    "USD/PEN"
+  ],
   "runtime": "DUALHISTV2"
 }
