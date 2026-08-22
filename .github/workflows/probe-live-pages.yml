@@ -1,0 +1,29 @@
+name: Sonda HTTP GitHub Pages
+on:
+  pull_request:
+    branches: [migracion-github-actions]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Consultar HTML público sin caché
+        run: |
+          set -e
+          URL="https://rldaqp.github.io/afp-fondo3-monitor/?probe=$(date +%s)"
+          curl -L --fail --silent --show-error -D /tmp/headers.txt "$URL" -o /tmp/live.html
+          echo '=== HEADERS ==='
+          cat /tmp/headers.txt
+          echo '=== TITLE ==='
+          grep -o '<title>[^<]*' /tmp/live.html | head -1 || true
+          echo '=== DUAL TAKEOVER ==='
+          grep -o 'dualTakeoverV3' /tmp/live.html | head -3 || true
+          echo '=== V3 TAG ==='
+          grep -o 'DUALTAKEOVERV3' /tmp/live.html | head -3 || true
+          echo '=== ROLLING90 ==='
+          grep -o 'OLS Rolling 90' /tmp/live.html | head -3 || true
+          echo '=== SHA256 ==='
+          sha256sum /tmp/live.html
+          test "$(grep -c 'dualTakeoverV3' /tmp/live.html || true)" -ge 1
