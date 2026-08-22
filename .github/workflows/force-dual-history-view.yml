@@ -1,0 +1,133 @@
+name: Forzar visor dual con histórico completo
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - migracion-github-actions
+    paths:
+      - ".github/workflows/force-dual-history-view.yml"
+      - "scripts/embed_dual_history.py"
+      - "public/data/dual_history_fix_v2.js"
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages-ui-fondo3
+  cancel-in-progress: false
+
+jobs:
+  rebuild-and-deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Descargar repositorio
+        uses: actions/checkout@v4
+        with:
+          ref: migracion-github-actions
+          fetch-depth: 0
+
+      - name: Incorporar histórico comparable completo
+        run: |
+          python scripts/embed_dual_history.py
+
+      - name: Activar runtime histórico V2
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('public/index.html')
+          html=p.read_text(encoding='utf-8')
+          tag='<script src="data/dual_history_fix_v2.js?rev=DUALHISTV2"></script>'
+          if tag not in html:
+              html=html.replace('</body>',tag+'\n</body>',1)
+          p.write_text(html,encoding='utf-8')
+          PY
+
+      - name: Validar histórico, botones y tickers
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          d=json.loads(Path('public/data/dual_rolling30_monitor.json').read_text(encoding='utf-8'))
+          q=d['models']['qqq']['history_one_step']
+          n=d['models']['new_tickers']['history_one_step']
+          assert len(q) >= 70, len(q)
+          assert len(n) >= 70, len(n)
+          assert len(q) == len(n), (len(q),len(n))
+          assert q[0]['fecha'] <= '2026-04-20'
+          assert q[-1]['fecha'] >= '2026-08-19'
+          assert len(d['models']['qqq'].get('intraday_assets',[])) == 6
+          assert len(d['models']['new_tickers'].get('intraday_assets',[])) == 6
+          js=Path('public/data/dual_history_fix_v2.js').read_text(encoding='utf-8')
+          for token in ("7/15/30/90/Todo", "dualMarket_", "history_chart_meta"):
+              assert token in js, token
+          html=Path('public/index.html').read_text(encoding='utf-8')
+          assert 'dual_history_fix_v2.js?rev=DUALHISTV2' in html
+          print('VERIFICADO',len(q),len(n),q[0]['fecha'],q[-1]['fecha'],'tickers',6,6)
+          PY
+
+      - name: Guardar histórico e integración en la rama
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/data/dual_rolling30_monitor.json public/index.html
+          if git diff --cached --quiet; then
+            echo "Histórico e index ya estaban actualizados."
+          else
+            git commit -m "Publicar histórico completo en visor dual"
+            git pull --rebase origin migracion-github-actions
+            git push origin HEAD:migracion-github-actions
+          fi
+
+      - name: Configurar GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Subir visor verificado
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: public
+
+      - name: Publicar visor verificado
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+      - name: Registrar verificación final
+        if: success()
+        env:
+          DEPLOY_URL: ${{ steps.deployment.outputs.page_url }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git fetch origin migracion-github-actions
+          git reset --hard origin/migracion-github-actions
+          python - <<'PY'
+          import json, os
+          from datetime import datetime, timezone
+          from pathlib import Path
+          d=json.loads(Path('public/data/dual_rolling30_monitor.json').read_text(encoding='utf-8'))
+          q=d['models']['qqq']['history_one_step']; n=d['models']['new_tickers']['history_one_step']
+          out={
+            'verified_at_utc':datetime.now(timezone.utc).isoformat(),
+            'page_url':os.environ.get('DEPLOY_URL'),
+            'history_qqq':len(q),
+            'history_new_tickers':len(n),
+            'history_start':q[0]['fecha'],
+            'history_end':q[-1]['fecha'],
+            'intraday_qqq':len(d['models']['qqq'].get('intraday_assets',[])),
+            'intraday_new_tickers':len(d['models']['new_tickers'].get('intraday_assets',[])),
+            'runtime':'DUALHISTV2'
+          }
+          Path('public/data/dual_history_deploy_verified.json').write_text(json.dumps(out,ensure_ascii=False,indent=2),encoding='utf-8')
+          print(json.dumps(out,ensure_ascii=False))
+          PY
+          git add public/data/dual_history_deploy_verified.json
+          git commit -m "Registrar verificación visor dual histórico" || true
+          git pull --rebase origin migracion-github-actions || true
+          git push origin HEAD:migracion-github-actions || true
