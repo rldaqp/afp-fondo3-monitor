@@ -99,14 +99,15 @@ script = r'''
 html = html.replace("</body>", script + "</body>", 1)
 
 # 3) Runtimes permanentes. Los runtimes anteriores se conservan para compatibilidad
-# de operaciones/datos, pero el runtime dual se carga al final y deja visibles solo
-# los dos modelos Rolling 30 aprobados para seguimiento.
+# de operaciones/datos, pero los runtimes duales se cargan al final y dejan visibles
+# solo los dos modelos Rolling 30; DUALSHADOW conserva las predicciones históricas sin ajuste retroactivo.
 for pattern in (
     r'\n?<script src="data/alt_runtime_v4\.js\?rev=[^"]+"></script>',
     r'\n?<script src="data/alt_runtime_v5\.js\?rev=[^"]+"></script>',
     r'\n?<script src="data/spblscup_stale_fix\.js\?rev=[^"]+"></script>',
     r'\n?<script src="data/visor_hotfix_v1\.js\?rev=[^"]+"></script>',
     r'\n?<script src="data/dual_rolling30_runtime_v1\.js\?rev=[^"]+"></script>',
+    r'\n?<script src="data/dual_rolling30_shadow_runtime_v1\.js\?rev=[^"]+"></script>',
 ):
     html = re.sub(pattern, '', html)
 
@@ -115,6 +116,7 @@ runtime_tags = [
     '<script src="data/spblscup_stale_fix.js?rev=SPBLCLOSEV1"></script>',
     '<script src="data/visor_hotfix_v1.js?rev=VISORHOTFIX1"></script>',
     '<script src="data/dual_rolling30_runtime_v1.js?rev=DUALROLL30V1"></script>',
+    '<script src="data/dual_rolling30_shadow_runtime_v1.js?rev=DUALSHADOWV1"></script>',
 ]
 html = html.replace("</body>", "\n".join(runtime_tags) + "\n</body>", 1)
 
@@ -127,12 +129,13 @@ for required in (
     "spblscup_stale_fix.js?rev=SPBLCLOSEV1",
     "visor_hotfix_v1.js?rev=VISORHOTFIX1",
     "dual_rolling30_runtime_v1.js?rev=DUALROLL30V1",
+    "dual_rolling30_shadow_runtime_v1.js?rev=DUALSHADOWV1",
 ):
     if required not in html:
         raise RuntimeError(f"No quedo fijado el runtime requerido: {required}")
 
 HTML_PATH.write_text(html, encoding="utf-8")
-print("Runtime dual Rolling30 fijado al final del visor.")
+print("Runtime dual Rolling30 + sombra inmutable fijados al final del visor.")
 
 # Genera también la auditoría comparativa exacta de los últimos 20 VC SBS.
 subprocess.run([sys.executable, str(ROOT / "scripts" / "recheck_6030_exact20.py")], check=True)
