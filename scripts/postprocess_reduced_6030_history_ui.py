@@ -97,21 +97,31 @@ script = r'''
 '''
 html = html.replace("</body>", script + "</body>", 1)
 
-# 3) Runtime permanente del 60/30 con nuevos tickers. El runtime añade la
-# tarjeta de VC experimental, el histórico y el seguimiento con hora de corte.
-RUNTIME_TAG = '<script src="data/alt_runtime_v4.js?rev=ALT6030V4-PERSIST"></script>'
+# 3) Runtime permanente del nuevo 60/30 y hotfix operativo del visor.
+# Se eliminan runtimes antiguos para evitar que una publicación pesada vuelva
+# a dejar activo ALT6030V4 o quite los controles de operaciones.
 html = re.sub(r'\n?<script src="data/alt_runtime_v4\.js\?rev=[^"]+"></script>', '', html)
-html = html.replace("</body>", RUNTIME_TAG + "\n</body>", 1)
+html = re.sub(r'\n?<script src="data/alt_runtime_v5\.js\?rev=[^"]+"></script>', '', html)
+html = re.sub(r'\n?<script src="data/spblscup_stale_fix\.js\?rev=[^"]+"></script>', '', html)
+html = re.sub(r'\n?<script src="data/visor_hotfix_v1\.js\?rev=[^"]+"></script>', '', html)
+
+runtime_tags = [
+    '<script src="data/alt_runtime_v5.js?rev=ALT6030V5"></script>',
+    '<script src="data/spblscup_stale_fix.js?rev=SPBLCLOSEV1"></script>',
+    '<script src="data/visor_hotfix_v1.js?rev=VISORHOTFIX1"></script>',
+]
+html = html.replace("</body>", "\n".join(runtime_tags) + "\n</body>", 1)
 
 if "r6030HistoryDate" not in html:
     raise RuntimeError("No quedo insertado selector historico 60/30")
 if "$('huberValue').textContent" in html or "$('huberSub').textContent" in html:
     raise RuntimeError("Persistieron referencias DOM Huber que pueden romper el visor")
-if "alt_runtime_v4.js?rev=ALT6030V4-PERSIST" not in html:
-    raise RuntimeError("No quedo fijado el runtime del 60/30 con nuevos tickers")
+for required in ("alt_runtime_v5.js?rev=ALT6030V5", "spblscup_stale_fix.js?rev=SPBLCLOSEV1", "visor_hotfix_v1.js?rev=VISORHOTFIX1"):
+    if required not in html:
+        raise RuntimeError(f"No quedo fijado el runtime requerido: {required}")
 
 HTML_PATH.write_text(html, encoding="utf-8")
-print("Selector historico 60/30 y runtime de nuevos tickers insertados.")
+print("Selector historico 60/30, runtime V5 y hotfix de operaciones insertados.")
 
 # Genera también la auditoría comparativa exacta de los últimos 20 VC SBS.
 subprocess.run([sys.executable, str(ROOT / "scripts" / "recheck_6030_exact20.py")], check=True)
