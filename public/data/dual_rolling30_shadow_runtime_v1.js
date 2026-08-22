@@ -7,6 +7,7 @@
   const classify=x=>Number(x)>0.001?'SUBE':Number(x)<-0.001?'BAJA':'NEUTRO';
   let payload=null;
   let blindHistory={qqq:[],new_tickers:[]};
+  let uiReady=false;
   const ranges={qqqVc:30,qqqRet:30,new_tickersVc:30,new_tickersRet:30};
   const MODEL_LABEL={qqq:'Modelo A · Rolling 30 + QQQ',new_tickers:'Modelo B · Rolling 30 + nuevos tickers'};
 
@@ -52,11 +53,13 @@
   }
 
   async function loadBlindHistory(){
+    if(blindHistory.qqq.length&&blindHistory.new_tickers.length)return;
     try{
       const r=await fetch(RAW_BLIND+'?ts='+Date.now(),{cache:'no-store'});
       if(!r.ok)throw new Error('HTTP '+r.status);
-      blindHistory=parseBlindCsv(await r.text());
-    }catch(e){blindHistory={qqq:[],new_tickers:[]};}
+      const parsed=parseBlindCsv(await r.text());
+      if(parsed.qqq.length&&parsed.new_tickers.length)blindHistory=parsed;
+    }catch(e){}
   }
 
   function rowsFor(key,m){
@@ -175,15 +178,17 @@
   function renderMarket(key){
     const m=payload?.models?.[key],grid=$('dualMarket_'+key);if(!m||!grid)return;
     const rows=Array.isArray(m.intraday_assets)?m.intraday_assets:[];
-    grid.innerHTML=rows.length?rows.map(assetHtml).join(''):'<div class="dual-note">Sin cotizaciones intradía disponibles en este corte.</div>';
+    const html=rows.length?rows.map(assetHtml).join(''):'<div class="dual-note">Sin cotizaciones intradía disponibles en este corte.</div>';
+    if(grid.dataset.shadowHtml!==html){grid.innerHTML=html;grid.dataset.shadowHtml=html;}
     const note=$('dualSource_'+key);
-    if(note)note.textContent=`${payload.market_open?'MERCADO ABIERTO':'CIERRE / ÚLTIMO CORTE'} · ${rows.length} factores visibles · ${m.source_note||''}`;
+    const txt=`${payload.market_open?'MERCADO ABIERTO':'CIERRE / ÚLTIMO CORTE'} · ${rows.length} factores visibles · ${m.source_note||''}`;
+    if(note&&note.textContent!==txt)note.textContent=txt;
   }
 
   function arrangeModel(key){
     const model=$('dualModel_'+key);if(!model)return;
     const mb=marketBlock(key),vb=vcBlock(key),rb=retBlock(key),label=MODEL_LABEL[key];
-    if(mb&&vb&&mb!==vb)model.insertBefore(mb,vb);
+    if(mb&&vb&&mb.nextElementSibling!==vb)model.insertBefore(mb,vb);
     if(mb){const t=mb.querySelector('.dual-chart-title');if(t)t.textContent=label+' · factores intradía / último corte';}
     if(vb){const t=vb.querySelector('.dual-chart-title');if(t)t.textContent=label+' · histórico VC estimado vs VC real SBS · backtest ciego 3 VC + seguimiento';}
     if(rb){const t=rb.querySelector('.dual-chart-title');if(t)t.textContent=label+' · retorno estimado vs real · puntos históricos y seguimiento';}
@@ -235,10 +240,15 @@
       payload=p;bindControls();render();
     }catch(e){ensureLegacyCompat();}
   }
+
   function boot(){
-    ensureLegacyCompat();
-    refresh();setInterval(refresh,30000);
-    new MutationObserver(()=>{ensureLegacyCompat();bindControls();if(payload)setTimeout(render,0)}).observe(document.body,{childList:true,subtree:true});
+    ensureLegacyCompat();refresh();setInterval(refresh,30000);
+    const obs=new MutationObserver(()=>{
+      ensureLegacyCompat();bindControls();
+      if(!uiReady&&$('dualRolling30Root')){uiReady=true;if(payload)setTimeout(render,0);}
+    });
+    obs.observe(document.body,{childList:true,subtree:true});
+    if($('dualRolling30Root'))uiReady=true;
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 })();
