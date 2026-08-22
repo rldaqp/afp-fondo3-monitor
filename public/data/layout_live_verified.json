@@ -1,23 +1,44 @@
 {
-  "checked_at_utc": "2026-08-22T06:42:10.099Z",
-  "url": "https://rldaqp.github.io/afp-fondo3-monitor/?layoutv5=1787380927935",
+  "checked_at_utc": "2026-08-22T06:53:41.601Z",
+  "url": "https://rldaqp.github.io/afp-fondo3-monitor/?v6verify=1787381619436",
   "http": 200,
   "initial": {
     "tickersA": 6,
-    "tickersB": 6
+    "tickersB": 6,
+    "sbs": "70.3276160",
+    "modelA": "71.8606887",
+    "modelB": "71.7110639",
+    "fxNote": "USD/PEN compartido por ambos modelos: 3.3523 · retorno +0.060% · YAHOO PEN=X · PROVISIONAL · USADO POR MODELO"
   },
-  "atA": {
-    "visible": true,
-    "y": 178.6875,
-    "h": 147.34375
+  "fx": {
+    "a": {
+      "price": "3.3523",
+      "ret": "+0.060%",
+      "src": "YAHOO PEN=X · PROVISIONAL · USADO POR MODELO"
+    },
+    "b": {
+      "price": "3.3523",
+      "ret": "+0.060%",
+      "src": "MISMA FUENTE QUE MODELO A · YAHOO PEN=X · PROVISIONAL · USADO POR MODELO"
+    }
   },
-  "atB": {
-    "visible": true,
-    "y": 0,
-    "h": 147.34375
+  "graph": {
+    "qqq": {
+      "points": 56,
+      "pairs": 54,
+      "maxGap": 1.1116442676994893,
+      "badKinds": []
+    },
+    "new_tickers": {
+      "points": 57,
+      "pairs": 55,
+      "maxGap": 1.355230230472543,
+      "badKinds": []
+    }
   },
+  "tickerDockY": 0,
   "aChartH": 300,
   "bChartH": 300,
   "errors": [],
-  "status": "PASS_GLOBAL_TICKERS_V5"
+  "status": "PASS_V6_DAILY_SHARED_FX"
 }
