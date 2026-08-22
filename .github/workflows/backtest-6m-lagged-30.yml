@@ -1,0 +1,38 @@
+name: Backtest 6m lagged 30-day models
+
+on:
+  push:
+    branches: [migracion-github-actions]
+    paths:
+      - 'scripts/backtest_6m_lagged_compare_30.py'
+      - '.github/workflows/backtest-6m-lagged-30.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  backtest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: migracion-github-actions
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install dependencies
+        run: python -m pip install --upgrade pip pandas numpy yfinance
+      - name: Run backtest
+        run: python scripts/backtest_6m_lagged_compare_30.py
+      - name: Commit results
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add analysis/backtest_6m_lagged_compare_30.csv analysis/backtest_6m_lagged_compare_30.json public/data/backtest_6m_lagged_compare_30.json
+          if git diff --cached --quiet; then
+            echo 'No changes to commit'
+          else
+            git commit -m 'Update six-month lagged 30-day backtest'
+            git push origin HEAD:migracion-github-actions
+          fi
