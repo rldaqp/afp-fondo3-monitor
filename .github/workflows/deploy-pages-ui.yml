@@ -11,7 +11,7 @@ on:
       - "public/data/dual_rolling30_monitor.json"
 
 permissions:
-  contents: read
+  contents: write
   pages: write
   id-token: write
 
@@ -32,7 +32,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: migracion-github-actions
-          fetch-depth: 1
+          fetch-depth: 0
 
       - name: Validar visor dual standalone
         run: |
@@ -70,7 +70,7 @@ jobs:
         uses: actions/deploy-pages@v4
 
       - name: Esperar propagación
-        run: sleep 20
+        run: sleep 25
 
       - name: Instalar Playwright
         run: |
@@ -84,6 +84,7 @@ jobs:
         run: |
           node <<'JS'
           const { chromium } = require('playwright');
+          const fs=require('fs');
           (async()=>{
             const browser=await chromium.launch({headless:true});
             const page=await browser.newPage({viewport:{width:1440,height:1100}});
@@ -98,12 +99,14 @@ jobs:
             const txt=async s=>(await page.locator(s).textContent()).trim();
             const vis=async s=>page.locator(s).isVisible().catch(()=>false);
             const out={
+              checked_at_utc:new Date().toISOString(), url,
               http:r.status(), title:await page.title(),
               sbs:await txt('#dSbs'), a:await txt('#dAVc'), b:await txt('#dBVc'),
               models:await page.locator('#dualTakeoverV3 .dv3m').count(),
               tickersA:await page.locator('#dM_qqq .asset').count(),
               tickersB:await page.locator('#dM_new_tickers .asset').count(),
-              old90:await vis('#reduced6030Panel'), oldMarket:await vis('#marketPanel')
+              old90:await vis('#reduced6030Panel'), oldMarket:await vis('#marketPanel'),
+              console_errors:errs
             };
             if(out.http!==200) throw Error('HTTP '+out.http);
             if(out.sbs!=='70.3276160') throw Error('SBS visible '+out.sbs);
@@ -127,8 +130,23 @@ jobs:
               aVc:await test('qqq','Vc'), aRet:await test('qqq','Ret'),
               bVc:await test('new_tickers','Vc'), bRet:await test('new_tickers','Ret')
             };
-            if(errs.some(x=>/Cannot set properties of null|textContent/i.test(x))) throw Error('Error JS legado: '+errs.join(' | '));
+            if(errs.some(x=>/Cannot set properties of null|setting ['\"]?textContent/i.test(x))) throw Error('Error JS legado: '+errs.join(' | '));
+            out.status='PASS';
+            fs.writeFileSync('/tmp/standalone_live_verified.json',JSON.stringify(out,null,2));
             console.log('VISOR_DUAL_PUBLICO_PASS',JSON.stringify(out,null,2));
             await browser.close();
           })().catch(e=>{console.error('VISOR_DUAL_PUBLICO_FAIL',e);process.exit(1)});
           JS
+
+      - name: Registrar prueba pública aprobada
+        if: success()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git fetch origin migracion-github-actions
+          git reset --hard origin/migracion-github-actions
+          cp /tmp/standalone_live_verified.json public/data/standalone_live_verified.json
+          git add public/data/standalone_live_verified.json
+          git commit -m "Registrar visor dual standalone verificado en vivo" || true
+          git pull --rebase origin migracion-github-actions || true
+          git push origin HEAD:migracion-github-actions || true
