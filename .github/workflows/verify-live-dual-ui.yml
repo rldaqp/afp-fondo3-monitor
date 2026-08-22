@@ -45,7 +45,7 @@ jobs:
             page.on('console',msg=>{ if(msg.type()==='error') errors.push(msg.text()); });
             page.on('pageerror',err=>errors.push(String(err)));
             const url='https://rldaqp.github.io/afp-fondo3-monitor/?verify='+Date.now();
-            await page.goto(url,{waitUntil:'networkidle',timeout:90000});
+            await page.goto(url,{waitUntil:'domcontentloaded',timeout:45000});
             await page.waitForSelector('#dualTakeoverV3',{state:'visible',timeout:45000});
             await page.waitForFunction(()=>document.querySelector('#dSbs')?.textContent?.trim()!=='—',{timeout:30000});
 
