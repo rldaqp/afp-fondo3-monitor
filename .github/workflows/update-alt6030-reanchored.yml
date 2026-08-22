@@ -9,6 +9,8 @@ on:
       - ".github/workflows/update-alt6030-reanchored.yml"
       - "scripts/patch_spblscup_google_selenium.py"
       - "scripts/build_alt_6030_reanchored.py"
+      - "data/rolling90/sbs_reference_corrections.csv"
+      - "data/rolling90/sbs_profuturo_f3.csv"
       - "requirements-live.txt"
   schedule:
     # Dos minutos después de la malla principal de mercado para leer su snapshot más reciente.
@@ -57,6 +59,10 @@ jobs:
           git fetch origin migracion-github-actions
           git reset --hard origin/migracion-github-actions
 
+          # Si SBS está rezagado por Incapsula, aplicar primero las referencias
+          # oficiales verificadas. Así el nuevo 60/30 se reancla con el VC real
+          # más reciente y no mantiene una cadena estimada innecesaria.
+          python scripts/apply_sbs_reference_corrections.py
           python scripts/patch_spblscup_google_selenium.py
           python scripts/build_alt_6030_reanchored.py
 
@@ -85,7 +91,7 @@ jobs:
           print("FX:", alt.get("fx_operational"))
           PY
 
-          git add public/data/live_market.json public/data/alt_6030_experimental.json data/rolling90/alt_6030_shadow.csv
+          git add data/rolling90/sbs_profuturo_f3.csv public/data/live_market.json public/data/alt_6030_experimental.json data/rolling90/alt_6030_shadow.csv
           if git diff --cached --quiet; then
             echo "Nuevo 60/30 sin cambios."
           else
