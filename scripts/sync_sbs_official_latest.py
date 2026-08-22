@@ -20,6 +20,12 @@ HEADERS = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/151 Safari/537.36"
 }
 
+# El 20/08 fue facilitado por el usuario solo para comparar el modelo. No puede
+# considerarse SBS oficial hasta que aparezca en la fuente SBS consultada por el
+# propio monitor. En cuanto la SBS lo publique, esta misma sincronización lo
+# reincorpora automáticamente con el valor obtenido de la web oficial.
+COMPARISON_ONLY_DATES = {pd.Timestamp("2026-08-20")}
+
 
 def norm(value: object) -> str:
     text = unicodedata.normalize("NFKD", str(value))
@@ -36,7 +42,6 @@ def parse_sbs_html(html: str) -> pd.DataFrame:
     soup = BeautifulSoup(html, "lxml")
     rows: list[dict[str, object]] = []
 
-    # Estructura normal: cada bloque diario contiene una fecha y una tabla con PROFUTURO.
     for table in soup.find_all("table"):
         text = " ".join(table.stripped_strings)
         dates = list(dict.fromkeys(re.findall(r"\d{2}/\d{2}/\d{4}", text)))
@@ -54,7 +59,6 @@ def parse_sbs_html(html: str) -> pd.DataFrame:
                     rows.append({"fecha": fecha, "valor_cuota": vc})
                 break
 
-    # Respaldo para cambios menores de maquetación: fecha del bloque + fila PROFUTURO en texto.
     if not rows:
         text = soup.get_text("\n", strip=True)
         marks = list(re.finditer(r"Informaci[oó]n\s+al\s+(\d{2}/\d{2}/\d{4})", text, flags=re.I))
@@ -147,6 +151,14 @@ def main() -> None:
 
     remote = parse_sbs_html(html)
     saved = load_saved()
+    remote_dates = set(pd.to_datetime(remote["fecha"]))
+
+    # Elimina cualquier fecha que haya sido usada solo como dato de comparación
+    # si todavía no está confirmada por la SBS en esta ejecución.
+    for date_value in COMPARISON_ONLY_DATES:
+        if date_value not in remote_dates:
+            saved = saved.loc[saved["fecha"] != date_value].copy()
+
     latest_remote = remote.iloc[-1]
     remote_date = pd.Timestamp(latest_remote["fecha"])
     remote_vc = float(latest_remote["valor_cuota"])
@@ -167,6 +179,7 @@ def main() -> None:
         "latest_remote_vc_profuturo_f3": remote_vc,
         "previous_saved_date": None if pd.isna(saved_date) else saved_date.strftime("%Y-%m-%d"),
         "updated": bool(pd.isna(saved_date) or remote_date > saved_date),
+        "comparison_only_dates": [d.strftime("%Y-%m-%d") for d in sorted(COMPARISON_ONLY_DATES)],
         "url": SBS_URL,
     }
     STATUS_PATH.parent.mkdir(parents=True, exist_ok=True)
