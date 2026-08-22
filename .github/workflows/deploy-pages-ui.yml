@@ -34,14 +34,16 @@ jobs:
           ref: migracion-github-actions
           fetch-depth: 0
 
-      - name: Validar visor dual standalone
+      - name: Validar visor dual standalone V4
         run: |
           set -e
           test -s public/index.html
           test -s public/data/dual_rolling30_monitor.json
-          grep -q 'id="dualTakeoverV3"' public/index.html
+          grep -q 'id="dualTakeoverV4"' public/index.html
           grep -q 'Modelo A · Rolling 30 + QQQ' public/index.html
           grep -q 'Modelo B · Rolling 30 + nuevos tickers' public/index.html
+          grep -q 'tickerbar_qqq' public/index.html
+          grep -q 'tickerbar_new_tickers' public/index.html
           ! grep -q 'OLS OFICIAL · ROLLING 90' public/index.html
           ! grep -q '60/30 SIN NEM-FCX' public/index.html
           python - <<'PY'
@@ -54,7 +56,10 @@ jobs:
               assert len(m.get('history_one_step',[])) >= 70, (k,len(m.get('history_one_step',[])))
               assert len(m.get('intraday_assets',[])) == 6, (k,len(m.get('intraday_assets',[])))
               assert m['current']['vc_estimated'] > 0
-          print('Datos duales OK')
+              for r in m.get('forward_chain',[]):
+                  if r['fecha'] > d['latest_sbs']['fecha']:
+                      assert r.get('actual_vc') is None, (k,r)
+          print('Datos duales y pendientes SBS OK')
           PY
 
       - name: Configurar GitHub Pages
@@ -94,17 +99,20 @@ jobs:
             const root=(process.env.PAGE_URL||'https://rldaqp.github.io/afp-fondo3-monitor/').replace(/\/?$/,'/');
             const url=root+'?liveverify='+Date.now();
             const r=await page.goto(url,{waitUntil:'domcontentloaded',timeout:60000});
-            await page.waitForSelector('#dualTakeoverV3',{state:'visible',timeout:30000});
+            await page.waitForSelector('#dualTakeoverV4',{state:'visible',timeout:30000});
             await page.waitForFunction(()=>document.querySelector('#dSbs')?.textContent?.trim() && document.querySelector('#dSbs')?.textContent?.trim()!=='—',{timeout:30000});
+            await page.waitForFunction(()=>document.querySelectorAll('#tickerbar_qqq .tickerchip').length===6 && document.querySelectorAll('#tickerbar_new_tickers .tickerchip').length===6,{timeout:30000});
             const txt=async s=>(await page.locator(s).textContent()).trim();
             const vis=async s=>page.locator(s).isVisible().catch(()=>false);
             const out={
               checked_at_utc:new Date().toISOString(), url,
               http:r.status(), title:await page.title(),
               sbs:await txt('#dSbs'), a:await txt('#dAVc'), b:await txt('#dBVc'),
-              models:await page.locator('#dualTakeoverV3 .dv3m').count(),
+              models:await page.locator('#dualTakeoverV4 .dv4m').count(),
               tickersA:await page.locator('#dM_qqq .asset').count(),
               tickersB:await page.locator('#dM_new_tickers .asset').count(),
+              stickyTickersA:await page.locator('#tickerbar_qqq .tickerchip').count(),
+              stickyTickersB:await page.locator('#tickerbar_new_tickers .tickerchip').count(),
               old90:await vis('#reduced6030Panel'), oldMarket:await vis('#marketPanel'),
               console_errors:errs
             };
@@ -113,8 +121,9 @@ jobs:
             if(out.a!=='71.8606887') throw Error('Modelo A '+out.a);
             if(out.b!=='71.7192086') throw Error('Modelo B '+out.b);
             if(out.models!==2) throw Error('Modelos visibles '+out.models);
-            if(out.tickersA!==6 || out.tickersB!==6) throw Error('Tickers '+out.tickersA+'/'+out.tickersB);
+            if(out.tickersA!==6 || out.tickersB!==6 || out.stickyTickersA!==6 || out.stickyTickersB!==6) throw Error('Tickers '+out.tickersA+'/'+out.tickersB+' sticky '+out.stickyTickersA+'/'+out.stickyTickersB);
             if(out.old90 || out.oldMarket) throw Error('Quedó UI antigua visible');
+
             async function test(k,t){
               const exp={7:6,15:11,30:18,90:56,all:80}, got={};
               for(const d of ['7','15','30','90','all']){
@@ -130,12 +139,39 @@ jobs:
               aVc:await test('qqq','Vc'), aRet:await test('qqq','Ret'),
               bVc:await test('new_tickers','Vc'), bRet:await test('new_tickers','Ret')
             };
-            if(errs.some(x=>/Cannot set properties of null|setting ['\"]?textContent/i.test(x))) throw Error('Error JS legado: '+errs.join(' | '));
-            out.status='PASS';
+
+            // Volver a 30 días y comprobar que SBS pendiente NO se convierta en cero ni -100%.
+            for(const k of ['qqq','new_tickers']) for(const t of ['Vc','Ret']){
+              await page.locator(`.controls[data-k="${k}"][data-t="${t}"] button[data-d="30"]`).click();
+              await page.waitForTimeout(150);
+            }
+            out.pending_check=await page.evaluate(()=>{
+              const latest='2026-08-19';
+              const result={};
+              for(const k of ['qqq','new_tickers']){
+                const vcg=document.getElementById('dVc_'+k),rtg=document.getElementById('dRet_'+k);
+                const vct=vcg.data.find(t=>t.name==='VC real SBS');
+                const rtt=rtg.data.find(t=>t.name==='Retorno real SBS');
+                const pendingVc=vct.x.map((x,i)=>({x:String(x).slice(0,10),y:vct.y[i]})).filter(p=>p.x>latest);
+                const pendingRet=rtt.x.map((x,i)=>({x:String(x).slice(0,10),y:rtt.y[i]})).filter(p=>p.x>latest);
+                const badRealShapes=(rtg.layout.shapes||[]).filter(s=>String(s.line?.color).toLowerCase()==='#7c2d12' && String(s.x0).slice(0,10)>latest);
+                result[k]={pendingVc,pendingRet,badRealShapes:badRealShapes.length};
+              }
+              return result;
+            });
+            for(const [k,p] of Object.entries(out.pending_check)){
+              if(!p.pendingVc.length || !p.pendingRet.length) throw Error(k+' no contiene días pendientes para validar');
+              if(p.pendingVc.some(x=>x.y!==null && x.y!==undefined)) throw Error(k+' VC SBS pendiente dibujado como dato real: '+JSON.stringify(p.pendingVc));
+              if(p.pendingRet.some(x=>x.y!==null && x.y!==undefined)) throw Error(k+' retorno SBS pendiente dibujado como dato real: '+JSON.stringify(p.pendingRet));
+              if(p.badRealShapes!==0) throw Error(k+' tallos SBS ficticios después del último VC: '+p.badRealShapes);
+            }
+            if(errs.some(x=>/Cannot set properties of null|setting ['\"]?textContent/i.test(x))) throw Error('Error JS: '+errs.join(' | '));
+            out.status='PASS_V4_NULLS_TICKERS';
             fs.writeFileSync('/tmp/standalone_live_verified.json',JSON.stringify(out,null,2));
-            console.log('VISOR_DUAL_PUBLICO_PASS',JSON.stringify(out,null,2));
+            await page.screenshot({path:'/tmp/standalone_live_verified.png',fullPage:true});
+            console.log('VISOR_DUAL_PUBLICO_V4_PASS',JSON.stringify(out,null,2));
             await browser.close();
-          })().catch(e=>{console.error('VISOR_DUAL_PUBLICO_FAIL',e);process.exit(1)});
+          })().catch(e=>{console.error('VISOR_DUAL_PUBLICO_V4_FAIL',e);process.exit(1)});
           JS
 
       - name: Registrar prueba pública aprobada
@@ -146,7 +182,8 @@ jobs:
           git fetch origin migracion-github-actions
           git reset --hard origin/migracion-github-actions
           cp /tmp/standalone_live_verified.json public/data/standalone_live_verified.json
-          git add public/data/standalone_live_verified.json
-          git commit -m "Registrar visor dual standalone verificado en vivo" || true
+          cp /tmp/standalone_live_verified.png public/data/standalone_live_verified.png
+          git add public/data/standalone_live_verified.json public/data/standalone_live_verified.png
+          git commit -m "Registrar visor dual V4 verificado en vivo" || true
           git pull --rebase origin migracion-github-actions || true
           git push origin HEAD:migracion-github-actions || true
