@@ -12,6 +12,8 @@ on:
       - "public/data/spblscup_stale_fix.js"
       - "public/data/visor_hotfix_v1.js"
       - "public/data/audit_runtime_v1.js"
+      - "public/data/dual_rolling30_runtime_v1.js"
+      - "public/data/dual_rolling30_monitor.json"
       - "public/data/live_market.json"
       - "public/data/alt_6030_experimental.json"
       - "public/data/reduced_6030_challenger.json"
@@ -48,6 +50,7 @@ jobs:
               '<script src="data/spblscup_stale_fix.js?rev=SPBLCLOSEV1"></script>',
               '<script src="data/visor_hotfix_v1.js?rev=VISORHOTFIX1"></script>',
               '<script src="data/audit_runtime_v1.js?rev=AUDITV1"></script>',
+              '<script src="data/dual_rolling30_runtime_v1.js?rev=DUALROLL30V1"></script>',
           ]
           for tag in tags:
               if tag not in html:
@@ -62,20 +65,19 @@ jobs:
           test -s public/data/spblscup_stale_fix.js
           test -s public/data/visor_hotfix_v1.js
           test -s public/data/audit_runtime_v1.js
+          test -s public/data/dual_rolling30_runtime_v1.js
+          test -s public/data/dual_rolling30_monitor.json
           test -s public/data/live_market.json
           test -s public/data/alt_6030_experimental.json
           test -s public/data/reduced_6030_challenger.json
           test -s public/data/latest.json
-          grep -q "alt_runtime_v5.js" public/index.html
-          grep -q "spblscup_stale_fix.js" public/index.html
-          grep -q "visor_hotfix_v1.js" public/index.html
-          grep -q "audit_runtime_v1.js" public/index.html
-          grep -q '"experimental_assets"' public/data/live_market.json
-          grep -q '"vc_estimated"' public/data/alt_6030_experimental.json
+          grep -q "dual_rolling30_runtime_v1.js" public/index.html
+          grep -q '"models"' public/data/dual_rolling30_monitor.json
+          grep -q '"qqq"' public/data/dual_rolling30_monitor.json
+          grep -q '"new_tickers"' public/data/dual_rolling30_monitor.json
+          grep -q "Dos modelos en seguimiento" public/data/dual_rolling30_runtime_v1.js
           grep -q "Registrar operación" public/data/alt_runtime_v5.js
-          grep -q "REANCLADO" public/data/alt_runtime_v5.js
           grep -q "saveCurrentHotfix" public/data/visor_hotfix_v1.js
-          grep -q "updateTopSbs" public/data/visor_hotfix_v1.js
           grep -q "updateAudit" public/data/audit_runtime_v1.js
 
       - name: Configurar GitHub Pages
@@ -105,12 +107,12 @@ jobs:
           from pathlib import Path
           p=Path('public/data/pages_deploy_verified.json')
           p.write_text(json.dumps({
-            'runtime':'ALT6030V5+SPBLCLOSEV1+VISORHOTFIX1+AUDITV1',
+            'runtime':'DUALROLL30V1+ALT6030V5+VISORHOTFIX1+AUDITV1',
             'deployed_at_utc':datetime.now(timezone.utc).isoformat(),
             'commit':os.environ.get('GITHUB_SHA'),
             'page_url':os.environ.get('DEPLOY_URL')
           },ensure_ascii=False,indent=2),encoding='utf-8')
           PY
           git add public/data/pages_deploy_verified.json
-          git commit -m "Registrar despliegue Pages con auditoría activa" || true
+          git commit -m "Registrar despliegue Pages dual rolling30" || true
           git push origin HEAD:migracion-github-actions || true
