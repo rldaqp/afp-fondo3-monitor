@@ -141,7 +141,7 @@
       const model=$('dualModel_'+key);
       if(model){
         const titles=model.querySelectorAll('.dual-chart-title'),label=MODEL_LABEL[key];
-        if(titles[0])titles[0].textContent=label+' · VC SBS vs VC estimado (histórico + seguimiento guardado)';
+        if(titles[0])titles[0].textContent=label+' · VC SBS vs VC estimado · seguimiento guardado (sin ajuste retroactivo)';
         if(titles[1])titles[1].textContent=label+' · retorno diario estimado vs real · gráfico de puntos';
         if(titles[2])titles[2].textContent=label+' · visor intradía / último corte';
       }
