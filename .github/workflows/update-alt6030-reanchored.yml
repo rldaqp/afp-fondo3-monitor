@@ -12,19 +12,17 @@ on:
       - "scripts/patch_google_rolling30_assets.py"
       - "scripts/build_alt_6030_reanchored.py"
       - "scripts/build_dual_rolling30_monitor.py"
+      - "scripts/persist_dual_rolling30_shadow.py"
       - "scripts/apply_sbs_reference_corrections.py"
       - "data/rolling90/sbs_reference_corrections.csv"
       - "data/rolling90/sbs_profuturo_f3.csv"
       - "analysis/backtest_blind3_rolling30_resid_newtickers.json"
       - "public/data/audit_runtime_v1.js"
       - "public/data/dual_rolling30_runtime_v1.js"
+      - "public/data/dual_rolling30_shadow_runtime_v1.js"
       - "requirements-live.txt"
   schedule:
-    # Revisa mercado y SBS cada 5 minutos en días hábiles.
-    # 13:00-23:57 UTC = 08:00-18:57 Lima.
     - cron: "2-57/5 13-23 * * 1-5"
-    # Continúa por la noche de Lima para captar publicaciones tardías de SBS.
-    # 00:00-04:57 UTC = 19:00-23:57 Lima del día anterior.
     - cron: "2-57/5 0-4 * * 2-6"
 
 permissions:
@@ -85,6 +83,7 @@ jobs:
           python scripts/update_live_market_hybrid.py
           python scripts/patch_google_rolling30_assets.py || echo "Google exacto parcial: se conserva el respaldo disponible para esta ejecución."
           python scripts/build_dual_rolling30_monitor.py
+          python scripts/persist_dual_rolling30_shadow.py
 
           python - <<'PY'
           import json
@@ -104,21 +103,26 @@ jobs:
           assert dual["signal_date"] == live["signal_date"], (dual["signal_date"], live["signal_date"])
           assert int(dual["models"]["qqq"]["current"]["train_n"]) == 30
           assert int(dual["models"]["new_tickers"]["current"]["train_n"]) == 30
+          assert "inmutable" in dual.get("operational_history_rule", "").lower()
           for key in ("qqq", "new_tickers"):
               cur = dual["models"][key]["current"]
               assert cur["signal"] in {"SUBE", "NEUTRO", "BAJA"}
               assert float(cur["vc_estimated"]) > 0
               assert dual["models"][key].get("history_one_step")
               assert dual["models"][key].get("intraday_assets")
+              assert "history_operational" in dual["models"][key]
+              assert "operational_metrics" in dual["models"][key]
 
           print("SBS remoto:", sbs_status["latest_remote_date"], sbs_status["latest_remote_vc_profuturo_f3"], sbs_status["method"])
           print("Rolling30 QQQ:", dual["models"]["qqq"]["current"])
           print("Rolling30 nuevos tickers:", dual["models"]["new_tickers"]["current"])
-          print("Ganador backtest ciego 3 VC:", dual["comparison"]["winner_blind3_mape"])
+          print("Métrica operacional QQQ:", dual["models"]["qqq"]["operational_metrics"])
+          print("Métrica operacional nuevos:", dual["models"]["new_tickers"]["operational_metrics"])
           PY
 
           git add \
             data/rolling90/sbs_profuturo_f3.csv \
+            data/rolling90/dual_rolling30_shadow.csv \
             public/data/sbs_sync_status.json \
             public/data/live_market.json \
             public/data/alt_6030_experimental.json \
@@ -167,22 +171,20 @@ jobs:
               '<script src="data/visor_hotfix_v1.js?rev=VISORHOTFIX1"></script>',
               '<script src="data/audit_runtime_v1.js?rev=AUDITV1"></script>',
               '<script src="data/dual_rolling30_runtime_v1.js?rev=DUALROLL30V1"></script>',
+              '<script src="data/dual_rolling30_shadow_runtime_v1.js?rev=DUALSHADOWV1"></script>',
           ]
           for tag in tags:
               if tag not in html:
                   html = html.replace('</body>', tag + '\n</body>', 1)
           path.write_text(html, encoding='utf-8')
-          for token in ('alt_runtime_v5.js', 'spblscup_stale_fix.js', 'visor_hotfix_v1.js', 'audit_runtime_v1.js', 'dual_rolling30_runtime_v1.js'):
+          for token in ('alt_runtime_v5.js', 'spblscup_stale_fix.js', 'visor_hotfix_v1.js', 'audit_runtime_v1.js', 'dual_rolling30_runtime_v1.js', 'dual_rolling30_shadow_runtime_v1.js'):
               assert token in html, token
           PY
-          test -s public/data/alt_runtime_v5.js
-          test -s public/data/spblscup_stale_fix.js
-          test -s public/data/visor_hotfix_v1.js
-          test -s public/data/audit_runtime_v1.js
           test -s public/data/dual_rolling30_runtime_v1.js
+          test -s public/data/dual_rolling30_shadow_runtime_v1.js
           test -s public/data/dual_rolling30_monitor.json
           grep -q "Dos modelos en seguimiento" public/data/dual_rolling30_runtime_v1.js
-          grep -q "VC real SBS vs VC estimado" public/data/dual_rolling30_runtime_v1.js
+          grep -q "sin ajuste retroactivo" public/data/dual_rolling30_shadow_runtime_v1.js
           grep -q "Visor intradía" public/data/dual_rolling30_runtime_v1.js
 
       - name: Configurar GitHub Pages
@@ -213,7 +215,7 @@ jobs:
           p = Path('public/data/alt6030_deploy_status.json')
           p.write_text(json.dumps({
               'deployed_at_utc': datetime.now(timezone.utc).isoformat(),
-              'runtime': 'DUALROLL30V1+ALT6030V5+VISORHOTFIX1+AUDITV1',
+              'runtime': 'DUALROLL30V1+DUALSHADOWV1+ALT6030V5+VISORHOTFIX1+AUDITV1',
               'page_url': os.environ.get('DEPLOY_URL'),
           }, ensure_ascii=False, indent=2), encoding='utf-8')
           PY
