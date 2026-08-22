@@ -131,3 +131,5 @@ jobs:
           git commit -m "Registrar verificación visor dual histórico" || true
           git pull --rebase origin migracion-github-actions || true
           git push origin HEAD:migracion-github-actions || true
+
+# Trigger 2026-08-22T00:04-05:00
