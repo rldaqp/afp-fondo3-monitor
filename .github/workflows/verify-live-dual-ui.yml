@@ -1,18 +1,13 @@
 name: Verificar visor dual en vivo
 
 on:
-  push:
-    branches:
-      - migracion-github-actions
-    paths:
-      - ".github/workflows/verify-live-dual-ui.yml"
   pull_request:
     branches:
       - migracion-github-actions
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   verify-live-ui:
@@ -20,127 +15,37 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
-        with:
-          ref: migracion-github-actions
-          fetch-depth: 0
-
-      - name: Esperar despliegue de Pages
-        run: sleep 15
-
       - name: Instalar Playwright
         run: |
           npm init -y >/dev/null 2>&1
           npm install playwright@1.55.0 >/dev/null 2>&1
           npx playwright install --with-deps chromium >/dev/null 2>&1
-
-      - name: Probar y diagnosticar visor real publicado
+      - name: Probar visor público real
         run: |
           node <<'JS'
-          const { chromium } = require('playwright');
-          const fs = require('fs');
+          const {chromium}=require('playwright');
           (async()=>{
-            const browser = await chromium.launch({headless:true});
-            const page = await browser.newPage({viewport:{width:1440,height:1100}});
-            const errors=[];
-            page.on('console',msg=>{ if(msg.type()==='error') errors.push(msg.text()); });
-            page.on('pageerror',err=>errors.push(String(err)));
-            const stamp=Date.now();
-            const url='https://rldaqp.github.io/afp-fondo3-monitor/?verify='+stamp;
-            const resp=await page.goto(url,{waitUntil:'domcontentloaded',timeout:45000});
-            await page.waitForTimeout(4000);
-
-            const diag=await page.evaluate(async(stamp)=>{
-              const scripts=[...document.scripts].map(s=>s.src||'[inline]');
-              const html=document.documentElement.outerHTML;
-              async function probe(url){
-                try{
-                  const r=await fetch(url,{cache:'no-store'});
-                  const t=await r.text();
-                  return {url,status:r.status,length:t.length,hasV3:t.includes('DUAL TAKEOVER V3'),hasTakeover:t.includes('dualTakeoverV3'),head:t.slice(0,180)};
-                }catch(e){return {url,error:String(e)}}
-              }
-              return {
-                location:location.href,
-                title:document.title,
-                scripts,
-                html_has_v3_tag:html.includes('DUALTAKEOVERV3'),
-                html_has_old_tag:html.includes('DUALHISTV2'),
-                has_takeover:!!document.querySelector('#dualTakeoverV3'),
-                body_text:(document.body?.innerText||'').slice(0,2500),
-                js_probe:await probe('data/dual_history_fix_v2.js?diag='+stamp),
-                data_probe:await probe('data/dual_rolling30_monitor.json?diag='+stamp)
-              };
-            },stamp);
-            diag.http_status=resp?resp.status():null;
-            diag.console_errors=errors;
-            console.log('LIVE_DIAG_START');
-            console.log(JSON.stringify(diag,null,2));
-            console.log('LIVE_DIAG_END');
-
-            if(!diag.has_takeover && diag.js_probe?.hasV3){
-              console.log('Intentando cargar manualmente el runtime V3 para aislar el fallo...');
-              await page.addScriptTag({url:'https://rldaqp.github.io/afp-fondo3-monitor/data/dual_history_fix_v2.js?manual='+Date.now()});
-              await page.waitForTimeout(5000);
-              console.log('MANUAL_RUNTIME_TAKEOVER',await page.locator('#dualTakeoverV3').count());
-              console.log('MANUAL_RUNTIME_ERRORS',JSON.stringify(errors));
-            }
-
-            await page.waitForSelector('#dualTakeoverV3',{state:'visible',timeout:12000});
-            await page.waitForFunction(()=>document.querySelector('#dSbs')?.textContent?.trim()!=='—',{timeout:15000});
-
-            const txt = async sel => (await page.locator(sel).textContent()).trim();
-            const visible = async sel => page.locator(sel).isVisible().catch(()=>false);
-            const countCards = async sel => page.locator(sel).count();
-
-            const result={
-              checked_at:new Date().toISOString(),url,title:await page.title(),
-              takeover_visible:await visible('#dualTakeoverV3'),
-              sbs:await txt('#dSbs'),sbs_date:await txt('#dSbsDate'),
-              model_a_vc:await txt('#dAVc'),model_a_signal:await txt('#dASig'),
-              model_b_vc:await txt('#dBVc'),model_b_signal:await txt('#dBSig'),
-              comparison:await txt('#dWin'),comparison_diff:await txt('#dDiff'),
-              model_sections:await countCards('#dualTakeoverV3 .dv3m'),
-              model_a_tickers:await countCards('#dM_qqq .dv3a'),
-              model_b_tickers:await countCards('#dM_new_tickers .dv3a'),
-              old_rolling90_visible:await visible('#reduced6030Panel'),
-              old_market_visible:await visible('#marketPanel'),console_errors:errors
-            };
-            const expected={sbs:'70.3276160',a:'71.8606887',b:'71.7192086'};
-            if(result.sbs!==expected.sbs) throw new Error('SBS visible incorrecto: '+result.sbs);
-            if(result.model_a_vc!==expected.a) throw new Error('VC Modelo A visible incorrecto: '+result.model_a_vc);
-            if(result.model_b_vc!==expected.b) throw new Error('VC Modelo B visible incorrecto: '+result.model_b_vc);
-            if(result.model_sections!==2) throw new Error('No hay exactamente 2 modelos visibles: '+result.model_sections);
-            if(result.model_a_tickers!==6) throw new Error('Modelo A no muestra 6 tickers: '+result.model_a_tickers);
-            if(result.model_b_tickers!==6) throw new Error('Modelo B no muestra 6 tickers: '+result.model_b_tickers);
-            if(result.old_rolling90_visible) throw new Error('Rolling 90 antiguo sigue visible');
-            if(result.old_market_visible) throw new Error('Mercado antiguo sigue visible');
-
-            async function testRanges(model,type){
-              const expected={7:6,15:11,30:18,90:56,all:80},out={};
-              for(const d of ['7','15','30','90','all']){
-                await page.locator(`.dv3c[data-k="${model}"][data-t="${type}"] button[data-d="${d}"]`).click();
-                await page.waitForTimeout(220);
-                const note=await txt(`#d${type}N_${model}`),m=note.match(/^(\d+) puntos/);
-                out[d]=m?Number(m[1]):null;
-                if(out[d]!==expected[d]) throw new Error(`${model} ${type} ${d}: ${out[d]} != ${expected[d]}`);
-              }
-              return out;
-            }
-            result.ranges={a_vc:await testRanges('qqq','Vc'),a_ret:await testRanges('qqq','Ret'),b_vc:await testRanges('new_tickers','Vc'),b_ret:await testRanges('new_tickers','Ret')};
-            await page.screenshot({path:'public/data/live_dual_ui_verified.png',fullPage:true});
-            result.status='PASS';
-            fs.writeFileSync('public/data/live_dual_ui_verification.json',JSON.stringify(result,null,2));
-            console.log('LIVE_PASS',JSON.stringify(result,null,2));
+            const browser=await chromium.launch({headless:true});
+            const page=await browser.newPage({viewport:{width:1440,height:1100}});
+            const errors=[];page.on('pageerror',e=>errors.push(String(e)));page.on('console',m=>{if(m.type()==='error')errors.push(m.text())});
+            const url='https://rldaqp.github.io/afp-fondo3-monitor/?prverify='+Date.now();
+            const r=await page.goto(url,{waitUntil:'domcontentloaded',timeout:60000});
+            await page.waitForSelector('#dualTakeoverV3',{state:'visible',timeout:30000});
+            await page.waitForFunction(()=>document.querySelector('#dSbs')?.textContent?.trim() && document.querySelector('#dSbs')?.textContent?.trim()!=='—',{timeout:30000});
+            const txt=async s=>(await page.locator(s).textContent()).trim();
+            const vis=async s=>page.locator(s).isVisible().catch(()=>false);
+            const out={http:r.status(),title:await page.title(),sbs:await txt('#dSbs'),a:await txt('#dAVc'),b:await txt('#dBVc'),models:await page.locator('#dualTakeoverV3 .dv3m').count(),tickersA:await page.locator('#dM_qqq .asset').count(),tickersB:await page.locator('#dM_new_tickers .asset').count(),old90:await vis('#reduced6030Panel'),oldMarket:await vis('#marketPanel'),errors};
+            if(out.http!==200)throw Error('HTTP '+out.http);
+            if(out.sbs!=='70.3276160')throw Error('SBS '+out.sbs);
+            if(out.a!=='71.8606887')throw Error('Modelo A '+out.a);
+            if(out.b!=='71.7192086')throw Error('Modelo B '+out.b);
+            if(out.models!==2)throw Error('Modelos '+out.models);
+            if(out.tickersA!==6||out.tickersB!==6)throw Error('Tickers '+out.tickersA+'/'+out.tickersB);
+            if(out.old90||out.oldMarket)throw Error('UI antigua visible');
+            async function test(k,t){const exp={7:6,15:11,30:18,90:56,all:80},got={};for(const d of ['7','15','30','90','all']){await page.locator(`.controls[data-k="${k}"][data-t="${t}"] button[data-d="${d}"]`).click();await page.waitForTimeout(180);const note=await txt(`#d${t}N_${k}`),m=note.match(/^(\d+) puntos/);got[d]=m?+m[1]:null;if(got[d]!==exp[d])throw Error(`${k}/${t}/${d}=${got[d]} esperado ${exp[d]}`)}return got}
+            out.ranges={aVc:await test('qqq','Vc'),aRet:await test('qqq','Ret'),bVc:await test('new_tickers','Vc'),bRet:await test('new_tickers','Ret')};
+            if(errors.some(x=>/Cannot set properties of null|setting ['\"]?textContent/i.test(x)))throw Error('Error JS legado '+errors.join(' | '));
+            console.log('VISOR_PUBLICO_PASS',JSON.stringify(out,null,2));
             await browser.close();
-          })().catch(err=>{console.error('LIVE_TEST_FAILURE',err);process.exit(1)});
+          })().catch(e=>{console.error('VISOR_PUBLICO_FAIL',e);process.exit(1)});
           JS
-
-      - name: Guardar evidencia de prueba
-        if: success() && github.event_name == 'push'
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add public/data/live_dual_ui_verification.json public/data/live_dual_ui_verified.png
-          git commit -m "Registrar prueba visual del visor dual en vivo" || true
-          git pull --rebase origin migracion-github-actions || true
-          git push origin HEAD:migracion-github-actions || true
