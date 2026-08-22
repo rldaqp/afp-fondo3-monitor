@@ -1,0 +1,103 @@
+{
+  "generated_at_lima": "2026-08-21T23:10:00-05:00",
+  "fund": "PROFUTURO Fondo 3",
+  "signal_date": "2026-08-21",
+  "market_mode": "CIERRE / ULTIMO CORTE",
+  "market_open": false,
+  "latest_sbs": {"fecha": "2026-08-19", "vc": 70.327616},
+  "rule": "Solo quedan dos modelos visibles. Ambos son OLS rolling 30. En la validacion principal se ocultan exactamente 3 VC SBS: no se usan para ajustar ni reanclar; los VC reales se revelan solo para medir el error. En operacion, si SBS esta atrasada, los dias faltantes se encadenan y el modelo vuelve a anclarse cuando SBS publica un VC real.",
+  "models": {
+    "qqq": {
+      "key": "qqq",
+      "name": "Rolling 30 · QQQ",
+      "short": "QQQ",
+      "features_display": ["SPY", "EEM", "EPU", "MCHI", "USD/PEN", "QQQ"],
+      "features": ["ret_SPY", "ret_EEM", "ret_EPU", "ret_MCHI", "ret_USD_PEN", "ret_QQQ"],
+      "current": {
+        "fecha": "2026-08-21",
+        "base_vc": 70.85344824368957,
+        "vc_estimated": 71.86068865704428,
+        "return_estimated": 0.01421582771653483,
+        "signal": "SUBE",
+        "actual_vc": null,
+        "anchor_date": "2026-08-19",
+        "anchor_vc": 70.327616,
+        "train_start": "2026-07-01",
+        "train_end": "2026-08-19",
+        "train_n": 30,
+        "blind_chain_sessions": 2
+      },
+      "forward_chain": [
+        {"fecha": "2026-08-20", "base_vc": 70.327616, "vc_estimated": 70.85344824368957, "return_estimated": 0.007476895615081851, "signal": "SUBE", "actual_vc": null},
+        {"fecha": "2026-08-21", "base_vc": 70.85344824368957, "vc_estimated": 71.86068865704428, "return_estimated": 0.01421582771653483, "signal": "SUBE", "actual_vc": null}
+      ],
+      "history_one_step": [
+        {"fecha": "2026-08-17", "base_date": "2026-08-12", "base_vc": 70.5338688, "vc_estimated": 71.3807709073689, "actual_vc": 71.5395979, "return_estimated": 0.012006940600612, "actual_return": 0.014258815905532, "signal": "SUBE", "error_pct": -0.222012699670349, "validation": "BLOQUE CIEGO 3 VC"},
+        {"fecha": "2026-08-18", "base_date": "2026-08-13", "base_vc": 70.6649381, "vc_estimated": 69.6311939125049, "actual_vc": 69.6328126, "return_estimated": -0.014629351890023, "actual_return": -0.014606446768506, "signal": "BAJA", "error_pct": -0.002324604499881, "validation": "BLOQUE CIEGO 3 VC"},
+        {"fecha": "2026-08-19", "base_date": "2026-08-14", "base_vc": 70.8740985, "vc_estimated": 70.43498318646822, "actual_vc": 70.327616, "return_estimated": -0.006195709332822, "actual_return": -0.007710609539534, "signal": "BAJA", "error_pct": 0.152667177667754, "validation": "BLOQUE CIEGO 3 VC"}
+      ],
+      "history_metrics": {"n": 78, "mape_pct": 1.0265708179543778, "mae_vc": 0.716539561399728, "rmse_vc": 1.0519146858923554},
+      "intraday_assets": [
+        {"serie": "SPY", "ticker": "SPY", "timestamp": "2026-08-21T15:55:00-04:00", "precio_anterior": 762.5999755859375, "precio_actual": 765.6400146484375, "retorno": 0.00398641379468212, "retorno_modelo": 0.00398641379468212, "estado": "YAHOO · ULTIMO CORTE", "usado_modelo": true},
+        {"serie": "EEM", "ticker": "EEM", "timestamp": "2026-08-21T15:55:00-04:00", "precio_anterior": 66.62000274658203, "precio_actual": 67.11499786376953, "retorno": 0.007430127540979381, "retorno_modelo": 0.007430127540979381, "estado": "YAHOO · ULTIMO CORTE", "usado_modelo": true},
+        {"serie": "EPU", "ticker": "EPU", "timestamp": "2026-08-21T15:55:00-04:00", "precio_anterior": 90.72000122070312, "precio_actual": 93.93000030517578, "retorno": 0.035383587315694465, "retorno_modelo": 0.035383587315694465, "estado": "YAHOO · ULTIMO CORTE", "usado_modelo": true},
+        {"serie": "MCHI", "ticker": "MCHI", "timestamp": "2026-08-21T15:55:00-04:00", "precio_anterior": 55.5099983215332, "precio_actual": 55.64500045776367, "retorno": 0.0024320327925158036, "retorno_modelo": 0.0024320327925158036, "estado": "YAHOO · ULTIMO CORTE", "usado_modelo": true},
+        {"serie": "USD_PEN", "ticker": "PEN=X", "timestamp": "2026-08-21T16:05:00-04:00", "precio_anterior": 3.3503000736236572, "precio_actual": 3.352299928665161, "retorno": 0.0005969181857017336, "retorno_modelo": 0.0005969181857017336, "estado": "YAHOO PEN=X · PROVISIONAL", "usado_modelo": true},
+        {"serie": "QQQ", "ticker": "QQQ", "timestamp": "2026-08-21", "precio_anterior": null, "precio_actual": null, "retorno": 0.0035306004690811533, "retorno_modelo": 0.0035306004690811533, "estado": "YAHOO QQQ · RETORNO USADO", "usado_modelo": true}
+      ],
+      "source_note": "Modelo A: rolling 30 sin NEM ni FCX; mantiene QQQ. El historial y la medicion se actualizan automaticamente contra SBS."
+    },
+    "new_tickers": {
+      "key": "new_tickers",
+      "name": "Rolling 30 · nuevos tickers",
+      "short": "Nuevos tickers",
+      "features_display": [".INX", "CPER", "EEM", "NDX", "SPBLSCUP", "USD/PEN"],
+      "features": ["ret_.INX", "ret_CPER", "ret_EEM_alt", "ret_NDX", "ret_SPBLSCUP", "ret_USD_PEN_alt"],
+      "current": {
+        "fecha": "2026-08-21",
+        "base_vc": 70.80525866139183,
+        "vc_estimated": 71.71920858339585,
+        "return_estimated": 0.012907938467886312,
+        "signal": "SUBE",
+        "actual_vc": null,
+        "anchor_date": "2026-08-19",
+        "anchor_vc": 70.327616,
+        "train_start": "2026-07-02",
+        "train_end": "2026-08-19",
+        "train_n": 30,
+        "blind_chain_sessions": 2
+      },
+      "forward_chain": [
+        {"fecha": "2026-08-20", "base_vc": 70.327616, "vc_estimated": 70.80525866139183, "return_estimated": 0.006791679976637102, "signal": "SUBE", "actual_vc": null},
+        {"fecha": "2026-08-21", "base_vc": 70.80525866139183, "vc_estimated": 71.71920858339585, "return_estimated": 0.012907938467886312, "signal": "SUBE", "actual_vc": null}
+      ],
+      "history_one_step": [
+        {"fecha": "2026-08-17", "base_date": "2026-08-12", "base_vc": 70.5338688, "vc_estimated": 71.67558463649051, "actual_vc": 71.5395979, "return_estimated": 0.016187014756605, "actual_return": 0.014258815905532, "signal": "SUBE", "error_pct": 0.190085967048059, "validation": "BLOQUE CIEGO 3 VC"},
+        {"fecha": "2026-08-18", "base_date": "2026-08-13", "base_vc": 70.6649381, "vc_estimated": 69.80897657495089, "actual_vc": 69.6328126, "return_estimated": -0.012112955155058, "actual_return": -0.014606446768506, "signal": "BAJA", "error_pct": 0.25298988849245, "validation": "BLOQUE CIEGO 3 VC"},
+        {"fecha": "2026-08-19", "base_date": "2026-08-14", "base_vc": 70.8740985, "vc_estimated": 70.32836627312336, "actual_vc": 70.327616, "return_estimated": -0.007700023540711, "actual_return": -0.007710609539534, "signal": "BAJA", "error_pct": 0.001066825759266, "validation": "BLOQUE CIEGO 3 VC"}
+      ],
+      "history_metrics": {"n": 78, "mape_pct": 0.8969174103812058, "mae_vc": 0.6249187372185256, "rmse_vc": 0.7908378669869135},
+      "intraday_assets": [
+        {"serie": ".INX", "ticker": ".INX:INDEXSP", "timestamp": "2026-08-21T15:55:00-04:00", "precio_anterior": null, "precio_actual": 7674.10009765625, "retorno": 0.004310856039224209, "retorno_modelo": 0.004310856039224209, "estado": "YAHOO ^GSPC · RESPALDO EQUIVALENTE", "usado_modelo": true},
+        {"serie": "CPER", "ticker": "CPER:NYSEARCA", "timestamp": "2026-08-21T15:55:00-04:00", "precio_anterior": null, "precio_actual": 39.98500061035156, "retorno": 0.01613728490099131, "retorno_modelo": 0.01613728490099131, "estado": "YAHOO CPER · RESPALDO EQUIVALENTE", "usado_modelo": true},
+        {"serie": "EEM", "ticker": "EEM:NYSEARCA", "timestamp": "2026-08-21T15:55:00-04:00", "precio_anterior": null, "precio_actual": 67.11000061035156, "retorno": 0.007355116234885939, "retorno_modelo": 0.007355116234885939, "estado": "YAHOO EEM · RESPALDO EQUIVALENTE", "usado_modelo": true},
+        {"serie": "NDX", "ticker": "NDX:INDEXNASDAQ", "timestamp": "2026-08-21T15:55:00-04:00", "precio_anterior": null, "precio_actual": 29309.248046875, "retorno": 0.00328919877586209, "retorno_modelo": 0.00328919877586209, "estado": "YAHOO ^NDX · RESPALDO EQUIVALENTE", "usado_modelo": true},
+        {"serie": "SPBLSCUP", "ticker": "SPBLSCUP:INDEXSP", "timestamp": "2026-08-21", "precio_anterior": 446.7, "precio_actual": 460.43, "retorno": 0.030736512200582045, "retorno_modelo": 0.030736512200582045, "estado": "GOOGLE FINANCE · SELENIUM", "usado_modelo": true},
+        {"serie": "USD/PEN", "ticker": "USD/PEN", "timestamp": "2026-08-21", "precio_anterior": 3.355, "precio_actual": 3.349, "retorno": -0.00178837555886735, "retorno_modelo": -0.00178837555886735, "estado": "TUCAMBISTA PROVISIONAL (3.333/3.365)", "usado_modelo": true}
+      ],
+      "source_note": "Modelo B: rolling 30 con .INX, CPER, EEM, NDX, SPBLSCUP y USD/PEN. El historial exacto y la medicion se amplian automaticamente a medida que se incorporan nuevas sesiones."
+    }
+  },
+  "blind3": {
+    "rule": "Ocultar exactamente 3 VC SBS; no recalibrar ni reanclar hasta revelar el error.",
+    "common_period": {"start": "2026-04-20", "end": "2026-08-19"},
+    "qqq_common": {"n": 78, "mape_pct": 1.0265708179543778, "mae_vc": 0.716539561399728, "rmse_vc": 1.0519146858923554, "direction_accuracy_pct": 75.64102564102564},
+    "new_tickers_common": {"n": 78, "mape_pct": 0.8969174103812058, "mae_vc": 0.6249187372185256, "rmse_vc": 0.7908378669869135, "direction_accuracy_pct": 80.76923076923077},
+    "qqq_full_six_month": {"n": 118, "mape_pct": 0.9152275605292246, "mae_vc": 0.6345260899043572, "rmse_vc": 0.9400421838571169, "direction_accuracy_pct": 78.8135593220339}
+  },
+  "comparison": {
+    "winner_blind3_mape": "NUEVOS TICKERS",
+    "vc_difference": -0.14148007364842385,
+    "return_difference": -0.001307889248648518
+  }
+}
