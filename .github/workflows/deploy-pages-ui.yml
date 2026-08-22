@@ -9,6 +9,7 @@ on:
       - ".github/workflows/deploy-pages-ui.yml"
       - "public/index.html"
       - "public/data/dual_rolling30_monitor.json"
+      - "public/data/dual_trade_runtime_v1.js"
 
 permissions:
   contents: write
@@ -34,14 +35,33 @@ jobs:
           ref: migracion-github-actions
           fetch-depth: 0
 
+      - name: Inyectar módulo de operaciones y Drive
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('public/index.html')
+          html=p.read_text(encoding='utf-8')
+          tag='<script src="data/dual_trade_runtime_v1.js?rev=DUALTRADEV1"></script>'
+          if tag not in html:
+              html=html.replace('</body>',tag+'\n</body>',1)
+          p.write_text(html,encoding='utf-8')
+          assert tag in html
+          PY
+
       - name: Validar datos y visor dual
         run: |
           set -e
           test -s public/index.html
           test -s public/data/dual_rolling30_monitor.json
+          test -s public/data/dual_trade_runtime_v1.js
           grep -q 'id="dualTakeoverV4"' public/index.html
           grep -q 'tickerbar_qqq' public/index.html
           grep -q 'tickerbar_new_tickers' public/index.html
+          grep -q 'dual_trade_runtime_v1.js' public/index.html
+          grep -q 'Registrar operación' public/data/dual_trade_runtime_v1.js
+          grep -q 'Conectar Drive' public/data/dual_trade_runtime_v1.js
+          grep -q "profuturo_fondo3_trade_history_v3" public/data/dual_trade_runtime_v1.js
+          grep -q "fondo3_drive_sync_key_v1" public/data/dual_trade_runtime_v1.js
           ! grep -q 'OLS OFICIAL · ROLLING 90' public/index.html
           python - <<'PY'
           import json
@@ -54,7 +74,6 @@ jobs:
               assert len(m.get('history_one_step',[])) >= 30, (k,len(m.get('history_one_step',[])))
               assert len(m.get('intraday_assets',[])) == 6, (k,len(m.get('intraday_assets',[])))
               assert float(m['current']['vc_estimated']) > 0
-              # El histórico visible debe ser one-step diario, no blind3 dibujado como serie diaria.
               assert all(int(r.get('horizon_sessions',1)) == 1 for r in m['history_one_step']), k
           def fx(model, name):
               for a in model.get('intraday_assets',[]):
@@ -68,7 +87,7 @@ jobs:
           assert abs(ar-br) < 1e-12, (ar,br)
           if a.get('precio_actual') is not None and b.get('precio_actual') is not None:
               assert abs(float(a['precio_actual'])-float(b['precio_actual'])) < 1e-9, (a['precio_actual'],b['precio_actual'])
-          print('Visor dual: datos diarios y USD/PEN común OK')
+          print('Visor dual: datos diarios, USD/PEN común y módulo operaciones OK')
           PY
 
       - name: Configurar GitHub Pages
@@ -101,7 +120,7 @@ jobs:
           const fs=require('fs');
           (async()=>{
             const browser=await chromium.launch({headless:true});
-            const page=await browser.newPage({viewport:{width:1440,height:900}});
+            const page=await browser.newPage({viewport:{width:1440,height:1000}});
             const errs=[];
             page.on('pageerror',e=>errs.push(String(e)));
             page.on('console',m=>{if(m.type()==='error')errs.push(m.text())});
@@ -111,6 +130,12 @@ jobs:
             await page.waitForSelector('#dualTakeoverV4',{state:'visible',timeout:30000});
             await page.waitForFunction(()=>document.querySelector('#dSbs')?.textContent?.trim() && document.querySelector('#dSbs')?.textContent?.trim()!=='—',{timeout:30000});
             await page.waitForFunction(()=>document.querySelectorAll('#tickerbar_qqq .tickerchip').length===6 && document.querySelectorAll('#tickerbar_new_tickers .tickerchip').length===6,{timeout:30000});
+            await page.waitForSelector('#dualTradePanel',{state:'visible',timeout:30000});
+            if(await page.locator('[data-trademode]').count()!==3) throw Error('Faltan modos de operación');
+            if(await page.locator('#tradeSave').count()!==1) throw Error('Falta Registrar operación');
+            if(await page.locator('#tradeCloudConnect').count()!==1) throw Error('Falta Conectar Drive');
+            await page.locator('[data-trademode="inside"]').click();
+            if(!await page.locator('#tradeForm').isVisible()) throw Error('Formulario de operación no abre');
             const txt=async s=>(await page.locator(s).textContent()).trim();
             const fx=await page.evaluate(()=>{
               const read=id=>[...document.querySelectorAll('#'+id+' .tickerchip')].find(x=>x.querySelector('.sym')?.textContent?.replace('_','/').includes('USD/PEN'));
@@ -137,7 +162,7 @@ jobs:
             });
             for(const [k,rows] of Object.entries(pending)) if(rows.some(x=>x.y!==null && x.y!==undefined)) throw Error(k+' SBS pendiente dibujado');
             if(errs.length) throw Error('Consola: '+errs.join(' | '));
-            const out={checked_at_utc:new Date().toISOString(),url,http:r.status(),sbs:await txt('#dSbs'),a:await txt('#dAVc'),b:await txt('#dBVc'),fx,counts,pending,status:'PASS_DYNAMIC_DUAL'};
+            const out={checked_at_utc:new Date().toISOString(),url,http:r.status(),sbs:await txt('#dSbs'),a:await txt('#dAVc'),b:await txt('#dBVc'),fx,counts,pending,operation_ui:true,drive_ui:true,status:'PASS_DYNAMIC_DUAL_TRADE'};
             fs.writeFileSync('/tmp/pages_ui_verified.json',JSON.stringify(out,null,2));
             console.log(JSON.stringify(out,null,2));
             await browser.close();
@@ -153,6 +178,6 @@ jobs:
           git reset --hard origin/migracion-github-actions
           cp /tmp/pages_ui_verified.json public/data/pages_ui_verified.json
           git add public/data/pages_ui_verified.json
-          git commit -m "Registrar visor dual verificado dinámicamente" || true
+          git commit -m "Registrar visor dual con operaciones y Drive verificado" || true
           git pull --rebase origin migracion-github-actions || true
           git push origin HEAD:migracion-github-actions || true
