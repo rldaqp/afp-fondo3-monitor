@@ -1,8 +1,8 @@
 {
-  "generated_at_lima": "2026-08-22T01:44:37.641696-05:00",
+  "generated_at_lima": "2026-08-22T01:48:51.365858-05:00",
   "fund": "PROFUTURO Fondo 3",
-  "signal_date": "2026-08-20",
-  "market_mode": "CIERRE DIARIO",
+  "signal_date": "2026-08-21",
+  "market_mode": "INTRADIA PROVISIONAL - ULTIMO CORTE",
   "market_open": false,
   "latest_sbs": {
     "fecha": "2026-08-19",
@@ -31,10 +31,10 @@
         "ret_QQQ"
       ],
       "current": {
-        "fecha": "2026-08-20",
-        "base_vc": 70.327616,
-        "vc_estimated": 70.85344824368957,
-        "return_estimated": 0.007476895615081899,
+        "fecha": "2026-08-21",
+        "base_vc": 70.85344824368957,
+        "vc_estimated": 71.86068865704428,
+        "return_estimated": 0.01421582771653483,
         "signal": "SUBE",
         "actual_vc": null,
         "anchor_date": "2026-08-19",
@@ -51,14 +51,22 @@
           "ret_USD_PEN": 0.05383889009410812,
           "ret_QQQ": 0.5635824489246808
         },
-        "blind_chain_sessions": 1
+        "blind_chain_sessions": 2
       },
       "forward_chain": [
         {
           "fecha": "2026-08-20",
           "base_vc": 70.327616,
           "vc_estimated": 70.85344824368957,
-          "return_estimated": 0.007476895615081899,
+          "return_estimated": 0.007476895615081851,
+          "signal": "SUBE",
+          "actual_vc": null
+        },
+        {
+          "fecha": "2026-08-21",
+          "base_vc": 70.85344824368957,
+          "vc_estimated": 71.86068865704428,
+          "return_estimated": 0.01421582771653483,
           "signal": "SUBE",
           "actual_vc": null
         }
@@ -1895,66 +1903,66 @@
         {
           "serie": "SPY",
           "ticker": "SPY",
-          "timestamp": "2026-08-20",
-          "precio_anterior": 769.0599975585938,
-          "precio_actual": 762.5999755859375,
-          "retorno": -0.008399893367440514,
-          "retorno_modelo": -0.008399893367440514,
-          "estado": "CIERRE DIARIO YAHOO · USADO POR MODELO",
+          "timestamp": "2026-08-21T15:55:00-04:00",
+          "precio_anterior": 762.5999755859375,
+          "precio_actual": 765.6400146484375,
+          "retorno": 0.00398641379468212,
+          "retorno_modelo": 0.00398641379468212,
+          "estado": "INTRADÍA YAHOO · USADO POR MODELO",
           "usado_modelo": true
         },
         {
           "serie": "EEM",
           "ticker": "EEM",
-          "timestamp": "2026-08-20",
-          "precio_anterior": 66.11000061035156,
-          "precio_actual": 66.62000274658203,
-          "retorno": 0.007714447610375874,
-          "retorno_modelo": 0.007714447610375874,
-          "estado": "CIERRE DIARIO YAHOO · USADO POR MODELO",
+          "timestamp": "2026-08-21T15:55:00-04:00",
+          "precio_anterior": 66.62000274658203,
+          "precio_actual": 67.11499786376953,
+          "retorno": 0.007430127540979381,
+          "retorno_modelo": 0.007430127540979381,
+          "estado": "INTRADÍA YAHOO · USADO POR MODELO",
           "usado_modelo": true
         },
         {
           "serie": "EPU",
           "ticker": "EPU",
-          "timestamp": "2026-08-20",
-          "precio_anterior": 89.98999786376953,
-          "precio_actual": 90.72000122070312,
-          "retorno": 0.008112049941802368,
-          "retorno_modelo": 0.008112049941802368,
-          "estado": "CIERRE DIARIO YAHOO · USADO POR MODELO",
+          "timestamp": "2026-08-21T15:55:00-04:00",
+          "precio_anterior": 90.72000122070312,
+          "precio_actual": 93.93000030517578,
+          "retorno": 0.035383587315694465,
+          "retorno_modelo": 0.035383587315694465,
+          "estado": "INTRADÍA YAHOO · USADO POR MODELO",
           "usado_modelo": true
         },
         {
           "serie": "MCHI",
           "ticker": "MCHI",
-          "timestamp": "2026-08-20",
-          "precio_anterior": 55.38999938964844,
-          "precio_actual": 55.5099983215332,
-          "retorno": 0.0021664367793292616,
-          "retorno_modelo": 0.0021664367793292616,
-          "estado": "CIERRE DIARIO YAHOO · USADO POR MODELO",
+          "timestamp": "2026-08-21T15:55:00-04:00",
+          "precio_anterior": 55.5099983215332,
+          "precio_actual": 55.64500045776367,
+          "retorno": 0.0024320327925158036,
+          "retorno_modelo": 0.0024320327925158036,
+          "estado": "INTRADÍA YAHOO · USADO POR MODELO",
           "usado_modelo": true
         },
         {
           "serie": "USD_PEN",
-          "ticker": "BCRP PD04646PD",
-          "timestamp": "2026-08-20",
-          "precio_anterior": 3.355,
-          "precio_actual": 3.352,
-          "retorno": -0.0008941877794337305,
-          "retorno_modelo": -0.0008941877794337305,
-          "estado": "BCRP MISMA FECHA · USADO POR MODELO",
+          "ticker": "PEN=X",
+          "timestamp": "2026-08-21T16:05:00-04:00",
+          "precio_anterior": 3.3503000736236572,
+          "precio_actual": 3.352299928665161,
+          "retorno": 0.0005969181857017336,
+          "retorno_modelo": 0.0005969181857017336,
+          "estado": "YAHOO PEN=X · PROVISIONAL · USADO POR MODELO",
           "usado_modelo": true
         },
         {
           "serie": "QQQ",
           "ticker": "QQQ",
-          "timestamp": "2026-08-20",
-          "precio_anterior": 716.0800170898438,
-          "precio_actual": 710.9299926757812,
-          "retorno": -0.007191967784539344,
-          "retorno_modelo": -0.007191967784539344,
+          "timestamp": "2026-08-21",
+          "precio_anterior": 710.9299926757812,
+          "precio_actual": 713.4400024414062,
+          "retorno": 0.0035306004690811577,
+          "retorno_modelo": 0.0035306004690811577,
           "estado": "YAHOO QQQ · CIERRE",
           "usado_modelo": true
         }
@@ -2031,10 +2039,10 @@
         "ret_USD_PEN_alt"
       ],
       "current": {
-        "fecha": "2026-08-20",
-        "base_vc": 70.327616,
-        "vc_estimated": 70.73328865767861,
-        "return_estimated": 0.005768326594187406,
+        "fecha": "2026-08-21",
+        "base_vc": 70.80525866139183,
+        "vc_estimated": 71.71106394250891,
+        "return_estimated": 0.012792909710970182,
         "signal": "SUBE",
         "actual_vc": null,
         "anchor_date": "2026-08-19",
@@ -2051,14 +2059,22 @@
           "ret_SPBLSCUP": 0.27495397989471393,
           "ret_USD_PEN_alt": -0.0482241473101723
         },
-        "blind_chain_sessions": 1
+        "blind_chain_sessions": 2
       },
       "forward_chain": [
         {
           "fecha": "2026-08-20",
           "base_vc": 70.327616,
-          "vc_estimated": 70.73328865767861,
-          "return_estimated": 0.005768326594187406,
+          "vc_estimated": 70.80525866139183,
+          "return_estimated": 0.006791679976637102,
+          "signal": "SUBE",
+          "actual_vc": null
+        },
+        {
+          "fecha": "2026-08-21",
+          "base_vc": 70.80525866139183,
+          "vc_estimated": 71.71106394250891,
+          "return_estimated": 0.012792909710970182,
           "signal": "SUBE",
           "actual_vc": null
         }
@@ -3172,23 +3188,23 @@
         {
           "serie": "SPBLSCUP",
           "ticker": "SPBLSCUP:INDEXSP",
-          "timestamp": "2026-08-20",
-          "precio_anterior": null,
-          "precio_actual": 446.7,
-          "retorno": 0.004926773300938,
-          "retorno_modelo": 0.004926773300938,
-          "estado": "HISTÓRICO EXACTO · SESIÓN CERRADA",
-          "usado_modelo": false
+          "timestamp": "2026-08-21",
+          "precio_anterior": 446.7,
+          "precio_actual": 460.43,
+          "retorno": 0.030736512200582045,
+          "retorno_modelo": 0.030736512200582045,
+          "estado": "GOOGLE FINANCE · SELENIUM · NUEVO 60/30 EXPERIMENTAL",
+          "usado_modelo": true
         },
         {
           "serie": "USD/PEN",
-          "ticker": "BCRP PD04646PD",
-          "timestamp": "2026-08-20",
-          "precio_anterior": 3.355,
-          "precio_actual": 3.352,
-          "retorno": -0.0008941877794337305,
-          "retorno_modelo": -0.0008941877794337305,
-          "estado": "MISMA FUENTE QUE MODELO A · BCRP MISMA FECHA · USADO POR MODELO",
+          "ticker": "PEN=X",
+          "timestamp": "2026-08-21T16:05:00-04:00",
+          "precio_anterior": 3.3503000736236572,
+          "precio_actual": 3.352299928665161,
+          "retorno": 0.0005969181857017336,
+          "retorno_modelo": 0.0005969181857017336,
+          "estado": "MISMA FUENTE QUE MODELO A · YAHOO PEN=X · PROVISIONAL · USADO POR MODELO",
           "usado_modelo": true
         }
       ],
@@ -3307,30 +3323,30 @@
   },
   "comparison": {
     "winner_blind3_mape": "NUEVOS TICKERS",
-    "vc_difference": -0.12015958601095633,
-    "return_difference": -0.0017085690208944937
+    "vc_difference": -0.14962471453536352,
+    "return_difference": -0.0014229180055646499
   },
   "shared_fx_operational": {
-    "return": -0.0008941877794337305,
-    "value": 3.352,
-    "previous_value": 3.355,
-    "source": "BCRP MISMA FECHA · USADO POR MODELO",
-    "timestamp": "2026-08-20",
-    "provisional": false,
+    "return": 0.0005969181857017336,
+    "value": 3.352299928665161,
+    "previous_value": 3.3503000736236572,
+    "source": "YAHOO PEN=X · PROVISIONAL · USADO POR MODELO",
+    "timestamp": "2026-08-21T16:05:00-04:00",
+    "provisional": true,
     "rule": "Mismo USD/PEN operativo para ambos Rolling 30; no se mezclan Yahoo y Tucambista dentro de la comparación dual."
   },
   "fx_operational_new_tickers": {
-    "return": -0.0008941877794337305,
-    "value": 3.352,
+    "return": 0.0005969181857017336,
+    "value": 3.352299928665161,
     "source": "TUCAMBISTA PROVISIONAL (3.333/3.365)",
-    "source_used_model": "BCRP MISMA FECHA · USADO POR MODELO",
+    "source_used_model": "YAHOO PEN=X · PROVISIONAL · USADO POR MODELO",
     "legacy_validation_source_only": true,
-    "provisional": false
+    "provisional": true
   },
   "operational_history_rule": "Cada prediccion diaria se congela al cierre y queda inmutable. Cuando SBS publica el VC real, solo se completa actual_vc/error; el VC estimado historico no se recalcula ni se reancla retroactivamente.",
   "history_chart_meta": {
     "source": "ROLLING30 ONE-STEP DIARIO",
     "horizon_sessions": 1,
-    "note": "El gráfico diario usa como base el VC SBS real de la sesión inmediatamente anterior. Blind3 queda solo como validación agregada."
+    "note": "Serie diaria: cada estimación histórica parte del VC SBS de la sesión inmediatamente anterior. Blind3 se conserva solo como métrica agregada."
   }
 }
