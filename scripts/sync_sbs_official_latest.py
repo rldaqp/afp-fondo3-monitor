@@ -14,6 +14,8 @@ from bs4 import BeautifulSoup
 ROOT = Path(__file__).resolve().parents[1]
 CSV_PATH = ROOT / "data" / "rolling90" / "sbs_profuturo_f3.csv"
 STATUS_PATH = ROOT / "public" / "data" / "sbs_sync_status.json"
+SERIES_PATH = ROOT / "public" / "data" / "series.json"
+SIGNALS_PATH = ROOT / "public" / "data" / "signals.json"
 SBS_URL = "https://www.sbs.gob.pe/app/spp/variablesSPP_net/PagSS/variables_spp.aspx"
 LIMA = ZoneInfo("America/Lima")
 HEADERS = {
@@ -140,6 +142,66 @@ def save_csv(df: pd.DataFrame) -> None:
     out.to_csv(CSV_PATH, index=False, encoding="utf-8")
 
 
+def sync_public_series(sbs: pd.DataFrame) -> None:
+    """Mantiene el gráfico VC real vs estimado alineado al CSV SBS vigente."""
+    if SERIES_PATH.exists():
+        series = json.loads(SERIES_PATH.read_text(encoding="utf-8"))
+    else:
+        series = []
+
+    if SIGNALS_PATH.exists():
+        signals = json.loads(SIGNALS_PATH.read_text(encoding="utf-8"))
+    else:
+        signals = []
+
+    signal_by_date = {
+        str(row.get("fecha", ""))[:10]: row
+        for row in signals
+        if isinstance(row, dict) and row.get("fecha")
+    }
+    by_date: dict[str, dict[str, object]] = {}
+    for row in series:
+        if isinstance(row, dict) and row.get("fecha"):
+            by_date[str(row["fecha"])[:10]] = dict(row)
+
+    official_dates = {
+        pd.Timestamp(row["fecha"]).strftime("%Y-%m-%d")
+        for _, row in sbs.dropna(subset=["fecha", "valor_cuota"]).iterrows()
+    }
+
+    # Si una fecha quedó antes como SBS por una comparación manual, se retira
+    # mientras no exista en el CSV oficial confirmado por esta sincronización.
+    for date_value in COMPARISON_ONLY_DATES:
+        key = date_value.strftime("%Y-%m-%d")
+        if key not in official_dates and key in by_date and by_date[key].get("fuente") == "SBS OFICIAL":
+            del by_date[key]
+
+    for _, row in sbs.dropna(subset=["fecha", "valor_cuota"]).iterrows():
+        fecha = pd.Timestamp(row["fecha"]).strftime("%Y-%m-%d")
+        value = float(row["valor_cuota"])
+        old = by_date.get(fecha, {})
+        sig = signal_by_date.get(fecha, {})
+        by_date[fecha] = {
+            "fecha": fecha,
+            "vc": value,
+            "fuente": "SBS OFICIAL",
+            "senal": old.get("senal") if old.get("senal") is not None else sig.get("senal"),
+            "ret_estimado": old.get("ret_estimado") if old.get("ret_estimado") is not None else sig.get("ret_estimado"),
+        }
+
+    out = [by_date[key] for key in sorted(by_date)]
+    SERIES_PATH.parent.mkdir(parents=True, exist_ok=True)
+    SERIES_PATH.write_text(json.dumps(out, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
+
+    latest = sbs.sort_values("fecha").iloc[-1]
+    latest_date = pd.Timestamp(latest["fecha"]).strftime("%Y-%m-%d")
+    latest_vc = float(latest["valor_cuota"])
+    published = by_date.get(latest_date)
+    if not published or published.get("fuente") != "SBS OFICIAL" or abs(float(published.get("vc")) - latest_vc) > 1e-10:
+        raise RuntimeError("series.json no quedó sincronizado con el último SBS")
+    print(f"Gráfico SBS sincronizado hasta {latest_date} · VC {latest_vc:.7f}")
+
+
 def main() -> None:
     method = "REQUESTS"
     try:
@@ -153,8 +215,6 @@ def main() -> None:
     saved = load_saved()
     remote_dates = set(pd.to_datetime(remote["fecha"]))
 
-    # Elimina cualquier fecha que haya sido usada solo como dato de comparación
-    # si todavía no está confirmada por la SBS en esta ejecución.
     for date_value in COMPARISON_ONLY_DATES:
         if date_value not in remote_dates:
             saved = saved.loc[saved["fecha"] != date_value].copy()
@@ -164,12 +224,15 @@ def main() -> None:
     remote_vc = float(latest_remote["valor_cuota"])
     saved_date = pd.Timestamp(saved["fecha"].max()) if not saved.empty else pd.NaT
 
-    # Solo incorporamos observaciones que provienen de la SBS consultada en esta ejecución.
     merged = pd.concat([saved, remote], ignore_index=True)
     merged["fecha"] = pd.to_datetime(merged["fecha"], errors="coerce")
     merged["valor_cuota"] = pd.to_numeric(merged["valor_cuota"], errors="coerce")
     merged = merged.dropna().sort_values("fecha").drop_duplicates("fecha", keep="last")
     save_csv(merged)
+
+    # Importante: el gráfico principal usa public/data/series.json, no lee el CSV
+    # SBS directamente. Por eso se actualiza en la misma ejecución.
+    sync_public_series(merged)
 
     status = {
         "checked_at_lima": datetime.now(LIMA).isoformat(),
