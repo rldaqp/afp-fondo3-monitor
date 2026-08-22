@@ -7,13 +7,15 @@ on:
       - migracion-github-actions
     paths:
       - ".github/workflows/update-alt6030-reanchored.yml"
+      - "scripts/sync_sbs_official_latest.py"
       - "scripts/patch_spblscup_google_selenium.py"
       - "scripts/build_alt_6030_reanchored.py"
+      - "scripts/apply_sbs_reference_corrections.py"
       - "data/rolling90/sbs_reference_corrections.csv"
       - "data/rolling90/sbs_profuturo_f3.csv"
       - "requirements-live.txt"
   schedule:
-    # Dos minutos después de la malla principal de mercado para leer su snapshot más reciente.
+    # Revisa mercado y SBS cada 5 minutos en días hábiles.
     - cron: "2-57/5 13-23 * * 1-5"
 
 permissions:
@@ -48,7 +50,7 @@ jobs:
           pip install -r requirements-live.txt
           google-chrome --version || chromium --version || true
 
-      - name: Actualizar SPBLSCUP y nuevo modelo
+      - name: Sincronizar SBS, SPBLSCUP y nuevo modelo
         env:
           PYTHONUTF8: "1"
           PYTHONIOENCODING: "utf-8"
@@ -59,10 +61,15 @@ jobs:
           git fetch origin migracion-github-actions
           git reset --hard origin/migracion-github-actions
 
-          # Si SBS está rezagado por Incapsula, aplicar primero las referencias
-          # oficiales verificadas. Así el nuevo 60/30 se reancla con el VC real
-          # más reciente y no mantiene una cadena estimada innecesaria.
+          # 1) SBS se obtiene del sitio oficial en cada ejecución. Requests es la
+          # primera vía; Selenium se usa automáticamente si Incapsula bloquea HTTP.
+          python scripts/sync_sbs_official_latest.py
+
+          # 2) Las correcciones históricas conservan únicamente referencias ya
+          # verificadas. No se incorporan valores dados por el usuario para comparar.
           python scripts/apply_sbs_reference_corrections.py
+
+          # 3) Mercado y cálculo experimental.
           python scripts/patch_spblscup_google_selenium.py
           python scripts/build_alt_6030_reanchored.py
 
@@ -72,6 +79,7 @@ jobs:
 
           live = json.loads(Path("public/data/live_market.json").read_text(encoding="utf-8"))
           alt = json.loads(Path("public/data/alt_6030_experimental.json").read_text(encoding="utf-8"))
+          sbs_status = json.loads(Path("public/data/sbs_sync_status.json").read_text(encoding="utf-8"))
 
           assert alt["model"]["reanchored_with_latest_sbs"] is True, alt
           assert alt["model"]["blind_chain"] is False, alt
@@ -81,40 +89,48 @@ jobs:
           assert alt["model"]["signal"] in {"SUBE", "NEUTRO", "BAJA"}, alt
           assert float(alt["model"]["vc_estimated"]) > 0, alt
           assert "BCRP PD04638PD" in alt["cycle"]["fx_training_source"], alt
+          assert sbs_status["source"].startswith("SBS OFICIAL"), sbs_status
 
           sp = next((x for x in live.get("experimental_assets", []) if x.get("serie") == "SPBLSCUP"), None)
           assert sp is not None, live
           assert sp.get("retorno") is not None, "SPBLSCUP sigue sin retorno; no se publica 0% artificial"
+          print("SBS remoto:", sbs_status["latest_remote_date"], sbs_status["latest_remote_vc_profuturo_f3"], sbs_status["method"])
           print("Nuevo 60/30:", alt["signal_date"], alt["model"]["vc_estimated"], alt["model"]["return_estimated"])
           print("Ancla SBS:", alt["model"]["sbs_anchor_date"], alt["model"]["sbs_anchor_vc"])
           print("SPBLSCUP:", sp.get("precio_actual"), sp.get("retorno"), sp.get("estado"))
           print("FX:", alt.get("fx_operational"))
           PY
 
-          git add data/rolling90/sbs_profuturo_f3.csv public/data/live_market.json public/data/alt_6030_experimental.json data/rolling90/alt_6030_shadow.csv
+          git add \
+            data/rolling90/sbs_profuturo_f3.csv \
+            public/data/sbs_sync_status.json \
+            public/data/live_market.json \
+            public/data/alt_6030_experimental.json \
+            data/rolling90/alt_6030_shadow.csv
           if git diff --cached --quiet; then
             echo "Nuevo 60/30 sin cambios."
           else
-            git commit -m "Actualizar nuevo 60/30 reanclado"
+            git commit -m "Actualizar SBS y nuevo 60/30 reanclado"
             if ! git push origin HEAD:migracion-github-actions; then
               git pull --rebase origin migracion-github-actions
               git push origin HEAD:migracion-github-actions
             fi
           fi
 
-          # Publicación rápida de los dos snapshots sin esperar un redeploy completo de Pages.
+          # Publicación rápida de snapshots sin esperar un redeploy completo de Pages.
           tmp="$(mktemp -d)"
           git clone --depth 1 --branch gh-pages "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" "$tmp/gh-pages"
           mkdir -p "$tmp/gh-pages/data"
           cp public/data/live_market.json "$tmp/gh-pages/data/live_market.json"
           cp public/data/alt_6030_experimental.json "$tmp/gh-pages/data/alt_6030_experimental.json"
+          cp public/data/sbs_sync_status.json "$tmp/gh-pages/data/sbs_sync_status.json"
           cd "$tmp/gh-pages"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/live_market.json data/alt_6030_experimental.json
+          git add data/live_market.json data/alt_6030_experimental.json data/sbs_sync_status.json
           if git diff --cached --quiet; then
-            echo "gh-pages ya tiene el nuevo 60/30 vigente."
+            echo "gh-pages ya tiene el estado vigente."
           else
-            git commit -m "Publicar nuevo 60/30 reanclado"
+            git commit -m "Publicar SBS y nuevo 60/30 reanclado"
             git push origin HEAD:gh-pages
           fi
