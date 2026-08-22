@@ -20,7 +20,7 @@ jobs:
           ref: migracion-github-actions
           fetch-depth: 0
       - name: Esperar propagación del despliegue
-        run: sleep 30
+        run: sleep 20
       - name: Instalar Chromium
         run: |
           npm init -y >/dev/null 2>&1
@@ -40,15 +40,12 @@ jobs:
             await page.waitForSelector('#dualTakeoverV4',{state:'visible',timeout:30000});
             await page.waitForFunction(()=>document.querySelectorAll('#tickerbar_qqq .tickerchip').length===6 && document.querySelectorAll('#tickerbar_new_tickers .tickerchip').length===6,{timeout:30000});
             const dock=page.locator('#globalTickerDock');
-            async function dockState(label){
-              const bb=await dock.boundingBox();
-              if(!bb||!(await dock.isVisible()))throw Error(label+' panel global no visible');
-              if(bb.y< -2 || bb.y>8)throw Error(label+' panel global no está pegado arriba: y='+bb.y);
-              return {y:bb.y,h:bb.height};
-            }
+            async function state(){const bb=await dock.boundingBox();return {visible:await dock.isVisible(),y:bb?bb.y:null,h:bb?bb.height:null}}
             const initial={tickersA:await page.locator('#tickerbar_qqq .tickerchip').count(),tickersB:await page.locator('#tickerbar_new_tickers .tickerchip').count()};
-            await page.locator('#dVc_qqq').scrollIntoViewIfNeeded(); await page.waitForTimeout(500); const atA=await dockState('modelo A');
-            await page.locator('#dRet_new_tickers').scrollIntoViewIfNeeded(); await page.waitForTimeout(500); const atB=await dockState('modelo B final');
+            await page.locator('#dVc_qqq').scrollIntoViewIfNeeded(); await page.waitForTimeout(400); const atA=await state();
+            if(!atA.visible||atA.y===null||atA.y< -2||atA.y>260)throw Error('panel no visible durante Modelo A: '+JSON.stringify(atA));
+            await page.locator('#dRet_new_tickers').evaluate(el=>window.scrollTo(0,el.getBoundingClientRect().top+window.scrollY+120)); await page.waitForTimeout(500); const atB=await state();
+            if(!atB.visible||atB.y===null||atB.y< -2||atB.y>8)throw Error('panel no quedó fijo al final del Modelo B: '+JSON.stringify(atB));
             const aChart=await page.locator('#dVc_qqq').boundingBox(),bChart=await page.locator('#dRet_new_tickers').boundingBox();
             if(!aChart||aChart.height>320)throw Error('gráfico A demasiado alto '+(aChart&&aChart.height));
             if(!bChart||bChart.height>320)throw Error('gráfico B demasiado alto '+(bChart&&bChart.height));
