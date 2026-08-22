@@ -1,0 +1,147 @@
+{
+  "generated_at_utc": "2026-08-22T03:09:00.640117+00:00",
+  "fund": "PROFUTURO Fondo 3",
+  "model": "OLS rolling 30 · sin NEM ni FCX · mantiene QQQ",
+  "rolling": true,
+  "train_window": 30,
+  "freeze_horizon": null,
+  "features": [
+    "ret_SPY",
+    "ret_EEM",
+    "ret_EPU",
+    "ret_MCHI",
+    "ret_USD_PEN",
+    "ret_QQQ"
+  ],
+  "target": "retorno diario del VC SBS",
+  "latest_training": {
+    "start": "2026-07-01",
+    "end": "2026-08-19",
+    "n": 30,
+    "coefficients": {
+      "intercept": 0.0006106719745437616,
+      "ret_SPY": -0.6486338197115965,
+      "ret_EEM": 0.4374591697345466,
+      "ret_EPU": 0.32390491006343775,
+      "ret_MCHI": -0.22299798609921065,
+      "ret_USD_PEN": 0.05383889009410812,
+      "ret_QQQ": 0.5635824489246808
+    },
+    "metrics_in_sample": {
+      "n": 30,
+      "r2": 0.9598187983856924,
+      "r2_adj": 0.9493367457906556,
+      "mae_return": 0.0021222834360045944,
+      "rmse_return": 0.0031732733931120363
+    }
+  },
+  "current": {
+    "fecha": "2026-08-21",
+    "train_start": "2026-07-01",
+    "train_end": "2026-08-19",
+    "train_n": 30,
+    "base_date": "estimado previo",
+    "base_vc": 70.85344824368957,
+    "return_estimated": 0.01421582771653483,
+    "signal": "SUBE",
+    "vc_estimated": 71.86068865704428,
+    "actual_vc_sbs": null,
+    "error_pct": null,
+    "factor_source": "live_market + QQQ Yahoo cierre",
+    "coefficients": {
+      "intercept": 0.0006106719745437616,
+      "ret_SPY": -0.6486338197115965,
+      "ret_EEM": 0.4374591697345466,
+      "ret_EPU": 0.32390491006343775,
+      "ret_MCHI": -0.22299798609921065,
+      "ret_USD_PEN": 0.05383889009410812,
+      "ret_QQQ": 0.5635824489246808
+    }
+  },
+  "recent": [
+    {
+      "fecha": "2026-08-19",
+      "train_start": "2026-06-30",
+      "train_end": "2026-08-18",
+      "train_n": 30,
+      "base_date": "2026-08-18",
+      "base_vc": 69.6328126,
+      "return_estimated": 0.010727410830542872,
+      "signal": "SUBE",
+      "vc_estimated": 70.3797923880464,
+      "actual_vc_sbs": 70.327616,
+      "error_pct": 0.07419046885706049,
+      "factor_source": "markets.csv + QQQ Yahoo",
+      "coefficients": {
+        "intercept": 0.0004173232053062376,
+        "ret_SPY": -0.5957800436932019,
+        "ret_EEM": 0.4609383710865818,
+        "ret_EPU": 0.3273258729636755,
+        "ret_MCHI": -0.22204313686890714,
+        "ret_USD_PEN": 0.08370367202589078,
+        "ret_QQQ": 0.4991079353015935
+      }
+    },
+    {
+      "fecha": "2026-08-20",
+      "train_start": "2026-07-01",
+      "train_end": "2026-08-19",
+      "train_n": 30,
+      "base_date": "2026-08-19",
+      "base_vc": 70.327616,
+      "return_estimated": 0.007476895615081851,
+      "signal": "SUBE",
+      "vc_estimated": 70.85344824368957,
+      "actual_vc_sbs": null,
+      "error_pct": null,
+      "factor_source": "markets.csv + QQQ Yahoo",
+      "coefficients": {
+        "intercept": 0.0006106719745437616,
+        "ret_SPY": -0.6486338197115965,
+        "ret_EEM": 0.4374591697345466,
+        "ret_EPU": 0.32390491006343775,
+        "ret_MCHI": -0.22299798609921065,
+        "ret_USD_PEN": 0.05383889009410812,
+        "ret_QQQ": 0.5635824489246808
+      }
+    },
+    {
+      "fecha": "2026-08-21",
+      "train_start": "2026-07-01",
+      "train_end": "2026-08-19",
+      "train_n": 30,
+      "base_date": "estimado previo",
+      "base_vc": 70.85344824368957,
+      "return_estimated": 0.01421582771653483,
+      "signal": "SUBE",
+      "vc_estimated": 71.86068865704428,
+      "actual_vc_sbs": null,
+      "error_pct": null,
+      "factor_source": "live_market + QQQ Yahoo cierre",
+      "coefficients": {
+        "intercept": 0.0006106719745437616,
+        "ret_SPY": -0.6486338197115965,
+        "ret_EEM": 0.4374591697345466,
+        "ret_EPU": 0.32390491006343775,
+        "ret_MCHI": -0.22299798609921065,
+        "ret_USD_PEN": 0.05383889009410812,
+        "ret_QQQ": 0.5635824489246808
+      }
+    }
+  ],
+  "comparison_current": {
+    "rolling90_official": {
+      "return_estimated": 0.0193609133030967,
+      "vc_estimated": 72.79700228468487
+    },
+    "challenger_60_30_no_nem_fcx_qqq": {
+      "return_estimated": 0.016834907647223785,
+      "vc_estimated": 71.76365133715457
+    },
+    "rolling30_no_nem_fcx_qqq": {
+      "return_estimated": 0.01421582771653483,
+      "vc_estimated": 71.86068865704428
+    }
+  },
+  "note": "Experimental. Rolling 30 significa recalibrar OLS con las últimas 30 observaciones válidas; no congela beta por 30 sesiones. NEM y FCX están excluidos; QQQ se mantiene."
+}
