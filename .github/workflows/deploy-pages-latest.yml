@@ -10,6 +10,8 @@ on:
       - "public/index.html"
       - "public/data/reduced_6030_challenger.json"
       - "public/data/reduced_6030_history.json"
+      - "public/data/alt_6030_experimental.json"
+      - "public/data/visor_hotfix_v1.js"
       - "scripts/postprocess_reduced_6030_ui.py"
       - "scripts/build_reduced_6030_history.py"
 
@@ -33,17 +35,37 @@ jobs:
           ref: migracion-github-actions
           fetch-depth: 1
 
+      - name: Preparar runtime operativo Profuturo
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('public/index.html')
+          html=p.read_text(encoding='utf-8')
+          tags=[
+            '<script src="data/alt_runtime_v5.js?rev=ALT6030V5"></script>',
+            '<script src="data/spblscup_stale_fix.js?rev=SPBLCLOSEV1"></script>',
+            '<script src="data/visor_hotfix_v1.js?rev=VISORHOTFIX1"></script>',
+          ]
+          for tag in tags:
+              if tag not in html:
+                  html=html.replace('</body>',tag+'\n</body>',1)
+          p.write_text(html,encoding='utf-8')
+          PY
+
       - name: Validar archivos vigentes
         run: |
           test -s public/index.html
           test -s public/data/latest.json
           test -s public/data/reduced_6030_challenger.json
           test -s public/data/reduced_6030_history.json
+          test -s public/data/alt_runtime_v5.js
+          test -s public/data/visor_hotfix_v1.js
           test -s public/habitat/index.html
           test -s public/habitat/data/series.json
           grep -q "60/30 SIN NEM-FCX + QQQ · CHALLENGER" public/index.html
           grep -q "Ver Challenger 60/30 en otra fecha" public/index.html
-          grep -q "TOP_SBS_REPAIR_6030" public/index.html
+          grep -q "visor_hotfix_v1.js" public/index.html
+          grep -q "alt_runtime_v5.js" public/index.html
           grep -q "HABITAT_CHART_OFFICIAL_VS_OLS_V6" public/habitat/index.html
           grep -q "VC SBS real (oficial)" public/habitat/index.html
           grep -q "VC estimado OLS" public/habitat/index.html
