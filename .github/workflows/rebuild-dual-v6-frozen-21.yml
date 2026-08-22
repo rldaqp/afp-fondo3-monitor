@@ -5,6 +5,8 @@ on:
     branches: [migracion-github-actions]
     paths:
       - ".github/workflows/rebuild-dual-v6-frozen-21.yml"
+  pull_request:
+    branches: [migracion-github-actions]
   workflow_dispatch:
 
 permissions:
@@ -58,8 +60,7 @@ jobs:
 
           python scripts/sync_sbs_official_latest.py
           python scripts/apply_sbs_reference_corrections.py
-          # NO se ejecuta update_live_market_hybrid aquí: el objetivo es reconstruir
-          # exactamente con el último corte válido ya guardado del 21/08.
+          # No se recalcula live_market: se usa exactamente el corte válido del 21/08.
           python scripts/build_dual_rolling30_monitor.py
           python scripts/patch_dual_rolling30_fx_operational.py
           python scripts/persist_dual_rolling30_shadow.py
@@ -77,8 +78,6 @@ jobs:
               assert len(h)>=70,(k,len(h))
               assert all(int(r.get('horizon_sessions',1))==1 for r in h),k
               assert len(d['models'][k]['intraday_assets'])==6,k
-              # Base diaria: cuando ambas fechas existen, base_date debe ser anterior
-              # y no una fila blind3 marcada a horizonte 3.
               assert not any(str(r.get('validation','')).upper().startswith('BACKTEST CIEGO 3') for r in h),k
           def fx(k,n):
               return next(a for a in d['models'][k]['intraday_assets'] if str(a.get('serie'))==n)
