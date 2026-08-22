@@ -1,0 +1,68 @@
+name: Verificar layout visual visor dual V5
+on:
+  workflow_dispatch:
+  push:
+    branches: [migracion-github-actions]
+    paths:
+      - ".github/workflows/verify-visual-layout-v5.yml"
+      - "public/index.html"
+permissions:
+  contents: write
+jobs:
+  verify-layout:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: migracion-github-actions
+          fetch-depth: 0
+      - name: Esperar propagación del despliegue
+        run: sleep 55
+      - name: Instalar Chromium
+        run: |
+          npm init -y >/dev/null 2>&1
+          npm install playwright@1.55.0 >/dev/null 2>&1
+          npx playwright install --with-deps chromium >/dev/null 2>&1
+      - name: Verificar tickers fijos y tamaño de gráficos
+        run: |
+          node <<'JS'
+          const {chromium}=require('playwright');
+          const fs=require('fs');
+          (async()=>{
+            const browser=await chromium.launch({headless:true});
+            const page=await browser.newPage({viewport:{width:1440,height:900}});
+            const errors=[]; page.on('pageerror',e=>errors.push(String(e))); page.on('console',m=>{if(m.type()==='error')errors.push(m.text())});
+            const url='https://rldaqp.github.io/afp-fondo3-monitor/?layoutv5='+Date.now();
+            const r=await page.goto(url,{waitUntil:'domcontentloaded',timeout:60000});
+            await page.waitForSelector('#dualTakeoverV4',{state:'visible',timeout:30000});
+            await page.waitForFunction(()=>document.querySelectorAll('#tickerbar_qqq .tickerchip').length===6 && document.querySelectorAll('#tickerbar_new_tickers .tickerchip').length===6,{timeout:30000});
+            async function checkModel(k){
+              const chart=page.locator('#dVc_'+k); await chart.scrollIntoViewIfNeeded(); await page.waitForTimeout(600);
+              const bar=page.locator('#tickerbar_'+k).locator('..');
+              const bb=await bar.boundingBox(); const cb=await chart.boundingBox();
+              const visible=await bar.isVisible();
+              if(!visible||!bb) throw Error(k+' barra ticker no visible');
+              if(bb.y< -2 || bb.y>35) throw Error(k+' barra ticker no quedó fija arriba: y='+bb.y);
+              if(!cb || cb.height>335) throw Error(k+' gráfico demasiado alto: '+(cb&&cb.height));
+              return {ticker_y:bb.y,ticker_h:bb.height,chart_h:cb.height,tickers:await page.locator('#tickerbar_'+k+' .tickerchip').count()};
+            }
+            const out={checked_at_utc:new Date().toISOString(),url,http:r.status(),a:await checkModel('qqq'),b:await checkModel('new_tickers'),errors,status:'PASS_LAYOUT_V5'};
+            await page.screenshot({path:'/tmp/layout_v5.png',fullPage:false});
+            fs.writeFileSync('/tmp/layout_v5.json',JSON.stringify(out,null,2));
+            console.log(JSON.stringify(out,null,2)); await browser.close();
+          })().catch(e=>{console.error('LAYOUT_V5_FAIL',e);process.exit(1)});
+          JS
+      - name: Guardar evidencia
+        if: success()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git fetch origin migracion-github-actions
+          git reset --hard origin/migracion-github-actions
+          cp /tmp/layout_v5.json public/data/layout_live_verified.json
+          cp /tmp/layout_v5.png public/data/layout_live_verified.png
+          git add public/data/layout_live_verified.json public/data/layout_live_verified.png
+          git commit -m "Registrar layout V5 verificado en vivo" || true
+          git pull --rebase origin migracion-github-actions || true
+          git push origin HEAD:migracion-github-actions || true
