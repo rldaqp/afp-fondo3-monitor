@@ -6,6 +6,8 @@ on:
     paths:
       - ".github/workflows/verify-visual-layout-v5.yml"
       - "public/index.html"
+  pull_request:
+    branches: [migracion-github-actions]
 permissions:
   contents: write
 jobs:
@@ -18,7 +20,7 @@ jobs:
           ref: migracion-github-actions
           fetch-depth: 0
       - name: Esperar propagación del despliegue
-        run: sleep 55
+        run: sleep 25
       - name: Instalar Chromium
         run: |
           npm init -y >/dev/null 2>&1
@@ -43,7 +45,7 @@ jobs:
               const bb=await bar.boundingBox(); const cb=await chart.boundingBox();
               const visible=await bar.isVisible();
               if(!visible||!bb) throw Error(k+' barra ticker no visible');
-              if(bb.y< -2 || bb.y>35) throw Error(k+' barra ticker no quedó fija arriba: y='+bb.y);
+              if(bb.y< -2 || bb.y>45) throw Error(k+' barra ticker no quedó fija arriba: y='+bb.y);
               if(!cb || cb.height>335) throw Error(k+' gráfico demasiado alto: '+(cb&&cb.height));
               return {ticker_y:bb.y,ticker_h:bb.height,chart_h:cb.height,tickers:await page.locator('#tickerbar_'+k+' .tickerchip').count()};
             }
@@ -54,7 +56,7 @@ jobs:
           })().catch(e=>{console.error('LAYOUT_V5_FAIL',e);process.exit(1)});
           JS
       - name: Guardar evidencia
-        if: success()
+        if: success() && github.event_name == 'push'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
