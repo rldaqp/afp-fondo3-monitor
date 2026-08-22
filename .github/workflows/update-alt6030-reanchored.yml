@@ -10,6 +10,7 @@ on:
       - "scripts/sync_sbs_official_latest.py"
       - "scripts/patch_spblscup_google_selenium.py"
       - "scripts/patch_google_rolling30_assets.py"
+      - "scripts/patch_dual_rolling30_fx_operational.py"
       - "scripts/build_alt_6030_reanchored.py"
       - "scripts/build_dual_rolling30_monitor.py"
       - "scripts/persist_dual_rolling30_shadow.py"
@@ -83,6 +84,10 @@ jobs:
           python scripts/update_live_market_hybrid.py
           python scripts/patch_google_rolling30_assets.py || echo "Google exacto parcial: se conserva el respaldo disponible para esta ejecución."
           python scripts/build_dual_rolling30_monitor.py
+          # Para el Modelo B, aplica exactamente la misma regla FX operacional del
+          # modelo alternativo: BCRP si existe; de lo contrario fuente provisional explícita.
+          python scripts/patch_dual_rolling30_fx_operational.py
+          # Congela al cierre y luego solo completa el SBS real/error, sin reescribir el estimado.
           python scripts/persist_dual_rolling30_shadow.py
 
           python - <<'PY'
@@ -104,6 +109,7 @@ jobs:
           assert int(dual["models"]["qqq"]["current"]["train_n"]) == 30
           assert int(dual["models"]["new_tickers"]["current"]["train_n"]) == 30
           assert "inmutable" in dual.get("operational_history_rule", "").lower()
+          assert dual.get("fx_operational_new_tickers", {}).get("source") == alt.get("fx_operational", {}).get("source")
           for key in ("qqq", "new_tickers"):
               cur = dual["models"][key]["current"]
               assert cur["signal"] in {"SUBE", "NEUTRO", "BAJA"}
@@ -116,6 +122,7 @@ jobs:
           print("SBS remoto:", sbs_status["latest_remote_date"], sbs_status["latest_remote_vc_profuturo_f3"], sbs_status["method"])
           print("Rolling30 QQQ:", dual["models"]["qqq"]["current"])
           print("Rolling30 nuevos tickers:", dual["models"]["new_tickers"]["current"])
+          print("FX nuevos tickers:", dual.get("fx_operational_new_tickers"))
           print("Métrica operacional QQQ:", dual["models"]["qqq"]["operational_metrics"])
           print("Métrica operacional nuevos:", dual["models"]["new_tickers"]["operational_metrics"])
           PY
