@@ -53,10 +53,41 @@ jobs:
           git fetch origin migracion-github-actions
           git reset --hard origin/migracion-github-actions
 
+          # Guardar el último snapshot válido antes de consultar nuevamente proveedores.
+          cp public/data/live_market.json /tmp/live_before_rebuild.json
+
           python scripts/sync_sbs_official_latest.py
           python scripts/apply_sbs_reference_corrections.py
           python scripts/patch_spblscup_google_selenium.py || true
           python scripts/update_live_market_hybrid.py
+
+          # Nunca permitir que una consulta posterior reemplace una sesión más nueva
+          # por un cierre más antiguo. Ej.: conservar 21/08 si Yahoo solo devuelve 20/08.
+          python - <<'PY'
+          import json
+          from datetime import datetime
+          from pathlib import Path
+          from zoneinfo import ZoneInfo
+
+          oldp=Path('/tmp/live_before_rebuild.json')
+          newp=Path('public/data/live_market.json')
+          old=json.loads(oldp.read_text(encoding='utf-8'))
+          new=json.loads(newp.read_text(encoding='utf-8'))
+          old_date=str(old.get('signal_date') or '')[:10]
+          new_date=str(new.get('signal_date') or '')[:10]
+          if old_date and new_date and old_date > new_date:
+              old['market_open']=False
+              old['mode']='INTRADIA PROVISIONAL - ULTIMO CORTE'
+              old['action']='ULTIMO_CORTE'
+              old['checked_at_lima']=datetime.now(ZoneInfo('America/Lima')).isoformat()
+              old['note']=(f'Se conserva la sesión {old_date}: la consulta nueva solo devolvió {new_date}. '
+                           'El monitor no retrocede de sesión.')
+              newp.write_text(json.dumps(old,ensure_ascii=False,indent=2),encoding='utf-8')
+              print('ANTI-REGRESION: restaurado',old_date,'en lugar de',new_date)
+          else:
+              print('Sesión vigente:',new_date,'; previa:',old_date)
+          PY
+
           python scripts/patch_google_rolling30_assets.py || true
           python scripts/build_dual_rolling30_monitor.py
           python scripts/patch_dual_rolling30_fx_operational.py
@@ -66,8 +97,10 @@ jobs:
           import json
           from pathlib import Path
           p=Path('public/data/dual_rolling30_monitor.json')
+          live=json.loads(Path('public/data/live_market.json').read_text(encoding='utf-8'))
           d=json.loads(p.read_text(encoding='utf-8'))
           assert set(d['models'])=={'qqq','new_tickers'}
+          assert d['signal_date']==live['signal_date'],(d['signal_date'],live['signal_date'])
           assert float(d['latest_sbs']['vc'])>0
           for k in ('qqq','new_tickers'):
               h=d['models'][k].get('history_one_step',[])
@@ -86,7 +119,7 @@ jobs:
               'note':'El gráfico diario usa como base el VC SBS real de la sesión inmediatamente anterior. Blind3 queda solo como validación agregada.'
           }
           p.write_text(json.dumps(d,ensure_ascii=False,indent=2),encoding='utf-8')
-          print('V6 VALIDADO', d['generated_at_lima'], a['precio_actual'], ar)
+          print('V6 VALIDADO', d['signal_date'], d['generated_at_lima'], a['precio_actual'], ar)
           PY
 
           git add data/rolling90/sbs_profuturo_f3.csv data/rolling90/dual_rolling30_shadow.csv public/data/sbs_sync_status.json public/data/live_market.json public/data/dual_rolling30_monitor.json
