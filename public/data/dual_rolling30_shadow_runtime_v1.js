@@ -1,9 +1,12 @@
 (function(){
   'use strict';
   const RAW='https://raw.githubusercontent.com/rldaqp/afp-fondo3-monitor/migracion-github-actions/public/data/';
+  const RAW_BLIND='https://raw.githubusercontent.com/rldaqp/afp-fondo3-monitor/migracion-github-actions/analysis/backtest_blind3_rolling30_common.csv';
   const $=id=>document.getElementById(id);
   const finite=x=>x!==null&&x!==undefined&&x!==''&&Number.isFinite(Number(x));
+  const classify=x=>Number(x)>0.001?'SUBE':Number(x)<-0.001?'BAJA':'NEUTRO';
   let payload=null;
+  let blindHistory={qqq:[],new_tickers:[]};
   const ranges={qqqVc:30,qqqRet:30,new_tickersVc:30,new_tickersRet:30};
   const MODEL_LABEL={qqq:'Modelo A · Rolling 30 + QQQ',new_tickers:'Modelo B · Rolling 30 + nuevos tickers'};
 
@@ -30,9 +33,36 @@
     throw new Error('dual_rolling30_monitor.json no disponible');
   }
 
-  function rowsFor(m){
+  function parseBlindCsv(text){
+    const out={qqq:[],new_tickers:[]};
+    String(text||'').split(/\r?\n/).slice(1).forEach(line=>{
+      if(!line.trim())return;
+      const p=line.split(',',8);
+      if(p.length<8||Number(p[0])!==3)return;
+      const fecha=p[1],base=Number(p[3]),actual=Number(p[4]),qqq=Number(p[5]),nuevo=Number(p[7]);
+      if(!fecha||![base,actual,qqq,nuevo].every(Number.isFinite))return;
+      const make=est=>{
+        const re=est/base-1,rr=actual/base-1;
+        return {fecha,base_vc:base,vc_estimated:est,actual_vc:actual,return_estimated:re,actual_return:rr,signal:classify(re),_kind:'backtest ciego 3 VC',horizon:'3 VC'};
+      };
+      out.qqq.push(make(qqq));out.new_tickers.push(make(nuevo));
+    });
+    out.qqq.sort((a,b)=>a.fecha.localeCompare(b.fecha));out.new_tickers.sort((a,b)=>a.fecha.localeCompare(b.fecha));
+    return out;
+  }
+
+  async function loadBlindHistory(){
+    try{
+      const r=await fetch(RAW_BLIND+'?ts='+Date.now(),{cache:'no-store'});
+      if(!r.ok)throw new Error('HTTP '+r.status);
+      blindHistory=parseBlindCsv(await r.text());
+    }catch(e){blindHistory={qqq:[],new_tickers:[]};}
+  }
+
+  function rowsFor(key,m){
     const map=new Map();
-    (m.history_one_step||[]).forEach(r=>map.set(r.fecha,{...r,_kind:'histórico ciego'}));
+    (blindHistory[key]||[]).forEach(r=>map.set(r.fecha,{...r}));
+    (m.history_one_step||[]).forEach(r=>map.set(r.fecha,{...map.get(r.fecha),...r,_kind:'backtest ciego 3 VC',horizon:'3 VC'}));
     (m.history_operational||[]).forEach(r=>{
       if(!r||!r.fecha||!finite(r.vc_estimated))return;
       map.set(r.fecha,{
@@ -45,14 +75,15 @@
         signal:r.signal,
         error_pct:r.error_pct,
         frozen:r.frozen,
-        _kind:r.frozen?'operacional guardado':'intradía provisional'
+        _kind:r.frozen?'operacional guardado':'intradía provisional',
+        horizon:'1 sesión'
       });
     });
     (m.forward_chain||[]).forEach(r=>{
       const old=map.get(r.fecha)||{};
       if(old._kind==='operacional guardado'&&old.actual_vc!=null)return;
       if(old._kind==='operacional guardado'&&r.fecha!==payload.signal_date)return;
-      map.set(r.fecha,{...old,...r,actual_vc:old.actual_vc??r.actual_vc,actual_return:old.actual_return,_kind:old._kind||'provisional'});
+      map.set(r.fecha,{...old,...r,actual_vc:old.actual_vc??r.actual_vc,actual_return:old.actual_return,_kind:old._kind||'provisional',horizon:old.horizon||'1 sesión'});
     });
     return [...map.values()].filter(r=>r.fecha).sort((a,b)=>a.fecha.localeCompare(b.fecha));
   }
@@ -70,18 +101,18 @@
   function plotVc(key){
     if(!payload||!window.Plotly)return;
     const m=payload.models&&payload.models[key];if(!m)return;
-    const rows=inRange(rowsFor(m),ranges[key+'Vc']);
+    const rows=inRange(rowsFor(key,m),ranges[key+'Vc']);
     const el=$('dualVcChart_'+key);if(!el)return;
     const estimated={
       x:rows.map(r=>r.fecha),y:rows.map(r=>finite(r.vc_estimated)?Number(r.vc_estimated):null),
       type:'scatter',mode:'lines+markers',name:'VC estimado rolling 30',
-      line:{width:2,color:'#38bdf8'},marker:{size:8,color:'#38bdf8',symbol:rows.map(estimateSymbol)},
-      customdata:rows.map(r=>[r._kind||'',r.signal||'—']),
-      hovertemplate:'<b>%{x}</b><br>VC estimado: %{y:.7f}<br>%{customdata[0]} · %{customdata[1]}<extra></extra>'
+      line:{width:2,color:'#38bdf8'},marker:{size:7,color:'#38bdf8',symbol:rows.map(estimateSymbol)},
+      customdata:rows.map(r=>[r._kind||'',r.signal||'—',r.horizon||'']),
+      hovertemplate:'<b>%{x}</b><br>VC estimado: %{y:.7f}<br>%{customdata[0]} · %{customdata[1]}<br>Horizonte: %{customdata[2]}<extra></extra>'
     };
     const real={
       x:rows.map(r=>r.fecha),y:rows.map(r=>finite(r.actual_vc)?Number(r.actual_vc):null),
-      type:'scatter',mode:'lines+markers',name:'VC real SBS',line:{width:2,color:'#fb923c'},marker:{size:7,color:'#fb923c',symbol:'diamond'},
+      type:'scatter',mode:'lines+markers',name:'VC real SBS',line:{width:2,color:'#fb923c'},marker:{size:6,color:'#fb923c',symbol:'diamond'},
       hovertemplate:'<b>%{x}</b><br>VC SBS: %{y:.7f}<extra></extra>'
     };
     Plotly.react(el,[estimated,real],{
@@ -99,20 +130,20 @@
   function plotRet(key){
     if(!payload||!window.Plotly)return;
     const m=payload.models&&payload.models[key];if(!m)return;
-    const rows=inRange(rowsFor(m),ranges[key+'Ret']);
+    const rows=inRange(rowsFor(key,m),ranges[key+'Ret']);
     const el=$('dualRetChart_'+key);if(!el)return;
     const estStem=stemXY(rows,'return_estimated'),realStem=stemXY(rows,'actual_return');
     Plotly.react(el,[
-      {x:estStem.x,y:estStem.y,type:'scatter',mode:'lines',name:'Tallo estimado',line:{width:1,color:'#64748b'},hoverinfo:'skip',showlegend:false,connectgaps:false},
-      {x:realStem.x,y:realStem.y,type:'scatter',mode:'lines',name:'Tallo SBS',line:{width:1,color:'#7c2d12'},hoverinfo:'skip',showlegend:false,connectgaps:false},
+      {x:estStem.x,y:estStem.y,type:'scatter',mode:'lines',line:{width:1,color:'#64748b'},hoverinfo:'skip',showlegend:false,connectgaps:false},
+      {x:realStem.x,y:realStem.y,type:'scatter',mode:'lines',line:{width:1,color:'#7c2d12'},hoverinfo:'skip',showlegend:false,connectgaps:false},
       {
         x:rows.map(r=>r.fecha),y:rows.map(r=>finite(r.return_estimated)?Number(r.return_estimated)*100:null),type:'scatter',mode:'markers',name:'Retorno estimado',
-        marker:{size:9,color:rows.map(r=>signalColor(r.signal)),symbol:rows.map(estimateSymbol),line:{width:1,color:'#0f172a'}},
-        customdata:rows.map(r=>[r.signal||'—',r._kind||'']),hovertemplate:'<b>%{x}</b><br>Estimado: %{y:+.3f}%<br>%{customdata[0]} · %{customdata[1]}<extra></extra>'
+        marker:{size:8,color:rows.map(r=>signalColor(r.signal)),symbol:rows.map(estimateSymbol),line:{width:1,color:'#0f172a'}},
+        customdata:rows.map(r=>[r.signal||'—',r._kind||'',r.horizon||'']),hovertemplate:'<b>%{x}</b><br>Estimado: %{y:+.3f}%<br>%{customdata[0]} · %{customdata[1]}<br>Horizonte: %{customdata[2]}<extra></extra>'
       },
       {
         x:rows.map(r=>r.fecha),y:rows.map(r=>finite(r.actual_return)?Number(r.actual_return)*100:null),type:'scatter',mode:'markers',name:'Retorno real SBS',
-        marker:{size:8,color:'#fb923c',symbol:'diamond'},hovertemplate:'<b>%{x}</b><br>SBS real: %{y:+.3f}%<extra></extra>'
+        marker:{size:7,color:'#fb923c',symbol:'diamond'},hovertemplate:'<b>%{x}</b><br>SBS real: %{y:+.3f}%<extra></extra>'
       }
     ],{
       margin:{l:48,r:14,t:12,b:42},paper_bgcolor:'rgba(0,0,0,0)',plot_bgcolor:'rgba(0,0,0,0)',font:{color:'#cbd5e1',size:10},
@@ -124,7 +155,39 @@
     },{responsive:true,displayModeBar:false});
   }
 
-  function plot(key,type){type==='vc'?plotVc(key):plotRet(key)}
+  function marketBlock(key){const el=$('dualMarket_'+key);return el?el.closest('.dual-chart-block'):null}
+  function vcBlock(key){const el=$('dualVcChart_'+key);return el?el.closest('.dual-chart-block'):null}
+  function retBlock(key){const el=$('dualRetChart_'+key);return el?el.closest('.dual-chart-block'):null}
+
+  function stampText(s){
+    if(!s)return 'sin hora';
+    const x=String(s);if(!x.includes('T'))return x.slice(0,10);
+    return x.replace('T',' ').slice(0,16);
+  }
+
+  function assetHtml(a){
+    const name=a.serie||a.ticker||'—',raw=a.precio_actual,price=finite(raw)?Number(raw).toFixed(String(name).includes('USD')?4:2):'s/p',r=a.retorno_modelo??a.retorno;
+    const ret=finite(r)?`${Number(r)>=0?'+':''}${(Number(r)*100).toFixed(3)}%`:'—';
+    const cls=finite(r)?(Number(r)>0?'pos':Number(r)<0?'neg':'zero'):'zero';
+    return `<div class="dual-asset"><div class="sym">${name}</div><div class="price">${price}</div><div class="ret ${cls}">${ret}</div><div class="src">${a.estado||'Fuente pendiente'}<br>${stampText(a.timestamp)}</div></div>`;
+  }
+
+  function renderMarket(key){
+    const m=payload?.models?.[key],grid=$('dualMarket_'+key);if(!m||!grid)return;
+    const rows=Array.isArray(m.intraday_assets)?m.intraday_assets:[];
+    grid.innerHTML=rows.length?rows.map(assetHtml).join(''):'<div class="dual-note">Sin cotizaciones intradía disponibles en este corte.</div>';
+    const note=$('dualSource_'+key);
+    if(note)note.textContent=`${payload.market_open?'MERCADO ABIERTO':'CIERRE / ÚLTIMO CORTE'} · ${rows.length} factores visibles · ${m.source_note||''}`;
+  }
+
+  function arrangeModel(key){
+    const model=$('dualModel_'+key);if(!model)return;
+    const mb=marketBlock(key),vb=vcBlock(key),rb=retBlock(key),label=MODEL_LABEL[key];
+    if(mb&&vb&&mb!==vb)model.insertBefore(mb,vb);
+    if(mb){const t=mb.querySelector('.dual-chart-title');if(t)t.textContent=label+' · factores intradía / último corte';}
+    if(vb){const t=vb.querySelector('.dual-chart-title');if(t)t.textContent=label+' · histórico VC estimado vs VC real SBS · backtest ciego 3 VC + seguimiento';}
+    if(rb){const t=rb.querySelector('.dual-chart-title');if(t)t.textContent=label+' · retorno estimado vs real · puntos históricos y seguimiento';}
+  }
 
   function metricText(key){
     const m=payload.models?.[key]||{},b=key==='qqq'?payload.blind3?.qqq_common:payload.blind3?.new_tickers_common,o=m.operational_metrics||{};
@@ -138,16 +201,13 @@
     ensureLegacyCompat();clearKnownLegacyError();
     for(const key of ['qqq','new_tickers']){
       const el=$('dualMape_'+key);if(el)el.textContent=metricText(key);
-      const model=$('dualModel_'+key);
-      if(model){
-        const titles=model.querySelectorAll('.dual-chart-title'),label=MODEL_LABEL[key];
-        if(titles[0])titles[0].textContent=label+' · VC SBS vs VC estimado · seguimiento guardado (sin ajuste retroactivo)';
-        if(titles[1])titles[1].textContent=label+' · retorno diario estimado vs real · gráfico de puntos';
-        if(titles[2])titles[2].textContent=label+' · visor intradía / último corte';
-      }
-      plot(key,'vc');plot(key,'ret');
+      arrangeModel(key);renderMarket(key);plotVc(key);plotRet(key);
     }
-    const rule=$('dualRule');if(rule&&payload.operational_history_rule)rule.textContent=payload.rule+' '+payload.operational_history_rule;
+    const rule=$('dualRule');
+    if(rule){
+      const n=Math.min(blindHistory.qqq.length,blindHistory.new_tickers.length);
+      rule.textContent=`Histórico visible: ${n} observaciones comparables del backtest ciego de 3 VC, desde ${n?blindHistory.qqq[0].fecha:'—'} hasta ${n?blindHistory.qqq.at(-1).fecha:'—'}. `+(payload.operational_history_rule||payload.rule||'');
+    }
     const top=$('dualTopMape');
     if(top){
       const q=payload.models?.qqq?.operational_metrics||{},n=payload.models?.new_tickers?.operational_metrics||{};
@@ -170,8 +230,10 @@
   }
 
   async function refresh(){
-    try{payload=await load();bindControls();render()}
-    catch(e){ensureLegacyCompat()}
+    try{
+      const [p]=await Promise.all([load(),loadBlindHistory()]);
+      payload=p;bindControls();render();
+    }catch(e){ensureLegacyCompat();}
   }
   function boot(){
     ensureLegacyCompat();
