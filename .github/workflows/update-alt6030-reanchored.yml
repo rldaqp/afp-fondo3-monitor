@@ -20,6 +20,8 @@ on:
 
 permissions:
   contents: write
+  pages: write
+  id-token: write
 
 concurrency:
   group: fondo3-data-writes
@@ -28,7 +30,10 @@ concurrency:
 jobs:
   alt6030:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 12
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
 
     steps:
       - name: Descargar repositorio
@@ -117,7 +122,7 @@ jobs:
             fi
           fi
 
-          # Publicación rápida de snapshots sin esperar un redeploy completo de Pages.
+          # Mantener también los snapshots en gh-pages como respaldo.
           tmp="$(mktemp -d)"
           git clone --depth 1 --branch gh-pages "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" "$tmp/gh-pages"
           mkdir -p "$tmp/gh-pages/data"
@@ -134,3 +139,42 @@ jobs:
             git commit -m "Publicar SBS y nuevo 60/30 reanclado"
             git push origin HEAD:gh-pages
           fi
+
+      - name: Preparar visor con runtime vigente
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          path = Path('public/index.html')
+          html = path.read_text(encoding='utf-8')
+          tags = [
+              '<script src="data/alt_runtime_v5.js?rev=ALT6030V5"></script>',
+              '<script src="data/spblscup_stale_fix.js?rev=SPBLCLOSEV1"></script>',
+              '<script src="data/visor_hotfix_v1.js?rev=VISORHOTFIX1"></script>',
+          ]
+          for tag in tags:
+              if tag not in html:
+                  html = html.replace('</body>', tag + '\n</body>', 1)
+          path.write_text(html, encoding='utf-8')
+          for token in ('alt_runtime_v5.js', 'spblscup_stale_fix.js', 'visor_hotfix_v1.js'):
+              assert token in html, token
+          PY
+          test -s public/data/alt_runtime_v5.js
+          test -s public/data/spblscup_stale_fix.js
+          test -s public/data/visor_hotfix_v1.js
+          test -s public/data/sbs_sync_status.json
+          test -s public/data/alt_6030_experimental.json
+          grep -q "Registrar operación" public/data/alt_runtime_v5.js
+          grep -q "saveCurrentHotfix" public/data/visor_hotfix_v1.js
+          grep -q "updateTopSbs" public/data/visor_hotfix_v1.js
+
+      - name: Configurar GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Subir visor actualizado
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: public
+
+      - name: Publicar visor actualizado
+        id: deployment
+        uses: actions/deploy-pages@v4
