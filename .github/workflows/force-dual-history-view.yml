@@ -38,19 +38,21 @@ jobs:
         run: |
           python scripts/embed_dual_history.py
 
-      - name: Activar runtime histórico V2
+      - name: Activar runtime dual V3 y romper caché
         run: |
           python - <<'PY'
+          import re
           from pathlib import Path
           p=Path('public/index.html')
           html=p.read_text(encoding='utf-8')
-          tag='<script src="data/dual_history_fix_v2.js?rev=DUALHISTV2"></script>'
+          tag='<script src="data/dual_history_fix_v2.js?rev=DUALTAKEOVERV3"></script>'
+          html=re.sub(r'<script src="data/dual_history_fix_v2\.js\?rev=[^"]+"></script>',tag,html)
           if tag not in html:
               html=html.replace('</body>',tag+'\n</body>',1)
           p.write_text(html,encoding='utf-8')
           PY
 
-      - name: Validar histórico, botones y tickers
+      - name: Validar histórico, botones, tickers y runtime V3
         run: |
           node --check public/data/dual_history_fix_v2.js
           python - <<'PY'
@@ -97,14 +99,16 @@ jobs:
           assert counts_a == counts_b, (counts_a,counts_b)
 
           js=Path('public/data/dual_history_fix_v2.js').read_text(encoding='utf-8')
-          for token in ("7/15/30/90/Todo", "dualMarket_", "history_chart_meta", "stopImmediatePropagation"):
+          for token in ('DUAL TAKEOVER V3','dualTakeoverV3','dSbs','dAVc','dBVc','7/15/30/90/Todo'):
               assert token in js, token
           html=Path('public/index.html').read_text(encoding='utf-8')
-          assert 'dual_history_fix_v2.js?rev=DUALHISTV2' in html
+          assert 'dual_history_fix_v2.js?rev=DUALTAKEOVERV3' in html
+          assert 'dual_history_fix_v2.js?rev=DUALHISTV2' not in html
           print('VERIFICADO HISTORICO',len(qa),len(nb),qa[0]['fecha'],qa[-1]['fecha'])
           print('VERIFICADO RANGOS',counts_a)
           print('VERIFICADO TICKERS A',sorted(got_a))
           print('VERIFICADO TICKERS B',sorted(got_b))
+          print('VERIFICADO RUNTIME DUALTAKEOVERV3')
           PY
 
       - name: Guardar histórico e integración en la rama
@@ -115,7 +119,7 @@ jobs:
           if git diff --cached --quiet; then
             echo "Histórico e index ya estaban actualizados."
           else
-            git commit -m "Publicar histórico completo en visor dual"
+            git commit -m "Publicar runtime dual V3 sin caché"
             git pull --rebase origin migracion-github-actions
             git push origin HEAD:migracion-github-actions
           fi
@@ -174,14 +178,12 @@ jobs:
             'range_counts_new_tickers':range_counts(d['models']['new_tickers']),
             'tickers_qqq':[str(x.get('serie')) for x in d['models']['qqq'].get('intraday_assets',[])],
             'tickers_new_tickers':[str(x.get('serie')) for x in d['models']['new_tickers'].get('intraday_assets',[])],
-            'runtime':'DUALHISTV2'
+            'runtime':'DUALTAKEOVERV3'
           }
           Path('public/data/dual_history_deploy_verified.json').write_text(json.dumps(out,ensure_ascii=False,indent=2),encoding='utf-8')
           print(json.dumps(out,ensure_ascii=False))
           PY
           git add public/data/dual_history_deploy_verified.json
-          git commit -m "Registrar verificación visor dual histórico" || true
+          git commit -m "Registrar verificación runtime dual V3" || true
           git pull --rebase origin migracion-github-actions || true
           git push origin HEAD:migracion-github-actions || true
-
-# Trigger de control completo 2026-08-22T00:06-05:00
