@@ -1,0 +1,58 @@
+name: Backtest blind3 rolling30 residual QQQ and new tickers
+
+on:
+  push:
+    branches: [migracion-github-actions]
+    paths:
+      - 'scripts/backtest_blind3_rolling30_resid_newtickers.py'
+      - '.github/workflows/backtest-blind3-rolling30-resid-newtickers.yml'
+      - 'data/analysis/googlefinance_alt_6030_returns_20260303_20260820.csv'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: backtest-blind3-rolling30-resid-newtickers
+  cancel-in-progress: true
+
+jobs:
+  backtest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: migracion-github-actions
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install
+        run: python -m pip install --upgrade pip pandas numpy yfinance
+      - name: Run
+        run: python scripts/backtest_blind3_rolling30_resid_newtickers.py
+      - name: Validate
+        run: |
+          test -s analysis/backtest_blind3_rolling30_resid_newtickers.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=json.loads(Path('analysis/backtest_blind3_rolling30_resid_newtickers.json').read_text())
+          assert p['primary_lag']==3
+          assert p['full_six_month_residual']['3']['resid_qqq']['n'] > 50
+          assert p['common_exact_comparison']['3']['new_tickers']['n'] > 30
+          print(json.dumps(p['common_exact_comparison']['3'], indent=2))
+          PY
+      - name: Commit results
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add analysis/backtest_blind3_rolling30_full.csv analysis/backtest_blind3_rolling30_common.csv analysis/backtest_blind3_rolling30_resid_newtickers.json public/data/backtest_blind3_rolling30_resid_newtickers.json
+          if git diff --cached --quiet; then
+            echo 'No changes'
+          else
+            git commit -m 'Update blind3 rolling30 residual and new-tickers backtest'
+            git pull --rebase origin migracion-github-actions
+            git push origin HEAD:migracion-github-actions
+          fi
