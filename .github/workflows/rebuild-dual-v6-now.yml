@@ -1,0 +1,104 @@
+name: Reconstruir dual Rolling 30 V6 ahora
+
+on:
+  push:
+    branches:
+      - migracion-github-actions
+    paths:
+      - ".github/workflows/rebuild-dual-v6-now.yml"
+      - "scripts/build_dual_rolling30_monitor.py"
+      - "scripts/patch_dual_rolling30_fx_operational.py"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: fondo3-data-writes
+  cancel-in-progress: true
+
+jobs:
+  rebuild:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: migracion-github-actions
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: requirements-live.txt
+
+      - name: Instalar dependencias
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements-live.txt
+
+      - name: Reconstruir datos duales
+        env:
+          PYTHONUTF8: "1"
+          PYTHONIOENCODING: "utf-8"
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git fetch origin migracion-github-actions
+          git reset --hard origin/migracion-github-actions
+
+          python scripts/sync_sbs_official_latest.py
+          python scripts/apply_sbs_reference_corrections.py
+          python scripts/patch_spblscup_google_selenium.py || true
+          python scripts/update_live_market_hybrid.py
+          python scripts/patch_google_rolling30_assets.py || true
+          python scripts/build_dual_rolling30_monitor.py
+          python scripts/patch_dual_rolling30_fx_operational.py
+          python scripts/persist_dual_rolling30_shadow.py
+
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path('public/data/dual_rolling30_monitor.json')
+          d=json.loads(p.read_text(encoding='utf-8'))
+          assert set(d['models'])=={'qqq','new_tickers'}
+          assert float(d['latest_sbs']['vc'])>0
+          for k in ('qqq','new_tickers'):
+              h=d['models'][k].get('history_one_step',[])
+              assert len(h)>=30,(k,len(h))
+              assert all(int(r.get('horizon_sessions',1))==1 for r in h),k
+              assert len(d['models'][k].get('intraday_assets',[]))==6,k
+          def fx(k,name):
+              return next(a for a in d['models'][k]['intraday_assets'] if str(a.get('serie'))==name)
+          a=fx('qqq','USD_PEN'); b=fx('new_tickers','USD/PEN')
+          ar=float(a.get('retorno_modelo',a.get('retorno'))); br=float(b.get('retorno_modelo',b.get('retorno')))
+          assert abs(ar-br)<1e-12,(ar,br)
+          assert abs(float(a['precio_actual'])-float(b['precio_actual']))<1e-9,(a['precio_actual'],b['precio_actual'])
+          d['history_chart_meta']={
+              'source':'ROLLING30 ONE-STEP DIARIO',
+              'horizon_sessions':1,
+              'note':'El gráfico diario usa como base el VC SBS real de la sesión inmediatamente anterior. Blind3 queda solo como validación agregada.'
+          }
+          p.write_text(json.dumps(d,ensure_ascii=False,indent=2),encoding='utf-8')
+          print('V6 VALIDADO', d['generated_at_lima'], a['precio_actual'], ar)
+          PY
+
+          git add data/rolling90/sbs_profuturo_f3.csv data/rolling90/dual_rolling30_shadow.csv public/data/sbs_sync_status.json public/data/live_market.json public/data/dual_rolling30_monitor.json
+          if test -f data/analysis/googlefinance_alt_rolling30_live_returns.csv; then git add data/analysis/googlefinance_alt_rolling30_live_returns.csv; fi
+          git commit -m "Reconstruir visor dual V6 con histórico diario y FX común" || true
+          git pull --rebase origin migracion-github-actions || true
+          git push origin HEAD:migracion-github-actions
+
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: public
+      - name: Publicar Pages V6
+        id: deployment
+        uses: actions/deploy-pages@v4
