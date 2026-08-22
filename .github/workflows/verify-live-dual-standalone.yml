@@ -1,0 +1,50 @@
+name: Verificar visor público dual final
+
+on:
+  pull_request:
+    branches:
+      - migracion-github-actions
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - name: Instalar Playwright
+        run: |
+          npm init -y >/dev/null 2>&1
+          npm install playwright@1.55.0 >/dev/null 2>&1
+          npx playwright install --with-deps chromium >/dev/null 2>&1
+      - name: Verificar página pública con Chromium
+        run: |
+          node <<'JS'
+          const {chromium}=require('playwright');
+          (async()=>{
+            const browser=await chromium.launch({headless:true});
+            const page=await browser.newPage({viewport:{width:1440,height:1000}});
+            const errs=[];page.on('pageerror',e=>errs.push(String(e)));page.on('console',m=>{if(m.type()==='error')errs.push(m.text())});
+            const url='https://rldaqp.github.io/afp-fondo3-monitor/?finalverify='+Date.now();
+            const response=await page.goto(url,{waitUntil:'domcontentloaded',timeout:45000});
+            await page.waitForSelector('#dualTakeoverV3',{state:'visible',timeout:20000});
+            await page.waitForFunction(()=>document.querySelector('#dSbs')?.textContent?.trim()!=='—',{timeout:20000});
+            const text=async s=>(await page.locator(s).textContent()).trim();
+            const vis=async s=>page.locator(s).isVisible().catch(()=>false);
+            const out={http:response.status(),title:await page.title(),sbs:await text('#dSbs'),sbsDate:await text('#dSbsDate'),a:await text('#dAVc'),b:await text('#dBVc'),models:await page.locator('#dualTakeoverV3 .dv3m').count(),tickersA:await page.locator('#dM_qqq .asset').count(),tickersB:await page.locator('#dM_new_tickers .asset').count(),old90:await vis('#reduced6030Panel'),oldMarket:await vis('#marketPanel'),errors:errs};
+            if(out.http!==200)throw Error('HTTP '+out.http);
+            if(out.sbs!=='70.3276160')throw Error('SBS '+out.sbs);
+            if(out.a!=='71.8606887')throw Error('A '+out.a);
+            if(out.b!=='71.7192086')throw Error('B '+out.b);
+            if(out.models!==2)throw Error('modelos '+out.models);
+            if(out.tickersA!==6||out.tickersB!==6)throw Error('tickers '+out.tickersA+'/'+out.tickersB);
+            if(out.old90||out.oldMarket)throw Error('UI antigua visible');
+            async function ranges(k,t){const exp={7:6,15:11,30:18,90:56,all:80},got={};for(const d of ['7','15','30','90','all']){await page.locator(`.controls[data-k="${k}"][data-t="${t}"] button[data-d="${d}"]`).click();await page.waitForTimeout(180);const s=await text(`#d${t}N_${k}`),m=s.match(/^(\d+) puntos/);got[d]=m?+m[1]:null;if(got[d]!==exp[d])throw Error(`${k}/${t}/${d}=${got[d]} esperado ${exp[d]}`)}return got}
+            out.ranges={aVc:await ranges('qqq','Vc'),aRet:await ranges('qqq','Ret'),bVc:await ranges('new_tickers','Vc'),bRet:await ranges('new_tickers','Ret')};
+            console.log('VISOR_PUBLICO_VERIFICADO',JSON.stringify(out,null,2));
+            await browser.close();
+          })().catch(e=>{console.error('VERIFICACION_FALLIDA',e);process.exit(1)});
+          JS
