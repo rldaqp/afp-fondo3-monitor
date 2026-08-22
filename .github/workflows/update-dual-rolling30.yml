@@ -19,8 +19,8 @@ permissions:
   contents: write
 
 concurrency:
-  group: fondo3-data-writes
-  cancel-in-progress: false
+  group: dual-rolling30-data-writes
+  cancel-in-progress: true
 
 jobs:
   update:
@@ -40,6 +40,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements-live.txt
+          pip install requests
           google-chrome --version || chromium --version || true
       - name: Actualizar SBS, mercado y dos rolling30
         env:
