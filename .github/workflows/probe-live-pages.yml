@@ -9,21 +9,33 @@ jobs:
   probe:
     runs-on: ubuntu-latest
     steps:
-      - name: Consultar HTML público sin caché
+      - name: Consultar HTML, runtime y datos públicos
         run: |
           set -e
-          URL="https://rldaqp.github.io/afp-fondo3-monitor/?probe=$(date +%s)"
-          curl -L --fail --silent --show-error -D /tmp/headers.txt "$URL" -o /tmp/live.html
-          echo '=== HEADERS ==='
-          cat /tmp/headers.txt
-          echo '=== TITLE ==='
+          TS=$(date +%s)
+          BASE="https://rldaqp.github.io/afp-fondo3-monitor"
+          curl -L --fail --silent --show-error -D /tmp/h-html.txt "$BASE/?probe=$TS" -o /tmp/live.html
+          curl -L --silent --show-error -D /tmp/h-js.txt "$BASE/data/dual_history_fix_v2.js?probe=$TS" -o /tmp/live.js
+          curl -L --silent --show-error -D /tmp/h-json.txt "$BASE/data/dual_rolling30_monitor.json?probe=$TS" -o /tmp/live.json
+          echo '=== HTML ==='
+          head -1 /tmp/h-html.txt
           grep -o '<title>[^<]*' /tmp/live.html | head -1 || true
-          echo '=== DUAL TAKEOVER ==='
-          grep -o 'dualTakeoverV3' /tmp/live.html | head -3 || true
-          echo '=== V3 TAG ==='
           grep -o 'DUALTAKEOVERV3' /tmp/live.html | head -3 || true
-          echo '=== ROLLING90 ==='
-          grep -o 'OLS Rolling 90' /tmp/live.html | head -3 || true
-          echo '=== SHA256 ==='
-          sha256sum /tmp/live.html
-          test "$(grep -c 'dualTakeoverV3' /tmp/live.html || true)" -ge 1
+          echo "HTML_BYTES $(wc -c </tmp/live.html)"
+          echo '=== JS ==='
+          head -1 /tmp/h-js.txt
+          grep -i '^content-type:' /tmp/h-js.txt | tail -1 || true
+          echo "JS_BYTES $(wc -c </tmp/live.js)"
+          grep -o 'DUAL TAKEOVER V3' /tmp/live.js | head -3 || true
+          grep -o 'dualTakeoverV3' /tmp/live.js | head -3 || true
+          head -c 180 /tmp/live.js; echo
+          echo '=== JSON ==='
+          head -1 /tmp/h-json.txt
+          grep -i '^content-type:' /tmp/h-json.txt | tail -1 || true
+          echo "JSON_BYTES $(wc -c </tmp/live.json)"
+          head -c 180 /tmp/live.json; echo
+          echo '=== ASSERT ==='
+          grep -q 'DUALTAKEOVERV3' /tmp/live.html
+          grep -q 'DUAL TAKEOVER V3' /tmp/live.js
+          grep -q 'dualTakeoverV3' /tmp/live.js
+          grep -q '"models"' /tmp/live.json
