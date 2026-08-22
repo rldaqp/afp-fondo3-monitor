@@ -1,5 +1,5 @@
 {
-  "generated_at_lima": "2026-08-21T20:16:28.123519-05:00",
+  "generated_at_lima": "2026-08-21T20:23:32.529214-05:00",
   "signal_date": "2026-08-21",
   "mode": "INTRADIA PROVISIONAL - ULTIMO CORTE",
   "market_open": false,
@@ -25,11 +25,11 @@
     ],
     "return_estimated": 0.012808295848399398,
     "signal": "SUBE",
-    "vc_estimated": 71.44595101890681,
+    "vc_estimated": 71.95264543986708,
     "blind_chain": false,
     "reanchored_with_latest_sbs": true,
-    "sbs_anchor_date": "2026-08-19",
-    "sbs_anchor_vc": 70.327616
+    "sbs_anchor_date": "2026-08-20",
+    "sbs_anchor_vc": 71.0427094
   },
   "cycle": {
     "cycle_start": "2026-08-19",
@@ -362,7 +362,7 @@
         "ret_SPBLSCUP": "2026-08-19",
         "ret_USD_PEN_alt": "2026-08-19"
       },
-      "updated_at_lima": "2026-08-21T20:16:28.123519-05:00"
+      "updated_at_lima": "2026-08-21T20:23:32.529214-05:00"
     },
     {
       "fecha": "2026-08-20",
@@ -371,9 +371,9 @@
       "return": 0.0030543733751628483,
       "signal": "SUBE",
       "vc": 70.54242279784908,
-      "actual_vc": null,
-      "abs_error": null,
-      "error_pct": null,
+      "actual_vc": 71.0427094,
+      "abs_error": 0.500286602150922,
+      "error_pct": -0.7042054087972636,
       "source": "CIERRE HISTÓRICO REANCLADO",
       "factor_returns": {
         "ret_.INX": -0.008668937905910501,
@@ -399,15 +399,15 @@
         "ret_SPBLSCUP": "2026-08-20",
         "ret_USD_PEN_alt": "2026-08-20"
       },
-      "updated_at_lima": "2026-08-21T20:16:28.123519-05:00"
+      "updated_at_lima": "2026-08-21T20:23:32.529214-05:00"
     },
     {
       "fecha": "2026-08-21",
       "base_date": "2026-08-20",
-      "base_vc": 70.54242279784908,
+      "base_vc": 71.0427094,
       "return": 0.012808295848399398,
       "signal": "SUBE",
-      "vc": 71.44595101890681,
+      "vc": 71.95264543986708,
       "actual_vc": null,
       "abs_error": null,
       "error_pct": null,
@@ -436,7 +436,7 @@
         "ret_SPBLSCUP": "2026-08-21",
         "ret_USD_PEN_alt": "2026-08-21"
       },
-      "updated_at_lima": "2026-08-21T20:16:28.123519-05:00"
+      "updated_at_lima": "2026-08-21T20:23:32.529214-05:00"
     }
   ],
   "history_min_date": "2026-07-22",
