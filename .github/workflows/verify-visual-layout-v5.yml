@@ -1,4 +1,4 @@
-name: Verificar layout visual visor dual V5
+name: Verificar visor dual V6 en vivo
 on:
   workflow_dispatch:
   push:
@@ -6,6 +6,7 @@ on:
     paths:
       - ".github/workflows/verify-visual-layout-v5.yml"
       - "public/index.html"
+      - "public/data/dual_rolling30_monitor.json"
   pull_request:
     branches: [migracion-github-actions]
 permissions:
@@ -20,13 +21,13 @@ jobs:
           ref: migracion-github-actions
           fetch-depth: 0
       - name: Esperar propagación del despliegue
-        run: sleep 20
+        run: sleep 25
       - name: Instalar Chromium
         run: |
           npm init -y >/dev/null 2>&1
           npm install playwright@1.55.0 >/dev/null 2>&1
           npx playwright install --with-deps chromium >/dev/null 2>&1
-      - name: Verificar panel global y gráficos compactos
+      - name: Verificar V6 diario, FX común y layout
         run: |
           node <<'JS'
           const {chromium}=require('playwright');
@@ -34,26 +35,80 @@ jobs:
           (async()=>{
             const browser=await chromium.launch({headless:true});
             const page=await browser.newPage({viewport:{width:1440,height:900}});
-            const errors=[]; page.on('pageerror',e=>errors.push(String(e))); page.on('console',m=>{if(m.type()==='error')errors.push(m.text())});
-            const url='https://rldaqp.github.io/afp-fondo3-monitor/?layoutv5='+Date.now();
+            const errors=[];
+            page.on('pageerror',e=>errors.push(String(e)));
+            page.on('console',m=>{if(m.type()==='error')errors.push(m.text())});
+            const url='https://rldaqp.github.io/afp-fondo3-monitor/?v6verify='+Date.now();
             const r=await page.goto(url,{waitUntil:'domcontentloaded',timeout:60000});
             await page.waitForSelector('#dualTakeoverV4',{state:'visible',timeout:30000});
             await page.waitForFunction(()=>document.querySelectorAll('#tickerbar_qqq .tickerchip').length===6 && document.querySelectorAll('#tickerbar_new_tickers .tickerchip').length===6,{timeout:30000});
+            if(await page.locator('#loadError').isVisible()) throw Error('El visor muestra error: '+await page.locator('#loadError').textContent());
+
+            const text=async s=>(await page.locator(s).textContent()).trim();
             const dock=page.locator('#globalTickerDock');
-            async function state(){const bb=await dock.boundingBox();return {visible:await dock.isVisible(),y:bb?bb.y:null,h:bb?bb.height:null}}
-            const initial={tickersA:await page.locator('#tickerbar_qqq .tickerchip').count(),tickersB:await page.locator('#tickerbar_new_tickers .tickerchip').count()};
-            await page.locator('#dVc_qqq').scrollIntoViewIfNeeded(); await page.waitForTimeout(400); const atA=await state();
-            if(!atA.visible||atA.y===null||atA.y< -2||atA.y>260)throw Error('panel no visible durante Modelo A: '+JSON.stringify(atA));
-            await page.locator('#dRet_new_tickers').evaluate(el=>window.scrollTo(0,el.getBoundingClientRect().top+window.scrollY+120)); await page.waitForTimeout(500); const atB=await state();
-            if(!atB.visible||atB.y===null||atB.y< -2||atB.y>8)throw Error('panel no quedó fijo al final del Modelo B: '+JSON.stringify(atB));
+            const initial={
+              tickersA:await page.locator('#tickerbar_qqq .tickerchip').count(),
+              tickersB:await page.locator('#tickerbar_new_tickers .tickerchip').count(),
+              sbs:await text('#dSbs'),
+              modelA:await text('#dAVc'),
+              modelB:await text('#dBVc'),
+              fxNote:await text('#fxCommon')
+            };
+            if(initial.tickersA!==6||initial.tickersB!==6) throw Error('Faltan tickers');
+            if(!initial.fxNote.startsWith('USD/PEN compartido por ambos modelos:')) throw Error('USD/PEN no aparece como compartido: '+initial.fxNote);
+
+            const fx=await page.evaluate(()=>{
+              function one(id){
+                const chips=[...document.querySelectorAll('#'+id+' .tickerchip')];
+                const c=chips.find(x=>(x.querySelector('.sym')?.textContent||'').replace('_','/').trim()==='USD/PEN');
+                return c?{price:c.querySelector('.price')?.textContent?.trim(),ret:c.querySelector('.ret')?.textContent?.trim(),src:c.querySelector('.src')?.textContent?.trim()}:null;
+              }
+              return {a:one('tickerbar_qqq'),b:one('tickerbar_new_tickers')};
+            });
+            if(!fx.a||!fx.b||fx.a.price!==fx.b.price||fx.a.ret!==fx.b.ret) throw Error('USD/PEN distinto entre modelos: '+JSON.stringify(fx));
+
+            // Mostrar 90 días y comprobar que lo dibujado es one-step diario, no blind3.
+            for(const k of ['qqq','new_tickers']){
+              await page.locator(`.controls[data-k="${k}"][data-t="Vc"] button[data-d="90"]`).click();
+              await page.waitForTimeout(250);
+            }
+            const graph=await page.evaluate(()=>{
+              const out={};
+              for(const k of ['qqq','new_tickers']){
+                const g=document.getElementById('dVc_'+k);
+                const est=g.data.find(t=>t.name==='VC estimado Rolling 30');
+                const real=g.data.find(t=>t.name==='VC real SBS');
+                let maxGap=0, pairs=0, badKinds=[];
+                for(let i=0;i<est.y.length;i++){
+                  const a=Number(est.y[i]),b=real.y[i];
+                  if(Number.isFinite(a)&&b!==null&&b!==undefined&&Number.isFinite(Number(b))){maxGap=Math.max(maxGap,Math.abs(a-Number(b)));pairs++;}
+                  const kind=est.customdata?.[i]?.[0]||'';
+                  if(/blind|3 vc/i.test(String(kind))) badKinds.push(kind);
+                }
+                out[k]={points:est.y.length,pairs,maxGap,badKinds:[...new Set(badKinds)]};
+              }
+              return out;
+            });
+            for(const [k,g] of Object.entries(graph)){
+              if(g.pairs<25) throw Error(k+' pocos pares reales en 90 días: '+g.pairs);
+              if(g.badKinds.length) throw Error(k+' todavía dibuja blind3: '+JSON.stringify(g.badKinds));
+              if(g.maxGap>2.5) throw Error(k+' conserva hueco artificial >2.5 VC: '+g.maxGap);
+            }
+
+            await page.locator('#dRet_new_tickers').evaluate(el=>window.scrollTo(0,el.getBoundingClientRect().top+window.scrollY+120));
+            await page.waitForTimeout(500);
+            const bb=await dock.boundingBox();
+            if(!bb||!(await dock.isVisible())||bb.y< -2||bb.y>8) throw Error('Panel de tickers no queda fijo al final: '+JSON.stringify(bb));
             const aChart=await page.locator('#dVc_qqq').boundingBox(),bChart=await page.locator('#dRet_new_tickers').boundingBox();
-            if(!aChart||aChart.height>320)throw Error('gráfico A demasiado alto '+(aChart&&aChart.height));
-            if(!bChart||bChart.height>320)throw Error('gráfico B demasiado alto '+(bChart&&bChart.height));
-            const out={checked_at_utc:new Date().toISOString(),url,http:r.status(),initial,atA,atB,aChartH:aChart.height,bChartH:bChart.height,errors,status:'PASS_GLOBAL_TICKERS_V5'};
-            await page.screenshot({path:'/tmp/layout_v5.png',fullPage:false});
-            fs.writeFileSync('/tmp/layout_v5.json',JSON.stringify(out,null,2));
-            console.log(JSON.stringify(out,null,2)); await browser.close();
-          })().catch(e=>{console.error('LAYOUT_V5_FAIL',e);process.exit(1)});
+            if(!aChart||aChart.height>320||!bChart||bChart.height>320) throw Error('Gráficos demasiado altos');
+            if(errors.length) throw Error('Errores de consola: '+errors.join(' | '));
+
+            const out={checked_at_utc:new Date().toISOString(),url,http:r.status(),initial,fx,graph,tickerDockY:bb.y,aChartH:aChart.height,bChartH:bChart.height,errors,status:'PASS_V6_DAILY_SHARED_FX'};
+            await page.screenshot({path:'/tmp/layout_v6.png',fullPage:false});
+            fs.writeFileSync('/tmp/layout_v6.json',JSON.stringify(out,null,2));
+            console.log(JSON.stringify(out,null,2));
+            await browser.close();
+          })().catch(e=>{console.error('V6_LIVE_FAIL',e);process.exit(1)});
           JS
       - name: Guardar evidencia
         if: success() && github.event_name == 'push'
@@ -62,9 +117,9 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git fetch origin migracion-github-actions
           git reset --hard origin/migracion-github-actions
-          cp /tmp/layout_v5.json public/data/layout_live_verified.json
-          cp /tmp/layout_v5.png public/data/layout_live_verified.png
+          cp /tmp/layout_v6.json public/data/layout_live_verified.json
+          cp /tmp/layout_v6.png public/data/layout_live_verified.png
           git add public/data/layout_live_verified.json public/data/layout_live_verified.png
-          git commit -m "Registrar layout V5 verificado en vivo" || true
+          git commit -m "Registrar visor V6 diario con FX común verificado" || true
           git pull --rebase origin migracion-github-actions || true
           git push origin HEAD:migracion-github-actions || true
