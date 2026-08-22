@@ -1,5 +1,6 @@
 (function(){
   'use strict';
+  // Histórico operativo sin ajuste retroactivo: los estimados guardados nunca se reescriben con SBS posterior.
   const RAW='https://raw.githubusercontent.com/rldaqp/afp-fondo3-monitor/migracion-github-actions/public/data/';
   const RAW_BLIND='https://raw.githubusercontent.com/rldaqp/afp-fondo3-monitor/migracion-github-actions/analysis/backtest_blind3_rolling30_common.csv';
   const $=id=>document.getElementById(id);
