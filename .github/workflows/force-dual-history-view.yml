@@ -52,25 +52,59 @@ jobs:
 
       - name: Validar histórico, botones y tickers
         run: |
+          node --check public/data/dual_history_fix_v2.js
           python - <<'PY'
           import json
+          from datetime import date, timedelta
           from pathlib import Path
+
           d=json.loads(Path('public/data/dual_rolling30_monitor.json').read_text(encoding='utf-8'))
-          q=d['models']['qqq']['history_one_step']
-          n=d['models']['new_tickers']['history_one_step']
-          assert len(q) >= 70, len(q)
-          assert len(n) >= 70, len(n)
-          assert len(q) == len(n), (len(q),len(n))
-          assert q[0]['fecha'] <= '2026-04-20'
-          assert q[-1]['fecha'] >= '2026-08-19'
-          assert len(d['models']['qqq'].get('intraday_assets',[])) == 6
-          assert len(d['models']['new_tickers'].get('intraday_assets',[])) == 6
+          qa=d['models']['qqq']['history_one_step']
+          nb=d['models']['new_tickers']['history_one_step']
+          assert len(qa) >= 70, len(qa)
+          assert len(nb) >= 70, len(nb)
+          assert len(qa) == len(nb), (len(qa),len(nb))
+          assert qa[0]['fecha'] <= '2026-04-20'
+          assert qa[-1]['fecha'] >= '2026-08-19'
+
+          expected_a={'SPY','EEM','EPU','MCHI','USD_PEN','QQQ'}
+          expected_b={'.INX','CPER','EEM','NDX','SPBLSCUP','USD/PEN'}
+          got_a={str(x.get('serie')) for x in d['models']['qqq'].get('intraday_assets',[])}
+          got_b={str(x.get('serie')) for x in d['models']['new_tickers'].get('intraday_assets',[])}
+          assert got_a == expected_a, (got_a,expected_a)
+          assert got_b == expected_b, (got_b,expected_b)
+
+          def merged_dates(model):
+              dates={str(x['fecha'])[:10] for x in model.get('history_one_step',[]) if x.get('fecha')}
+              dates.update(str(x['fecha'])[:10] for x in model.get('history_operational',[]) if x.get('fecha'))
+              dates.update(str(x['fecha'])[:10] for x in model.get('forward_chain',[]) if x.get('fecha'))
+              return sorted(dates)
+
+          def range_counts(model):
+              dates=merged_dates(model)
+              last=date.fromisoformat(dates[-1])
+              out={}
+              for days in (7,15,30,90):
+                  cutoff=last-timedelta(days=days)
+                  out[str(days)]=sum(date.fromisoformat(x)>=cutoff for x in dates)
+              out['all']=len(dates)
+              vals=[out['7'],out['15'],out['30'],out['90'],out['all']]
+              assert vals[0] < vals[1] < vals[2] < vals[3] <= vals[4], vals
+              return out
+
+          counts_a=range_counts(d['models']['qqq'])
+          counts_b=range_counts(d['models']['new_tickers'])
+          assert counts_a == counts_b, (counts_a,counts_b)
+
           js=Path('public/data/dual_history_fix_v2.js').read_text(encoding='utf-8')
-          for token in ("7/15/30/90/Todo", "dualMarket_", "history_chart_meta"):
+          for token in ("7/15/30/90/Todo", "dualMarket_", "history_chart_meta", "stopImmediatePropagation"):
               assert token in js, token
           html=Path('public/index.html').read_text(encoding='utf-8')
           assert 'dual_history_fix_v2.js?rev=DUALHISTV2' in html
-          print('VERIFICADO',len(q),len(n),q[0]['fecha'],q[-1]['fecha'],'tickers',6,6)
+          print('VERIFICADO HISTORICO',len(qa),len(nb),qa[0]['fecha'],qa[-1]['fecha'])
+          print('VERIFICADO RANGOS',counts_a)
+          print('VERIFICADO TICKERS A',sorted(got_a))
+          print('VERIFICADO TICKERS B',sorted(got_b))
           PY
 
       - name: Guardar histórico e integración en la rama
@@ -109,10 +143,26 @@ jobs:
           git reset --hard origin/migracion-github-actions
           python - <<'PY'
           import json, os
-          from datetime import datetime, timezone
+          from datetime import datetime, timezone, date, timedelta
           from pathlib import Path
+
           d=json.loads(Path('public/data/dual_rolling30_monitor.json').read_text(encoding='utf-8'))
           q=d['models']['qqq']['history_one_step']; n=d['models']['new_tickers']['history_one_step']
+
+          def merged_dates(model):
+              dates={str(x['fecha'])[:10] for x in model.get('history_one_step',[]) if x.get('fecha')}
+              dates.update(str(x['fecha'])[:10] for x in model.get('history_operational',[]) if x.get('fecha'))
+              dates.update(str(x['fecha'])[:10] for x in model.get('forward_chain',[]) if x.get('fecha'))
+              return sorted(dates)
+
+          def range_counts(model):
+              dates=merged_dates(model); last=date.fromisoformat(dates[-1]); out={}
+              for days in (7,15,30,90):
+                  cutoff=last-timedelta(days=days)
+                  out[str(days)]=sum(date.fromisoformat(x)>=cutoff for x in dates)
+              out['all']=len(dates)
+              return out
+
           out={
             'verified_at_utc':datetime.now(timezone.utc).isoformat(),
             'page_url':os.environ.get('DEPLOY_URL'),
@@ -120,8 +170,10 @@ jobs:
             'history_new_tickers':len(n),
             'history_start':q[0]['fecha'],
             'history_end':q[-1]['fecha'],
-            'intraday_qqq':len(d['models']['qqq'].get('intraday_assets',[])),
-            'intraday_new_tickers':len(d['models']['new_tickers'].get('intraday_assets',[])),
+            'range_counts_qqq':range_counts(d['models']['qqq']),
+            'range_counts_new_tickers':range_counts(d['models']['new_tickers']),
+            'tickers_qqq':[str(x.get('serie')) for x in d['models']['qqq'].get('intraday_assets',[])],
+            'tickers_new_tickers':[str(x.get('serie')) for x in d['models']['new_tickers'].get('intraday_assets',[])],
             'runtime':'DUALHISTV2'
           }
           Path('public/data/dual_history_deploy_verified.json').write_text(json.dumps(out,ensure_ascii=False,indent=2),encoding='utf-8')
@@ -132,4 +184,4 @@ jobs:
           git pull --rebase origin migracion-github-actions || true
           git push origin HEAD:migracion-github-actions || true
 
-# Trigger 2026-08-22T00:04-05:00
+# Trigger de control completo 2026-08-22T00:06-05:00
