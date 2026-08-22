@@ -1,6 +1,6 @@
 {
-  "checked_at_utc": "2026-08-22T06:00:20.285Z",
-  "url": "https://rldaqp.github.io/afp-fondo3-monitor/?liveverify=1787378419403",
+  "checked_at_utc": "2026-08-22T06:07:15.345Z",
+  "url": "https://rldaqp.github.io/afp-fondo3-monitor/?liveverify=1787378834312",
   "http": 200,
   "title": "Profuturo Fondo 3 · Dos modelos Rolling 30",
   "sbs": "70.3276160",
@@ -9,6 +9,8 @@
   "models": 2,
   "tickersA": 6,
   "tickersB": 6,
+  "stickyTickersA": 6,
+  "stickyTickersB": 6,
   "old90": false,
   "oldMarket": false,
   "console_errors": [],
@@ -42,5 +44,53 @@
       "all": 80
     }
   },
-  "status": "PASS"
+  "pending_check": {
+    "qqq": {
+      "pendingVc": [
+        {
+          "x": "2026-08-20",
+          "y": null
+        },
+        {
+          "x": "2026-08-21",
+          "y": null
+        }
+      ],
+      "pendingRet": [
+        {
+          "x": "2026-08-20",
+          "y": null
+        },
+        {
+          "x": "2026-08-21",
+          "y": null
+        }
+      ],
+      "badRealShapes": 0
+    },
+    "new_tickers": {
+      "pendingVc": [
+        {
+          "x": "2026-08-20",
+          "y": null
+        },
+        {
+          "x": "2026-08-21",
+          "y": null
+        }
+      ],
+      "pendingRet": [
+        {
+          "x": "2026-08-20",
+          "y": null
+        },
+        {
+          "x": "2026-08-21",
+          "y": null
+        }
+      ],
+      "badRealShapes": 0
+    }
+  },
+  "status": "PASS_V4_NULLS_TICKERS"
 }
