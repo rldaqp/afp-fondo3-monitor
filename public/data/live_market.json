@@ -1,98 +1,95 @@
 {
-  "generated_at_lima": "2026-08-21T15:09:07.663131-05:00",
-  "mode": "INTRADIA PROVISIONAL - ULTIMO CORTE",
+  "generated_at_lima": "2026-08-22T01:44:19.770346-05:00",
+  "mode": "CIERRE DIARIO",
   "market_open": false,
-  "signal_date": "2026-08-21",
-  "vc_base": 71.41435514610457,
-  "vc_estimated": 72.79700228468487,
-  "return_estimated": 0.0193609133030967,
+  "signal_date": "2026-08-20",
+  "vc_estimated": 71.41435514610457,
+  "return_estimated": 0.007158423542333535,
   "signal": "SUBE",
   "assets": [
     {
       "serie": "SPY",
       "ticker": "SPY",
-      "timestamp": "2026-08-21T15:55:00-04:00",
-      "precio_anterior": 762.5999755859375,
-      "precio_actual": 765.6400146484375,
-      "retorno": 0.00398641379468212,
-      "retorno_modelo": 0.00398641379468212,
-      "estado": "INTRADÍA YAHOO · USADO POR MODELO",
+      "timestamp": "2026-08-20",
+      "precio_anterior": 769.0599975585938,
+      "precio_actual": 762.5999755859375,
+      "retorno": -0.008399893367440514,
+      "retorno_modelo": -0.008399893367440514,
+      "estado": "CIERRE DIARIO YAHOO · USADO POR MODELO",
       "usado_modelo": true
     },
     {
       "serie": "NEM",
       "ticker": "NEM",
-      "timestamp": "2026-08-21T15:55:00-04:00",
-      "precio_anterior": 127.63999938964844,
-      "precio_actual": 131.58999633789062,
-      "retorno": 0.03094638802201799,
-      "retorno_modelo": 0.03094638802201799,
-      "estado": "INTRADÍA YAHOO · USADO POR MODELO",
+      "timestamp": "2026-08-20",
+      "precio_anterior": 125.08000183105467,
+      "precio_actual": 127.63999938964844,
+      "retorno": 0.02046688136486874,
+      "retorno_modelo": 0.02046688136486874,
+      "estado": "CIERRE DIARIO YAHOO · USADO POR MODELO",
       "usado_modelo": true
     },
     {
       "serie": "FCX",
       "ticker": "FCX",
-      "timestamp": "2026-08-21T15:55:00-04:00",
-      "precio_anterior": 71.22000122070312,
-      "precio_actual": 76.68000030517578,
-      "retorno": 0.0766638442977936,
-      "retorno_modelo": 0.0766638442977936,
-      "estado": "INTRADÍA YAHOO · USADO POR MODELO",
+      "timestamp": "2026-08-20",
+      "precio_anterior": 69.08999633789062,
+      "precio_actual": 71.22000122070312,
+      "retorno": 0.03082942532513,
+      "retorno_modelo": 0.03082942532513,
+      "estado": "CIERRE DIARIO YAHOO · USADO POR MODELO",
       "usado_modelo": true
     },
     {
       "serie": "EPU",
       "ticker": "EPU",
-      "timestamp": "2026-08-21T15:55:00-04:00",
-      "precio_anterior": 90.72000122070312,
-      "precio_actual": 93.93000030517578,
-      "retorno": 0.035383587315694465,
-      "retorno_modelo": 0.035383587315694465,
-      "estado": "INTRADÍA YAHOO · USADO POR MODELO",
+      "timestamp": "2026-08-20",
+      "precio_anterior": 89.98999786376953,
+      "precio_actual": 90.72000122070312,
+      "retorno": 0.008112049941802368,
+      "retorno_modelo": 0.008112049941802368,
+      "estado": "CIERRE DIARIO YAHOO · USADO POR MODELO",
       "usado_modelo": true
     },
     {
       "serie": "MCHI",
       "ticker": "MCHI",
-      "timestamp": "2026-08-21T15:55:00-04:00",
-      "precio_anterior": 55.5099983215332,
-      "precio_actual": 55.64500045776367,
-      "retorno": 0.0024320327925158036,
-      "retorno_modelo": 0.0024320327925158036,
-      "estado": "INTRADÍA YAHOO · USADO POR MODELO",
+      "timestamp": "2026-08-20",
+      "precio_anterior": 55.38999938964844,
+      "precio_actual": 55.5099983215332,
+      "retorno": 0.0021664367793292616,
+      "retorno_modelo": 0.0021664367793292616,
+      "estado": "CIERRE DIARIO YAHOO · USADO POR MODELO",
       "usado_modelo": true
     },
     {
       "serie": "EEM",
       "ticker": "EEM",
-      "timestamp": "2026-08-21T15:55:00-04:00",
-      "precio_anterior": 66.62000274658203,
-      "precio_actual": 67.11499786376953,
-      "retorno": 0.007430127540979381,
-      "retorno_modelo": 0.007430127540979381,
-      "estado": "INTRADÍA YAHOO · USADO POR MODELO",
+      "timestamp": "2026-08-20",
+      "precio_anterior": 66.11000061035156,
+      "precio_actual": 66.62000274658203,
+      "retorno": 0.007714447610375874,
+      "retorno_modelo": 0.007714447610375874,
+      "estado": "CIERRE DIARIO YAHOO · USADO POR MODELO",
       "usado_modelo": true
     },
     {
       "serie": "USD_PEN",
-      "ticker": "PEN=X",
-      "timestamp": "2026-08-21T16:05:00-04:00",
-      "precio_anterior": 3.3503000736236572,
-      "precio_actual": 3.352299928665161,
-      "retorno": 0.0005969181857017336,
-      "retorno_modelo": 0.0005969181857017336,
-      "estado": "YAHOO PEN=X · PROVISIONAL · USADO POR MODELO",
+      "ticker": "BCRP PD04646PD",
+      "timestamp": "2026-08-20",
+      "precio_anterior": 3.355,
+      "precio_actual": 3.352,
+      "retorno": -0.0008941877794337305,
+      "retorno_modelo": -0.0008941877794337305,
+      "estado": "BCRP MISMA FECHA · USADO POR MODELO",
       "usado_modelo": true
     }
   ],
-  "action": "ULTIMO_CORTE",
+  "action": "CIERRE",
   "engine": "LIVE INDEPENDIENTE",
-  "fx_fresh": false,
-  "fx_rule": "Histórico/entrenamiento: BCRP. Predicción: BCRP si existe; si está rezagado, Yahoo PEN=X provisional; 0 % solo si ambas fuentes faltan.",
-  "note": "Se conserva el ultimo snapshot intradia de hoy porque el cierre diario de hoy aun no esta disponible.",
-  "fx_source": "YAHOO PEN=X PROVISIONAL",
-  "fx_provisional": true,
+  "fx_rule": "BCRP si existe; Yahoo PEN=X solo como respaldo provisional cuando BCRP aún no publicó la fecha.",
+  "fx_source": "BCRP",
+  "fx_provisional": false,
   "experimental_assets": [
     {
       "serie": ".INX",
@@ -141,23 +138,23 @@
     {
       "serie": "SPBLSCUP",
       "ticker": "SPBLSCUP:INDEXSP",
-      "timestamp": "2026-08-21",
-      "precio_anterior": 446.7,
-      "precio_actual": 460.43,
-      "retorno": 0.030736512200582045,
-      "retorno_modelo": 0.030736512200582045,
-      "estado": "GOOGLE FINANCE · SELENIUM · NUEVO 60/30 EXPERIMENTAL",
-      "usado_modelo": true
+      "timestamp": "2026-08-20",
+      "precio_anterior": null,
+      "precio_actual": 446.7,
+      "retorno": null,
+      "retorno_modelo": null,
+      "estado": "ÚLTIMO CIERRE GOOGLE FINANCE GUARDADO · NUEVO 60/30 EXPERIMENTAL",
+      "usado_modelo": false
     },
     {
       "serie": "USD/PEN",
       "ticker": "USD/PEN",
-      "timestamp": "2026-08-21T16:05:00-04:00",
-      "precio_anterior": 3.3503000736236572,
-      "precio_actual": 3.352299928665161,
-      "retorno": 0.0005969181857017336,
+      "timestamp": "2026-08-20",
+      "precio_anterior": 3.355,
+      "precio_actual": 3.352,
+      "retorno": -0.0008941877794337305,
       "retorno_modelo": null,
-      "estado": "YAHOO PEN=X · PROVISIONAL · USADO POR MODELO · NUEVO 60/30 EXPERIMENTAL",
+      "estado": "BCRP MISMA FECHA · USADO POR MODELO · NUEVO 60/30 EXPERIMENTAL",
       "usado_modelo": false
     }
   ],
@@ -170,7 +167,27 @@
     "USD/PEN"
   ],
   "experimental_note": "Seguimiento del nuevo 60/30. No modifica el OLS principal ni el challenger 60/30 vigente.",
-  "checked_at_lima": "2026-08-21T20:15:14.483820-05:00",
-  "experimental_spblscup_source": "GOOGLE FINANCE · SELENIUM",
-  "experimental_spblscup_stamp": "Aug 21, 5:29:44 PM UTC-4"
+  "experimental_google_rolling30_checked": true,
+  "experimental_google_rolling30_results": {
+    ".INX": {
+      "quote": ".INX:INDEXSP",
+      "error": "ValueError: ,"
+    },
+    "CPER": {
+      "quote": "CPER:NYSEARCA",
+      "error": "ValueError: ,"
+    },
+    "EEM": {
+      "quote": "EEM:NYSEARCA",
+      "error": "ValueError: ,"
+    },
+    "NDX": {
+      "quote": "NDX:INDEXNASDAQ",
+      "error": "ValueError: ,"
+    },
+    "SPBLSCUP": {
+      "quote": "SPBLSCUP:INDEXSP",
+      "error": "ValueError: ,"
+    }
+  }
 }
