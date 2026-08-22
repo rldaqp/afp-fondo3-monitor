@@ -8,13 +8,26 @@
 <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
 <style>
 :root{color-scheme:dark;--bg:#07111f;--card:#0f1b2d;--inner:#0b1728;--line:#26364a;--text:#f8fafc;--muted:#9aa9bd;--blue:#38bdf8;--orange:#fb923c;--green:#4ade80;--red:#f87171;--yellow:#fbbf24;--btn:#132238;--active:#2563eb}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}.wrap{max-width:1180px;margin:auto;padding:18px}h1{margin:0;font-size:1.65rem}h2{font-size:1.08rem;margin:0 0 5px}h3{font-size:.92rem;margin:0 0 8px}.sub,.small{color:var(--muted);font-size:.78rem;line-height:1.45}.topgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:15px 0}.card,.model,.chartbox,.market{border:1px solid var(--line);background:var(--card);border-radius:14px}.card{padding:13px}.label{font-size:.72rem;color:var(--muted)}.value{font-size:1.15rem;font-weight:900;margin-top:5px}.signal{font-size:.95rem;font-weight:900;margin-top:4px}.up{color:var(--green)}.down{color:var(--red)}.flat{color:var(--yellow)}.model{padding:14px;margin:14px 0}.modelhead{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}.modelmeta{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:11px 0}.mini{background:var(--inner);border:1px solid var(--line);border-radius:10px;padding:9px}.mini b{display:block;margin-top:3px;font-size:.9rem}.market{background:var(--inner);padding:11px;margin:11px 0}.assets{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.asset{border:1px solid var(--line);background:#101e32;border-radius:11px;padding:10px;min-width:0}.asset .sym{font-size:.78rem;font-weight:900}.asset .price{font-size:1rem;font-weight:900;margin-top:3px}.asset .ret{font-size:.86rem;font-weight:900;margin-top:2px}.asset .src{font-size:.64rem;color:var(--muted);line-height:1.35;margin-top:4px;overflow-wrap:anywhere}.charts{display:grid;grid-template-columns:1fr;gap:10px}.chartbox{padding:10px;background:var(--inner)}.controls{display:flex;gap:6px;flex-wrap:wrap;margin:7px 0}.controls button{border:1px solid #35465d;background:var(--btn);color:white;border-radius:9px;padding:8px 12px;font-weight:800;cursor:pointer}.controls button.active{background:var(--active)}.chart{height:420px}.count{font-size:.69rem;color:var(--muted);margin-top:2px}.legendnote{font-size:.68rem;color:var(--muted);line-height:1.4;margin-top:5px}.error{display:none;background:#451a1a;border:1px solid #7f1d1d;padding:12px;border-radius:10px;margin:12px 0}.footer{font-size:.7rem;color:var(--muted);padding:8px 2px 22px}
-@media(max-width:850px){.topgrid,.modelmeta{grid-template-columns:repeat(2,1fr)}.assets{grid-template-columns:repeat(2,1fr)}.chart{height:340px}.wrap{padding:11px}}
-@media(max-width:480px){.assets{grid-template-columns:1fr 1fr}.value{font-size:1.03rem}.controls button{padding:8px 9px;font-size:.75rem}.chart{height:315px}.modelhead{display:block}}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+.wrap{max-width:1180px;margin:auto;padding:18px}
+h1{margin:0;font-size:1.65rem}h2{font-size:1.08rem;margin:0 0 5px}h3{font-size:.92rem;margin:0 0 8px}
+.sub,.small{color:var(--muted);font-size:.78rem;line-height:1.45}
+.topgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:15px 0}
+.card,.model,.chartbox,.market{border:1px solid var(--line);background:var(--card);border-radius:14px}
+.card{padding:13px}.label{font-size:.72rem;color:var(--muted)}.value{font-size:1.15rem;font-weight:900;margin-top:5px}.signal{font-size:.95rem;font-weight:900;margin-top:4px}.up{color:var(--green)}.down{color:var(--red)}.flat{color:var(--yellow)}
+.model{padding:14px;margin:14px 0}.modelhead{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}.modelmeta{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:11px 0}.mini{background:var(--inner);border:1px solid var(--line);border-radius:10px;padding:9px}.mini b{display:block;margin-top:3px;font-size:.9rem}
+.market{background:var(--inner);padding:11px;margin:11px 0}.market h3{color:#e2e8f0}.assets{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.asset{border:1px solid var(--line);background:#101e32;border-radius:11px;padding:10px;min-width:0}.asset .sym{font-size:.8rem;font-weight:950}.asset .price{font-size:1rem;font-weight:900;margin-top:3px}.asset .ret{font-size:.86rem;font-weight:900;margin-top:2px}.asset .src{font-size:.64rem;color:var(--muted);line-height:1.35;margin-top:4px;overflow-wrap:anywhere}
+.tickerbar{position:sticky;top:6px;z-index:30;display:flex;align-items:center;gap:7px;overflow-x:auto;white-space:nowrap;padding:8px 9px;margin:8px 0 10px;border:1px solid #36506d;border-radius:12px;background:rgba(9,22,39,.96);box-shadow:0 6px 20px rgba(0,0,0,.25);backdrop-filter:blur(8px)}
+.tickerbar .tag{flex:0 0 auto;color:#93c5fd;font-size:.68rem;font-weight:900;text-transform:uppercase;letter-spacing:.03em;margin-right:2px}.tickerchip{flex:0 0 auto;border:1px solid #33465f;border-radius:9px;background:#102039;padding:6px 8px;font-size:.7rem}.tickerchip b{font-size:.73rem}.tickerchip span{margin-left:5px;font-weight:850}.tickerchip em{font-style:normal;color:var(--muted);margin-left:5px}
+.charts{display:grid;grid-template-columns:1fr;gap:10px}.chartbox{padding:10px;background:var(--inner)}.controls{display:flex;gap:6px;flex-wrap:wrap;margin:7px 0}.controls button{border:1px solid #35465d;background:var(--btn);color:white;border-radius:9px;padding:8px 12px;font-weight:800;cursor:pointer}.controls button.active{background:var(--active)}.chart{height:410px}.count{font-size:.69rem;color:var(--muted);margin-top:2px;line-height:1.4}.legendnote{font-size:.68rem;color:var(--muted);line-height:1.4;margin-top:5px}.pending{color:#fbbf24}.error{display:none;background:#451a1a;border:1px solid #7f1d1d;padding:12px;border-radius:10px;margin:12px 0}.footer{font-size:.7rem;color:var(--muted);padding:8px 2px 22px}
+@media(max-width:850px){.topgrid,.modelmeta{grid-template-columns:repeat(2,1fr)}.assets{grid-template-columns:repeat(2,1fr)}.chart{height:350px}.wrap{padding:11px}}
+@media(max-width:480px){.assets{grid-template-columns:1fr 1fr}.value{font-size:1.03rem}.controls button{padding:8px 9px;font-size:.75rem}.chart{height:320px}.modelhead{display:block}.tickerbar{top:4px}}
 </style>
 </head>
 <body>
-<main class="wrap" id="dualTakeoverV3">
+<main class="wrap" id="dualTakeoverV4">
   <h1>Profuturo Fondo 3</h1>
   <div class="sub">Comparación operativa · solo dos modelos OLS Rolling 30 · seguimiento contra SBS</div>
   <div id="loadError" class="error"></div>
@@ -26,7 +39,7 @@
     <div class="card"><div class="label">Comparación histórica ciega</div><div class="value" id="dWin">—</div><div class="small" id="dDiff">—</div></div>
   </section>
 
-  <section class="model dv3m" id="dM_qqq" data-model="qqq">
+  <section class="model dv4m" id="dM_qqq" data-model="qqq">
     <div class="modelhead"><div><h2>Modelo A · Rolling 30 + QQQ</h2><div class="sub">SPY, EEM, EPU, MCHI, USD/PEN y QQQ · recalibración Rolling 30</div></div><div class="small" id="metaA">—</div></div>
     <div class="modelmeta">
       <div class="mini"><span class="label">VC estimado actual</span><b id="aVc2">—</b></div>
@@ -34,7 +47,8 @@
       <div class="mini"><span class="label">Ancla SBS</span><b id="aAnchor">—</b></div>
       <div class="mini"><span class="label">MAPE histórico ciego</span><b id="aMape">—</b></div>
     </div>
-    <div class="market"><h3>Tickers / factores del último corte</h3><div class="assets" id="assets_qqq"></div></div>
+    <div class="market"><h3>Factores intradía usados por el Modelo A</h3><div class="assets" id="assets_qqq"></div></div>
+    <div class="tickerbar" id="tickerbar_qqq"><div class="tag">Modelo A · intradía</div></div>
     <div class="charts">
       <div class="chartbox">
         <h3>VC SBS real vs VC estimado</h3>
@@ -47,12 +61,12 @@
         <div class="controls" data-k="qqq" data-t="Ret"></div>
         <div class="count" id="dRetN_qqq">—</div>
         <div class="chart" id="dRet_qqq"></div>
-        <div class="legendnote">Los tallos parten de 0%. Verde = SUBE, rojo = BAJA, amarillo = NEUTRO. Los puntos abiertos corresponden a estimaciones sin VC SBS revelado.</div>
+        <div class="legendnote">Los tallos parten de 0%. Verde = SUBE, rojo = BAJA, amarillo = NEUTRO. Los días posteriores al último VC oficial SBS quedan sin punto naranja hasta que SBS publique el dato.</div>
       </div>
     </div>
   </section>
 
-  <section class="model dv3m" id="dM_new_tickers" data-model="new_tickers">
+  <section class="model dv4m" id="dM_new_tickers" data-model="new_tickers">
     <div class="modelhead"><div><h2>Modelo B · Rolling 30 + nuevos tickers</h2><div class="sub">.INX, CPER, EEM, NDX, SPBLSCUP y USD/PEN · recalibración Rolling 30</div></div><div class="small" id="metaB">—</div></div>
     <div class="modelmeta">
       <div class="mini"><span class="label">VC estimado actual</span><b id="bVc2">—</b></div>
@@ -60,7 +74,8 @@
       <div class="mini"><span class="label">Ancla SBS</span><b id="bAnchor">—</b></div>
       <div class="mini"><span class="label">MAPE histórico ciego</span><b id="bMape">—</b></div>
     </div>
-    <div class="market"><h3>Tickers / factores del último corte</h3><div class="assets" id="assets_new_tickers"></div></div>
+    <div class="market"><h3>Factores intradía usados por el Modelo B</h3><div class="assets" id="assets_new_tickers"></div></div>
+    <div class="tickerbar" id="tickerbar_new_tickers"><div class="tag">Modelo B · intradía</div></div>
     <div class="charts">
       <div class="chartbox">
         <h3>VC SBS real vs VC estimado</h3>
@@ -73,7 +88,7 @@
         <div class="controls" data-k="new_tickers" data-t="Ret"></div>
         <div class="count" id="dRetN_new_tickers">—</div>
         <div class="chart" id="dRet_new_tickers"></div>
-        <div class="legendnote">Los tallos parten de 0%. Verde = SUBE, rojo = BAJA, amarillo = NEUTRO. Los puntos abiertos corresponden a estimaciones sin VC SBS revelado.</div>
+        <div class="legendnote">Los tallos parten de 0%. Verde = SUBE, rojo = BAJA, amarillo = NEUTRO. Los días posteriores al último VC oficial SBS quedan sin punto naranja hasta que SBS publique el dato.</div>
       </div>
     </div>
   </section>
@@ -87,14 +102,16 @@ const DATA='data/dual_rolling30_monitor.json';
 let DB=null;
 const state={qqq:{Vc:'30',Ret:'30'},new_tickers:{Vc:'30',Ret:'30'}};
 const $=id=>document.getElementById(id);
-const vc=x=>Number.isFinite(Number(x))?Number(x).toFixed(7):'—';
-const pct=(x,d=3)=>Number.isFinite(Number(x))?((Number(x)>=0?'+':'')+(Number(x)*100).toFixed(d)+'%'):'—';
-const pctPlain=(x,d=4)=>Number.isFinite(Number(x))?Number(x).toFixed(d)+'%':'—';
+function nval(x){if(x===null||x===undefined||x==='')return null;const n=Number(x);return Number.isFinite(n)?n:null}
+const vc=x=>nval(x)===null?'—':nval(x).toFixed(7);
+const pct=(x,d=3)=>{const n=nval(x);return n===null?'—':`${n>=0?'+':''}${(n*100).toFixed(d)}%`};
+const pctPlain=(x,d=4)=>{const n=nval(x);return n===null?'—':n.toFixed(d)+'%'};
 const dateFmt=s=>{if(!s)return '—';const p=String(s).slice(0,10).split('-');return p.length===3?`${p[2]}/${p[1]}/${p[0]}`:String(s)};
 const sigClass=s=>s==='SUBE'?'up':s==='BAJA'?'down':'flat';
 const signalColor=s=>s==='SUBE'?'#4ade80':s==='BAJA'?'#f87171':'#fbbf24';
-function setSignal(id,s,ret){const e=$(id);e.textContent=`${s||'—'}${ret!=null?' · '+pct(ret):''}`;e.className='signal '+sigClass(s)}
-function actualRet(r){if(Number.isFinite(Number(r.actual_return)))return Number(r.actual_return);if(Number.isFinite(Number(r.actual_vc))&&Number.isFinite(Number(r.base_vc))&&Number(r.base_vc)!==0)return Number(r.actual_vc)/Number(r.base_vc)-1;return null}
+function setSignal(id,s,ret){const e=$(id);e.textContent=`${s||'—'}${nval(ret)!==null?' · '+pct(ret):''}`;e.className='signal '+sigClass(s)}
+function actualRet(r){const direct=nval(r.actual_return);if(direct!==null)return direct;const av=nval(r.actual_vc),bv=nval(r.base_vc);if(av!==null&&bv!==null&&bv!==0)return av/bv-1;return null}
+function hasSbsActual(r){return nval(r.actual_vc)!==null && String(r.fecha).slice(0,10)<=String(DB.latest_sbs?.fecha||'9999-12-31').slice(0,10)}
 function mergeRows(m){
   const map=new Map();
   for(const r of (m.history_one_step||[]))map.set(String(r.fecha).slice(0,10),{...r,_kind:'Histórico ciego'});
@@ -112,21 +129,45 @@ function mergeRows(m){
 function rowsRange(rows,d){if(d==='all')return rows.slice();const last=new Date(rows.at(-1).fecha+'T00:00:00');const cut=new Date(last);cut.setDate(cut.getDate()-Number(d));return rows.filter(r=>new Date(r.fecha+'T00:00:00')>=cut)}
 function rangeLabel(d){return d==='all'?'Todo':d+' días'}
 function buildControls(k,t){const box=document.querySelector(`.controls[data-k="${k}"][data-t="${t}"]`);box.innerHTML='';for(const d of ['7','15','30','90','all']){const b=document.createElement('button');b.type='button';b.dataset.d=d;b.textContent=rangeLabel(d);if(state[k][t]===d)b.classList.add('active');b.onclick=()=>{state[k][t]=d;[...box.children].forEach(x=>x.classList.toggle('active',x===b));draw(k,t)};box.appendChild(b)}}
-function countNote(k,t,rows){const id=`d${t}N_${k}`;$(id).textContent=`${rows.length} puntos · ${dateFmt(rows[0]?.fecha)} → ${dateFmt(rows.at(-1)?.fecha)}`}
-const layoutBase={paper_bgcolor:'#0b1728',plot_bgcolor:'#0b1728',font:{color:'#dbe7f5',size:11},margin:{l:58,r:18,t:18,b:52},xaxis:{type:'date',gridcolor:'#213147',zeroline:false},yaxis:{gridcolor:'#213147',zeroline:false},showlegend:true,legend:{orientation:'h',x:0,y:1.12},hovermode:'x unified'};
+function countNote(k,t,rows){const id=`d${t}N_${k}`;const pending=rows.some(r=>String(r.fecha).slice(0,10)>String(DB.latest_sbs?.fecha||'').slice(0,10));$(id).innerHTML=`${rows.length} puntos · ${dateFmt(rows[0]?.fecha)} → ${dateFmt(rows.at(-1)?.fecha)}${pending?` · <span class="pending">SBS real solo hasta ${dateFmt(DB.latest_sbs?.fecha)}; posteriores pendientes</span>`:''}`}
+const layoutBase={paper_bgcolor:'#0b1728',plot_bgcolor:'#0b1728',font:{color:'#dbe7f5',size:11},margin:{l:58,r:18,t:22,b:52},xaxis:{type:'date',gridcolor:'#213147',zeroline:false},yaxis:{gridcolor:'#213147',zeroline:false},showlegend:true,legend:{orientation:'h',x:0,y:1.12},hovermode:'x unified'};
 const config={responsive:true,displaylogo:false,modeBarButtonsToRemove:['lasso2d','select2d']};
-function drawVc(k){const m=DB.models[k],rows=rowsRange(mergeRows(m),state[k].Vc);countNote(k,'Vc',rows);const x=rows.map(r=>r.fecha);const est=rows.map(r=>Number(r.vc_estimated));const real=rows.map(r=>Number.isFinite(Number(r.actual_vc))?Number(r.actual_vc):null);const symbols=rows.map(r=>Number.isFinite(Number(r.actual_vc))?'circle':'circle-open');const custom=rows.map(r=>[r._kind,r.signal||'—']);Plotly.react(`dVc_${k}`,[{x,y:est,type:'scatter',mode:'lines+markers',name:'VC estimado Rolling 30',line:{color:'#38bdf8',width:2},marker:{color:'#38bdf8',size:7,symbol:symbols},customdata:custom,hovertemplate:'%{x}<br>VC estimado %{y:.7f}<br>%{customdata[0]}<br>Señal %{customdata[1]}<extra></extra>'},{x,y:real,type:'scatter',mode:'lines+markers',name:'VC real SBS',line:{color:'#fb923c',width:2},marker:{color:'#fb923c',size:7,symbol:'diamond'},hovertemplate:'%{x}<br>VC SBS %{y:.7f}<extra></extra>'}],{...layoutBase,yaxis:{...layoutBase.yaxis,title:'Valor cuota'}},config)}
-function drawRet(k){const m=DB.models[k],rows=rowsRange(mergeRows(m),state[k].Ret);countNote(k,'Ret',rows);const x=rows.map(r=>r.fecha);const est=rows.map(r=>Number(r.return_estimated)*100);const real=rows.map(r=>{const z=actualRet(r);return z==null?null:z*100});const colors=rows.map(r=>signalColor(r.signal));const symbols=rows.map(r=>Number.isFinite(Number(r.actual_vc))?'circle':'circle-open');const shapes=[];rows.forEach((r,i)=>{if(Number.isFinite(est[i]))shapes.push({type:'line',x0:r.fecha,x1:r.fecha,y0:0,y1:est[i],line:{color:'#48647f',width:1}});if(real[i]!=null)shapes.push({type:'line',x0:r.fecha,x1:r.fecha,y0:0,y1:real[i],line:{color:'#7c2d12',width:1}})});shapes.push({type:'line',xref:'paper',x0:0,x1:1,y0:.1,y1:.1,line:{color:'#94a3b8',width:1,dash:'dot'}},{type:'line',xref:'paper',x0:0,x1:1,y0:-.1,y1:-.1,line:{color:'#94a3b8',width:1,dash:'dot'}});Plotly.react(`dRet_${k}`,[{x,y:est,type:'scatter',mode:'markers',name:'Retorno estimado',marker:{size:8,color:colors,symbol:symbols,line:{width:1}},customdata:rows.map(r=>[r.signal||'—',r._kind]),hovertemplate:'%{x}<br>Estimado %{y:.3f}%<br>%{customdata[0]} · %{customdata[1]}<extra></extra>'},{x,y:real,type:'scatter',mode:'markers',name:'Retorno real SBS',marker:{size:8,color:'#fb923c',symbol:'diamond'},hovertemplate:'%{x}<br>SBS %{y:.3f}%<extra></extra>'}],{...layoutBase,shapes,yaxis:{...layoutBase.yaxis,title:'Retorno %',zeroline:true,zerolinecolor:'#cbd5e1',zerolinewidth:1}},config)}
+function drawVc(k){
+  const m=DB.models[k],rows=rowsRange(mergeRows(m),state[k].Vc);countNote(k,'Vc',rows);
+  const x=rows.map(r=>r.fecha),est=rows.map(r=>nval(r.vc_estimated)),real=rows.map(r=>hasSbsActual(r)?nval(r.actual_vc):null),symbols=rows.map(r=>hasSbsActual(r)?'circle':'circle-open'),custom=rows.map(r=>[r._kind,r.signal||'—']);
+  Plotly.react(`dVc_${k}`,[
+    {x,y:est,type:'scatter',mode:'lines+markers',name:'VC estimado Rolling 30',connectgaps:false,line:{color:'#38bdf8',width:2},marker:{color:'#38bdf8',size:7,symbol:symbols},customdata:custom,hovertemplate:'%{x}<br>VC estimado %{y:.7f}<br>%{customdata[0]}<br>Señal %{customdata[1]}<extra></extra>'},
+    {x,y:real,type:'scatter',mode:'lines+markers',name:'VC real SBS',connectgaps:false,line:{color:'#fb923c',width:2},marker:{color:'#fb923c',size:7,symbol:'diamond'},hovertemplate:'%{x}<br>VC SBS %{y:.7f}<extra></extra>'}
+  ],{...layoutBase,yaxis:{...layoutBase.yaxis,title:'Valor cuota',autorange:true}},config);
+}
+function drawRet(k){
+  const m=DB.models[k],rows=rowsRange(mergeRows(m),state[k].Ret);countNote(k,'Ret',rows);
+  const x=rows.map(r=>r.fecha),est=rows.map(r=>{const n=nval(r.return_estimated);return n===null?null:n*100}),real=rows.map(r=>{if(String(r.fecha).slice(0,10)>String(DB.latest_sbs?.fecha||'9999-12-31').slice(0,10))return null;const z=actualRet(r);return z===null?null:z*100}),colors=rows.map(r=>signalColor(r.signal)),symbols=rows.map(r=>hasSbsActual(r)?'circle':'circle-open');
+  const shapes=[];
+  rows.forEach((r,i)=>{if(est[i]!==null)shapes.push({type:'line',x0:r.fecha,x1:r.fecha,y0:0,y1:est[i],line:{color:'#48647f',width:1}});if(real[i]!==null)shapes.push({type:'line',x0:r.fecha,x1:r.fecha,y0:0,y1:real[i],line:{color:'#7c2d12',width:1}})});
+  shapes.push({type:'line',xref:'paper',x0:0,x1:1,y0:.1,y1:.1,line:{color:'#94a3b8',width:1,dash:'dot'}},{type:'line',xref:'paper',x0:0,x1:1,y0:-.1,y1:-.1,line:{color:'#94a3b8',width:1,dash:'dot'}});
+  Plotly.react(`dRet_${k}`,[
+    {x,y:est,type:'scatter',mode:'markers',name:'Retorno estimado',marker:{size:8,color:colors,symbol:symbols,line:{width:1}},customdata:rows.map(r=>[r.signal||'—',r._kind]),hovertemplate:'%{x}<br>Estimado %{y:.3f}%<br>%{customdata[0]} · %{customdata[1]}<extra></extra>'},
+    {x,y:real,type:'scatter',mode:'markers',name:'Retorno real SBS',marker:{size:8,color:'#fb923c',symbol:'diamond'},hovertemplate:'%{x}<br>SBS %{y:.3f}%<extra></extra>'}
+  ],{...layoutBase,shapes,yaxis:{...layoutBase.yaxis,title:'Retorno %',zeroline:true,zerolinecolor:'#cbd5e1',zerolinewidth:1,autorange:true}},config);
+}
 function draw(k,t){if(!DB)return;t==='Vc'?drawVc(k):drawRet(k)}
-function renderAssets(k){const box=$(`assets_${k}`),a=DB.models[k].intraday_assets||[];box.innerHTML='';for(const z of a){const r=Number(z.retorno_modelo??z.retorno),price=Number(z.precio_actual);const div=document.createElement('div');div.className='asset';div.innerHTML=`<div class="sym">${z.serie||z.ticker||'—'}</div><div class="price">${Number.isFinite(price)?price.toFixed(price<10?4:2):'s/p'}</div><div class="ret ${r>0?'up':r<0?'down':'flat'}">${pct(r)}</div><div class="src">${z.estado||'Último corte'}<br>${z.timestamp||''}</div>`;box.appendChild(div)}}
+function assetPrice(z){const p=nval(z.precio_actual);return p===null?'s/p':p.toFixed(p<10?4:2)}
+function renderAssets(k){
+  const a=DB.models[k].intraday_assets||[],box=$(`assets_${k}`),bar=$(`tickerbar_${k}`);box.innerHTML='';bar.innerHTML=`<div class="tag">${k==='qqq'?'Modelo A':'Modelo B'} · intradía</div>`;
+  for(const z of a){const r=nval(z.retorno_modelo??z.retorno),div=document.createElement('div');div.className='asset';div.innerHTML=`<div class="sym">${z.serie||z.ticker||'—'}</div><div class="price">${assetPrice(z)}</div><div class="ret ${r>0?'up':r<0?'down':'flat'}">${pct(r)}</div><div class="src">${z.estado||'Último corte'}<br>${z.timestamp||''}</div>`;box.appendChild(div);
+    const chip=document.createElement('div');chip.className='tickerchip';chip.innerHTML=`<b>${z.serie||z.ticker||'—'}</b><em>${assetPrice(z)}</em><span class="${r>0?'up':r<0?'down':'flat'}">${pct(r)}</span>`;bar.appendChild(chip);
+  }
+}
 function render(){
- const s=DB.latest_sbs||{},a=DB.models.qqq,b=DB.models.new_tickers,ac=a.current||{},bc=b.current||{};
- $('dSbs').textContent=vc(s.vc);$('dSbsDate').textContent=`SBS · ${dateFmt(s.fecha)}`;
- $('dAVc').textContent=vc(ac.vc_estimated);$('dBVc').textContent=vc(bc.vc_estimated);$('dADate').textContent=`${dateFmt(ac.fecha)} · retorno ${pct(ac.return_estimated)}`;$('dBDate').textContent=`${dateFmt(bc.fecha)} · retorno ${pct(bc.return_estimated)}`;setSignal('dASig',ac.signal,ac.return_estimated);setSignal('dBSig',bc.signal,bc.return_estimated);
- const ma=Number(a.history_metrics?.mape_pct),mb=Number(b.history_metrics?.mape_pct);$('dWin').textContent=ma<=mb?'Modelo A':'Modelo B';$('dDiff').textContent=`MAPE A ${pctPlain(ma)} · B ${pctPlain(mb)} · Δ VC actual ${(Number(bc.vc_estimated)-Number(ac.vc_estimated)).toFixed(7)}`;
- $('aVc2').textContent=vc(ac.vc_estimated);$('bVc2').textContent=vc(bc.vc_estimated);$('aRet').textContent=`${pct(ac.return_estimated)} · ${ac.signal}`;$('bRet').textContent=`${pct(bc.return_estimated)} · ${bc.signal}`;$('aAnchor').textContent=`${vc(ac.anchor_vc)} · ${dateFmt(ac.anchor_date)}`;$('bAnchor').textContent=`${vc(bc.anchor_vc)} · ${dateFmt(bc.anchor_date)}`;$('aMape').textContent=pctPlain(ma);$('bMape').textContent=pctPlain(mb);$('metaA').textContent=`Entrena ${ac.train_n||30} · ${dateFmt(ac.train_start)}–${dateFmt(ac.train_end)}`;$('metaB').textContent=`Entrena ${bc.train_n||30} · ${dateFmt(bc.train_start)}–${dateFmt(bc.train_end)}`;
- renderAssets('qqq');renderAssets('new_tickers');for(const k of ['qqq','new_tickers'])for(const t of ['Vc','Ret']){buildControls(k,t);draw(k,t)}
- $('updated').textContent=`Datos: ${DB.generated_at_lima||'—'} · ${DB.market_mode||''}. Histórico ciego y seguimiento operativo se muestran sin recalibración retroactiva de los puntos ya generados.`;
+  const s=DB.latest_sbs||{},a=DB.models.qqq,b=DB.models.new_tickers,ac=a.current||{},bc=b.current||{};
+  $('dSbs').textContent=vc(s.vc);$('dSbsDate').textContent=`SBS · ${dateFmt(s.fecha)}`;
+  $('dAVc').textContent=vc(ac.vc_estimated);$('dBVc').textContent=vc(bc.vc_estimated);$('dADate').textContent=`${dateFmt(ac.fecha)} · retorno ${pct(ac.return_estimated)}`;$('dBDate').textContent=`${dateFmt(bc.fecha)} · retorno ${pct(bc.return_estimated)}`;setSignal('dASig',ac.signal,ac.return_estimated);setSignal('dBSig',bc.signal,bc.return_estimated);
+  const ma=nval(a.history_metrics?.mape_pct),mb=nval(b.history_metrics?.mape_pct);$('dWin').textContent=ma!==null&&mb!==null?(ma<=mb?'Modelo A':'Modelo B'):'—';$('dDiff').textContent=`MAPE A ${pctPlain(ma)} · B ${pctPlain(mb)} · Δ VC actual ${(nval(bc.vc_estimated)-nval(ac.vc_estimated)).toFixed(7)}`;
+  $('aVc2').textContent=vc(ac.vc_estimated);$('bVc2').textContent=vc(bc.vc_estimated);$('aRet').textContent=`${pct(ac.return_estimated)} · ${ac.signal}`;$('bRet').textContent=`${pct(bc.return_estimated)} · ${bc.signal}`;$('aAnchor').textContent=`${vc(ac.anchor_vc)} · ${dateFmt(ac.anchor_date)}`;$('bAnchor').textContent=`${vc(bc.anchor_vc)} · ${dateFmt(bc.anchor_date)}`;$('aMape').textContent=pctPlain(ma);$('bMape').textContent=pctPlain(mb);$('metaA').textContent=`Entrena ${ac.train_n||30} · ${dateFmt(ac.train_start)}–${dateFmt(ac.train_end)}`;$('metaB').textContent=`Entrena ${bc.train_n||30} · ${dateFmt(bc.train_start)}–${dateFmt(bc.train_end)}`;
+  renderAssets('qqq');renderAssets('new_tickers');
+  for(const k of ['qqq','new_tickers'])for(const t of ['Vc','Ret']){buildControls(k,t);draw(k,t)}
+  $('updated').textContent=`Datos: ${DB.generated_at_lima||'—'} · ${DB.market_mode||''}. Los VC SBS no publicados se muestran como pendientes, nunca como cero.`;
 }
 fetch(DATA+'?ts='+Date.now(),{cache:'no-store'}).then(r=>{if(!r.ok)throw Error('HTTP '+r.status);return r.json()}).then(d=>{DB=d;if(!d.models?.qqq||!d.models?.new_tickers)throw Error('Faltan los dos modelos Rolling 30');render()}).catch(e=>{const box=$('loadError');box.style.display='block';box.textContent='No se pudieron cargar los datos del visor dual: '+e.message;console.error(e)});
 })();
