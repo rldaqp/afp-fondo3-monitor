@@ -25,6 +25,8 @@ on:
       - "scripts/finalize_notebook_parity_v4.py"
       - "scripts/finalize_notebook_parity_v5.py"
       - "scripts/finalize_fx_hybrid.py"
+      - "public/data/visor_hotfix_v1.js"
+      - "public/data/alt_runtime_v5.js"
       - "requirements.txt"
   schedule:
     - cron: "20 5-23 * * 1-5"
@@ -164,6 +166,26 @@ jobs:
         run: |
           git fetch origin migracion-github-actions
           git reset --hard origin/migracion-github-actions
+
+      - name: Preservar runtime operativo de Profuturo en el sitio completo
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('public/index.html')
+          html=p.read_text(encoding='utf-8')
+          tags=[
+            '<script src="data/alt_runtime_v5.js?rev=ALT6030V5"></script>',
+            '<script src="data/spblscup_stale_fix.js?rev=SPBLCLOSEV1"></script>',
+            '<script src="data/visor_hotfix_v1.js?rev=VISORHOTFIX1"></script>',
+          ]
+          for tag in tags:
+              if tag not in html:
+                  html=html.replace('</body>',tag+'\n</body>',1)
+          p.write_text(html,encoding='utf-8')
+          PY
+          test -s public/data/alt_runtime_v5.js
+          test -s public/data/visor_hotfix_v1.js
+          grep -q "visor_hotfix_v1.js" public/index.html
 
       - name: Configurar GitHub Pages
         uses: actions/configure-pages@v5
