@@ -10,6 +10,7 @@ on:
       - "public/index.html"
       - "public/data/alt_runtime_v5.js"
       - "public/data/spblscup_stale_fix.js"
+      - "public/data/visor_hotfix_v1.js"
       - "public/data/live_market.json"
       - "public/data/alt_6030_experimental.json"
       - "public/data/reduced_6030_challenger.json"
@@ -45,6 +46,7 @@ jobs:
           tags = [
               '<script src="data/alt_runtime_v5.js?rev=ALT6030V5"></script>',
               '<script src="data/spblscup_stale_fix.js?rev=SPBLCLOSEV1"></script>',
+              '<script src="data/visor_hotfix_v1.js?rev=VISORHOTFIX1"></script>',
           ]
           for tag in tags:
               if tag not in html:
@@ -57,16 +59,20 @@ jobs:
           test -s public/index.html
           test -s public/data/alt_runtime_v5.js
           test -s public/data/spblscup_stale_fix.js
+          test -s public/data/visor_hotfix_v1.js
           test -s public/data/live_market.json
           test -s public/data/alt_6030_experimental.json
           test -s public/data/reduced_6030_challenger.json
           test -s public/data/latest.json
           grep -q "alt_runtime_v5.js" public/index.html
           grep -q "spblscup_stale_fix.js" public/index.html
+          grep -q "visor_hotfix_v1.js" public/index.html
           grep -q '"experimental_assets"' public/data/live_market.json
           grep -q '"vc_estimated"' public/data/alt_6030_experimental.json
           grep -q "Registrar operación" public/data/alt_runtime_v5.js
           grep -q "REANCLADO" public/data/alt_runtime_v5.js
+          grep -q "saveCurrentHotfix" public/data/visor_hotfix_v1.js
+          grep -q "updateTopSbs" public/data/visor_hotfix_v1.js
 
       - name: Configurar GitHub Pages
         uses: actions/configure-pages@v5
@@ -95,12 +101,12 @@ jobs:
           from pathlib import Path
           p=Path('public/data/pages_deploy_verified.json')
           p.write_text(json.dumps({
-            'runtime':'ALT6030V5+SPBLCLOSEV1',
+            'runtime':'ALT6030V5+SPBLCLOSEV1+VISORHOTFIX1',
             'deployed_at_utc':datetime.now(timezone.utc).isoformat(),
             'commit':os.environ.get('GITHUB_SHA'),
             'page_url':os.environ.get('DEPLOY_URL')
           },ensure_ascii=False,indent=2),encoding='utf-8')
           PY
           git add public/data/pages_deploy_verified.json
-          git commit -m "Registrar despliegue Pages ALT6030V5" || true
+          git commit -m "Registrar despliegue Pages con hotfix operaciones" || true
           git push origin HEAD:migracion-github-actions || true
