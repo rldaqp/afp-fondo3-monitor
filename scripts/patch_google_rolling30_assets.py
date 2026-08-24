@@ -35,6 +35,17 @@ def num(text: str) -> float:
     return float(m.group(0))
 
 
+def numeric_candidates(text: str) -> list[float]:
+    """Convierte solo tokens numéricos válidos; Google a veces devuelve ',' como token."""
+    out: list[float] = []
+    for token in re.findall(r"(?:\$\s*)?[\d,]+(?:\.\d+)?", text):
+        try:
+            out.append(num(token))
+        except (TypeError, ValueError):
+            continue
+    return out
+
+
 def scrape_all() -> dict[str, dict]:
     from selenium import webdriver
     from selenium.webdriver.common.by import By
@@ -72,8 +83,8 @@ def scrape_all() -> dict[str, dict]:
                         price = candidate
                         break
                 if price is None:
-                    # Respaldo: el precio principal suele aparecer al inicio del bloque de cotización.
-                    candidates = [num(x) for x in re.findall(r"(?:\$\s*)?[\d,]+(?:\.\d+)?", body[:1200])]
+                    # Respaldo robusto: ignora tokens vacíos/comas y conserva solo números válidos.
+                    candidates = numeric_candidates(body[:1600])
                     price = next((x for x in candidates if lo < x < hi), None)
                 if price is None:
                     raise RuntimeError("No se identificó precio principal")
