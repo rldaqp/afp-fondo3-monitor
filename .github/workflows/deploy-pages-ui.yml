@@ -48,6 +48,22 @@ jobs:
           assert tag in html
           PY
 
+      - name: Corregir base operativa de rentabilidad
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('public/data/dual_trade_runtime_v1.js')
+          js=p.read_text(encoding='utf-8')
+          old="function rowMetrics(r){const re=finite(r.entry_est_vc)&&finite(r.exit_est_vc)&&Number(r.entry_est_vc)!==0?Number(r.exit_est_vc)/Number(r.entry_est_vc)-1:null;const rr=finite(r.entry_sbs_vc)&&finite(r.exit_sbs_vc)&&Number(r.entry_sbs_vc)!==0?Number(r.exit_sbs_vc)/Number(r.entry_sbs_vc)-1:null;const cap=finite(r.capital)?Number(r.capital):null;return{re,rr,ge:re!==null&&cap!==null?cap*re:null,gr:rr!==null&&cap!==null?cap*rr:null};}"
+          new="function rowMetrics(r){const entryBase=finite(r.entry_sbs_vc)?Number(r.entry_sbs_vc):(finite(r.entry_est_vc)?Number(r.entry_est_vc):null);const re=entryBase!==null&&entryBase!==0&&finite(r.exit_est_vc)?Number(r.exit_est_vc)/entryBase-1:null;const rr=finite(r.entry_sbs_vc)&&finite(r.exit_sbs_vc)&&Number(r.entry_sbs_vc)!==0?Number(r.exit_sbs_vc)/Number(r.entry_sbs_vc)-1:null;const cap=finite(r.capital)?Number(r.capital):null;return{re,rr,ge:re!==null&&cap!==null?cap*re:null,gr:rr!==null&&cap!==null?cap*rr:null};}"
+          if old not in js:
+              raise SystemExit('No se encontró la fórmula antigua de rowMetrics')
+          js=js.replace(old,new,1)
+          p.write_text(js,encoding='utf-8')
+          assert 'const entryBase=finite(r.entry_sbs_vc)' in js
+          print('Histórico de operación usa la misma base que Calcular: SBS de entrada si ya existe; estimado solo si SBS está pendiente.')
+          PY
+
       - name: Validar datos y visor dual
         run: |
           set -e
@@ -62,6 +78,7 @@ jobs:
           grep -q 'Conectar Drive' public/data/dual_trade_runtime_v1.js
           grep -q "profuturo_fondo3_trade_history_v3" public/data/dual_trade_runtime_v1.js
           grep -q "fondo3_drive_sync_key_v1" public/data/dual_trade_runtime_v1.js
+          grep -q "const entryBase=finite(r.entry_sbs_vc)" public/data/dual_trade_runtime_v1.js
           ! grep -q 'OLS OFICIAL · ROLLING 90' public/index.html
           python - <<'PY'
           import json
@@ -134,8 +151,7 @@ jobs:
             if(await page.locator('[data-trademode]').count()!==3) throw Error('Faltan modos de operación');
             if(await page.locator('#tradeSave').count()!==1) throw Error('Falta Registrar operación');
             if(await page.locator('#tradeCloudConnect').count()!==1) throw Error('Falta Conectar Drive');
-            await page.locator('[data-trademode="inside"]').click();
-            if(!await page.locator('#tradeForm').isVisible()) throw Error('Formulario de operación no abre');
+
             const txt=async s=>(await page.locator(s).textContent()).trim();
             const fx=await page.evaluate(()=>{
               const read=id=>[...document.querySelectorAll('#'+id+' .tickerchip')].find(x=>x.querySelector('.sym')?.textContent?.replace('_','/').includes('USD/PEN'));
@@ -144,6 +160,7 @@ jobs:
               return {aPrice:p(read('tickerbar_qqq')),bPrice:p(read('tickerbar_new_tickers')),aRet:q(read('tickerbar_qqq')),bRet:q(read('tickerbar_new_tickers'))};
             });
             if(fx.aPrice!==fx.bPrice || fx.aRet!==fx.bRet) throw Error('USD/PEN visible distinto '+JSON.stringify(fx));
+
             const counts={};
             for(const d of ['7','15','30','90','all']){
               await page.locator(`.controls[data-k="qqq"][data-t="Vc"] button[data-d="${d}"]`).click();
@@ -152,6 +169,7 @@ jobs:
               const m=note.match(/^(\d+) puntos/); counts[d]=m?Number(m[1]):null;
             }
             if(!(counts['7']<counts['30'] && counts['30']<=counts['90'] && counts['90']<=counts['all'])) throw Error('Rangos no cambian '+JSON.stringify(counts));
+
             const pending=await page.evaluate(()=>{
               const out={};
               for(const k of ['qqq','new_tickers']){
@@ -161,8 +179,29 @@ jobs:
               return out;
             });
             for(const [k,rows] of Object.entries(pending)) if(rows.some(x=>x.y!==null && x.y!==undefined)) throw Error(k+' SBS pendiente dibujado');
+
+            // Prueba real de consistencia de la operación: entrada SBS 19/08,
+            // salida aún estimada 21/08. El cálculo y la fila guardada deben coincidir.
+            await page.locator('[data-trademode="closed"]').click();
+            await page.locator('#tradeModel').selectOption('qqq');
+            await page.locator('#tradeEntry').fill('2026-08-19');
+            await page.locator('#tradeExit').fill('2026-08-21');
+            await page.locator('#tradeCapital').fill('25000');
+            await page.locator('#tradeCalc').click();
+            const calcRet=await txt('#tradeMRet');
+            const calcGain=await txt('#tradeMGain');
+            const calcFinal=await txt('#tradeMFinal');
+            const detail=await txt('#tradeDetail');
+            if(!detail.includes('70.3276160') || !detail.includes('71.8606887')) throw Error('La operación no usa SBS entrada + VC estimado vigente: '+detail);
+            await page.locator('#tradeSave').click();
+            await page.waitForTimeout(200);
+            const cells=page.locator('#tradeBody tr').first().locator('td');
+            const histRet=(await cells.nth(8).textContent()).trim();
+            const histGain=(await cells.nth(10).textContent()).trim();
+            if(histRet!==calcRet || histGain!==calcGain) throw Error(`Operación inconsistente: calcular ${calcRet}/${calcGain}; histórico ${histRet}/${histGain}`);
+
             if(errs.length) throw Error('Consola: '+errs.join(' | '));
-            const out={checked_at_utc:new Date().toISOString(),url,http:r.status(),sbs:await txt('#dSbs'),a:await txt('#dAVc'),b:await txt('#dBVc'),fx,counts,pending,operation_ui:true,drive_ui:true,status:'PASS_DYNAMIC_DUAL_TRADE'};
+            const out={checked_at_utc:new Date().toISOString(),url,http:r.status(),sbs:await txt('#dSbs'),a:await txt('#dAVc'),b:await txt('#dBVc'),fx,counts,pending,operation_ui:true,drive_ui:true,operation_consistency:{entry:'2026-08-19',valuation:'2026-08-21',model:'qqq',capital:25000,final:calcFinal,return:calcRet,gain:calcGain,history_return:histRet,history_gain:histGain,status:'PASS'},status:'PASS_DYNAMIC_DUAL_TRADE_CONSISTENT'};
             fs.writeFileSync('/tmp/pages_ui_verified.json',JSON.stringify(out,null,2));
             console.log(JSON.stringify(out,null,2));
             await browser.close();
@@ -178,6 +217,6 @@ jobs:
           git reset --hard origin/migracion-github-actions
           cp /tmp/pages_ui_verified.json public/data/pages_ui_verified.json
           git add public/data/pages_ui_verified.json
-          git commit -m "Registrar visor dual con operaciones y Drive verificado" || true
+          git commit -m "Registrar visor dual con cálculo de operaciones consistente" || true
           git pull --rebase origin migracion-github-actions || true
           git push origin HEAD:migracion-github-actions || true
