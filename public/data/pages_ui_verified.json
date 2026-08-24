@@ -1,6 +1,6 @@
 {
-  "checked_at_utc": "2026-08-22T14:12:47.259Z",
-  "url": "https://rldaqp.github.io/afp-fondo3-monitor/?verify=1787407965277",
+  "checked_at_utc": "2026-08-24T01:27:01.208Z",
+  "url": "https://rldaqp.github.io/afp-fondo3-monitor/?verify=1787534818968",
   "http": 200,
   "sbs": "70.3276160",
   "a": "71.8606887",
@@ -42,5 +42,17 @@
   },
   "operation_ui": true,
   "drive_ui": true,
-  "status": "PASS_DYNAMIC_DUAL_TRADE"
+  "operation_consistency": {
+    "entry": "2026-08-19",
+    "valuation": "2026-08-21",
+    "model": "qqq",
+    "capital": 25000,
+    "final": "S/ 25,544.98",
+    "return": "+2.18%",
+    "gain": "S/ 544.98",
+    "history_return": "+2.18%",
+    "history_gain": "S/ 544.98",
+    "status": "PASS"
+  },
+  "status": "PASS_DYNAMIC_DUAL_TRADE_CONSISTENT"
 }
