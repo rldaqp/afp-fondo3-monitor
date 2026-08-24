@@ -1,87 +1,87 @@
 {
-  "generated_at_lima": "2026-08-24T12:24:28.322202-05:00",
+  "generated_at_lima": "2026-08-24T12:54:20.912970-05:00",
   "mode": "INTRADÍA PROVISIONAL",
   "market_open": true,
   "signal_date": "2026-08-24",
   "vc_base": 71.41435514610457,
-  "vc_estimated": 72.24521941713644,
-  "return_estimated": 0.01163441536833916,
+  "vc_estimated": 72.1874720951524,
+  "return_estimated": 0.010825791921892142,
   "signal": "SUBE",
   "assets": [
     {
       "serie": "SPY",
       "ticker": "SPY",
-      "timestamp": "2026-08-24T13:20:00-04:00",
+      "timestamp": "2026-08-24T13:50:00-04:00",
       "precio_anterior": 762.5999755859375,
-      "precio_actual": 763.594970703125,
-      "retorno": 0.001304740557358297,
-      "retorno_modelo": 0.001304740557358297,
+      "precio_actual": 763.25,
+      "retorno": 0.0008523792746819581,
+      "retorno_modelo": 0.0008523792746819581,
       "estado": "INTRADÍA YAHOO · USADO POR MODELO",
       "usado_modelo": true
     },
     {
       "serie": "NEM",
       "ticker": "NEM",
-      "timestamp": "2026-08-24T13:20:00-04:00",
+      "timestamp": "2026-08-24T13:50:00-04:00",
       "precio_anterior": 127.63999938964844,
-      "precio_actual": 130.67999267578125,
-      "retorno": 0.02381693278493824,
-      "retorno_modelo": 0.02381693278493824,
+      "precio_actual": 130.7899932861328,
+      "retorno": 0.024678736380030486,
+      "retorno_modelo": 0.024678736380030486,
       "estado": "INTRADÍA YAHOO · USADO POR MODELO",
       "usado_modelo": true
     },
     {
       "serie": "FCX",
       "ticker": "FCX",
-      "timestamp": "2026-08-24T13:20:00-04:00",
+      "timestamp": "2026-08-24T13:50:00-04:00",
       "precio_anterior": 71.22000122070312,
-      "precio_actual": 76.76000213623047,
-      "retorno": 0.07778714996591307,
-      "retorno_modelo": 0.07778714996591307,
+      "precio_actual": 76.80999755859375,
+      "retorno": 0.07848913566524418,
+      "retorno_modelo": 0.07848913566524418,
       "estado": "INTRADÍA YAHOO · USADO POR MODELO",
       "usado_modelo": true
     },
     {
       "serie": "EPU",
       "ticker": "EPU",
-      "timestamp": "2026-08-24T13:15:00-04:00",
+      "timestamp": "2026-08-24T13:50:00-04:00",
       "precio_anterior": 90.72000122070312,
-      "precio_actual": 93.83999633789062,
-      "retorno": 0.03439148010588311,
-      "retorno_modelo": 0.03439148010588311,
+      "precio_actual": 93.73999786376953,
+      "retorno": 0.03328920417140835,
+      "retorno_modelo": 0.03328920417140835,
       "estado": "INTRADÍA YAHOO · USADO POR MODELO",
       "usado_modelo": true
     },
     {
       "serie": "MCHI",
       "ticker": "MCHI",
-      "timestamp": "2026-08-24T13:20:00-04:00",
+      "timestamp": "2026-08-24T13:50:00-04:00",
       "precio_anterior": 55.5099983215332,
-      "precio_actual": 54.95500183105469,
-      "retorno": -0.00999813560187457,
-      "retorno_modelo": -0.00999813560187457,
+      "precio_actual": 54.869998931884766,
+      "retorno": -0.01152944350567875,
+      "retorno_modelo": -0.01152944350567875,
       "estado": "INTRADÍA YAHOO · USADO POR MODELO",
       "usado_modelo": true
     },
     {
       "serie": "EEM",
       "ticker": "EEM",
-      "timestamp": "2026-08-24T13:20:00-04:00",
+      "timestamp": "2026-08-24T13:50:00-04:00",
       "precio_anterior": 66.62000274658203,
-      "precio_actual": 66.07499694824219,
-      "retorno": -0.008180813207303683,
-      "retorno_modelo": -0.008180813207303683,
+      "precio_actual": 65.9749984741211,
+      "retorno": -0.009681840976718203,
+      "retorno_modelo": -0.009681840976718203,
       "estado": "INTRADÍA YAHOO · USADO POR MODELO",
       "usado_modelo": true
     },
     {
       "serie": "USD_PEN",
       "ticker": "PEN=X",
-      "timestamp": "2026-08-24T13:20:00-04:00",
+      "timestamp": "2026-08-24T13:50:00-04:00",
       "precio_anterior": 3.355299949645996,
-      "precio_actual": 3.3433001041412354,
-      "retorno": -0.003576385326154452,
-      "retorno_modelo": -0.003576385326154452,
+      "precio_actual": 3.3427000045776367,
+      "retorno": -0.0037552365682503863,
+      "retorno_modelo": -0.0037552365682503863,
       "estado": "YAHOO PEN=X · PROVISIONAL · USADO POR MODELO",
       "usado_modelo": true
     }
@@ -97,10 +97,10 @@
     {
       "serie": ".INX",
       "ticker": ".INX:INDEXSP",
-      "timestamp": "2026-08-24T13:20:00-04:00",
+      "timestamp": "2026-08-24T13:50:00-04:00",
       "precio_anterior": null,
-      "precio_actual": 7654.27978515625,
-      "retorno": -0.0026178476831936193,
+      "precio_actual": 7650.1298828125,
+      "retorno": -0.0031585959505278094,
       "retorno_modelo": null,
       "estado": "YAHOO ^GSPC · RESPALDO EQUIVALENTE · NUEVO 60/30 EXPERIMENTAL",
       "usado_modelo": false
@@ -108,21 +108,22 @@
     {
       "serie": "CPER",
       "ticker": "CPER:NYSEARCA",
-      "timestamp": "2026-08-24T13:20:00-04:00",
-      "precio_anterior": null,
-      "precio_actual": 40.11000061035156,
-      "retorno": 0.003000723352041712,
-      "retorno_modelo": null,
-      "estado": "YAHOO CPER · RESPALDO EQUIVALENTE · NUEVO 60/30 EXPERIMENTAL",
-      "usado_modelo": false
+      "timestamp": "2026-08-24",
+      "precio_anterior": 39.99,
+      "precio_actual": 38.83,
+      "retorno": -0.029007251812953383,
+      "retorno_modelo": -0.029007251812953383,
+      "estado": "GOOGLE FINANCE · SELENIUM · ROLLING30 NUEVOS TICKERS",
+      "usado_modelo": true,
+      "google_stamp": "Aug 24, 1:49:05 PM UTC-4"
     },
     {
       "serie": "EEM",
       "ticker": "EEM:NYSEARCA",
-      "timestamp": "2026-08-24T13:20:00-04:00",
+      "timestamp": "2026-08-24T13:50:00-04:00",
       "precio_anterior": null,
-      "precio_actual": 66.07499694824219,
-      "retorno": -0.01556921566712921,
+      "precio_actual": 65.9749984741211,
+      "retorno": -0.01705906176410643,
       "retorno_modelo": null,
       "estado": "YAHOO EEM · RESPALDO EQUIVALENTE · NUEVO 60/30 EXPERIMENTAL",
       "usado_modelo": false
@@ -130,32 +131,34 @@
     {
       "serie": "NDX",
       "ticker": "NDX:INDEXNASDAQ",
-      "timestamp": "2026-08-24T13:20:00-04:00",
-      "precio_anterior": null,
-      "precio_actual": 29067.49609375,
-      "retorno": -0.008235164602000133,
-      "retorno_modelo": null,
-      "estado": "YAHOO ^NDX · RESPALDO EQUIVALENTE · NUEVO 60/30 EXPERIMENTAL",
-      "usado_modelo": false
+      "timestamp": "2026-08-24",
+      "precio_anterior": 29308.86,
+      "precio_actual": 29045.8,
+      "retorno": -0.008975442920673204,
+      "retorno_modelo": -0.008975442920673204,
+      "estado": "GOOGLE FINANCE · SELENIUM · ROLLING30 NUEVOS TICKERS",
+      "usado_modelo": true,
+      "google_stamp": "Aug 24, 1:51:58 PM UTC-4"
     },
     {
       "serie": "SPBLSCUP",
       "ticker": "SPBLSCUP:INDEXSP",
-      "timestamp": "2026-08-20",
-      "precio_anterior": null,
-      "precio_actual": 446.7,
-      "retorno": null,
-      "retorno_modelo": null,
-      "estado": "ÚLTIMO CIERRE GOOGLE FINANCE GUARDADO · NUEVO 60/30 EXPERIMENTAL",
-      "usado_modelo": false
+      "timestamp": "2026-08-24",
+      "precio_anterior": 460.43,
+      "precio_actual": 500.0,
+      "retorno": 0.08594140260191563,
+      "retorno_modelo": 0.08594140260191563,
+      "estado": "GOOGLE FINANCE · SELENIUM · ROLLING30 NUEVOS TICKERS",
+      "usado_modelo": true,
+      "google_stamp": "Aug 24, 1:48:43 PM UTC-4"
     },
     {
       "serie": "USD/PEN",
       "ticker": "USD/PEN",
-      "timestamp": "2026-08-24T13:20:00-04:00",
+      "timestamp": "2026-08-24T13:50:00-04:00",
       "precio_anterior": 3.355299949645996,
-      "precio_actual": 3.3433001041412354,
-      "retorno": -0.003576385326154452,
+      "precio_actual": 3.3427000045776367,
+      "retorno": -0.0037552365682503863,
       "retorno_modelo": null,
       "estado": "YAHOO PEN=X · PROVISIONAL · USADO POR MODELO · NUEVO 60/30 EXPERIMENTAL",
       "usado_modelo": false
@@ -169,5 +172,37 @@
     "SPBLSCUP",
     "USD/PEN"
   ],
-  "experimental_note": "Seguimiento del nuevo 60/30. No modifica el OLS principal ni el challenger 60/30 vigente."
+  "experimental_note": "Seguimiento del nuevo 60/30. No modifica el OLS principal ni el challenger 60/30 vigente.",
+  "experimental_google_rolling30_checked": true,
+  "experimental_google_rolling30_results": {
+    ".INX": {
+      "quote": ".INX:INDEXSP",
+      "error": "RuntimeError: Movimiento fuera de control: -85.255%"
+    },
+    "CPER": {
+      "quote": "CPER:NYSEARCA",
+      "price": 38.83,
+      "previous": 39.99,
+      "return": -0.029007251812953383,
+      "stamp": "Aug 24, 1:49:05 PM UTC-4"
+    },
+    "EEM": {
+      "quote": "EEM:NYSEARCA",
+      "error": "RuntimeError: Movimiento fuera de control: -42.148%"
+    },
+    "NDX": {
+      "quote": "NDX:INDEXNASDAQ",
+      "price": 29045.8,
+      "previous": 29308.86,
+      "return": -0.008975442920673204,
+      "stamp": "Aug 24, 1:51:58 PM UTC-4"
+    },
+    "SPBLSCUP": {
+      "quote": "SPBLSCUP:INDEXSP",
+      "price": 500.0,
+      "previous": 460.43,
+      "return": 0.08594140260191563,
+      "stamp": "Aug 24, 1:48:43 PM UTC-4"
+    }
+  }
 }
