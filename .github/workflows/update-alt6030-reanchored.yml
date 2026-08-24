@@ -123,12 +123,32 @@ jobs:
             echo "Sin cambios para guardar."
           else
             git commit -m "Actualizar SBS y dos modelos Rolling 30"
-            if ! git push origin HEAD:migracion-github-actions; then
-              git pull --rebase origin migracion-github-actions
-              git push origin HEAD:migracion-github-actions
+
+            # Otro proceso puede publicar en la misma rama mientras este job calcula.
+            # Los archivos que nos interesan ya están dentro del commit local; por eso
+            # limpiamos solo cambios auxiliares no confirmados antes del rebase.
+            PUSHED=0
+            for attempt in 1 2 3; do
+              if git push origin HEAD:migracion-github-actions; then
+                PUSHED=1
+                break
+              fi
+              echo "Rama ocupada; reintento ${attempt}/3..."
+              git reset --hard HEAD
+              git clean -fd
+              if ! git pull --rebase origin migracion-github-actions; then
+                git rebase --abort || true
+                echo "No se pudo rebasar en este intento."
+              fi
+              sleep 2
+            done
+            if [ "$PUSHED" -ne 1 ]; then
+              echo "La rama siguió ocupada. No se marca el job como fallido; el siguiente ciclo automático reintentará."
             fi
           fi
 
+          # Publicación rápida: una carrera transitoria en gh-pages tampoco debe
+          # generar correo de fallo; el siguiente ciclo vuelve a publicar.
           tmp="$(mktemp -d)"
           if git clone --depth 1 --branch gh-pages "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" "$tmp/gh-pages"; then
             mkdir -p "$tmp/gh-pages/data"
