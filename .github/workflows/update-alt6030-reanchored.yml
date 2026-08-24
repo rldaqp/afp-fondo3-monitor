@@ -12,6 +12,7 @@ on:
       - "scripts/update_live_market_hybrid.py"
       - "scripts/patch_google_rolling30_assets.py"
       - "scripts/build_dual_rolling30_monitor.py"
+      - "scripts/build_dual_rolling30_resilient.py"
       - "scripts/patch_dual_rolling30_fx_operational.py"
       - "scripts/persist_dual_rolling30_shadow.py"
       - "data/rolling90/sbs_profuturo_f3.csv"
@@ -69,7 +70,11 @@ jobs:
           python scripts/apply_sbs_reference_corrections.py
           python scripts/update_live_market_hybrid.py
           python scripts/patch_google_rolling30_assets.py || echo "Google Finance parcial; se conserva el respaldo vigente para este corte."
-          python scripts/build_dual_rolling30_monitor.py
+
+          # Si un factor exclusivo del Modelo B (principalmente SPBLSCUP) aún no
+          # está publicado, el Modelo A se actualiza y el Modelo B conserva su
+          # última sesión completa. Nunca se sustituye el dato faltante por 0%.
+          python scripts/build_dual_rolling30_resilient.py
           python scripts/patch_dual_rolling30_fx_operational.py || echo "FX adicional no disponible; se conserva el FX común del constructor dual."
           python scripts/persist_dual_rolling30_shadow.py
 
@@ -99,8 +104,9 @@ jobs:
 
           print('SBS:', dual['latest_sbs'])
           print('Fecha mercado:', dual['signal_date'])
-          print('Rolling30 QQQ:', dual['models']['qqq']['current']['vc_estimated'])
-          print('Rolling30 nuevos:', dual['models']['new_tickers']['current']['vc_estimated'])
+          print('Modo degradado:', dual.get('degraded_mode', False), dual.get('degraded_reason'))
+          print('Rolling30 QQQ:', dual['models']['qqq']['current'])
+          print('Rolling30 nuevos:', dual['models']['new_tickers']['current'])
           PY
 
           git add \
