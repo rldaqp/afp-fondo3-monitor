@@ -1,7 +1,7 @@
 {
   "generated_at_lima": "2026-08-24T15:02:27.775683-05:00",
-  "mode": "INTRADÍA PROVISIONAL",
-  "market_open": true,
+  "mode": "INTRADIA PROVISIONAL - ULTIMO CORTE",
+  "market_open": false,
   "signal_date": "2026-08-24",
   "vc_base": 71.41435514610457,
   "vc_estimated": 71.06815162548534,
@@ -86,11 +86,11 @@
       "usado_modelo": true
     }
   ],
-  "action": "ESPERAR",
+  "action": "ULTIMO_CORTE",
   "engine": "LIVE INDEPENDIENTE",
   "fx_fresh": false,
   "fx_rule": "Histórico/entrenamiento: BCRP. Predicción: BCRP si existe; si está rezagado, Yahoo PEN=X provisional; 0 % solo si ambas fuentes faltan.",
-  "note": "Snapshot intradía independiente del modelo pesado; puede cambiar hasta el cierre.",
+  "note": "Se conserva el ultimo snapshot intradia de hoy porque el cierre diario de hoy aun no esta disponible.",
   "fx_source": "YAHOO PEN=X PROVISIONAL",
   "fx_provisional": true,
   "experimental_assets": [
@@ -108,13 +108,14 @@
     {
       "serie": "CPER",
       "ticker": "CPER:NYSEARCA",
-      "timestamp": "2026-08-24T15:55:00-04:00",
-      "precio_anterior": null,
-      "precio_actual": 40.109901428222656,
-      "retorno": 0.002998243178879978,
-      "retorno_modelo": null,
-      "estado": "YAHOO CPER · RESPALDO EQUIVALENTE · NUEVO 60/30 EXPERIMENTAL",
-      "usado_modelo": false
+      "timestamp": "2026-08-24",
+      "precio_anterior": 39.99,
+      "precio_actual": 38.76,
+      "retorno": -0.030757689422355683,
+      "retorno_modelo": -0.030757689422355683,
+      "estado": "GOOGLE FINANCE · SELENIUM · ROLLING30 NUEVOS TICKERS",
+      "usado_modelo": true,
+      "google_stamp": "Aug 24, 4:00:00 PM UTC-4"
     },
     {
       "serie": "EEM",
@@ -130,24 +131,26 @@
     {
       "serie": "NDX",
       "ticker": "NDX:INDEXNASDAQ",
-      "timestamp": "2026-08-24T15:55:00-04:00",
-      "precio_anterior": null,
-      "precio_actual": 29025.564453125,
-      "retorno": -0.0096658460245862,
-      "retorno_modelo": null,
-      "estado": "YAHOO ^NDX · RESPALDO EQUIVALENTE · NUEVO 60/30 EXPERIMENTAL",
-      "usado_modelo": false
+      "timestamp": "2026-08-24",
+      "precio_anterior": 29308.86,
+      "precio_actual": 29023.18,
+      "retorno": -0.0097472231946244,
+      "retorno_modelo": -0.0097472231946244,
+      "estado": "GOOGLE FINANCE · SELENIUM · ROLLING30 NUEVOS TICKERS",
+      "usado_modelo": true,
+      "google_stamp": "Aug 24, 4:11:40 PM UTC-4"
     },
     {
       "serie": "SPBLSCUP",
       "ticker": "SPBLSCUP:INDEXSP",
-      "timestamp": "2026-08-20",
-      "precio_anterior": null,
-      "precio_actual": 446.7,
-      "retorno": null,
-      "retorno_modelo": null,
-      "estado": "ÚLTIMO CIERRE GOOGLE FINANCE GUARDADO · NUEVO 60/30 EXPERIMENTAL",
-      "usado_modelo": false
+      "timestamp": "2026-08-24",
+      "precio_anterior": 460.43,
+      "precio_actual": 500.0,
+      "retorno": 0.08594140260191563,
+      "retorno_modelo": 0.08594140260191563,
+      "estado": "GOOGLE FINANCE · SELENIUM · ROLLING30 NUEVOS TICKERS",
+      "usado_modelo": true,
+      "google_stamp": "Aug 24, 4:13:48 PM UTC-4"
     },
     {
       "serie": "USD/PEN",
@@ -169,5 +172,38 @@
     "SPBLSCUP",
     "USD/PEN"
   ],
-  "experimental_note": "Seguimiento del nuevo 60/30. No modifica el OLS principal ni el challenger 60/30 vigente."
+  "experimental_note": "Seguimiento del nuevo 60/30. No modifica el OLS principal ni el challenger 60/30 vigente.",
+  "checked_at_lima": "2026-08-24T15:14:24.825366-05:00",
+  "experimental_google_rolling30_checked": true,
+  "experimental_google_rolling30_results": {
+    ".INX": {
+      "quote": ".INX:INDEXSP",
+      "error": "RuntimeError: Movimiento fuera de control: -85.189%"
+    },
+    "CPER": {
+      "quote": "CPER:NYSEARCA",
+      "price": 38.76,
+      "previous": 39.99,
+      "return": -0.030757689422355683,
+      "stamp": "Aug 24, 4:00:00 PM UTC-4"
+    },
+    "EEM": {
+      "quote": "EEM:NYSEARCA",
+      "error": "RuntimeError: Movimiento fuera de control: -42.253%"
+    },
+    "NDX": {
+      "quote": "NDX:INDEXNASDAQ",
+      "price": 29023.18,
+      "previous": 29308.86,
+      "return": -0.0097472231946244,
+      "stamp": "Aug 24, 4:11:40 PM UTC-4"
+    },
+    "SPBLSCUP": {
+      "quote": "SPBLSCUP:INDEXSP",
+      "price": 500.0,
+      "previous": 460.43,
+      "return": 0.08594140260191563,
+      "stamp": "Aug 24, 4:13:48 PM UTC-4"
+    }
+  }
 }
