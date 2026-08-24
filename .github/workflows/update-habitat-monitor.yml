@@ -8,6 +8,7 @@ on:
     paths:
       - ".github/workflows/update-habitat-monitor.yml"
       - "scripts/run_habitat_exact_pipeline.py"
+      - "scripts/run_habitat_exact_pipeline_stable_ui.py"
       - "scripts/update_habitat_live_market.py"
       - "scripts/habitat_complete_official_calendar.py"
       - "scripts/build_habitat_exact_parity.py"
@@ -25,8 +26,6 @@ on:
       - "scripts/finalize_notebook_parity_v4.py"
       - "scripts/finalize_notebook_parity_v5.py"
       - "scripts/finalize_fx_hybrid.py"
-      - "public/data/visor_hotfix_v1.js"
-      - "public/data/alt_runtime_v5.js"
       - "requirements.txt"
   schedule:
     - cron: "20 5-23 * * 1-5"
@@ -71,19 +70,17 @@ jobs:
           PYTHONUTF8: "1"
           PYTHONIOENCODING: "utf-8"
         run: |
-          python scripts/run_habitat_exact_pipeline.py
-          # El pipeline pesado deja como snapshot el cierre diario. Inmediatamente
-          # reconstruimos el mercado de Hábitat con el snapshot común intradía de
-          # Yahoo, manteniendo los coeficientes y el VC base propios de Hábitat.
+          # Hábitat ya no regenera su HTML tomando como plantilla el visor de
+          # Profuturo, porque Profuturo ahora tiene una interfaz dual Rolling 30.
+          # Se conserva el HTML Hábitat validado y se actualizan sus datos propios.
+          python scripts/run_habitat_exact_pipeline_stable_ui.py
           python scripts/update_habitat_live_market.py
-          # QQQ no sustituye a SPY: se residualiza contra los siete factores del
-          # OLS de Hábitat y solo se incorpora como información incremental.
           python scripts/build_habitat_qqq_incremental_challenger.py
           python scripts/postprocess_live_consistency.py
           python scripts/postprocess_trade_runtime_fixes.py habitat
           python scripts/postprocess_habitat_qqq_incremental_ui.py
 
-      - name: Validar histórico oficial, OLS, visor, QQQ y Drive
+      - name: Validar histórico oficial OLS visor QQQ y Drive
         run: |
           python scripts/validate_habitat_official.py
           PYTHONPATH=scripts python -c "from habitat_complete_official_calendar import validate_official_estimate_calendar; validate_official_estimate_calendar()"
@@ -111,6 +108,7 @@ jobs:
           import json
           import re
           from pathlib import Path
+
           html = Path('public/habitat/index.html').read_text(encoding='utf-8')
           for script_id in ('tradeHistoryScript', 'tradeCloudScript'):
               m = re.search(rf'<script id="{script_id}">(.*?)</script>', html, re.S)
@@ -127,9 +125,6 @@ jobs:
           assert abs(float(qqq['vc_base']) * (1.0 + float(qqq['official']['return_estimated'])) - float(qqq['official']['vc_estimated'])) < 1e-8
           assert int(qqq['training']['n']) == 90
 
-          # Si el mercado común está intradía, Hábitat debe conservar exactamente
-          # los mismos precios/retornos de los factores. Solo cambian coeficientes,
-          # VC estimado y señal del fondo.
           prof = json.loads(Path('public/data/live_market.json').read_text(encoding='utf-8'))
           if str(prof.get('mode','')).startswith('INTRAD'):
               assert str(hab.get('mode','')).startswith('INTRAD'), (prof.get('mode'), hab.get('mode'))
@@ -149,17 +144,28 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          # El pipeline también repara/actualiza markets.csv. Antes quedaba sin
-          # stage y hacía fallar `git pull --rebase` aunque el OLS ya estuviera bien.
-          # Como el runner parte de un checkout limpio, guardamos todos los cambios
-          # generados dentro de data/rolling90 y public/habitat.
           git add data/rolling90 public/habitat
           if git diff --cached --quiet; then
             echo "No hay cambios de Hábitat para confirmar."
           else
             git commit -m "Actualizar AFP Hábitat Fondo 3 con SBS oficial y QQQ incremental"
-            git pull --rebase origin migracion-github-actions
-            git push origin HEAD:migracion-github-actions
+            PUSHED=0
+            for attempt in 1 2 3; do
+              if git push origin HEAD:migracion-github-actions; then
+                PUSHED=1
+                break
+              fi
+              echo "Rama ocupada; reintento Hábitat ${attempt}/3..."
+              git reset --hard HEAD
+              git clean -fd
+              if ! git pull --rebase origin migracion-github-actions; then
+                git rebase --abort || true
+              fi
+              sleep 2
+            done
+            if [ "$PUSHED" -ne 1 ]; then
+              echo "Push Hábitat pendiente; el próximo ciclo reintentará sin generar fallo por carrera de escritura."
+            fi
           fi
 
       - name: Actualizar rama antes de publicar
@@ -167,25 +173,13 @@ jobs:
           git fetch origin migracion-github-actions
           git reset --hard origin/migracion-github-actions
 
-      - name: Preservar runtime operativo de Profuturo en el sitio completo
+      - name: Verificar visor dual Profuturo sin modificarlo
         run: |
-          python - <<'PY'
-          from pathlib import Path
-          p=Path('public/index.html')
-          html=p.read_text(encoding='utf-8')
-          tags=[
-            '<script src="data/alt_runtime_v5.js?rev=ALT6030V5"></script>',
-            '<script src="data/spblscup_stale_fix.js?rev=SPBLCLOSEV1"></script>',
-            '<script src="data/visor_hotfix_v1.js?rev=VISORHOTFIX1"></script>',
-          ]
-          for tag in tags:
-              if tag not in html:
-                  html=html.replace('</body>',tag+'\n</body>',1)
-          p.write_text(html,encoding='utf-8')
-          PY
-          test -s public/data/alt_runtime_v5.js
-          test -s public/data/visor_hotfix_v1.js
-          grep -q "visor_hotfix_v1.js" public/index.html
+          test -s public/index.html
+          test -s public/data/dual_rolling30_monitor.json
+          grep -q "Dos modelos Rolling 30" public/index.html
+          grep -q "dual_rolling30_monitor.json" public/index.html
+          ! grep -q "OLS OFICIAL · ROLLING 90" public/index.html
 
       - name: Configurar GitHub Pages
         uses: actions/configure-pages@v5
