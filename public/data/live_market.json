@@ -108,14 +108,13 @@
     {
       "serie": "CPER",
       "ticker": "CPER:NYSEARCA",
-      "timestamp": "2026-08-24",
-      "precio_anterior": 39.99,
-      "precio_actual": 38.76,
-      "retorno": -0.030757689422355683,
-      "retorno_modelo": -0.030757689422355683,
-      "estado": "GOOGLE FINANCE · SELENIUM · ROLLING30 NUEVOS TICKERS",
-      "usado_modelo": true,
-      "google_stamp": "Aug 24, 4:10:00 PM UTC-4"
+      "timestamp": "2026-08-24T15:55:00-04:00",
+      "precio_anterior": null,
+      "precio_actual": 40.109901428222656,
+      "retorno": 0.002998243178879978,
+      "retorno_modelo": null,
+      "estado": "YAHOO CPER · RESPALDO EQUIVALENTE · NUEVO 60/30 EXPERIMENTAL",
+      "usado_modelo": false
     },
     {
       "serie": "EEM",
@@ -131,26 +130,24 @@
     {
       "serie": "NDX",
       "ticker": "NDX:INDEXNASDAQ",
-      "timestamp": "2026-08-24",
-      "precio_anterior": 29308.86,
-      "precio_actual": 29023.18,
-      "retorno": -0.0097472231946244,
-      "retorno_modelo": -0.0097472231946244,
-      "estado": "GOOGLE FINANCE · SELENIUM · ROLLING30 NUEVOS TICKERS",
-      "usado_modelo": true,
-      "google_stamp": "Aug 24, 5:15:59 PM UTC-4"
+      "timestamp": "2026-08-24T15:55:00-04:00",
+      "precio_anterior": null,
+      "precio_actual": 29025.564453125,
+      "retorno": -0.0096658460245862,
+      "retorno_modelo": null,
+      "estado": "YAHOO ^NDX · RESPALDO EQUIVALENTE · NUEVO 60/30 EXPERIMENTAL",
+      "usado_modelo": false
     },
     {
       "serie": "SPBLSCUP",
       "ticker": "SPBLSCUP:INDEXSP",
-      "timestamp": "2026-08-24",
-      "precio_anterior": 460.43,
-      "precio_actual": 500.0,
-      "retorno": 0.08594140260191563,
-      "retorno_modelo": 0.08594140260191563,
-      "estado": "GOOGLE FINANCE · SELENIUM · ROLLING30 NUEVOS TICKERS",
-      "usado_modelo": true,
-      "google_stamp": "Aug 24, 4:49:00 PM UTC-4"
+      "timestamp": "2026-08-20",
+      "precio_anterior": null,
+      "precio_actual": 446.7,
+      "retorno": null,
+      "retorno_modelo": null,
+      "estado": "ÚLTIMO CIERRE GOOGLE FINANCE GUARDADO · NUEVO 60/30 EXPERIMENTAL",
+      "usado_modelo": false
     },
     {
       "serie": "USD/PEN",
@@ -173,7 +170,7 @@
     "USD/PEN"
   ],
   "experimental_note": "Seguimiento del nuevo 60/30. No modifica el OLS principal ni el challenger 60/30 vigente.",
-  "checked_at_lima": "2026-08-24T17:37:21.754902-05:00",
+  "checked_at_lima": "2026-08-24T17:54:27.872498-05:00",
   "experimental_google_rolling30_checked": true,
   "experimental_google_rolling30_results": {
     ".INX": {
