@@ -1,12 +1,12 @@
 {
-  "generated_at_lima": "2026-08-24T14:07:49.544101-05:00",
+  "generated_at_lima": "2026-08-24T14:45:54.453726-05:00",
   "fund": "PROFUTURO Fondo 3",
   "signal_date": "2026-08-24",
   "market_mode": "INTRADÍA PROVISIONAL",
   "market_open": true,
   "latest_sbs": {
-    "fecha": "2026-08-19",
-    "vc": 70.327616
+    "fecha": "2026-08-20",
+    "vc": 71.0427094
   },
   "rule": "Solo quedan dos modelos visibles. Ambos son OLS rolling 30 y se recalibran con las últimas 30 observaciones conocidas. Si SBS está atrasada, se encadenan los días faltantes sin usar los VC ocultos; cuando SBS publica, el siguiente cálculo vuelve a anclarse automáticamente al VC real.",
   "models": {
@@ -32,67 +32,46 @@
       ],
       "current": {
         "fecha": "2026-08-24",
-        "base_vc": 71.86139414849193,
-        "vc_estimated": 71.42665416814076,
-        "return_estimated": -0.006049701449610434,
+        "base_vc": 72.01282514070252,
+        "vc_estimated": 71.51328856841592,
+        "return_estimated": -0.0069367723222991855,
         "signal": "BAJA",
         "actual_vc": null,
-        "anchor_date": "2026-08-19",
-        "anchor_vc": 70.327616,
-        "train_start": "2026-07-01",
-        "train_end": "2026-08-19",
+        "anchor_date": "2026-08-20",
+        "anchor_vc": 71.0427094,
+        "train_start": "2026-07-02",
+        "train_end": "2026-08-20",
         "train_n": 30,
         "coefficients": {
-          "intercept": 0.0006106719745437594,
-          "ret_SPY": -0.6486338197115957,
-          "ret_EEM": 0.4374591697345464,
-          "ret_EPU": 0.3239049100634376,
-          "ret_MCHI": -0.22299798609921054,
-          "ret_USD_PEN": 0.053838890094107986,
-          "ret_QQQ": 0.5635824489246809
+          "intercept": 0.0005130215005562354,
+          "ret_SPY": -0.8414475656759712,
+          "ret_EEM": 0.49659277008921676,
+          "ret_EPU": 0.30416300210078284,
+          "ret_MCHI": -0.2757446856036431,
+          "ret_USD_PEN": -0.17882852240172137,
+          "ret_QQQ": 0.632329454405951
         },
-        "blind_chain_sessions": 3
+        "blind_chain_sessions": 2
       },
       "forward_chain": [
         {
-          "fecha": "2026-08-20",
-          "base_vc": 70.327616,
-          "vc_estimated": 70.85344824368957,
-          "return_estimated": 0.007476895615081838,
-          "signal": "SUBE",
-          "actual_vc": null
-        },
-        {
           "fecha": "2026-08-21",
-          "base_vc": 70.85344824368957,
-          "vc_estimated": 71.86139414849193,
-          "return_estimated": 0.014225784768239786,
+          "base_vc": 71.0427094,
+          "vc_estimated": 72.01282514070252,
+          "return_estimated": 0.01365538770826373,
           "signal": "SUBE",
           "actual_vc": null
         },
         {
           "fecha": "2026-08-24",
-          "base_vc": 71.86139414849193,
-          "vc_estimated": 71.42665416814076,
-          "return_estimated": -0.006049701449610434,
+          "base_vc": 72.01282514070252,
+          "vc_estimated": 71.51328856841592,
+          "return_estimated": -0.0069367723222991855,
           "signal": "BAJA",
           "actual_vc": null
         }
       ],
       "history_one_step": [
-        {
-          "fecha": "2026-01-16",
-          "base_date": "2026-01-15",
-          "base_vc": 66.9858961,
-          "vc_estimated": 66.98112569401394,
-          "actual_vc": 67.01718149999999,
-          "return_estimated": -7.121508054397781e-05,
-          "actual_return": 0.0004670445843297788,
-          "signal": "NEUTRO",
-          "error_pct": -0.0538008390968403,
-          "train_start": "2025-11-26",
-          "train_end": "2026-01-15"
-        },
         {
           "fecha": "2026-01-20",
           "base_date": "2026-01-19",
@@ -1899,63 +1878,76 @@
           "error_pct": 0.07419046885706049,
           "train_start": "2026-06-30",
           "train_end": "2026-08-18"
+        },
+        {
+          "fecha": "2026-08-20",
+          "base_date": "2026-08-19",
+          "base_vc": 70.327616,
+          "vc_estimated": 70.85344824368957,
+          "actual_vc": 71.0427094,
+          "return_estimated": 0.007476895615081838,
+          "actual_return": 0.01016803128944388,
+          "signal": "SUBE",
+          "error_pct": -0.26640475554615684,
+          "train_start": "2026-07-01",
+          "train_end": "2026-08-19"
         }
       ],
       "history_metrics": {
         "n": 140,
-        "mae_vc": 0.2811419705570928,
-        "rmse_vc": 0.37049063839376417,
-        "mape_pct": 0.40605027863153925
+        "mae_vc": 0.28223629448798127,
+        "rmse_vc": 0.370823250189757,
+        "mape_pct": 0.4075688780347488
       },
       "intraday_assets": [
         {
           "serie": "SPY",
           "ticker": "SPY",
-          "timestamp": "2026-08-24T15:05:00-04:00",
+          "timestamp": "2026-08-24T15:45:00-04:00",
           "precio_anterior": 765.719970703125,
-          "precio_actual": 764.02001953125,
-          "retorno": -0.0022200690029202663,
-          "retorno_modelo": -0.0022200690029202663,
+          "precio_actual": 763.6599731445312,
+          "retorno": -0.002690275345309523,
+          "retorno_modelo": -0.002690275345309523,
           "estado": "INTRADÍA YAHOO · USADO POR MODELO",
           "usado_modelo": true
         },
         {
           "serie": "EEM",
           "ticker": "EEM",
-          "timestamp": "2026-08-24T15:05:00-04:00",
+          "timestamp": "2026-08-24T15:45:00-04:00",
           "precio_anterior": 67.12000274658203,
-          "precio_actual": 66.16000366210938,
-          "retorno": -0.01430272713332903,
-          "retorno_modelo": -0.01430272713332903,
+          "precio_actual": 66.08499908447266,
+          "retorno": -0.015420196957040222,
+          "retorno_modelo": -0.015420196957040222,
           "estado": "INTRADÍA YAHOO · USADO POR MODELO",
           "usado_modelo": true
         },
         {
           "serie": "EPU",
           "ticker": "EPU",
-          "timestamp": "2026-08-24T15:05:00-04:00",
+          "timestamp": "2026-08-24T15:40:00-04:00",
           "precio_anterior": 94.0,
-          "precio_actual": 93.875,
-          "retorno": -0.0013297872340425343,
-          "retorno_modelo": -0.0013297872340425343,
+          "precio_actual": 93.9000015258789,
+          "retorno": -0.001063813554479709,
+          "retorno_modelo": -0.001063813554479709,
           "estado": "INTRADÍA YAHOO · USADO POR MODELO",
           "usado_modelo": true
         },
         {
           "serie": "MCHI",
           "ticker": "MCHI",
-          "timestamp": "2026-08-24T15:05:00-04:00",
+          "timestamp": "2026-08-24T15:45:00-04:00",
           "precio_anterior": 55.65999984741211,
-          "precio_actual": 54.85499954223633,
-          "retorno": -0.014462815439860388,
-          "retorno_modelo": -0.014462815439860388,
+          "precio_actual": 54.880001068115234,
+          "retorno": -0.014013632436852053,
+          "retorno_modelo": -0.014013632436852053,
           "estado": "INTRADÍA YAHOO · USADO POR MODELO",
           "usado_modelo": true
         },
         {
           "serie": "USD_PEN",
           "ticker": "PEN=X",
-          "timestamp": "2026-08-24T14:50:00-04:00",
+          "timestamp": "2026-08-24T15:35:00-04:00",
           "precio_anterior": 3.355299949645996,
           "precio_actual": 3.351300001144409,
           "retorno": -0.001192128442051521,
@@ -1966,11 +1958,11 @@
         {
           "serie": "QQQ",
           "ticker": "QQQ",
-          "timestamp": "2026-08-24 15:05:00-04:00",
+          "timestamp": "2026-08-24 15:45:00-04:00",
           "precio_anterior": 713.4400024414062,
-          "precio_actual": 707.6500244140625,
-          "retorno": -0.008115578054959549,
-          "retorno_modelo": -0.008115578054959549,
+          "precio_actual": 706.885009765625,
+          "retorno": -0.009187868150580147,
+          "retorno_modelo": -0.009187868150580147,
           "estado": "YAHOO QQQ 5M · INTRADÍA",
           "usado_modelo": true
         }
@@ -1990,11 +1982,11 @@
           "vc_estimated": 70.85344824368957,
           "return_estimated": 0.0074768956150818,
           "signal": "SUBE",
-          "actual_vc": null,
-          "actual_return_daily": null,
-          "error_vc": null,
-          "error_pct": null,
-          "direction_hit": null,
+          "actual_vc": 71.0427094,
+          "actual_return_daily": 0.01016803128944388,
+          "error_vc": -0.18926115631043672,
+          "error_pct": -0.26640475554615684,
+          "direction_hit": true,
           "source": "OPERACIONAL ROLLING30 · CIERRE"
         },
         {
@@ -2022,13 +2014,13 @@
           "model_name": "Rolling 30 · QQQ",
           "fecha": "2026-08-24",
           "first_generated_at_lima": "2026-08-24T12:54:43.164023-05:00",
-          "last_updated_at_lima": "2026-08-24T14:07:49.993443-05:00",
+          "last_updated_at_lima": "2026-08-24T14:45:54.868734-05:00",
           "frozen": false,
-          "anchor_date": "2026-08-19",
-          "anchor_vc": 70.327616,
-          "base_vc": 71.86139414849193,
-          "vc_estimated": 71.42665416814076,
-          "return_estimated": -0.006049701449610434,
+          "anchor_date": "2026-08-20",
+          "anchor_vc": 71.0427094,
+          "base_vc": 72.01282514070252,
+          "vc_estimated": 71.51328856841592,
+          "return_estimated": -0.0069367723222991855,
           "signal": "BAJA",
           "actual_vc": null,
           "actual_return_daily": null,
@@ -2039,11 +2031,13 @@
         }
       ],
       "operational_metrics": {
-        "n": 0,
-        "mae_vc": null,
-        "rmse_vc": null,
-        "mape_pct": null,
-        "direction_accuracy_pct": null
+        "n": 1,
+        "start": "2026-08-20",
+        "end": "2026-08-20",
+        "mae_vc": 0.18926115631043672,
+        "rmse_vc": 0.18926115631043672,
+        "mape_pct": 0.266404755546157,
+        "direction_accuracy_pct": 100.0
       }
     },
     "new_tickers": {
@@ -2068,41 +2062,33 @@
       ],
       "current": {
         "fecha": "2026-08-24",
-        "base_vc": 70.80525866139182,
-        "vc_estimated": 71.62135777493137,
-        "return_estimated": 0.011525967547725969,
+        "base_vc": 71.0427094,
+        "vc_estimated": 71.95258011119219,
+        "return_estimated": 0.012807376279376427,
         "signal": "SUBE",
         "actual_vc": null,
-        "anchor_date": "2026-08-19",
-        "anchor_vc": 70.327616,
-        "train_start": "2026-07-02",
-        "train_end": "2026-08-19",
+        "anchor_date": "2026-08-20",
+        "anchor_vc": 71.0427094,
+        "train_start": "2026-07-06",
+        "train_end": "2026-08-20",
         "train_n": 30,
         "coefficients": {
-          "intercept": 0.0007595690387905219,
-          "ret_.INX": -0.6804801652367795,
-          "ret_CPER": 0.08562120999074221,
-          "ret_EEM_alt": 0.422361699021059,
-          "ret_NDX": 0.6251488907838654,
-          "ret_SPBLSCUP": 0.274953979894714,
-          "ret_USD_PEN_alt": -0.04822414731017213
+          "intercept": 0.0009101082171446432,
+          "ret_.INX": -0.8805336844517557,
+          "ret_CPER": 0.08823539224031512,
+          "ret_EEM_alt": 0.4104755362989351,
+          "ret_NDX": 0.7467944517404421,
+          "ret_SPBLSCUP": 0.2596158784970525,
+          "ret_USD_PEN_alt": -0.04301318226891038
         },
-        "blind_chain_sessions": 2
+        "blind_chain_sessions": 1
       },
       "forward_chain": [
         {
-          "fecha": "2026-08-20",
-          "base_vc": 70.327616,
-          "vc_estimated": 70.80525866139182,
-          "return_estimated": 0.006791679976637096,
-          "signal": "SUBE",
-          "actual_vc": null
-        },
-        {
           "fecha": "2026-08-24",
-          "base_vc": 70.80525866139182,
-          "vc_estimated": 71.62135777493137,
-          "return_estimated": 0.011525967547725969,
+          "base_vc": 71.0427094,
+          "vc_estimated": 71.95258011119219,
+          "return_estimated": 0.012807376279376427,
           "signal": "SUBE",
           "actual_vc": null
         }
@@ -3160,22 +3146,35 @@
           "error_pct": -0.45047915481529754,
           "train_start": "2026-07-01",
           "train_end": "2026-08-18"
+        },
+        {
+          "fecha": "2026-08-20",
+          "base_date": "2026-08-19",
+          "base_vc": 70.327616,
+          "vc_estimated": 70.80525866139182,
+          "actual_vc": 71.0427094,
+          "return_estimated": 0.006791679976637096,
+          "actual_return": 0.01016803128944388,
+          "signal": "SUBE",
+          "error_pct": -0.33423660304288116,
+          "train_start": "2026-07-02",
+          "train_end": "2026-08-19"
         }
       ],
       "history_metrics": {
-        "n": 81,
-        "mae_vc": 0.30927392937254167,
-        "rmse_vc": 0.40609410939881846,
-        "mape_pct": 0.4429451448534838
+        "n": 82,
+        "mae_vc": 0.3083980368022447,
+        "rmse_vc": 0.40446123957359525,
+        "mape_pct": 0.4416194309289643
       },
       "intraday_assets": [
         {
           "serie": ".INX",
           "ticker": ".INX:INDEXSP",
-          "timestamp": "2026-08-24T15:05:00-04:00",
+          "timestamp": "2026-08-24T15:45:00-04:00",
           "precio_anterior": null,
-          "precio_actual": 7658.52001953125,
-          "retorno": -0.002065328804086719,
+          "precio_actual": 7654.8701171875,
+          "retorno": -0.002540925144635331,
           "retorno_modelo": null,
           "estado": "YAHOO ^GSPC · RESPALDO EQUIVALENTE · NUEVO 60/30 EXPERIMENTAL",
           "usado_modelo": false
@@ -3185,20 +3184,20 @@
           "ticker": "CPER:NYSEARCA",
           "timestamp": "2026-08-24",
           "precio_anterior": 39.99,
-          "precio_actual": 38.41,
-          "retorno": -0.039509877469367516,
-          "retorno_modelo": -0.039509877469367516,
+          "precio_actual": 40.08,
+          "retorno": 0.0022505626406601476,
+          "retorno_modelo": 0.0022505626406601476,
           "estado": "GOOGLE FINANCE · SELENIUM · ROLLING30 NUEVOS TICKERS",
           "usado_modelo": true,
-          "google_stamp": "Aug 24, 3:06:01 PM UTC-4"
+          "google_stamp": "Aug 24, 3:42:50 PM UTC-4"
         },
         {
           "serie": "EEM",
           "ticker": "EEM:NYSEARCA",
-          "timestamp": "2026-08-24T15:05:00-04:00",
+          "timestamp": "2026-08-24T15:45:00-04:00",
           "precio_anterior": null,
-          "precio_actual": 66.16000366210938,
-          "retorno": -0.01430272713332903,
+          "precio_actual": 66.08499908447266,
+          "retorno": -0.015420196957040222,
           "retorno_modelo": null,
           "estado": "YAHOO EEM · RESPALDO EQUIVALENTE · NUEVO 60/30 EXPERIMENTAL",
           "usado_modelo": false
@@ -3208,12 +3207,12 @@
           "ticker": "NDX:INDEXNASDAQ",
           "timestamp": "2026-08-24",
           "precio_anterior": 29308.86,
-          "precio_actual": 29079.01,
-          "retorno": -0.007842338460110732,
-          "retorno_modelo": -0.007842338460110732,
+          "precio_actual": 29050.93,
+          "retorno": -0.008800410524326119,
+          "retorno_modelo": -0.008800410524326119,
           "estado": "GOOGLE FINANCE · SELENIUM · ROLLING30 NUEVOS TICKERS",
           "usado_modelo": true,
-          "google_stamp": "Aug 24, 2:59:52 PM UTC-4"
+          "google_stamp": "Aug 24, 3:44:38 PM UTC-4"
         },
         {
           "serie": "SPBLSCUP",
@@ -3225,12 +3224,12 @@
           "retorno_modelo": 0.08594140260191563,
           "estado": "GOOGLE FINANCE · SELENIUM · ROLLING30 NUEVOS TICKERS",
           "usado_modelo": true,
-          "google_stamp": "Aug 24, 3:06:18 PM UTC-4"
+          "google_stamp": "Aug 24, 3:45:18 PM UTC-4"
         },
         {
           "serie": "USD/PEN",
           "ticker": "PEN=X",
-          "timestamp": "2026-08-24T14:50:00-04:00",
+          "timestamp": "2026-08-24T15:35:00-04:00",
           "precio_anterior": 3.355299949645996,
           "precio_actual": 3.351300001144409,
           "retorno": -0.001192128442051521,
@@ -3254,11 +3253,11 @@
           "vc_estimated": 70.80525866139183,
           "return_estimated": 0.0067916799766371,
           "signal": "SUBE",
-          "actual_vc": null,
-          "actual_return_daily": null,
-          "error_vc": null,
-          "error_pct": null,
-          "direction_hit": null,
+          "actual_vc": 71.0427094,
+          "actual_return_daily": 0.01016803128944388,
+          "error_vc": -0.23745073860817456,
+          "error_pct": -0.33423660304287006,
+          "direction_hit": true,
           "source": "OPERACIONAL ROLLING30 · CIERRE"
         },
         {
@@ -3286,13 +3285,13 @@
           "model_name": "Rolling 30 · nuevos tickers",
           "fecha": "2026-08-24",
           "first_generated_at_lima": "2026-08-24T12:54:43.164023-05:00",
-          "last_updated_at_lima": "2026-08-24T14:07:49.993443-05:00",
+          "last_updated_at_lima": "2026-08-24T14:45:54.868734-05:00",
           "frozen": false,
-          "anchor_date": "2026-08-19",
-          "anchor_vc": 70.327616,
-          "base_vc": 70.80525866139182,
-          "vc_estimated": 71.62135777493137,
-          "return_estimated": 0.011525967547725969,
+          "anchor_date": "2026-08-20",
+          "anchor_vc": 71.0427094,
+          "base_vc": 71.0427094,
+          "vc_estimated": 71.95258011119219,
+          "return_estimated": 0.012807376279376427,
           "signal": "SUBE",
           "actual_vc": null,
           "actual_return_daily": null,
@@ -3303,11 +3302,13 @@
         }
       ],
       "operational_metrics": {
-        "n": 0,
-        "mae_vc": null,
-        "rmse_vc": null,
-        "mape_pct": null,
-        "direction_accuracy_pct": null
+        "n": 1,
+        "start": "2026-08-20",
+        "end": "2026-08-20",
+        "mae_vc": 0.23745073860817456,
+        "rmse_vc": 0.23745073860817456,
+        "mape_pct": 0.33423660304286557,
+        "direction_accuracy_pct": 100.0
       }
     }
   },
@@ -3374,15 +3375,15 @@
   },
   "comparison": {
     "winner_blind3_mape": "NUEVOS TICKERS",
-    "vc_difference": 0.19470360679061116,
-    "return_difference": 0.017575668997336404
+    "vc_difference": 0.43929154277627447,
+    "return_difference": 0.01974414860167561
   },
   "shared_fx_operational": {
     "return": -0.001192128442051521,
     "value": 3.351300001144409,
     "previous_value": 3.355299949645996,
     "source": "YAHOO PEN=X · PROVISIONAL · USADO POR MODELO",
-    "timestamp": "2026-08-24T14:50:00-04:00",
+    "timestamp": "2026-08-24T15:35:00-04:00",
     "provisional": true,
     "rule": "Mismo USD/PEN operativo para ambos Rolling 30; no se mezclan Yahoo y Tucambista dentro de la comparación dual."
   },
