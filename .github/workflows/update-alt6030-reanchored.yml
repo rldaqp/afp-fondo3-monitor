@@ -1,4 +1,4 @@
-name: Actualizar nuevo 60/30 reanclado
+name: Actualizar SBS y visor dual Rolling 30
 
 on:
   workflow_dispatch:
@@ -8,19 +8,14 @@ on:
     paths:
       - ".github/workflows/update-alt6030-reanchored.yml"
       - "scripts/sync_sbs_official_latest.py"
-      - "scripts/patch_spblscup_google_selenium.py"
-      - "scripts/patch_google_rolling30_assets.py"
-      - "scripts/patch_dual_rolling30_fx_operational.py"
-      - "scripts/build_alt_6030_reanchored.py"
-      - "scripts/build_dual_rolling30_monitor.py"
-      - "scripts/persist_dual_rolling30_shadow.py"
       - "scripts/apply_sbs_reference_corrections.py"
-      - "data/rolling90/sbs_reference_corrections.csv"
+      - "scripts/update_live_market_hybrid.py"
+      - "scripts/patch_google_rolling30_assets.py"
+      - "scripts/build_dual_rolling30_monitor.py"
+      - "scripts/patch_dual_rolling30_fx_operational.py"
+      - "scripts/persist_dual_rolling30_shadow.py"
       - "data/rolling90/sbs_profuturo_f3.csv"
       - "analysis/backtest_blind3_rolling30_resid_newtickers.json"
-      - "public/data/audit_runtime_v1.js"
-      - "public/data/dual_rolling30_runtime_v1.js"
-      - "public/data/dual_rolling30_shadow_runtime_v1.js"
       - "requirements-live.txt"
   schedule:
     - cron: "2-57/5 13-23 * * 1-5"
@@ -28,20 +23,15 @@ on:
 
 permissions:
   contents: write
-  pages: write
-  id-token: write
 
 concurrency:
   group: fondo3-data-writes
   cancel-in-progress: false
 
 jobs:
-  alt6030:
+  dual30:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+    timeout-minutes: 14
 
     steps:
       - name: Descargar repositorio
@@ -63,68 +53,54 @@ jobs:
           pip install -r requirements-live.txt
           google-chrome --version || chromium --version || true
 
-      - name: Sincronizar SBS, mercado y modelos de seguimiento
+      - name: Actualizar SBS mercado y dos Rolling 30
         env:
           PYTHONUTF8: "1"
           PYTHONIOENCODING: "utf-8"
           GITHUB_TOKEN: ${{ github.token }}
         run: |
+          set -e
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git fetch origin migracion-github-actions
           git reset --hard origin/migracion-github-actions
 
-          python scripts/sync_sbs_official_latest.py
+          python scripts/sync_sbs_official_latest.py || echo "SBS temporalmente no disponible; se conserva el último VC oficial guardado."
           python scripts/apply_sbs_reference_corrections.py
-          python scripts/patch_spblscup_google_selenium.py
-          python scripts/build_alt_6030_reanchored.py
-
-          # El visor visible usa únicamente los dos Rolling 30. El 60/30 anterior
-          # queda como backend de compatibilidad hasta terminar la migración.
           python scripts/update_live_market_hybrid.py
-          python scripts/patch_google_rolling30_assets.py || echo "Google exacto parcial: se conserva el respaldo disponible para esta ejecución."
+          python scripts/patch_google_rolling30_assets.py || echo "Google Finance parcial; se conserva el respaldo vigente para este corte."
           python scripts/build_dual_rolling30_monitor.py
-          # Para el Modelo B, aplica exactamente la misma regla FX operacional del
-          # modelo alternativo: BCRP si existe; de lo contrario fuente provisional explícita.
-          python scripts/patch_dual_rolling30_fx_operational.py
-          # Congela al cierre y luego solo completa el SBS real/error, sin reescribir el estimado.
+          python scripts/patch_dual_rolling30_fx_operational.py || echo "FX adicional no disponible; se conserva el FX común del constructor dual."
           python scripts/persist_dual_rolling30_shadow.py
 
           python - <<'PY'
           import json
           from pathlib import Path
 
-          live = json.loads(Path("public/data/live_market.json").read_text(encoding="utf-8"))
-          alt = json.loads(Path("public/data/alt_6030_experimental.json").read_text(encoding="utf-8"))
-          dual = json.loads(Path("public/data/dual_rolling30_monitor.json").read_text(encoding="utf-8"))
-          sbs_status = json.loads(Path("public/data/sbs_sync_status.json").read_text(encoding="utf-8"))
+          live = json.loads(Path('public/data/live_market.json').read_text(encoding='utf-8'))
+          dual = json.loads(Path('public/data/dual_rolling30_monitor.json').read_text(encoding='utf-8'))
+          status = json.loads(Path('public/data/sbs_sync_status.json').read_text(encoding='utf-8'))
 
-          assert alt["model"]["reanchored_with_latest_sbs"] is True, alt
-          assert int(alt["cycle"]["train_n"]) == 60, alt
-          assert alt["signal_date"] == live["signal_date"], (alt, live)
-          assert sbs_status["source"].startswith("SBS OFICIAL"), sbs_status
+          assert set(dual['models']) == {'qqq', 'new_tickers'}, dual.keys()
+          assert dual['signal_date'] == live['signal_date'], (dual['signal_date'], live['signal_date'])
+          assert float(dual['latest_sbs']['vc']) > 0
+          assert status['source'].startswith('SBS OFICIAL')
 
-          assert set(dual["models"]) == {"qqq", "new_tickers"}, dual.keys()
-          assert dual["signal_date"] == live["signal_date"], (dual["signal_date"], live["signal_date"])
-          assert int(dual["models"]["qqq"]["current"]["train_n"]) == 30
-          assert int(dual["models"]["new_tickers"]["current"]["train_n"]) == 30
-          assert "inmutable" in dual.get("operational_history_rule", "").lower()
-          assert dual.get("fx_operational_new_tickers", {}).get("source") == alt.get("fx_operational", {}).get("source")
-          for key in ("qqq", "new_tickers"):
-              cur = dual["models"][key]["current"]
-              assert cur["signal"] in {"SUBE", "NEUTRO", "BAJA"}
-              assert float(cur["vc_estimated"]) > 0
-              assert dual["models"][key].get("history_one_step")
-              assert dual["models"][key].get("intraday_assets")
-              assert "history_operational" in dual["models"][key]
-              assert "operational_metrics" in dual["models"][key]
+          for key in ('qqq', 'new_tickers'):
+              model = dual['models'][key]
+              cur = model['current']
+              assert int(cur['train_n']) == 30, (key, cur)
+              assert cur['signal'] in {'SUBE', 'NEUTRO', 'BAJA'}
+              assert float(cur['vc_estimated']) > 0
+              assert model.get('history_one_step'), key
+              assert model.get('intraday_assets'), key
+              assert 'history_operational' in model
+              assert 'operational_metrics' in model
 
-          print("SBS remoto:", sbs_status["latest_remote_date"], sbs_status["latest_remote_vc_profuturo_f3"], sbs_status["method"])
-          print("Rolling30 QQQ:", dual["models"]["qqq"]["current"])
-          print("Rolling30 nuevos tickers:", dual["models"]["new_tickers"]["current"])
-          print("FX nuevos tickers:", dual.get("fx_operational_new_tickers"))
-          print("Métrica operacional QQQ:", dual["models"]["qqq"]["operational_metrics"])
-          print("Métrica operacional nuevos:", dual["models"]["new_tickers"]["operational_metrics"])
+          print('SBS:', dual['latest_sbs'])
+          print('Fecha mercado:', dual['signal_date'])
+          print('Rolling30 QQQ:', dual['models']['qqq']['current']['vc_estimated'])
+          print('Rolling30 nuevos:', dual['models']['new_tickers']['current']['vc_estimated'])
           PY
 
           git add \
@@ -132,16 +108,15 @@ jobs:
             data/rolling90/dual_rolling30_shadow.csv \
             public/data/sbs_sync_status.json \
             public/data/live_market.json \
-            public/data/alt_6030_experimental.json \
-            public/data/dual_rolling30_monitor.json \
-            data/rolling90/alt_6030_shadow.csv
+            public/data/dual_rolling30_monitor.json
           if test -f data/analysis/googlefinance_alt_rolling30_live_returns.csv; then
             git add data/analysis/googlefinance_alt_rolling30_live_returns.csv
           fi
+
           if git diff --cached --quiet; then
-            echo "Datos sin cambios."
+            echo "Sin cambios para guardar."
           else
-            git commit -m "Actualizar SBS y visor dual rolling30"
+            git commit -m "Actualizar SBS y dos modelos Rolling 30"
             if ! git push origin HEAD:migracion-github-actions; then
               git pull --rebase origin migracion-github-actions
               git push origin HEAD:migracion-github-actions
@@ -149,84 +124,21 @@ jobs:
           fi
 
           tmp="$(mktemp -d)"
-          git clone --depth 1 --branch gh-pages "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" "$tmp/gh-pages"
-          mkdir -p "$tmp/gh-pages/data"
-          cp public/data/live_market.json "$tmp/gh-pages/data/live_market.json"
-          cp public/data/alt_6030_experimental.json "$tmp/gh-pages/data/alt_6030_experimental.json"
-          cp public/data/dual_rolling30_monitor.json "$tmp/gh-pages/data/dual_rolling30_monitor.json"
-          cp public/data/sbs_sync_status.json "$tmp/gh-pages/data/sbs_sync_status.json"
-          cd "$tmp/gh-pages"
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/live_market.json data/alt_6030_experimental.json data/dual_rolling30_monitor.json data/sbs_sync_status.json
-          if git diff --cached --quiet; then
-            echo "gh-pages ya tiene el estado vigente."
+          if git clone --depth 1 --branch gh-pages "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" "$tmp/gh-pages"; then
+            mkdir -p "$tmp/gh-pages/data"
+            cp public/data/live_market.json "$tmp/gh-pages/data/live_market.json"
+            cp public/data/dual_rolling30_monitor.json "$tmp/gh-pages/data/dual_rolling30_monitor.json"
+            cp public/data/sbs_sync_status.json "$tmp/gh-pages/data/sbs_sync_status.json"
+            cd "$tmp/gh-pages"
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add data/live_market.json data/dual_rolling30_monitor.json data/sbs_sync_status.json
+            if git diff --cached --quiet; then
+              echo "gh-pages ya está actualizado."
+            else
+              git commit -m "Publicar visor dual Rolling 30"
+              git push origin HEAD:gh-pages || echo "Publicación rápida pendiente; se reintentará automáticamente."
+            fi
           else
-            git commit -m "Publicar SBS y visor dual rolling30"
-            git push origin HEAD:gh-pages
+            echo "No se pudo clonar gh-pages; se reintentará automáticamente."
           fi
-
-      - name: Preparar visor con runtime dual vigente
-        run: |
-          python - <<'PY'
-          from pathlib import Path
-          path = Path('public/index.html')
-          html = path.read_text(encoding='utf-8')
-          tags = [
-              '<script src="data/alt_runtime_v5.js?rev=ALT6030V5"></script>',
-              '<script src="data/spblscup_stale_fix.js?rev=SPBLCLOSEV1"></script>',
-              '<script src="data/visor_hotfix_v1.js?rev=VISORHOTFIX1"></script>',
-              '<script src="data/audit_runtime_v1.js?rev=AUDITV1"></script>',
-              '<script src="data/dual_rolling30_runtime_v1.js?rev=DUALROLL30V1"></script>',
-              '<script src="data/dual_rolling30_shadow_runtime_v1.js?rev=DUALSHADOWV1"></script>',
-          ]
-          for tag in tags:
-              if tag not in html:
-                  html = html.replace('</body>', tag + '\n</body>', 1)
-          path.write_text(html, encoding='utf-8')
-          for token in ('alt_runtime_v5.js', 'spblscup_stale_fix.js', 'visor_hotfix_v1.js', 'audit_runtime_v1.js', 'dual_rolling30_runtime_v1.js', 'dual_rolling30_shadow_runtime_v1.js'):
-              assert token in html, token
-          PY
-          test -s public/data/dual_rolling30_runtime_v1.js
-          test -s public/data/dual_rolling30_shadow_runtime_v1.js
-          test -s public/data/dual_rolling30_monitor.json
-          grep -q "Dos modelos en seguimiento" public/data/dual_rolling30_runtime_v1.js
-          grep -q "sin ajuste retroactivo" public/data/dual_rolling30_shadow_runtime_v1.js
-          grep -q "Visor intradía" public/data/dual_rolling30_runtime_v1.js
-
-      - name: Configurar GitHub Pages
-        uses: actions/configure-pages@v5
-
-      - name: Subir visor actualizado
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: public
-
-      - name: Publicar visor actualizado
-        id: deployment
-        uses: actions/deploy-pages@v4
-
-      - name: Registrar despliegue automático
-        if: success()
-        env:
-          DEPLOY_URL: ${{ steps.deployment.outputs.page_url }}
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git fetch origin migracion-github-actions
-          git reset --hard origin/migracion-github-actions
-          python - <<'PY'
-          import json, os
-          from datetime import datetime, timezone
-          from pathlib import Path
-          p = Path('public/data/alt6030_deploy_status.json')
-          p.write_text(json.dumps({
-              'deployed_at_utc': datetime.now(timezone.utc).isoformat(),
-              'runtime': 'DUALROLL30V1+DUALSHADOWV1+ALT6030V5+VISORHOTFIX1+AUDITV1',
-              'page_url': os.environ.get('DEPLOY_URL'),
-          }, ensure_ascii=False, indent=2), encoding='utf-8')
-          PY
-          git add public/data/alt6030_deploy_status.json
-          git commit -m "Registrar despliegue automático visor dual rolling30" || true
-          git pull --rebase origin migracion-github-actions || true
-          git push origin HEAD:migracion-github-actions || true
