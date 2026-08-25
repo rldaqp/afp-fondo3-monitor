@@ -1,5 +1,5 @@
 {
-  "generated_at_lima": "2026-08-25T04:53:13.254843-05:00",
+  "generated_at_lima": "2026-08-25T05:52:00.721556-05:00",
   "signal_date": "2026-08-24",
   "mode": "CIERRE DIARIO",
   "market_open": false,
@@ -8,19 +8,19 @@
   "vc_base": 33.679032410793916,
   "official": {
     "model": "OLS rolling 90 oficial Hábitat",
-    "return_estimated": -0.004930267602742352,
+    "return_estimated": -0.00493026760274236,
     "signal": "BAJA",
     "vc_estimated": 33.51298576840727
   },
   "challenger": {
     "model": "OLS rolling 90 Hábitat + QQQ incremental residualizado",
-    "return_estimated": -0.010718400520239365,
+    "return_estimated": -0.010718400520239393,
     "signal": "BAJA",
     "vc_estimated": 33.3180470522809
   },
   "qqq": {
     "return": -0.009979809224073155,
-    "residual": -0.0003578818593232818,
+    "residual": -0.00035788185932327833,
     "previous_close": 713.4400024414062,
     "current_price": 706.3200073242188,
     "source": "CIERRE DIARIO YAHOO",
@@ -37,7 +37,7 @@
   "comparison": {
     "same_signal": true,
     "vc_difference": -0.19493871612636582,
-    "return_difference_pp": -0.5788132917497013
+    "return_difference_pp": -0.5788132917497033
   },
   "training": {
     "window": 90,
@@ -45,14 +45,14 @@
     "start": "2026-04-01",
     "end": "2026-08-20",
     "qqq_residualizer": {
-      "intercept": -0.00016333510544468984,
-      "ret_SPY": 1.0067803267288093,
-      "ret_NEM": -0.006857794628074676,
-      "ret_FCX": 0.03294978252517866,
-      "ret_EPU": -0.10522184451756067,
-      "ret_MCHI": -0.0997901780777464,
-      "ret_EEM": 0.41053603117985904,
-      "ret_USD_PEN": 0.09329463939124243
+      "intercept": -0.00016333510544468865,
+      "ret_SPY": 1.0067803267288085,
+      "ret_NEM": -0.0068577946280747645,
+      "ret_FCX": 0.032949782525178696,
+      "ret_EPU": -0.10522184451756035,
+      "ret_MCHI": -0.09979017807774607,
+      "ret_EEM": 0.4105360311798584,
+      "ret_USD_PEN": 0.0932946393912432
     }
   },
   "performance_backtest": {
@@ -63,9 +63,9 @@
     "windows": {
       "30": {
         "n": 30,
-        "official_mae": 0.002975881053630567,
-        "challenger_mae": 0.002952478988349619,
-        "mae_improvement_pct": 0.7863911513666779,
+        "official_mae": 0.0029758810536305706,
+        "challenger_mae": 0.0029524789883496193,
+        "mae_improvement_pct": 0.786391151366779,
         "official_direction_accuracy": 0.8,
         "challenger_direction_accuracy": 0.8333333333333334,
         "direction_delta_pp": 3.3333333333333326,
@@ -76,8 +76,8 @@
       "60": {
         "n": 60,
         "official_mae": 0.003276704069720689,
-        "challenger_mae": 0.0032527930034179976,
-        "mae_improvement_pct": 0.7297291972030168,
+        "challenger_mae": 0.0032527930034179967,
+        "mae_improvement_pct": 0.7297291972030432,
         "official_direction_accuracy": 0.8,
         "challenger_direction_accuracy": 0.8166666666666667,
         "direction_delta_pp": 1.6666666666666607,
@@ -88,8 +88,8 @@
       "90": {
         "n": 90,
         "official_mae": 0.0030977138835994833,
-        "challenger_mae": 0.0030947287881955506,
-        "mae_improvement_pct": 0.09636446476664316,
+        "challenger_mae": 0.0030947287881955493,
+        "mae_improvement_pct": 0.09636446476668516,
         "official_direction_accuracy": 0.8222222222222222,
         "challenger_direction_accuracy": 0.8333333333333334,
         "direction_delta_pp": 1.1111111111111183,
@@ -112,8 +112,8 @@
       "ALL": {
         "n": 299,
         "official_mae": 0.0026386844587273518,
-        "challenger_mae": 0.002552138864685171,
-        "mae_improvement_pct": 3.2798765974436415,
+        "challenger_mae": 0.0025521388646851705,
+        "mae_improvement_pct": 3.279876597443658,
         "official_direction_accuracy": 0.7591973244147158,
         "challenger_direction_accuracy": 0.7725752508361204,
         "direction_delta_pp": 1.3377926421404673,
@@ -124,16 +124,16 @@
     },
     "recent90_vif": {
       "by_feature": {
-        "ret_SPY": 3.1972864587717527,
-        "ret_NEM": 2.293755503645855,
-        "ret_FCX": 3.062440073150981,
-        "ret_EPU": 4.341012826813053,
-        "ret_MCHI": 1.547675915944535,
+        "ret_SPY": 3.1972864587717513,
+        "ret_NEM": 2.2937555036458543,
+        "ret_FCX": 3.0624400731509787,
+        "ret_EPU": 4.341012826813057,
+        "ret_MCHI": 1.5476759159445346,
         "ret_EEM": 3.8630467943386106,
-        "ret_USD_PEN": 1.9454725272556854,
-        "ret_QQQ_residual": 1.0000000000000002
+        "ret_USD_PEN": 1.9454725272556859,
+        "ret_QQQ_residual": 1.0
       },
-      "max_vif": 4.341012826813053,
+      "max_vif": 4.341012826813057,
       "max_vif_feature": "ret_EPU"
     }
   },
