@@ -110,12 +110,12 @@
       "ticker": "CPER:NYSEARCA",
       "timestamp": "2026-08-24",
       "precio_anterior": 39.99,
-      "precio_actual": 40.07,
-      "retorno": 0.0020005001250311683,
-      "retorno_modelo": 0.0020005001250311683,
+      "precio_actual": 38.76,
+      "retorno": -0.030757689422355683,
+      "retorno_modelo": -0.030757689422355683,
       "estado": "GOOGLE FINANCE · SELENIUM · ROLLING30 NUEVOS TICKERS",
       "usado_modelo": true,
-      "google_stamp": "Aug 24, 6:30:00 PM UTC-4"
+      "google_stamp": "Aug 24, 8:00:00 PM UTC-4"
     },
     {
       "serie": "EEM",
@@ -173,7 +173,7 @@
     "USD/PEN"
   ],
   "experimental_note": "Seguimiento del nuevo 60/30. No modifica el OLS principal ni el challenger 60/30 vigente.",
-  "checked_at_lima": "2026-08-24T18:55:28.783299-05:00",
+  "checked_at_lima": "2026-08-24T20:39:30.800635-05:00",
   "experimental_google_rolling30_checked": true,
   "experimental_google_rolling30_results": {
     ".INX": {
@@ -182,10 +182,10 @@
     },
     "CPER": {
       "quote": "CPER:NYSEARCA",
-      "price": 40.07,
+      "price": 38.76,
       "previous": 39.99,
-      "return": 0.0020005001250311683,
-      "stamp": "Aug 24, 6:30:00 PM UTC-4"
+      "return": -0.030757689422355683,
+      "stamp": "Aug 24, 8:00:00 PM UTC-4"
     },
     "EEM": {
       "quote": "EEM:NYSEARCA",
