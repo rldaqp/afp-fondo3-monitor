@@ -97,60 +97,72 @@
     {
       "serie": ".INX",
       "ticker": ".INX:INDEXSP",
-      "timestamp": "2026-08-24T15:55:00-04:00",
-      "precio_anterior": null,
-      "precio_actual": 7652.81982421875,
-      "retorno": -0.0028080862194130862,
-      "retorno_modelo": null,
-      "estado": "YAHOO ^GSPC · RESPALDO EQUIVALENTE · NUEVO 60/30 EXPERIMENTAL",
-      "usado_modelo": false
+      "timestamp": "2026-08-24",
+      "precio_anterior": 7674.3701171875,
+      "precio_actual": 7652.85986328125,
+      "retorno": -0.0028028689752760405,
+      "retorno_modelo": -0.0028028689752760405,
+      "estado": "YAHOO ^GSPC · FALLBACK POR ERROR GOOGLE",
+      "usado_modelo": true,
+      "validado_modelo": true,
+      "google_stamp": "2026-08-24",
+      "error_validacion": "RuntimeError: Precio principal ambiguo/no identificado: []"
     },
     {
       "serie": "CPER",
       "ticker": "CPER:NYSEARCA",
       "timestamp": "2026-08-24",
-      "precio_anterior": 39.99,
-      "precio_actual": 38.76,
-      "retorno": -0.030757689422355683,
-      "retorno_modelo": -0.030757689422355683,
-      "estado": "GOOGLE FINANCE · SELENIUM · ROLLING30 NUEVOS TICKERS",
+      "precio_anterior": 39.9900016784668,
+      "precio_actual": 40.06999969482422,
+      "retorno": 0.0020004504376027743,
+      "retorno_modelo": 0.0020004504376027743,
+      "estado": "YAHOO CPER · FALLBACK POR ERROR GOOGLE",
       "usado_modelo": true,
-      "google_stamp": "Aug 24, 8:00:00 PM UTC-4"
+      "validado_modelo": true,
+      "google_stamp": "2026-08-24",
+      "error_validacion": "RuntimeError: Precio principal ambiguo/no identificado: []"
     },
     {
       "serie": "EEM",
       "ticker": "EEM:NYSEARCA",
-      "timestamp": "2026-08-24T15:55:00-04:00",
-      "precio_anterior": null,
-      "precio_actual": 66.12999725341797,
-      "retorno": -0.014749783263596106,
-      "retorno_modelo": null,
-      "estado": "YAHOO EEM · RESPALDO EQUIVALENTE · NUEVO 60/30 EXPERIMENTAL",
-      "usado_modelo": false
+      "timestamp": "2026-08-24",
+      "precio_anterior": 67.12000274658203,
+      "precio_actual": 66.11000061035156,
+      "retorno": -0.015047707015803158,
+      "retorno_modelo": -0.015047707015803158,
+      "estado": "YAHOO EEM · FALLBACK POR ERROR GOOGLE",
+      "usado_modelo": true,
+      "validado_modelo": true,
+      "google_stamp": "2026-08-24",
+      "error_validacion": "RuntimeError: Precio principal ambiguo/no identificado: []"
     },
     {
       "serie": "NDX",
       "ticker": "NDX:INDEXNASDAQ",
       "timestamp": "2026-08-24",
-      "precio_anterior": 29308.86,
-      "precio_actual": 29023.18,
-      "retorno": -0.0097472231946244,
-      "retorno_modelo": -0.0097472231946244,
-      "estado": "GOOGLE FINANCE · SELENIUM · ROLLING30 NUEVOS TICKERS",
+      "precio_anterior": 29308.859375,
+      "precio_actual": 29023.1796875,
+      "retorno": -0.009747212740175093,
+      "retorno_modelo": -0.009747212740175093,
+      "estado": "YAHOO ^NDX · FALLBACK POR ERROR GOOGLE",
       "usado_modelo": true,
-      "google_stamp": "Aug 24, 5:15:59 PM UTC-4"
+      "validado_modelo": true,
+      "google_stamp": "2026-08-24",
+      "error_validacion": "RuntimeError: Precio principal ambiguo/no identificado: []"
     },
     {
       "serie": "SPBLSCUP",
       "ticker": "SPBLSCUP:INDEXSP",
       "timestamp": "2026-08-24",
       "precio_anterior": 460.43,
-      "precio_actual": 500.0,
-      "retorno": 0.08594140260191563,
-      "retorno_modelo": 0.08594140260191563,
-      "estado": "GOOGLE FINANCE · SELENIUM · ROLLING30 NUEVOS TICKERS",
+      "precio_actual": 459.23,
+      "retorno": -0.00260625936624459,
+      "retorno_modelo": -0.00260625936624459,
+      "estado": "GOOGLE EXACTO",
       "usado_modelo": true,
-      "google_stamp": "Aug 24, 4:49:00 PM UTC-4"
+      "validado_modelo": true,
+      "google_stamp": "Aug 24, 4:49:00 PM UTC-4",
+      "error_validacion": null
     },
     {
       "serie": "USD/PEN",
@@ -173,37 +185,57 @@
     "USD/PEN"
   ],
   "experimental_note": "Seguimiento del nuevo 60/30. No modifica el OLS principal ni el challenger 60/30 vigente.",
-  "checked_at_lima": "2026-08-24T22:35:46.875804-05:00",
+  "checked_at_lima": "2026-08-24T23:20:29.528114-05:00",
   "experimental_google_rolling30_checked": true,
   "experimental_google_rolling30_results": {
     ".INX": {
       "quote": ".INX:INDEXSP",
-      "error": "RuntimeError: Movimiento fuera de control: -85.191%"
+      "price": 7652.85986328125,
+      "previous": 7674.3701171875,
+      "return": -0.0028028689752760405,
+      "stamp": "2026-08-24",
+      "validation": "YAHOO ^GSPC · FALLBACK POR ERROR GOOGLE",
+      "valid_for_model": true,
+      "google_error": "RuntimeError: Precio principal ambiguo/no identificado: []"
     },
     "CPER": {
       "quote": "CPER:NYSEARCA",
-      "price": 38.76,
-      "previous": 39.99,
-      "return": -0.030757689422355683,
-      "stamp": "Aug 24, 8:00:00 PM UTC-4"
+      "price": 40.06999969482422,
+      "previous": 39.9900016784668,
+      "return": 0.0020004504376027743,
+      "stamp": "2026-08-24",
+      "validation": "YAHOO CPER · FALLBACK POR ERROR GOOGLE",
+      "valid_for_model": true,
+      "google_error": "RuntimeError: Precio principal ambiguo/no identificado: []"
     },
     "EEM": {
       "quote": "EEM:NYSEARCA",
-      "error": "RuntimeError: Movimiento fuera de control: -42.253%"
+      "price": 66.11000061035156,
+      "previous": 67.12000274658203,
+      "return": -0.015047707015803158,
+      "stamp": "2026-08-24",
+      "validation": "YAHOO EEM · FALLBACK POR ERROR GOOGLE",
+      "valid_for_model": true,
+      "google_error": "RuntimeError: Precio principal ambiguo/no identificado: []"
     },
     "NDX": {
       "quote": "NDX:INDEXNASDAQ",
-      "price": 29023.18,
-      "previous": 29308.86,
-      "return": -0.0097472231946244,
-      "stamp": "Aug 24, 5:15:59 PM UTC-4"
+      "price": 29023.1796875,
+      "previous": 29308.859375,
+      "return": -0.009747212740175093,
+      "stamp": "2026-08-24",
+      "validation": "YAHOO ^NDX · FALLBACK POR ERROR GOOGLE",
+      "valid_for_model": true,
+      "google_error": "RuntimeError: Precio principal ambiguo/no identificado: []"
     },
     "SPBLSCUP": {
       "quote": "SPBLSCUP:INDEXSP",
-      "price": 500.0,
+      "price": 459.23,
       "previous": 460.43,
-      "return": 0.08594140260191563,
-      "stamp": "Aug 24, 4:49:00 PM UTC-4"
+      "return": -0.00260625936624459,
+      "stamp": "Aug 24, 4:49:00 PM UTC-4",
+      "validation": "GOOGLE EXACTO",
+      "valid_for_model": true
     }
   }
 }
