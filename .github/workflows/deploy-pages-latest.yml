@@ -1,102 +1,11 @@
-name: Publicar estado más reciente en GitHub Pages
+name: ARCHIVO · despliegue 60/30 anterior
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - migracion-github-actions
-    paths:
-      - ".github/workflows/deploy-pages-latest.yml"
-      - "public/index.html"
-      - "public/data/reduced_6030_challenger.json"
-      - "public/data/reduced_6030_history.json"
-      - "public/data/alt_6030_experimental.json"
-      - "public/data/visor_hotfix_v1.js"
-      - "scripts/postprocess_reduced_6030_ui.py"
-      - "scripts/build_reduced_6030_history.py"
-
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-
-concurrency:
-  group: pages-latest-state-manual
-  cancel-in-progress: true
 
 jobs:
-  deploy:
+  retired:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Descargar la rama más reciente
-        uses: actions/checkout@v4
-        with:
-          ref: migracion-github-actions
-          fetch-depth: 1
-
-      - name: Preparar runtime operativo Profuturo
-        run: |
-          python - <<'PY'
-          from pathlib import Path
-          p=Path('public/index.html')
-          html=p.read_text(encoding='utf-8')
-          tags=[
-            '<script src="data/alt_runtime_v5.js?rev=ALT6030V5"></script>',
-            '<script src="data/spblscup_stale_fix.js?rev=SPBLCLOSEV1"></script>',
-            '<script src="data/visor_hotfix_v1.js?rev=VISORHOTFIX1"></script>',
-          ]
-          for tag in tags:
-              if tag not in html:
-                  html=html.replace('</body>',tag+'\n</body>',1)
-          p.write_text(html,encoding='utf-8')
-          PY
-
-      - name: Validar archivos vigentes
-        run: |
-          test -s public/index.html
-          test -s public/data/latest.json
-          test -s public/data/reduced_6030_challenger.json
-          test -s public/data/reduced_6030_history.json
-          test -s public/data/alt_runtime_v5.js
-          test -s public/data/visor_hotfix_v1.js
-          test -s public/habitat/index.html
-          test -s public/habitat/data/series.json
-          grep -q "60/30 SIN NEM-FCX + QQQ · CHALLENGER" public/index.html
-          grep -q "Ver Challenger 60/30 en otra fecha" public/index.html
-          grep -q "visor_hotfix_v1.js" public/index.html
-          grep -q "alt_runtime_v5.js" public/index.html
-          grep -q "HABITAT_CHART_OFFICIAL_VS_OLS_V6" public/habitat/index.html
-          grep -q "VC SBS real (oficial)" public/habitat/index.html
-          grep -q "VC estimado OLS" public/habitat/index.html
-          ! grep -q "VC provisional · SBS pendiente" public/habitat/index.html
-          ! grep -q "Tramo SBS pendiente" public/habitat/index.html
-          python - <<'PY'
-          import json
-          from pathlib import Path
-
-          challenger = json.loads(Path("public/data/reduced_6030_challenger.json").read_text(encoding="utf-8"))
-          history = json.loads(Path("public/data/reduced_6030_history.json").read_text(encoding="utf-8"))
-          assert challenger.get("challenger",{}).get("vc_estimated")
-          assert history.get("backtest_history")
-
-          series = json.loads(Path("public/habitat/data/series.json").read_text(encoding="utf-8"))
-          by_date = {row["fecha"]: row for row in series}
-          for date in ("2026-07-01", "2026-07-20"):
-              row = by_date.get(date)
-              assert row, f"Falta {date} en Hábitat"
-              assert row.get("es_oficial") is True, row
-              assert row.get("fuente") == "SBS OFICIAL", row
-          PY
-
-      - name: Configurar GitHub Pages
-        uses: actions/configure-pages@v5
-
-      - name: Subir el sitio más reciente
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: public
-
-      - name: Publicar
-        id: deployment
-        uses: actions/deploy-pages@v4
+      - run: |
+          echo "Workflow retirado. No publica el antiguo 60/30/alt runtime sobre el visor dual Rolling 30."
