@@ -23,6 +23,7 @@ on:
       - "scripts/postprocess_trade_cloud_fund_routing.py"
       - "scripts/postprocess_trade_runtime_fixes.py"
       - "scripts/validate_habitat_official.py"
+      - "scripts/ensure_dual_trade_runtime.py"
       - "scripts/finalize_notebook_parity_v4.py"
       - "scripts/finalize_notebook_parity_v5.py"
       - "scripts/finalize_fx_hybrid.py"
@@ -70,9 +71,6 @@ jobs:
           PYTHONUTF8: "1"
           PYTHONIOENCODING: "utf-8"
         run: |
-          # Hábitat ya no regenera su HTML tomando como plantilla el visor de
-          # Profuturo, porque Profuturo ahora tiene una interfaz dual Rolling 30.
-          # Se conserva el HTML Hábitat validado y se actualizan sus datos propios.
           python scripts/run_habitat_exact_pipeline_stable_ui.py
           python scripts/update_habitat_live_market.py
           python scripts/build_habitat_qqq_incremental_challenger.py
@@ -80,7 +78,7 @@ jobs:
           python scripts/postprocess_trade_runtime_fixes.py habitat
           python scripts/postprocess_habitat_qqq_incremental_ui.py
 
-      - name: Validar histórico oficial OLS visor QQQ y Drive
+      - name: Validar Hábitat OLS QQQ y Drive
         run: |
           python scripts/validate_habitat_official.py
           PYTHONPATH=scripts python -c "from habitat_complete_official_calendar import validate_official_estimate_calendar; validate_official_estimate_calendar()"
@@ -125,17 +123,10 @@ jobs:
           assert abs(float(qqq['vc_base']) * (1.0 + float(qqq['official']['return_estimated'])) - float(qqq['official']['vc_estimated'])) < 1e-8
           assert int(qqq['training']['n']) == 90
 
-          prof = json.loads(Path('public/data/live_market.json').read_text(encoding='utf-8'))
-          if str(prof.get('mode','')).startswith('INTRAD'):
-              assert str(hab.get('mode','')).startswith('INTRAD'), (prof.get('mode'), hab.get('mode'))
-              assert hab.get('signal_date') == prof.get('signal_date')
-              p = {x['serie']: x for x in prof.get('assets', [])}
-              h = {x['serie']: x for x in hab.get('assets', [])}
-              for serie in ('SPY','NEM','FCX','EPU','MCHI','EEM','USD_PEN'):
-                  assert serie in p and serie in h, serie
-                  if p[serie].get('precio_actual') is not None and h[serie].get('precio_actual') is not None:
-                      assert abs(float(p[serie]['precio_actual']) - float(h[serie]['precio_actual'])) < 1e-9, serie
-                  assert abs(float(p[serie]['retorno_modelo']) - float(h[serie]['retorno_modelo'])) < 1e-12, serie
+          # Profuturo ya usa una arquitectura dual Rolling30 distinta. No se
+          # compara su lista de activos contra Hábitat: ese control heredado era
+          # el que fallaba con AssertionError: SPY y generaba correos repetidos.
+          print('Hábitat validado de forma independiente; Profuturo dual no se mezcla en esta prueba.')
           PY
           node --check /tmp/tradeHistoryScript.js
           node --check /tmp/tradeCloudScript.js
@@ -168,17 +159,22 @@ jobs:
             fi
           fi
 
-      - name: Actualizar rama antes de publicar
+      - name: Actualizar rama y preservar operaciones Profuturo
         run: |
           git fetch origin migracion-github-actions
           git reset --hard origin/migracion-github-actions
+          python scripts/ensure_dual_trade_runtime.py
 
-      - name: Verificar visor dual Profuturo sin modificarlo
+      - name: Verificar visor dual Profuturo y Drive antes de publicar
         run: |
           test -s public/index.html
           test -s public/data/dual_rolling30_monitor.json
+          test -s public/data/dual_trade_runtime_v1.js
           grep -q "Dos modelos Rolling 30" public/index.html
           grep -q "dual_rolling30_monitor.json" public/index.html
+          grep -q "dual_trade_runtime_v1.js" public/index.html
+          grep -q "Conectar Drive" public/data/dual_trade_runtime_v1.js
+          grep -q "Registrar operación" public/data/dual_trade_runtime_v1.js
           ! grep -q "OLS OFICIAL · ROLLING 90" public/index.html
 
       - name: Configurar GitHub Pages
