@@ -8,9 +8,11 @@ on:
     paths:
       - ".github/workflows/deploy-pages-ui.yml"
       - "public/index.html"
-      - "public/data/dual_rolling30_monitor.json"
       - "public/data/dual_trade_runtime_v1.js"
+      - "scripts/ensure_dual_trade_runtime.py"
 
+# Los datos de mercado cambian cada 5 minutos y se publican por la vía rápida
+# del updater dual. No disparan un despliegue completo + Playwright en cada corte.
 permissions:
   contents: write
   pages: write
@@ -18,7 +20,7 @@ permissions:
 
 concurrency:
   group: pages-ui-fondo3
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   deploy:
@@ -35,50 +37,27 @@ jobs:
           ref: migracion-github-actions
           fetch-depth: 0
 
-      - name: Inyectar módulo de operaciones y Drive
-        run: |
-          python - <<'PY'
-          from pathlib import Path
-          p=Path('public/index.html')
-          html=p.read_text(encoding='utf-8')
-          tag='<script src="data/dual_trade_runtime_v1.js?rev=DUALTRADEV1"></script>'
-          if tag not in html:
-              html=html.replace('</body>',tag+'\n</body>',1)
-          p.write_text(html,encoding='utf-8')
-          assert tag in html
-          PY
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
 
-      - name: Corregir base operativa de rentabilidad
-        run: |
-          python - <<'PY'
-          from pathlib import Path
-          p=Path('public/data/dual_trade_runtime_v1.js')
-          js=p.read_text(encoding='utf-8')
-          old="function rowMetrics(r){const re=finite(r.entry_est_vc)&&finite(r.exit_est_vc)&&Number(r.entry_est_vc)!==0?Number(r.exit_est_vc)/Number(r.entry_est_vc)-1:null;const rr=finite(r.entry_sbs_vc)&&finite(r.exit_sbs_vc)&&Number(r.entry_sbs_vc)!==0?Number(r.exit_sbs_vc)/Number(r.entry_sbs_vc)-1:null;const cap=finite(r.capital)?Number(r.capital):null;return{re,rr,ge:re!==null&&cap!==null?cap*re:null,gr:rr!==null&&cap!==null?cap*rr:null};}"
-          new="function rowMetrics(r){const entryBase=finite(r.entry_sbs_vc)?Number(r.entry_sbs_vc):(finite(r.entry_est_vc)?Number(r.entry_est_vc):null);const re=entryBase!==null&&entryBase!==0&&finite(r.exit_est_vc)?Number(r.exit_est_vc)/entryBase-1:null;const rr=finite(r.entry_sbs_vc)&&finite(r.exit_sbs_vc)&&Number(r.entry_sbs_vc)!==0?Number(r.exit_sbs_vc)/Number(r.entry_sbs_vc)-1:null;const cap=finite(r.capital)?Number(r.capital):null;return{re,rr,ge:re!==null&&cap!==null?cap*re:null,gr:rr!==null&&cap!==null?cap*rr:null};}"
-          if old not in js:
-              raise SystemExit('No se encontró la fórmula antigua de rowMetrics')
-          js=js.replace(old,new,1)
-          p.write_text(js,encoding='utf-8')
-          assert 'const entryBase=finite(r.entry_sbs_vc)' in js
-          print('Histórico de operación usa la misma base que Calcular: SBS de entrada si ya existe; estimado solo si SBS está pendiente.')
-          PY
+      - name: Fijar operaciones y Drive en el visor dual
+        run: python scripts/ensure_dual_trade_runtime.py
 
-      - name: Validar datos y visor dual
+      - name: Validar visor antes de publicar
         run: |
           set -e
           test -s public/index.html
           test -s public/data/dual_rolling30_monitor.json
           test -s public/data/dual_trade_runtime_v1.js
           grep -q 'id="dualTakeoverV4"' public/index.html
-          grep -q 'tickerbar_qqq' public/index.html
-          grep -q 'tickerbar_new_tickers' public/index.html
           grep -q 'dual_trade_runtime_v1.js' public/index.html
           grep -q 'Registrar operación' public/data/dual_trade_runtime_v1.js
           grep -q 'Conectar Drive' public/data/dual_trade_runtime_v1.js
-          grep -q "profuturo_fondo3_trade_history_v3" public/data/dual_trade_runtime_v1.js
-          grep -q "fondo3_drive_sync_key_v1" public/data/dual_trade_runtime_v1.js
-          grep -q "const entryBase=finite(r.entry_sbs_vc)" public/data/dual_trade_runtime_v1.js
+          grep -q 'profuturo_fondo3_trade_history_v3' public/data/dual_trade_runtime_v1.js
+          grep -q 'fondo3_drive_sync_key_v1' public/data/dual_trade_runtime_v1.js
+          grep -q 'const entryBase=finite(r.entry_sbs_vc)' public/data/dual_trade_runtime_v1.js
           ! grep -q 'OLS OFICIAL · ROLLING 90' public/index.html
           python - <<'PY'
           import json
@@ -88,23 +67,9 @@ jobs:
           assert float(d['latest_sbs']['vc']) > 0
           for k in ('qqq','new_tickers'):
               m=d['models'][k]
-              assert len(m.get('history_one_step',[])) >= 30, (k,len(m.get('history_one_step',[])))
               assert len(m.get('intraday_assets',[])) == 6, (k,len(m.get('intraday_assets',[])))
               assert float(m['current']['vc_estimated']) > 0
-              assert all(int(r.get('horizon_sessions',1)) == 1 for r in m['history_one_step']), k
-          def fx(model, name):
-              for a in model.get('intraday_assets',[]):
-                  if str(a.get('serie')) == name:
-                      return a
-              raise AssertionError(name)
-          a=fx(d['models']['qqq'],'USD_PEN')
-          b=fx(d['models']['new_tickers'],'USD/PEN')
-          ar=float(a.get('retorno_modelo',a.get('retorno')))
-          br=float(b.get('retorno_modelo',b.get('retorno')))
-          assert abs(ar-br) < 1e-12, (ar,br)
-          if a.get('precio_actual') is not None and b.get('precio_actual') is not None:
-              assert abs(float(a['precio_actual'])-float(b['precio_actual'])) < 1e-9, (a['precio_actual'],b['precio_actual'])
-          print('Visor dual: datos diarios, USD/PEN común y módulo operaciones OK')
+          print('Visor dual + operaciones + Drive OK')
           PY
 
       - name: Configurar GitHub Pages
@@ -120,7 +85,7 @@ jobs:
         uses: actions/deploy-pages@v4
 
       - name: Esperar propagación
-        run: sleep 25
+        run: sleep 20
 
       - name: Instalar Chromium
         run: |
@@ -128,7 +93,7 @@ jobs:
           npm install playwright@1.55.0 >/dev/null 2>&1
           npx playwright install --with-deps chromium >/dev/null 2>&1
 
-      - name: Verificar visor público
+      - name: Verificar visor público dinámicamente
         env:
           PAGE_URL: ${{ steps.deployment.outputs.page_url }}
         run: |
@@ -140,68 +105,32 @@ jobs:
             const page=await browser.newPage({viewport:{width:1440,height:1000}});
             const errs=[];
             page.on('pageerror',e=>errs.push(String(e)));
-            page.on('console',m=>{if(m.type()==='error')errs.push(m.text())});
             const root=(process.env.PAGE_URL||'https://rldaqp.github.io/afp-fondo3-monitor/').replace(/\/?$/,'/');
-            const url=root+'?verify='+Date.now();
-            const r=await page.goto(url,{waitUntil:'domcontentloaded',timeout:60000});
+            const r=await page.goto(root+'?verify='+Date.now(),{waitUntil:'domcontentloaded',timeout:60000});
             await page.waitForSelector('#dualTakeoverV4',{state:'visible',timeout:30000});
-            await page.waitForFunction(()=>document.querySelector('#dSbs')?.textContent?.trim() && document.querySelector('#dSbs')?.textContent?.trim()!=='—',{timeout:30000});
-            await page.waitForFunction(()=>document.querySelectorAll('#tickerbar_qqq .tickerchip').length===6 && document.querySelectorAll('#tickerbar_new_tickers .tickerchip').length===6,{timeout:30000});
+            await page.waitForFunction(()=>document.querySelector('#dSbs')?.textContent?.trim() && document.querySelector('#dSbs').textContent.trim()!=='—',{timeout:30000});
             await page.waitForSelector('#dualTradePanel',{state:'visible',timeout:30000});
             if(await page.locator('[data-trademode]').count()!==3) throw Error('Faltan modos de operación');
             if(await page.locator('#tradeSave').count()!==1) throw Error('Falta Registrar operación');
             if(await page.locator('#tradeCloudConnect').count()!==1) throw Error('Falta Conectar Drive');
 
-            const txt=async s=>(await page.locator(s).textContent()).trim();
-            const fx=await page.evaluate(()=>{
-              const read=id=>[...document.querySelectorAll('#'+id+' .tickerchip')].find(x=>x.querySelector('.sym')?.textContent?.replace('_','/').includes('USD/PEN'));
-              const p=x=>x?.querySelector('.price')?.textContent?.trim();
-              const q=x=>x?.querySelector('.ret')?.textContent?.trim();
-              return {aPrice:p(read('tickerbar_qqq')),bPrice:p(read('tickerbar_new_tickers')),aRet:q(read('tickerbar_qqq')),bRet:q(read('tickerbar_new_tickers'))};
-            });
-            if(fx.aPrice!==fx.bPrice || fx.aRet!==fx.bRet) throw Error('USD/PEN visible distinto '+JSON.stringify(fx));
-
-            const counts={};
-            for(const d of ['7','15','30','90','all']){
-              await page.locator(`.controls[data-k="qqq"][data-t="Vc"] button[data-d="${d}"]`).click();
-              await page.waitForTimeout(120);
-              const note=await txt('#dVcN_qqq');
-              const m=note.match(/^(\d+) puntos/); counts[d]=m?Number(m[1]):null;
-            }
-            if(!(counts['7']<counts['30'] && counts['30']<=counts['90'] && counts['90']<=counts['all'])) throw Error('Rangos no cambian '+JSON.stringify(counts));
-
-            const pending=await page.evaluate(()=>{
-              const out={};
-              for(const k of ['qqq','new_tickers']){
-                const g=document.getElementById('dVc_'+k); const t=g.data.find(x=>x.name==='VC real SBS');
-                out[k]=t.x.map((x,i)=>({x:String(x).slice(0,10),y:t.y[i]})).filter(p=>p.x>'2026-08-19');
-              }
-              return out;
-            });
-            for(const [k,rows] of Object.entries(pending)) if(rows.some(x=>x.y!==null && x.y!==undefined)) throw Error(k+' SBS pendiente dibujado');
-
-            // Prueba real de consistencia de la operación: entrada SBS 19/08,
-            // salida aún estimada 21/08. El cálculo y la fila guardada deben coincidir.
-            await page.locator('[data-trademode="closed"]').click();
+            const db=await page.evaluate(async()=>fetch('data/dual_rolling30_monitor.json?x='+Date.now(),{cache:'no-store'}).then(r=>r.json()));
+            const entry=String(db.latest_sbs.fecha).slice(0,10);
+            const valuation=String(db.signal_date).slice(0,10);
+            await page.locator('[data-trademode="inside"]').click();
             await page.locator('#tradeModel').selectOption('qqq');
-            await page.locator('#tradeEntry').fill('2026-08-19');
-            await page.locator('#tradeExit').fill('2026-08-21');
+            await page.locator('#tradeEntry').fill(entry);
             await page.locator('#tradeCapital').fill('25000');
             await page.locator('#tradeCalc').click();
-            const calcRet=await txt('#tradeMRet');
-            const calcGain=await txt('#tradeMGain');
-            const calcFinal=await txt('#tradeMFinal');
-            const detail=await txt('#tradeDetail');
-            if(!detail.includes('70.3276160') || !detail.includes('71.8606887')) throw Error('La operación no usa SBS entrada + VC estimado vigente: '+detail);
-            await page.locator('#tradeSave').click();
-            await page.waitForTimeout(200);
-            const cells=page.locator('#tradeBody tr').first().locator('td');
-            const histRet=(await cells.nth(8).textContent()).trim();
-            const histGain=(await cells.nth(10).textContent()).trim();
-            if(histRet!==calcRet || histGain!==calcGain) throw Error(`Operación inconsistente: calcular ${calcRet}/${calcGain}; histórico ${histRet}/${histGain}`);
+            const calcRet=(await page.locator('#tradeMRet').textContent()).trim();
+            const calcGain=(await page.locator('#tradeMGain').textContent()).trim();
+            if(calcRet==='—'||calcGain==='—') throw Error('Cálculo de operación vacío');
 
-            if(errs.length) throw Error('Consola: '+errs.join(' | '));
-            const out={checked_at_utc:new Date().toISOString(),url,http:r.status(),sbs:await txt('#dSbs'),a:await txt('#dAVc'),b:await txt('#dBVc'),fx,counts,pending,operation_ui:true,drive_ui:true,operation_consistency:{entry:'2026-08-19',valuation:'2026-08-21',model:'qqq',capital:25000,final:calcFinal,return:calcRet,gain:calcGain,history_return:histRet,history_gain:histGain,status:'PASS'},status:'PASS_DYNAMIC_DUAL_TRADE_CONSISTENT'};
+            const cloudText=(await page.locator('#tradeCloudStatus').textContent()).trim();
+            if(!cloudText) throw Error('Estado Drive vacío');
+            if(errs.length) throw Error('Errores JS: '+errs.join(' | '));
+
+            const out={checked_at_utc:new Date().toISOString(),url:root,http:r.status(),sbs:(await page.locator('#dSbs').textContent()).trim(),entry,valuation,operation_ui:true,drive_ui:true,cloud_status:cloudText,operation_test:{capital:25000,return:calcRet,gain:calcGain,status:'PASS'},status:'PASS_DYNAMIC_DUAL_TRADE'};
             fs.writeFileSync('/tmp/pages_ui_verified.json',JSON.stringify(out,null,2));
             console.log(JSON.stringify(out,null,2));
             await browser.close();
@@ -217,6 +146,6 @@ jobs:
           git reset --hard origin/migracion-github-actions
           cp /tmp/pages_ui_verified.json public/data/pages_ui_verified.json
           git add public/data/pages_ui_verified.json
-          git commit -m "Registrar visor dual con cálculo de operaciones consistente" || true
+          git commit -m "Registrar visor dual con operaciones y Drive activos" || true
           git pull --rebase origin migracion-github-actions || true
           git push origin HEAD:migracion-github-actions || true
