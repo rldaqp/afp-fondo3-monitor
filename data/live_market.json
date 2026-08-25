@@ -185,7 +185,7 @@
     "USD/PEN"
   ],
   "experimental_note": "Seguimiento del nuevo 60/30. No modifica el OLS principal ni el challenger 60/30 vigente.",
-  "checked_at_lima": "2026-08-24T23:20:29.528114-05:00",
+  "checked_at_lima": "2026-08-24T23:21:44.641151-05:00",
   "experimental_google_rolling30_checked": true,
   "experimental_google_rolling30_results": {
     ".INX": {
@@ -237,5 +237,11 @@
       "validation": "GOOGLE EXACTO",
       "valid_for_model": true
     }
+  },
+  "new_ticker_validation": {
+    "signal_date": "2026-08-24",
+    "status": "OK",
+    "problems": [],
+    "rule": "No se usa un cierre dudoso para Modelo B; se conserva la última sesión completa."
   }
 }
