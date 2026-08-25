@@ -1,5 +1,5 @@
 {
-  "generated_at_lima": "2026-08-25T15:57:08.188952-05:00",
+  "generated_at_lima": "2026-08-25T16:37:41.704745-05:00",
   "fund": "PROFUTURO Fondo 3",
   "signal_date": "2026-08-25",
   "market_mode": "CIERRE DIARIO",
@@ -2083,8 +2083,8 @@
       "current": {
         "fecha": "2026-08-25",
         "base_vc": 71.04642522509886,
-        "vc_estimated": 72.06764946108467,
-        "return_estimated": 0.014374041097074734,
+        "vc_estimated": 72.0604198366747,
+        "return_estimated": 0.01427228193907228,
         "signal": "SUBE",
         "actual_vc": null,
         "anchor_date": "2026-08-21",
@@ -2115,8 +2115,8 @@
         {
           "fecha": "2026-08-25",
           "base_vc": 71.04642522509886,
-          "vc_estimated": 72.06764946108467,
-          "return_estimated": 0.014374041097074734,
+          "vc_estimated": 72.0604198366747,
+          "return_estimated": 0.01427228193907228,
           "signal": "SUBE",
           "actual_vc": null
         }
@@ -3257,13 +3257,13 @@
           "ticker": "SPBLSCUP:INDEXSP",
           "timestamp": "2026-08-25",
           "precio_anterior": 459.23,
-          "precio_actual": 464.34,
-          "retorno": 0.011127321821309488,
-          "retorno_modelo": 0.011127321821309488,
+          "precio_actual": 464.16,
+          "retorno": 0.010735361365764362,
+          "retorno_modelo": 0.010735361365764362,
           "estado": "GOOGLE EXACTO",
           "usado_modelo": true,
           "validado_modelo": true,
-          "google_stamp": "Aug 25, 4:30:03 PM UTC-4",
+          "google_stamp": "Aug 25, 5:12:57 PM UTC-4",
           "error_validacion": null
         },
         {
@@ -3435,8 +3435,8 @@
   },
   "comparison": {
     "winner_blind3_mape": "NUEVOS TICKERS",
-    "vc_difference": -0.11677654716471864,
-    "return_difference": 0.002705240036364697
+    "vc_difference": -0.12400617157469185,
+    "return_difference": 0.0026034808783622423
   },
   "shared_fx_operational": {
     "return": 0.0,
