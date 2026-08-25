@@ -1,11 +1,11 @@
 {
-  "generated_at_lima": "2026-08-24T15:02:27.775683-05:00",
+  "generated_at_lima": "2026-08-24T23:23:20.145323-05:00",
   "mode": "INTRADIA PROVISIONAL - ULTIMO CORTE",
   "market_open": false,
   "signal_date": "2026-08-24",
   "vc_base": 33.679032410793916,
-  "vc_estimated": 33.52553747964284,
-  "return_estimated": -0.0045575813841339085,
+  "vc_estimated": 33.51298576840727,
+  "return_estimated": -0.00493026760274237,
   "signal": "BAJA",
   "assets": [
     {
@@ -14,8 +14,8 @@
       "timestamp": "2026-08-24T15:55:00-04:00",
       "precio_anterior": 765.719970703125,
       "precio_actual": 763.510009765625,
-      "retorno": -0.0028861215875964907,
-      "retorno_modelo": -0.0028861215875964907,
+      "retorno": -0.0029384110198065194,
+      "retorno_modelo": -0.0029384110198065194,
       "estado": "INTRADÍA YAHOO · USADO POR MODELO",
       "usado_modelo": true
     },
@@ -36,8 +36,8 @@
       "timestamp": "2026-08-24T15:55:00-04:00",
       "precio_anterior": 76.66000366210938,
       "precio_actual": 77.80500030517578,
-      "retorno": 0.0149360368949778,
-      "retorno_modelo": 0.0149360368949778,
+      "retorno": 0.014870849663315422,
+      "retorno_modelo": 0.014870849663315422,
       "estado": "INTRADÍA YAHOO · USADO POR MODELO",
       "usado_modelo": true
     },
@@ -47,8 +47,8 @@
       "timestamp": "2026-08-24T15:55:00-04:00",
       "precio_anterior": 94.0,
       "precio_actual": 94.05999755859375,
-      "retorno": 0.0006382718999335957,
-      "retorno_modelo": 0.0006382718999335957,
+      "retorno": 0.0029787104180518664,
+      "retorno_modelo": 0.0029787104180518664,
       "estado": "INTRADÍA YAHOO · USADO POR MODELO",
       "usado_modelo": true
     },
@@ -58,8 +58,8 @@
       "timestamp": "2026-08-24T15:55:00-04:00",
       "precio_anterior": 55.65999984741211,
       "precio_actual": 54.94499969482422,
-      "retorno": -0.012845852579015715,
-      "retorno_modelo": -0.012845852579015715,
+      "retorno": -0.01311533496653916,
+      "retorno_modelo": -0.01311533496653916,
       "estado": "INTRADÍA YAHOO · USADO POR MODELO",
       "usado_modelo": true
     },
@@ -69,8 +69,8 @@
       "timestamp": "2026-08-24T15:55:00-04:00",
       "precio_anterior": 67.12000274658203,
       "precio_actual": 66.12999725341797,
-      "retorno": -0.014749783263596106,
-      "retorno_modelo": -0.014749783263596106,
+      "retorno": -0.015047707015803158,
+      "retorno_modelo": -0.015047707015803158,
       "estado": "INTRADÍA YAHOO · USADO POR MODELO",
       "usado_modelo": true
     },
@@ -80,18 +80,19 @@
       "timestamp": "2026-08-24T15:55:00-04:00",
       "precio_anterior": 3.355299949645996,
       "precio_actual": 3.3515000343322754,
-      "retorno": -0.0011325113613528393,
-      "retorno_modelo": -0.0011325113613528393,
+      "retorno": -0.019233996832748734,
+      "retorno_modelo": -0.019233996832748734,
       "estado": "YAHOO PEN=X · PROVISIONAL · USADO POR MODELO",
       "usado_modelo": true
     }
   ],
-  "action": "ULTIMO_CORTE",
+  "action": "CIERRE",
   "engine": "LIVE HABITAT INDEPENDIENTE",
-  "fx_fresh": false,
+  "warning": null,
   "fx_source": "YAHOO PEN=X PROVISIONAL",
   "fx_provisional": true,
   "fx_rule": "Histórico/entrenamiento: BCRP. Predicción: BCRP si existe; si está rezagado, Yahoo PEN=X provisional; 0 % solo si ambas fuentes faltan.",
-  "checked_at_lima": "2026-08-24T23:21:44.641151-05:00",
-  "note": "Snapshot calculado con los coeficientes propios de Habitat y los mismos retornos de mercado del motor en vivo."
+  "model_snapshot_source": "PREDICCION OLS EXACTA DE HÁBITAT",
+  "model_snapshot_date": "2026-08-24",
+  "note": "Cierre diario de Hábitat alineado con el OLS exacto del mismo día."
 }

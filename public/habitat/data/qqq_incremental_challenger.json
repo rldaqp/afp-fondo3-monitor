@@ -1,29 +1,29 @@
 {
-  "generated_at_lima": "2026-08-24T14:47:07.400778-05:00",
+  "generated_at_lima": "2026-08-24T23:23:20.943177-05:00",
   "signal_date": "2026-08-24",
-  "mode": "INTRADÍA PROVISIONAL",
-  "market_open": true,
+  "mode": "INTRADIA PROVISIONAL - ULTIMO CORTE",
+  "market_open": false,
   "fund": "HABITAT FONDO 3",
   "role": "CHALLENGER EN SOMBRA; no reemplaza el OLS oficial de Hábitat.",
   "vc_base": 33.679032410793916,
   "official": {
     "model": "OLS rolling 90 oficial Hábitat",
-    "return_estimated": -0.005151267585848413,
+    "return_estimated": -0.00493026760274237,
     "signal": "BAJA",
-    "vc_estimated": 33.50554270281346
+    "vc_estimated": 33.51298576840727
   },
   "challenger": {
     "model": "OLS rolling 90 Hábitat + QQQ incremental residualizado",
-    "return_estimated": -0.005589599227041587,
+    "return_estimated": -0.01071840052023939,
     "signal": "BAJA",
-    "vc_estimated": 33.490780117263036
+    "vc_estimated": 33.3180470522809
   },
   "qqq": {
-    "return": -0.009236974143470467,
-    "residual": -0.0017969091135331128,
+    "return": -0.009979809224073155,
+    "residual": -0.00035788185932327486,
     "previous_close": 713.4400024414062,
-    "current_price": 706.8499755859375,
-    "source": "INTRADÍA YAHOO",
+    "current_price": 706.3200073242188,
+    "source": "CIERRE DIARIO YAHOO",
     "residualized_against": [
       "ret_SPY",
       "ret_NEM",
@@ -36,8 +36,8 @@
   },
   "comparison": {
     "same_signal": true,
-    "vc_difference": -0.014762585550421647,
-    "return_difference_pp": -0.043833164119317335
+    "vc_difference": -0.19493871612636582,
+    "return_difference_pp": -0.5788132917497019
   },
   "training": {
     "window": 90,
