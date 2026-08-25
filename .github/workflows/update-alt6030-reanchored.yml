@@ -11,6 +11,7 @@ on:
       - "scripts/apply_sbs_reference_corrections.py"
       - "scripts/update_live_market_hybrid.py"
       - "scripts/patch_google_rolling30_assets.py"
+      - "scripts/validate_new_ticker_session.py"
       - "scripts/build_dual_rolling30_monitor.py"
       - "scripts/build_dual_rolling30_resilient.py"
       - "scripts/patch_dual_rolling30_fx_operational.py"
@@ -70,10 +71,11 @@ jobs:
           python scripts/apply_sbs_reference_corrections.py
           python scripts/update_live_market_hybrid.py
           python scripts/patch_google_rolling30_assets.py || echo "Google Finance parcial; se conserva el respaldo vigente para este corte."
+          python scripts/validate_new_ticker_session.py
 
-          # Si un factor exclusivo del Modelo B (principalmente SPBLSCUP) aún no
-          # está publicado, el Modelo A se actualiza y el Modelo B conserva su
-          # última sesión completa. Nunca se sustituye el dato faltante por 0%.
+          # Si un factor exclusivo del Modelo B aún no está validado, el Modelo A
+          # se actualiza y el Modelo B conserva su última sesión completa. Nunca se
+          # sustituye un cierre dudoso por 0% ni se reutiliza una fila invalidada.
           python scripts/build_dual_rolling30_resilient.py
           python scripts/patch_dual_rolling30_fx_operational.py || echo "FX adicional no disponible; se conserva el FX común del constructor dual."
           python scripts/persist_dual_rolling30_shadow.py
@@ -90,6 +92,7 @@ jobs:
           assert dual['signal_date'] == live['signal_date'], (dual['signal_date'], live['signal_date'])
           assert float(dual['latest_sbs']['vc']) > 0
           assert status['source'].startswith('SBS OFICIAL')
+          assert live.get('new_ticker_validation', {}).get('status') in {'OK', 'PENDIENTE/BLOQUEADO'}
 
           for key in ('qqq', 'new_tickers'):
               model = dual['models'][key]
@@ -104,6 +107,7 @@ jobs:
 
           print('SBS:', dual['latest_sbs'])
           print('Fecha mercado:', dual['signal_date'])
+          print('Validación tickers:', live.get('new_ticker_validation'))
           print('Modo degradado:', dual.get('degraded_mode', False), dual.get('degraded_reason'))
           print('Rolling30 QQQ:', dual['models']['qqq']['current'])
           print('Rolling30 nuevos:', dual['models']['new_tickers']['current'])
@@ -124,9 +128,6 @@ jobs:
           else
             git commit -m "Actualizar SBS y dos modelos Rolling 30"
 
-            # Otro proceso puede publicar en la misma rama mientras este job calcula.
-            # Los archivos que nos interesan ya están dentro del commit local; por eso
-            # limpiamos solo cambios auxiliares no confirmados antes del rebase.
             PUSHED=0
             for attempt in 1 2 3; do
               if git push origin HEAD:migracion-github-actions; then
@@ -143,12 +144,12 @@ jobs:
               sleep 2
             done
             if [ "$PUSHED" -ne 1 ]; then
-              echo "La rama siguió ocupada. No se marca el job como fallido; el siguiente ciclo automático reintentará."
+              echo "La rama siguió ocupada. El siguiente ciclo automático reintentará."
             fi
           fi
 
-          # Publicación rápida: una carrera transitoria en gh-pages tampoco debe
-          # generar correo de fallo; el siguiente ciclo vuelve a publicar.
+          # Publicación rápida de datos. Un fallo de carrera transitorio aquí no
+          # genera correo; el siguiente ciclo de 5 minutos vuelve a intentarlo.
           tmp="$(mktemp -d)"
           if git clone --depth 1 --branch gh-pages "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" "$tmp/gh-pages"; then
             mkdir -p "$tmp/gh-pages/data"
