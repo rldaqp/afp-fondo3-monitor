@@ -1,5 +1,5 @@
 {
-  "generated_at_lima": "2026-08-25T11:02:52.742288-05:00",
+  "generated_at_lima": "2026-08-25T11:58:27.428629-05:00",
   "signal_date": "2026-08-25",
   "mode": "INTRADÍA PROVISIONAL",
   "market_open": true,
@@ -8,21 +8,21 @@
   "vc_base": 33.51298576840727,
   "official": {
     "model": "OLS rolling 90 oficial Hábitat",
-    "return_estimated": 0.005845638688407177,
+    "return_estimated": 0.005899801662851353,
     "signal": "SUBE",
-    "vc_estimated": 33.70889057457911
+    "vc_estimated": 33.710705737570834
   },
   "challenger": {
     "model": "OLS rolling 90 Hábitat + QQQ incremental residualizado",
-    "return_estimated": 0.0032624723259482374,
+    "return_estimated": 0.0027687074398135155,
     "signal": "SUBE",
-    "vc_estimated": 33.62232095703659
+    "vc_estimated": 33.60577342143462
   },
   "qqq": {
-    "return": 0.00640941720810817,
-    "residual": -0.0019506940725699546,
+    "return": 0.0056348120221421105,
+    "residual": -0.00349293161022831,
     "previous_close": 706.3200073242188,
-    "current_price": 710.8471069335938,
+    "current_price": 710.2999877929688,
     "source": "INTRADÍA YAHOO",
     "residualized_against": [
       "ret_SPY",
@@ -36,8 +36,8 @@
   },
   "comparison": {
     "same_signal": true,
-    "vc_difference": -0.08656961754251569,
-    "return_difference_pp": -0.25831663624589396
+    "vc_difference": -0.1049323161362139,
+    "return_difference_pp": -0.3131094223037838
   },
   "training": {
     "window": 90,
