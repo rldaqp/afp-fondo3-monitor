@@ -1,5 +1,5 @@
 {
-  "generated_at_lima": "2026-08-26T00:01:23.485990-05:00",
+  "generated_at_lima": "2026-08-26T00:52:15.093024-05:00",
   "signal_date": "2026-08-25",
   "mode": "CIERRE DIARIO",
   "market_open": false,
@@ -8,19 +8,19 @@
   "vc_base": 33.34849598156627,
   "official": {
     "model": "OLS rolling 90 oficial Hábitat",
-    "return_estimated": 0.01056609004482177,
+    "return_estimated": 0.010566090044821785,
     "signal": "SUBE",
     "vc_estimated": 33.700859192966874
   },
   "challenger": {
     "model": "OLS rolling 90 Hábitat + QQQ incremental residualizado",
-    "return_estimated": 0.015435648610244159,
+    "return_estimated": 0.01543564861024414,
     "signal": "SUBE",
-    "vc_estimated": 33.86325164721787
+    "vc_estimated": 33.863251647217865
   },
   "qqq": {
     "return": 0.006229419148941817,
-    "residual": -0.005451056378513036,
+    "residual": -0.005451056378513022,
     "previous_close": 706.3200073242188,
     "current_price": 710.719970703125,
     "source": "CIERRE DIARIO YAHOO",
@@ -36,8 +36,8 @@
   },
   "comparison": {
     "same_signal": true,
-    "vc_difference": 0.16239245425099824,
-    "return_difference_pp": 0.4869558565422389
+    "vc_difference": 0.16239245425099114,
+    "return_difference_pp": 0.48695585654223544
   },
   "training": {
     "window": 90,
@@ -45,14 +45,14 @@
     "start": "2026-04-06",
     "end": "2026-08-21",
     "qqq_residualizer": {
-      "intercept": -0.00020527307879765377,
-      "ret_SPY": 1.0023903760135893,
-      "ret_NEM": -0.008622339122893332,
-      "ret_FCX": 0.030270387584305405,
-      "ret_EPU": -0.10515427152947224,
-      "ret_MCHI": -0.09562582025693389,
-      "ret_EEM": 0.4159077148206516,
-      "ret_USD_PEN": 0.10387274584346995
+      "intercept": -0.00020527307879765532,
+      "ret_SPY": 1.002390376013589,
+      "ret_NEM": -0.008622339122893563,
+      "ret_FCX": 0.030270387584305003,
+      "ret_EPU": -0.10515427152947199,
+      "ret_MCHI": -0.09562582025693349,
+      "ret_EEM": 0.41590771482065175,
+      "ret_USD_PEN": 0.10387274584346992
     }
   },
   "performance_backtest": {
@@ -63,9 +63,9 @@
     "windows": {
       "30": {
         "n": 30,
-        "official_mae": 0.0028546365547819272,
+        "official_mae": 0.0028546365547819277,
         "challenger_mae": 0.002874274012262063,
-        "mae_improvement_pct": -0.6879144543721372,
+        "mae_improvement_pct": -0.687914454372122,
         "official_direction_accuracy": 0.8333333333333334,
         "challenger_direction_accuracy": 0.8666666666666667,
         "direction_delta_pp": 3.3333333333333326,
@@ -75,9 +75,9 @@
       },
       "60": {
         "n": 60,
-        "official_mae": 0.003268461593263199,
-        "challenger_mae": 0.003241274758321507,
-        "mae_improvement_pct": 0.8317930061570312,
+        "official_mae": 0.0032684615932632,
+        "challenger_mae": 0.00324127475832151,
+        "mae_improvement_pct": 0.831793006156978,
         "official_direction_accuracy": 0.8166666666666667,
         "challenger_direction_accuracy": 0.8333333333333334,
         "direction_delta_pp": 1.6666666666666718,
@@ -87,9 +87,9 @@
       },
       "90": {
         "n": 90,
-        "official_mae": 0.0031430550085913772,
+        "official_mae": 0.0031430550085913785,
         "challenger_mae": 0.0031455412831301174,
-        "mae_improvement_pct": -0.0791037551663607,
+        "mae_improvement_pct": -0.07910375516631928,
         "official_direction_accuracy": 0.8222222222222222,
         "challenger_direction_accuracy": 0.8333333333333334,
         "direction_delta_pp": 1.1111111111111183,
@@ -99,9 +99,9 @@
       },
       "180": {
         "n": 180,
-        "official_mae": 0.0032321488703253836,
+        "official_mae": 0.003232148870325385,
         "challenger_mae": 0.0031780527407472615,
-        "mae_improvement_pct": 1.6736892930515355,
+        "mae_improvement_pct": 1.673689293051575,
         "official_direction_accuracy": 0.8444444444444444,
         "challenger_direction_accuracy": 0.85,
         "direction_delta_pp": 0.5555555555555536,
@@ -111,9 +111,9 @@
       },
       "ALL": {
         "n": 300,
-        "official_mae": 0.0026543630771708395,
+        "official_mae": 0.00265436307717084,
         "challenger_mae": 0.0025666447204059023,
-        "mae_improvement_pct": 3.3046856897373655,
+        "mae_improvement_pct": 3.3046856897373815,
         "official_direction_accuracy": 0.76,
         "challenger_direction_accuracy": 0.7733333333333333,
         "direction_delta_pp": 1.3333333333333308,
@@ -130,8 +130,8 @@
         "ret_EPU": 4.3610948512936,
         "ret_MCHI": 1.5551333465710877,
         "ret_EEM": 3.8592702863313506,
-        "ret_USD_PEN": 1.9149029173123553,
-        "ret_QQQ_residual": 0.9999999999999998
+        "ret_USD_PEN": 1.9149029173123548,
+        "ret_QQQ_residual": 1.0
       },
       "max_vif": 4.3610948512936,
       "max_vif_feature": "ret_EPU"
