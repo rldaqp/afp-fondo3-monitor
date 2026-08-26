@@ -1,5 +1,5 @@
 {
-  "generated_at_lima": "2026-08-25T22:51:19.145561-05:00",
+  "generated_at_lima": "2026-08-25T23:28:55.235594-05:00",
   "fund": "PROFUTURO Fondo 3",
   "signal_date": "2026-08-25",
   "market_mode": "CIERRE DIARIO",
@@ -2083,8 +2083,8 @@
       "current": {
         "fecha": "2026-08-25",
         "base_vc": 71.04642522509886,
-        "vc_estimated": 72.0604198366747,
-        "return_estimated": 0.01427228193907228,
+        "vc_estimated": 72.06042340716913,
+        "return_estimated": 0.014272332194865265,
         "signal": "SUBE",
         "actual_vc": null,
         "anchor_date": "2026-08-21",
@@ -2115,8 +2115,8 @@
         {
           "fecha": "2026-08-25",
           "base_vc": 71.04642522509886,
-          "vc_estimated": 72.0604198366747,
-          "return_estimated": 0.01427228193907228,
+          "vc_estimated": 72.06042340716913,
+          "return_estimated": 0.014272332194865265,
           "signal": "SUBE",
           "actual_vc": null
         }
@@ -3243,9 +3243,9 @@
           "ticker": "NDX:INDEXNASDAQ",
           "timestamp": "2026-08-25",
           "precio_anterior": 29023.1796875,
-          "precio_actual": 29209.228515625,
-          "retorno": 0.006410353039475236,
-          "retorno_modelo": 0.006410353039475236,
+          "precio_actual": 29209.23046875,
+          "retorno": 0.006410420334823863,
+          "retorno_modelo": 0.006410420334823863,
           "estado": "YAHOO ^NDX · FALLBACK POR ERROR GOOGLE",
           "usado_modelo": true,
           "validado_modelo": true,
@@ -3435,8 +3435,8 @@
   },
   "comparison": {
     "winner_blind3_mape": "NUEVOS TICKERS",
-    "vc_difference": -0.12400617157469185,
-    "return_difference": 0.0026034808783622423
+    "vc_difference": -0.12400260108026373,
+    "return_difference": 0.002603531134155228
   },
   "shared_fx_operational": {
     "return": 0.0,
