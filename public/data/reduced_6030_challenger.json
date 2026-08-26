@@ -1,33 +1,33 @@
 {
-  "generated_at_lima": "2026-08-25T17:58:46.207477-05:00",
-  "signal_date": "2026-08-25",
-  "mode": "CIERRE DIARIO",
-  "market_open": false,
+  "generated_at_lima": "2026-08-26T08:44:04.089889-05:00",
+  "signal_date": "2026-08-26",
+  "mode": "INTRADÍA PROVISIONAL",
+  "market_open": true,
   "role": "UNICO CHALLENGER EN SOMBRA; no reemplaza el OLS rolling 90 oficial.",
   "official": {
     "model": "OLS rolling 90 oficial · SPY EEM EPU MCHI NEM FCX USD/PEN",
-    "return_estimated": 0.011776660384314448,
-    "signal": "SUBE",
-    "vc_estimated": 72.25537775322505
+    "return_estimated": -0.002821083977710029,
+    "signal": "BAJA",
+    "vc_estimated": 71.21288925302339
   },
   "challenger": {
     "model": "OLS 60/30 · sin NEM ni FCX + QQQ",
-    "return_estimated": 0.00877477957921489,
-    "signal": "SUBE",
-    "vc_estimated": 71.86857507145444,
+    "return_estimated": -0.0022030248291520556,
+    "signal": "BAJA",
+    "vc_estimated": 71.71024681613625,
     "blind_chain": true,
     "reanchored_with_latest_sbs": false
   },
   "comparison": {
     "same_signal": true,
-    "vc_difference": -0.38680268177060384,
-    "return_difference_pp": -0.3001880805099558
+    "vc_difference": 0.49735756311285684,
+    "return_difference_pp": 0.061805914855797346
   },
   "cycle": {
     "train_window": 60,
     "freeze_horizon": 30,
     "cycle_start": "2026-08-19",
-    "cycle_day": 5,
+    "cycle_day": 6,
     "anchor_date": "2026-08-18",
     "anchor_vc": 69.6328126,
     "train_start": "2026-05-14",
@@ -44,30 +44,30 @@
     "rule": "Coeficientes congelados 30 sesiones. El VC se encadena desde el ancla del ciclo y no se corrige con SBS dentro del bloque."
   },
   "qqq": {
-    "return": 0.006229419148941817,
-    "source": "CIERRE DIARIO YAHOO"
+    "return": 0.0007668898691186588,
+    "source": "INTRADIA YAHOO"
   },
   "blind_backtest": {
     "design": "Bloques no superpuestos: entrenar 60 observaciones, congelar 30, un solo VC SBS como ancla al inicio; dentro del bloque SBS solo evalua y nunca corrige.",
     "n_blocks": 10,
     "n_predictions": 300,
     "official_current_7f": {
-      "vc_mae": 0.9237423519720216,
-      "vc_rmse": 1.700110822983303,
-      "mean_endpoint_abs_error": 1.7523057813757164
+      "vc_mae": 0.923742351972024,
+      "vc_rmse": 1.7001108229833057,
+      "mean_endpoint_abs_error": 1.7523057813757212
     },
     "challenger_6030": {
-      "vc_mae": 0.7890758034935107,
-      "vc_rmse": 1.471612153052181,
-      "mean_endpoint_abs_error": 1.4012091494916923
+      "vc_mae": 0.7890758034935097,
+      "vc_rmse": 1.4716121530521804,
+      "mean_endpoint_abs_error": 1.401209149491688
     },
-    "mae_improvement_pct": 14.578366813107827,
+    "mae_improvement_pct": 14.578366813108163,
     "challenger_better_blocks": 7,
     "official_better_blocks": 3
   },
   "forward_sbs": {
     "evaluated": 3,
-    "pending": 2,
+    "pending": 3,
     "challenger_vc_mae": 0.19860791673334197,
     "official_vc_mae": 0.6513169139804281
   },
