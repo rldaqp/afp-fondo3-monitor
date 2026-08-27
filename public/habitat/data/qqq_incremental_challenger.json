@@ -1,26 +1,26 @@
 {
-  "generated_at_lima": "2026-08-26T17:19:50.988308-05:00",
+  "generated_at_lima": "2026-08-26T22:23:09.133611-05:00",
   "signal_date": "2026-08-26",
-  "mode": "INTRADIA PROVISIONAL - ULTIMO CORTE",
+  "mode": "CIERRE DIARIO",
   "market_open": false,
   "fund": "HABITAT FONDO 3",
   "role": "CHALLENGER EN SOMBRA; no reemplaza el OLS oficial de Hábitat.",
   "vc_base": 33.60367769210669,
   "official": {
     "model": "OLS rolling 90 oficial Hábitat",
-    "return_estimated": -0.002728338035335785,
+    "return_estimated": -0.003367279688650755,
     "signal": "BAJA",
-    "vc_estimated": 33.51199550013215
+    "vc_estimated": 33.490524710750094
   },
   "challenger": {
     "model": "OLS rolling 90 Hábitat + QQQ incremental residualizado",
-    "return_estimated": -0.003625498824282474,
+    "return_estimated": -0.009421539780458527,
     "signal": "BAJA",
-    "vc_estimated": 33.481847598142394
+    "vc_estimated": 33.2870793059608
   },
   "qqq": {
     "return": 0.0009145998999007254,
-    "residual": 0.0009660301889707536,
+    "residual": 0.0026230148933826993,
     "previous_close": 710.719970703125,
     "current_price": 711.3699951171875,
     "source": "CIERRE DIARIO YAHOO",
@@ -36,8 +36,8 @@
   },
   "comparison": {
     "same_signal": true,
-    "vc_difference": -0.03014790198975703,
-    "return_difference_pp": -0.0897160788946689
+    "vc_difference": -0.20344540478929218,
+    "return_difference_pp": -0.6054260091807772
   },
   "training": {
     "window": 90,
@@ -75,9 +75,9 @@
       },
       "60": {
         "n": 60,
-        "official_mae": 0.0032643883392125036,
+        "official_mae": 0.003264388339212503,
         "challenger_mae": 0.0032345824115628755,
-        "mae_improvement_pct": 0.9130631699541727,
+        "mae_improvement_pct": 0.9130631699541595,
         "official_direction_accuracy": 0.8166666666666667,
         "challenger_direction_accuracy": 0.8333333333333334,
         "direction_delta_pp": 1.6666666666666718,
@@ -87,9 +87,9 @@
       },
       "90": {
         "n": 90,
-        "official_mae": 0.0031461389207648083,
+        "official_mae": 0.003146138920764809,
         "challenger_mae": 0.0031395663389780326,
-        "mae_improvement_pct": 0.20890945861913637,
+        "mae_improvement_pct": 0.20890945861916388,
         "official_direction_accuracy": 0.8333333333333334,
         "challenger_direction_accuracy": 0.8444444444444444,
         "direction_delta_pp": 1.1111111111111072,
@@ -100,8 +100,8 @@
       "180": {
         "n": 180,
         "official_mae": 0.0032317973712007076,
-        "challenger_mae": 0.003176904306569512,
-        "mae_improvement_pct": 1.698530518044245,
+        "challenger_mae": 0.0031769043065695123,
+        "mae_improvement_pct": 1.6985305180442314,
         "official_direction_accuracy": 0.8444444444444444,
         "challenger_direction_accuracy": 0.85,
         "direction_delta_pp": 0.5555555555555536,
