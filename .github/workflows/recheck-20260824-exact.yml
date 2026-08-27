@@ -1,0 +1,50 @@
+name: Recheck exact 24 Aug rolling30
+
+on:
+  push:
+    branches: [migracion-github-actions]
+    paths:
+      - 'scripts/recheck_20260824_exact.py'
+      - '.github/workflows/recheck-20260824-exact.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  recheck:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: migracion-github-actions
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install
+        run: python -m pip install --upgrade pip pandas numpy requests yfinance
+      - name: Run exact recheck
+        run: python scripts/recheck_20260824_exact.py
+      - name: Validate and commit
+        run: |
+          test -s analysis/recheck_20260824_exact.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=json.loads(Path('analysis/recheck_20260824_exact.json').read_text())
+          assert p['anchor']['fecha']=='2026-08-20'
+          assert p['bcrp']['2026-08-24']>0
+          assert p['qqq']['train_n']==30
+          assert p['new_tickers']['train_n']==30
+          print(json.dumps(p,indent=2))
+          PY
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add analysis/recheck_20260824_exact.json
+          if ! git diff --cached --quiet; then
+            git commit -m 'Store exact 24 Aug rolling30 recheck'
+            git pull --rebase origin migracion-github-actions
+            git push origin HEAD:migracion-github-actions
+          fi
