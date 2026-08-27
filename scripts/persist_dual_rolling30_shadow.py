@@ -19,8 +19,15 @@ COLS = [
     "model_key", "model_name", "fecha", "first_generated_at_lima", "last_updated_at_lima",
     "frozen", "anchor_date", "anchor_vc", "base_vc", "vc_estimated", "return_estimated",
     "signal", "actual_vc", "actual_return_daily", "error_vc", "error_pct",
-    "direction_hit", "source",
+    "direction_hit", "source", "quality_status", "quality_note", "include_in_score",
 ]
+
+KNOWN_QUALITY_ISSUES = {
+    ("new_tickers", "2026-08-24"): (
+        "EXCLUIR_SCORE",
+        "Predicción operacional preservada, pero el cierre recibió CPER=38.76 y SPBLSCUP=500.00 por extracción inconsistente; además faltó la fila de factores 21/08 en la cadena. No representa limpiamente al modelo.",
+    ),
+}
 
 
 def finite(v) -> bool:
@@ -60,8 +67,6 @@ def upsert_prediction(d: pd.DataFrame, model_key: str, model_name: str, row: dic
     mask = d["model_key"].eq(model_key) & d["fecha"].eq(fecha)
     existing = d.loc[mask]
     should_freeze = fecha < signal_date or (fecha == signal_date and not market_open)
-
-    # Una prediccion congelada es inmutable: nunca se reescribe cuando SBS revela el VC.
     if not existing.empty and bool(existing.iloc[-1]["frozen"]):
         return d
 
@@ -84,6 +89,9 @@ def upsert_prediction(d: pd.DataFrame, model_key: str, model_name: str, row: dic
         "error_pct": None,
         "direction_hit": None,
         "source": "OPERACIONAL ROLLING30 · CIERRE" if should_freeze else "OPERACIONAL ROLLING30 · INTRADIA PROVISIONAL",
+        "quality_status": "OK",
+        "quality_note": None,
+        "include_in_score": True,
     }
     if not existing.empty:
         d = d.loc[~mask].copy()
@@ -108,71 +116,64 @@ def reconcile(d: pd.DataFrame, vc_map: dict[str, float], ret_map: dict[str, floa
     return d
 
 
+def apply_quality_flags(d: pd.DataFrame) -> pd.DataFrame:
+    # Preservamos el pronóstico que realmente vio el usuario; solo impedimos que
+    # un incidente comprobado de ingestión se contabilice como error del modelo.
+    for (model_key, fecha), (status, note) in KNOWN_QUALITY_ISSUES.items():
+        mask = d["model_key"].astype(str).eq(model_key) & d["fecha"].astype(str).eq(fecha)
+        if mask.any():
+            d.loc[mask, "quality_status"] = status
+            d.loc[mask, "quality_note"] = note
+            d.loc[mask, "include_in_score"] = False
+            d.loc[mask, "source"] = d.loc[mask, "source"].astype(str) + " · INCIDENTE DATOS DOCUMENTADO"
+    default_mask = d["quality_status"].isna() | d["quality_status"].astype(str).isin({"", "None", "nan"})
+    d.loc[default_mask, "quality_status"] = "OK"
+    include_missing = d["include_in_score"].isna() | d["include_in_score"].astype(str).isin({"", "None", "nan"})
+    d.loc[include_missing, "include_in_score"] = True
+    return d
+
+
 def metrics(rows: list[dict]) -> dict:
-    x = [r for r in rows if finite(r.get("actual_vc")) and finite(r.get("vc_estimated"))]
+    x = [
+        r for r in rows
+        if finite(r.get("actual_vc")) and finite(r.get("vc_estimated"))
+        and str(r.get("include_in_score", True)).lower() not in {"false", "0", "no"}
+    ]
     if not x:
         return {"n": 0, "mae_vc": None, "rmse_vc": None, "mape_pct": None, "direction_accuracy_pct": None}
-    est = np.array([float(r["vc_estimated"]) for r in x])
-    actual = np.array([float(r["actual_vc"]) for r in x])
-    err = est - actual
+    est = np.array([float(r["vc_estimated"]) for r in x]); actual = np.array([float(r["actual_vc"]) for r in x]); err = est - actual
     dh = [r.get("direction_hit") for r in x if isinstance(r.get("direction_hit"), (bool, np.bool_))]
-    return {
-        "n": len(x),
-        "start": min(r["fecha"] for r in x),
-        "end": max(r["fecha"] for r in x),
-        "mae_vc": float(np.mean(np.abs(err))),
-        "rmse_vc": float(np.sqrt(np.mean(err ** 2))),
-        "mape_pct": float(np.mean(np.abs(err / actual)) * 100.0),
-        "direction_accuracy_pct": float(np.mean(dh) * 100.0) if dh else None,
-    }
+    return {"n": len(x),"start": min(r["fecha"] for r in x),"end": max(r["fecha"] for r in x),"mae_vc": float(np.mean(np.abs(err))),"rmse_vc": float(np.sqrt(np.mean(err ** 2))),"mape_pct": float(np.mean(np.abs(err / actual)) * 100.0),"direction_accuracy_pct": float(np.mean(dh) * 100.0) if dh else None}
 
 
 def main() -> None:
-    dual = json.loads(DUAL_PATH.read_text(encoding="utf-8"))
-    d = load_shadow()
-    now = pd.Timestamp.now(tz=LIMA).isoformat()
-    signal_date = str(dual.get("signal_date", ""))[:10]
-    market_open = bool(dual.get("market_open"))
-
+    dual = json.loads(DUAL_PATH.read_text(encoding="utf-8")); d = load_shadow(); now = pd.Timestamp.now(tz=LIMA).isoformat(); signal_date = str(dual.get("signal_date", ""))[:10]; market_open = bool(dual.get("market_open"))
     for key, model in dual.get("models", {}).items():
         meta = model.get("current", {})
         for row in model.get("forward_chain", []) or []:
             d = upsert_prediction(d, key, model.get("name", key), row, signal_date, market_open, meta, now)
-
-    vc_map, ret_map = sbs_maps()
-    d = reconcile(d, vc_map, ret_map)
+    vc_map, ret_map = sbs_maps(); d = reconcile(d, vc_map, ret_map); d = apply_quality_flags(d)
     d = d.sort_values(["fecha", "model_key"]).drop_duplicates(["model_key", "fecha"], keep="last").reset_index(drop=True)
-
-    SHADOW_PATH.parent.mkdir(parents=True, exist_ok=True)
-    d.to_csv(SHADOW_PATH, index=False)
+    SHADOW_PATH.parent.mkdir(parents=True, exist_ok=True); d.to_csv(SHADOW_PATH, index=False)
 
     for key, model in dual.get("models", {}).items():
-        g = d.loc[d["model_key"].eq(key)].copy().sort_values("fecha")
-        rows = []
+        g = d.loc[d["model_key"].eq(key)].copy().sort_values("fecha"); rows = []
         for _, r in g.iterrows():
             def val(name):
                 v = r.get(name)
-                if pd.isna(v):
-                    return None
-                if name == "frozen" or name == "direction_hit":
-                    return bool(v)
-                if name in {"actual_vc", "actual_return_daily", "error_vc", "error_pct", "anchor_vc", "base_vc", "vc_estimated", "return_estimated"}:
-                    return float(v) if finite(v) else None
+                if pd.isna(v): return None
+                if name in {"frozen", "direction_hit", "include_in_score"}: return bool(v)
+                if name in {"actual_vc", "actual_return_daily", "error_vc", "error_pct", "anchor_vc", "base_vc", "vc_estimated", "return_estimated"}: return float(v) if finite(v) else None
                 return v
             rows.append({k: val(k) for k in COLS})
-        model["history_operational"] = rows
-        model["operational_metrics"] = metrics(rows)
+        model["history_operational"] = rows; model["operational_metrics"] = metrics(rows)
 
     dual["operational_history_rule"] = (
-        "Cada prediccion diaria se congela al cierre y queda inmutable. Cuando SBS publica el VC real, "
-        "solo se completa actual_vc/error; el VC estimado historico no se recalcula ni se reancla retroactivamente."
+        "Cada predicción diaria se congela al cierre y queda inmutable. Cuando SBS publica el VC real, solo se completa actual_vc/error. "
+        "Incidentes comprobados de datos se preservan en el histórico, se etiquetan y se excluyen del score limpio sin reescribir la predicción original."
     )
     DUAL_PATH.write_text(json.dumps(dual, ensure_ascii=False, indent=2), encoding="utf-8")
-    print(json.dumps({
-        "shadow_rows": int(len(d)),
-        "qqq": dual.get("models", {}).get("qqq", {}).get("operational_metrics"),
-        "new_tickers": dual.get("models", {}).get("new_tickers", {}).get("operational_metrics"),
-    }, ensure_ascii=False, indent=2))
+    print(json.dumps({"shadow_rows": int(len(d)),"qqq": dual.get("models", {}).get("qqq", {}).get("operational_metrics"),"new_tickers": dual.get("models", {}).get("new_tickers", {}).get("operational_metrics")}, ensure_ascii=False, indent=2))
 
 
 if __name__ == "__main__":
