@@ -8,6 +8,9 @@ on:
       - ".github/workflows/rebuild-dual-v6-now.yml"
       - "scripts/build_dual_rolling30_monitor.py"
       - "scripts/patch_dual_rolling30_fx_operational.py"
+      - "scripts/patch_google_rolling30_assets.py"
+      - "scripts/validate_new_ticker_session.py"
+      - "scripts/persist_dual_rolling30_shadow.py"
   workflow_dispatch:
 
 permissions:
@@ -53,7 +56,6 @@ jobs:
           git fetch origin migracion-github-actions
           git reset --hard origin/migracion-github-actions
 
-          # Guardar el último snapshot válido antes de consultar nuevamente proveedores.
           cp public/data/live_market.json /tmp/live_before_rebuild.json
 
           python scripts/sync_sbs_official_latest.py
@@ -61,8 +63,6 @@ jobs:
           python scripts/patch_spblscup_google_selenium.py || true
           python scripts/update_live_market_hybrid.py
 
-          # Nunca permitir que una consulta posterior reemplace una sesión más nueva
-          # por un cierre más antiguo. Ej.: conservar 21/08 si Yahoo solo devuelve 20/08.
           python - <<'PY'
           import json
           from datetime import datetime
@@ -80,22 +80,30 @@ jobs:
               old['mode']='INTRADIA PROVISIONAL - ULTIMO CORTE'
               old['action']='ULTIMO_CORTE'
               old['checked_at_lima']=datetime.now(ZoneInfo('America/Lima')).isoformat()
-              old['note']=(f'Se conserva la sesión {old_date}: la consulta nueva solo devolvió {new_date}. '
-                           'El monitor no retrocede de sesión.')
+              old['note']=(f'Se conserva la sesión {old_date}: la consulta nueva solo devolvió {new_date}. El monitor no retrocede de sesión.')
               newp.write_text(json.dumps(old,ensure_ascii=False,indent=2),encoding='utf-8')
               print('ANTI-REGRESION: restaurado',old_date,'en lugar de',new_date)
           else:
               print('Sesión vigente:',new_date,'; previa:',old_date)
           PY
 
+          # Los nuevos tickers se validan antes de entrar al modelo. Google se
+          # contrasta con Yahoo cuando existe equivalente; SPBLSCUP se bloquea si
+          # presenta una divergencia no corroborada. Nunca se sustituye por 0%.
           python scripts/patch_google_rolling30_assets.py || true
+          python scripts/validate_new_ticker_session.py
+
           python scripts/build_dual_rolling30_monitor.py
+          # Regla FX de ambos Rolling30: BCRP PD04638PD si ya existe la fecha;
+          # si no, midpoint TuCambista provisional. Yahoo PEN=X queda excluido.
           python scripts/patch_dual_rolling30_fx_operational.py
           python scripts/persist_dual_rolling30_shadow.py
 
           python - <<'PY'
           import json
+          import pandas as pd
           from pathlib import Path
+
           p=Path('public/data/dual_rolling30_monitor.json')
           live=json.loads(Path('public/data/live_market.json').read_text(encoding='utf-8'))
           d=json.loads(p.read_text(encoding='utf-8'))
@@ -107,24 +115,45 @@ jobs:
               assert len(h)>=30,(k,len(h))
               assert all(int(r.get('horizon_sessions',1))==1 for r in h),k
               assert len(d['models'][k].get('intraday_assets',[]))==6,k
+
           def fx(k,name):
               return next(a for a in d['models'][k]['intraday_assets'] if str(a.get('serie'))==name)
           a=fx('qqq','USD_PEN'); b=fx('new_tickers','USD/PEN')
           ar=float(a.get('retorno_modelo',a.get('retorno'))); br=float(b.get('retorno_modelo',b.get('retorno')))
           assert abs(ar-br)<1e-12,(ar,br)
           assert abs(float(a['precio_actual'])-float(b['precio_actual']))<1e-9,(a['precio_actual'],b['precio_actual'])
+          src=str(d.get('shared_fx_operational',{}).get('source','')).upper()
+          assert ('BCRP' in src) or ('TUCAMBISTA' in src),src
+          assert 'YAHOO' not in src,src
+          assert 'YAHOO' not in str(a.get('estado','')).upper(),a
+          assert 'YAHOO' not in str(b.get('estado','')).upper(),b
+
+          validation=live.get('new_ticker_validation',{})
+          if validation.get('status') != 'OK':
+              raise RuntimeError('Nuevos tickers no validados: '+json.dumps(validation,ensure_ascii=False))
+
+          # El incidente del 24/08 se conserva como pronóstico realmente emitido,
+          # pero queda fuera del score limpio por datos de entrada comprobados.
+          shadow=Path('data/rolling90/dual_rolling30_shadow.csv')
+          if shadow.exists():
+              sh=pd.read_csv(shadow)
+              issue=sh[(sh['model_key'].astype(str)=='new_tickers') & (sh['fecha'].astype(str)=='2026-08-24')]
+              if not issue.empty:
+                  assert str(issue.iloc[-1].get('quality_status'))=='EXCLUIR_SCORE',issue.iloc[-1].to_dict()
+                  assert str(issue.iloc[-1].get('include_in_score')).lower() in {'false','0'},issue.iloc[-1].to_dict()
+
           d['history_chart_meta']={
               'source':'ROLLING30 ONE-STEP DIARIO',
               'horizon_sessions':1,
               'note':'El gráfico diario usa como base el VC SBS real de la sesión inmediatamente anterior. Blind3 queda solo como validación agregada.'
           }
           p.write_text(json.dumps(d,ensure_ascii=False,indent=2),encoding='utf-8')
-          print('V6 VALIDADO', d['signal_date'], d['generated_at_lima'], a['precio_actual'], ar)
+          print('V6 VALIDADO', d['signal_date'], d['generated_at_lima'], d['shared_fx_operational'])
           PY
 
           git add data/rolling90/sbs_profuturo_f3.csv data/rolling90/dual_rolling30_shadow.csv public/data/sbs_sync_status.json public/data/live_market.json public/data/dual_rolling30_monitor.json
           if test -f data/analysis/googlefinance_alt_rolling30_live_returns.csv; then git add data/analysis/googlefinance_alt_rolling30_live_returns.csv; fi
-          git commit -m "Reconstruir visor dual V6 con histórico diario y FX común" || true
+          git commit -m "Reconstruir visor dual V6 con histórico diario y FX BCRP TuCambista" || true
           git pull --rebase origin migracion-github-actions || true
           git push origin HEAD:migracion-github-actions
 
