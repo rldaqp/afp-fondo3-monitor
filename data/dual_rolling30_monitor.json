@@ -1,5 +1,5 @@
 {
-  "generated_at_lima": "2026-08-26T18:49:57.024724-05:00",
+  "generated_at_lima": "2026-08-27T00:49:21.373498-05:00",
   "fund": "PROFUTURO Fondo 3",
   "signal_date": "2026-08-26",
   "market_mode": "CIERRE DIARIO",
@@ -8,7 +8,7 @@
     "fecha": "2026-08-24",
     "vc": 70.9791366
   },
-  "rule": "Solo quedan dos modelos visibles. Ambos son OLS rolling 30 y se recalibran con las últimas 30 observaciones conocidas. Si SBS está atrasada, se encadenan los días faltantes sin usar los VC ocultos; cuando SBS publica, el siguiente cálculo vuelve a anclarse automáticamente al VC real.",
+  "rule": "Solo quedan dos modelos visibles. Ambos son OLS rolling 30 y se recalibran con las últimas 30 observaciones conocidas. Si SBS está atrasada, se encadenan los días faltantes sin usar los VC ocultos; cuando SBS publica, el siguiente cálculo vuelve a anclarse automáticamente al VC real. Si falta una fila de factores de una sesión ya congelada, se conserva la predicción operacional congelada de esa sesión como puente y nunca se salta el día.",
   "models": {
     "qqq": {
       "key": "qqq",
@@ -33,10 +33,11 @@
       "current": {
         "fecha": "2026-08-26",
         "base_vc": 71.8339644838227,
-        "vc_estimated": 71.6995844571697,
-        "return_estimated": -0.0018707031919873245,
+        "vc_estimated": 71.70361319039853,
+        "return_estimated": -0.0018146192314573767,
         "signal": "BAJA",
         "actual_vc": null,
+        "chain_source": "FACTORES SESIÓN",
         "anchor_date": "2026-08-24",
         "anchor_vc": 70.9791366,
         "train_start": "2026-07-07",
@@ -51,7 +52,8 @@
           "ret_USD_PEN": -0.22835437981300055,
           "ret_QQQ": 0.5649683092959288
         },
-        "blind_chain_sessions": 2
+        "blind_chain_sessions": 2,
+        "fallback_frozen_sessions": []
       },
       "forward_chain": [
         {
@@ -60,15 +62,17 @@
           "vc_estimated": 71.8339644838227,
           "return_estimated": 0.012043368301872226,
           "signal": "SUBE",
-          "actual_vc": null
+          "actual_vc": null,
+          "chain_source": "FACTORES SESIÓN"
         },
         {
           "fecha": "2026-08-26",
           "base_vc": 71.8339644838227,
-          "vc_estimated": 71.6995844571697,
-          "return_estimated": -0.0018707031919873245,
+          "vc_estimated": 71.70361319039853,
+          "return_estimated": -0.0018146192314573767,
           "signal": "BAJA",
-          "actual_vc": null
+          "actual_vc": null,
+          "chain_source": "FACTORES SESIÓN"
         }
       ],
       "history_one_step": [
@@ -1946,13 +1950,13 @@
         },
         {
           "serie": "USD_PEN",
-          "ticker": "BCRP PD04646PD",
-          "timestamp": "2026-08-25",
-          "precio_anterior": 3.344,
-          "precio_actual": 3.344,
-          "retorno": 0.0,
-          "retorno_modelo": 0.0,
-          "estado": "BCRP REZAGADO · MODELO USA 0 %",
+          "ticker": "TUCAMBISTA",
+          "timestamp": "2026-08-26",
+          "precio_anterior": 3.34457142857143,
+          "precio_actual": 3.34375,
+          "retorno": -0.0002456005467286193,
+          "retorno_modelo": -0.0002456005467286193,
+          "estado": "TUCAMBISTA MIDPOINT (3.330/3.357) · PROVISIONAL · BASE BCRP PD04638PD · API 2026-08-25",
           "usado_modelo": true
         },
         {
@@ -1967,7 +1971,7 @@
           "usado_modelo": true
         }
       ],
-      "source_note": "SPY/EEM/EPU/MCHI y QQQ: Yahoo Finance; USD/PEN: fuente operativa del monitor. Entrenamiento histórico usa la serie guardada del modelo.",
+      "source_note": "Modelo A: SPY, EEM, EPU, MCHI, QQQ y USD/PEN. Regla FX común: BCRP PD04638PD si existe dato oficial de la fecha; si BCRP aún no publicó, TuCambista midpoint provisional. Yahoo PEN=X no entra en los dos Rolling 30.",
       "history_operational": [
         {
           "model_key": "qqq",
@@ -1987,7 +1991,10 @@
           "error_vc": -0.18926115631043672,
           "error_pct": -0.26640475554615684,
           "direction_hit": true,
-          "source": "OPERACIONAL ROLLING30 · CIERRE"
+          "source": "OPERACIONAL ROLLING30 · CIERRE",
+          "quality_status": "OK",
+          "quality_note": null,
+          "include_in_score": true
         },
         {
           "model_key": "qqq",
@@ -2007,7 +2014,10 @@
           "error_vc": 0.05484255704428165,
           "error_pct": 0.07637617272542307,
           "direction_hit": true,
-          "source": "OPERACIONAL ROLLING30 · CIERRE"
+          "source": "OPERACIONAL ROLLING30 · CIERRE",
+          "quality_status": "OK",
+          "quality_note": null,
+          "include_in_score": true
         },
         {
           "model_key": "qqq",
@@ -2027,7 +2037,10 @@
           "error_vc": 0.5472576089258752,
           "error_pct": 0.7710119270820659,
           "direction_hit": true,
-          "source": "OPERACIONAL ROLLING30 · CIERRE"
+          "source": "OPERACIONAL ROLLING30 · CIERRE",
+          "quality_status": "OK",
+          "quality_note": null,
+          "include_in_score": true
         },
         {
           "model_key": "qqq",
@@ -2047,7 +2060,10 @@
           "error_vc": null,
           "error_pct": null,
           "direction_hit": null,
-          "source": "OPERACIONAL ROLLING30 · CIERRE"
+          "source": "OPERACIONAL ROLLING30 · CIERRE",
+          "quality_status": "OK",
+          "quality_note": null,
+          "include_in_score": true
         },
         {
           "model_key": "qqq",
@@ -2067,7 +2083,10 @@
           "error_vc": null,
           "error_pct": null,
           "direction_hit": null,
-          "source": "OPERACIONAL ROLLING30 · CIERRE"
+          "source": "OPERACIONAL ROLLING30 · CIERRE",
+          "quality_status": "OK",
+          "quality_note": null,
+          "include_in_score": true
         }
       ],
       "operational_metrics": {
@@ -2103,10 +2122,11 @@
       "current": {
         "fecha": "2026-08-26",
         "base_vc": 72.04859914969276,
-        "vc_estimated": 71.93040134961542,
-        "return_estimated": -0.0016405287746368187,
+        "vc_estimated": 71.93104823081221,
+        "return_estimated": -0.0016315503738847013,
         "signal": "BAJA",
         "actual_vc": null,
+        "chain_source": "FACTORES SESIÓN",
         "anchor_date": "2026-08-24",
         "anchor_vc": 70.9791366,
         "train_start": "2026-07-07",
@@ -2121,7 +2141,8 @@
           "ret_SPBLSCUP": 0.24835808025389328,
           "ret_USD_PEN_alt": -0.036731766885567285
         },
-        "blind_chain_sessions": 2
+        "blind_chain_sessions": 2,
+        "fallback_frozen_sessions": []
       },
       "forward_chain": [
         {
@@ -2130,15 +2151,17 @@
           "vc_estimated": 72.04859914969276,
           "return_estimated": 0.015067280343513612,
           "signal": "SUBE",
-          "actual_vc": null
+          "actual_vc": null,
+          "chain_source": "FACTORES SESIÓN"
         },
         {
           "fecha": "2026-08-26",
           "base_vc": 72.04859914969276,
-          "vc_estimated": 71.93040134961542,
-          "return_estimated": -0.0016405287746368187,
+          "vc_estimated": 71.93104823081221,
+          "return_estimated": -0.0016315503738847013,
           "signal": "BAJA",
-          "actual_vc": null
+          "actual_vc": null,
+          "chain_source": "FACTORES SESIÓN"
         }
       ],
       "history_one_step": [
@@ -3276,9 +3299,9 @@
           "ticker": "NDX:INDEXNASDAQ",
           "timestamp": "2026-08-26",
           "precio_anterior": 29209.23046875,
-          "precio_actual": 29224.521484375,
-          "retorno": 0.0005234994342409038,
-          "retorno_modelo": 0.0005234994342409038,
+          "precio_actual": 29224.51953125,
+          "retorno": 0.00052343256753562,
+          "retorno_modelo": 0.00052343256753562,
           "estado": "YAHOO ^NDX · FALLBACK POR ERROR GOOGLE",
           "usado_modelo": true,
           "validado_modelo": true,
@@ -3301,17 +3324,17 @@
         },
         {
           "serie": "USD/PEN",
-          "ticker": "BCRP PD04646PD",
-          "timestamp": "2026-08-25",
-          "precio_anterior": 3.344,
-          "precio_actual": 3.344,
-          "retorno": 0.0,
-          "retorno_modelo": 0.0,
-          "estado": "MISMA FUENTE QUE MODELO A · BCRP REZAGADO · MODELO USA 0 %",
+          "ticker": "TUCAMBISTA",
+          "timestamp": "2026-08-26",
+          "precio_anterior": 3.34457142857143,
+          "precio_actual": 3.34375,
+          "retorno": -0.0002456005467286193,
+          "retorno_modelo": -0.0002456005467286193,
+          "estado": "TUCAMBISTA MIDPOINT (3.330/3.357) · PROVISIONAL · BASE BCRP PD04638PD · API 2026-08-25",
           "usado_modelo": true
         }
       ],
-      "source_note": "Modelo B: rolling 30 con .INX, CPER, EEM, NDX, SPBLSCUP y USD/PEN. Para la comparación operativa, USD/PEN usa exactamente la misma fuente del Modelo A. Si BCRP está rezagado, ambos usan la misma fuente provisional del monitor; el histórico conserva su serie diaria de entrenamiento.",
+      "source_note": "Modelo B: .INX, CPER, EEM, NDX, SPBLSCUP y USD/PEN. Regla FX común: BCRP PD04638PD si existe dato oficial de la fecha; si BCRP aún no publicó, TuCambista midpoint provisional. Yahoo PEN=X no entra en los dos Rolling 30.",
       "history_operational": [
         {
           "model_key": "new_tickers",
@@ -3331,7 +3354,10 @@
           "error_vc": -0.23745073860817456,
           "error_pct": -0.33423660304287006,
           "direction_hit": true,
-          "source": "OPERACIONAL ROLLING30 · CIERRE"
+          "source": "OPERACIONAL ROLLING30 · CIERRE",
+          "quality_status": "OK",
+          "quality_note": null,
+          "include_in_score": true
         },
         {
           "model_key": "new_tickers",
@@ -3351,7 +3377,10 @@
           "error_vc": -0.0866375166041422,
           "error_pct": -0.12065524091657842,
           "direction_hit": true,
-          "source": "OPERACIONAL ROLLING30 · CIERRE"
+          "source": "OPERACIONAL ROLLING30 · CIERRE",
+          "quality_status": "OK",
+          "quality_note": null,
+          "include_in_score": true
         },
         {
           "model_key": "new_tickers",
@@ -3371,7 +3400,10 @@
           "error_vc": 0.7523797637701222,
           "error_pct": 1.0600012902525435,
           "direction_hit": false,
-          "source": "OPERACIONAL ROLLING30 · CIERRE"
+          "source": "OPERACIONAL ROLLING30 · CIERRE · INCIDENTE DATOS DOCUMENTADO · INCIDENTE DATOS DOCUMENTADO",
+          "quality_status": "EXCLUIR_SCORE",
+          "quality_note": "Predicción operacional preservada, pero el cierre recibió CPER=38.76 y SPBLSCUP=500.00 por extracción inconsistente; además faltó la fila de factores 21/08 en la cadena. No representa limpiamente al modelo.",
+          "include_in_score": false
         },
         {
           "model_key": "new_tickers",
@@ -3391,7 +3423,10 @@
           "error_vc": null,
           "error_pct": null,
           "direction_hit": null,
-          "source": "OPERACIONAL ROLLING30 · CIERRE"
+          "source": "OPERACIONAL ROLLING30 · CIERRE",
+          "quality_status": "OK",
+          "quality_note": null,
+          "include_in_score": true
         },
         {
           "model_key": "new_tickers",
@@ -3411,17 +3446,20 @@
           "error_vc": null,
           "error_pct": null,
           "direction_hit": null,
-          "source": "OPERACIONAL ROLLING30 · CIERRE"
+          "source": "OPERACIONAL ROLLING30 · CIERRE",
+          "quality_status": "OK",
+          "quality_note": null,
+          "include_in_score": true
         }
       ],
       "operational_metrics": {
-        "n": 3,
+        "n": 2,
         "start": "2026-08-20",
-        "end": "2026-08-24",
-        "mae_vc": 0.35882267299414633,
-        "rmse_vc": 0.4582445567887979,
-        "mape_pct": 0.5049643780706655,
-        "direction_accuracy_pct": 66.66666666666666
+        "end": "2026-08-21",
+        "mae_vc": 0.16204412760615838,
+        "rmse_vc": 0.17873012134066918,
+        "mape_pct": 0.22744592197972177,
+        "direction_accuracy_pct": 100.0
       }
     }
   },
@@ -3488,25 +3526,17 @@
   },
   "comparison": {
     "winner_blind3_mape": "NUEVOS TICKERS",
-    "vc_difference": 0.23081689244571635,
-    "return_difference": 0.0002301744173505058
+    "vc_difference": 0.22743504041368112,
+    "return_difference": 0.0001830688575726754
   },
   "shared_fx_operational": {
-    "return": 0.0,
-    "value": 3.344,
-    "previous_value": 3.344,
-    "source": "BCRP REZAGADO · MODELO USA 0 %",
-    "timestamp": "2026-08-25",
+    "value": 3.34375,
+    "previous_value": 3.34457142857143,
+    "previous_date": "2026-08-25",
+    "return": -0.0002456005467286193,
+    "source": "TUCAMBISTA MIDPOINT (3.330/3.357) · PROVISIONAL · BASE BCRP PD04638PD · API 2026-08-25",
     "provisional": true,
-    "rule": "Mismo USD/PEN operativo para ambos Rolling 30; no se mezclan Yahoo y Tucambista dentro de la comparación dual."
+    "rule": "BCRP PD04638PD oficial de la fecha; si todavía no existe, TuCambista midpoint provisional. Mismo USD/PEN para ambos Rolling 30; Yahoo PEN=X excluido."
   },
-  "fx_operational_new_tickers": {
-    "return": 0.0,
-    "value": 3.344,
-    "source": "TUCAMBISTA PROVISIONAL (3.333/3.365)",
-    "source_used_model": "BCRP REZAGADO · MODELO USA 0 %",
-    "legacy_validation_source_only": true,
-    "provisional": true
-  },
-  "operational_history_rule": "Cada prediccion diaria se congela al cierre y queda inmutable. Cuando SBS publica el VC real, solo se completa actual_vc/error; el VC estimado historico no se recalcula ni se reancla retroactivamente."
+  "operational_history_rule": "Cada predicción diaria se congela al cierre y queda inmutable. Cuando SBS publica el VC real, solo se completa actual_vc/error. Incidentes comprobados de datos se preservan en el histórico, se etiquetan y se excluyen del score limpio sin reescribir la predicción original."
 }
