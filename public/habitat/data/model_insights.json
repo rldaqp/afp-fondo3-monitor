@@ -43,13 +43,6 @@
       "contribution_pp": -0.10427971004594541
     },
     {
-      "feature": "ret_USD_PEN",
-      "label": "USD/PEN",
-      "value": -0.02008656056215996,
-      "coefficient": 0.036844675162531385,
-      "contribution_pp": -0.07400827990452975
-    },
-    {
       "feature": "ret_EEM",
       "label": "EEM",
       "value": -0.0011896183056459009,
@@ -83,6 +76,13 @@
       "value": -0.00036285301435490247,
       "coefficient": -0.07487034134259926,
       "contribution_pp": 0.0027166929041942617
+    },
+    {
+      "feature": "ret_USD_PEN",
+      "label": "USD/PEN",
+      "value": 0.0,
+      "coefficient": 0.036844675162531385,
+      "contribution_pp": 0.0
     }
   ],
   "quality": {
@@ -91,7 +91,7 @@
     "critical": [],
     "training_n": 90,
     "latest_sbs_date": "2026-08-24",
-    "fx_provisional": true
+    "fx_provisional": false
   },
   "challenger_huber": {
     "status": "NO APLICA EN HÁBITAT",
