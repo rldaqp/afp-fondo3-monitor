@@ -1,12 +1,12 @@
 {
-  "generated_at_lima": "2026-08-27T03:44:37.768466-05:00",
+  "generated_at_lima": "2026-08-27T17:56:07.107981-05:00",
   "fund": "PROFUTURO Fondo 3",
   "signal_date": "2026-08-26",
   "market_mode": "CIERRE DIARIO",
   "market_open": false,
   "latest_sbs": {
-    "fecha": "2026-08-24",
-    "vc": 70.9791366
+    "fecha": "2026-08-25",
+    "vc": 71.7441786
   },
   "rule": "Solo quedan dos modelos visibles. Ambos son OLS rolling 30 y se recalibran con las últimas 30 observaciones conocidas. Si SBS está atrasada, se encadenan los días faltantes sin usar los VC ocultos; cuando SBS publica, el siguiente cálculo vuelve a anclarse automáticamente al VC real. Si falta una fila de factores de una sesión ya congelada, se conserva la predicción operacional congelada de esa sesión como puente y nunca se salta el día.",
   "models": {
@@ -32,63 +32,41 @@
       ],
       "current": {
         "fecha": "2026-08-26",
-        "base_vc": 71.8339644838227,
-        "vc_estimated": 71.70361319039853,
-        "return_estimated": -0.0018146192314573732,
+        "base_vc": 71.7441786,
+        "vc_estimated": 71.57243581006692,
+        "return_estimated": -0.002393821955793839,
         "signal": "BAJA",
         "actual_vc": null,
         "chain_source": "FACTORES SESIÓN",
-        "anchor_date": "2026-08-24",
-        "anchor_vc": 70.9791366,
-        "train_start": "2026-07-07",
-        "train_end": "2026-08-24",
+        "anchor_date": "2026-08-25",
+        "anchor_vc": 71.7441786,
+        "train_start": "2026-07-08",
+        "train_end": "2026-08-25",
         "train_n": 30,
         "coefficients": {
-          "intercept": 0.00034053566279633056,
-          "ret_SPY": -0.7608072425934951,
-          "ret_EEM": 0.5373364034795534,
-          "ret_EPU": 0.2815481840070949,
-          "ret_MCHI": -0.26486543089637077,
-          "ret_USD_PEN": -0.22835437981300136,
-          "ret_QQQ": 0.5649683092959289
+          "intercept": 6.6063316508455e-05,
+          "ret_SPY": -0.8111806804258409,
+          "ret_EEM": 0.5632936298883048,
+          "ret_EPU": 0.3208676526732854,
+          "ret_MCHI": -0.25220111021017805,
+          "ret_USD_PEN": 0.25951616608951933,
+          "ret_QQQ": 0.591342295451108
         },
-        "blind_chain_sessions": 2,
+        "blind_chain_sessions": 1,
         "fallback_frozen_sessions": []
       },
       "forward_chain": [
         {
-          "fecha": "2026-08-25",
-          "base_vc": 70.9791366,
-          "vc_estimated": 71.8339644838227,
-          "return_estimated": 0.012043368301872222,
-          "signal": "SUBE",
-          "actual_vc": null,
-          "chain_source": "FACTORES SESIÓN"
-        },
-        {
           "fecha": "2026-08-26",
-          "base_vc": 71.8339644838227,
-          "vc_estimated": 71.70361319039853,
-          "return_estimated": -0.0018146192314573732,
+          "base_vc": 71.7441786,
+          "vc_estimated": 71.57243581006692,
+          "return_estimated": -0.002393821955793839,
           "signal": "BAJA",
           "actual_vc": null,
           "chain_source": "FACTORES SESIÓN"
         }
       ],
       "history_one_step": [
-        {
-          "fecha": "2026-01-22",
-          "base_date": "2026-01-21",
-          "base_vc": 67.5490132,
-          "vc_estimated": 68.08563632520351,
-          "actual_vc": 68.3665282,
-          "return_estimated": 0.007944203768227768,
-          "actual_return": 0.012102545415126897,
-          "signal": "SUBE",
-          "error_pct": -0.41086169239832326,
-          "train_start": "2025-12-02",
-          "train_end": "2026-01-21"
-        },
         {
           "fecha": "2026-01-23",
           "base_date": "2026-01-22",
@@ -1895,13 +1873,26 @@
           "error_pct": 0.5250825112631974,
           "train_start": "2026-07-06",
           "train_end": "2026-08-21"
+        },
+        {
+          "fecha": "2026-08-25",
+          "base_date": "2026-08-24",
+          "base_vc": 70.9791366,
+          "vc_estimated": 71.8339644838227,
+          "actual_vc": 71.7441786,
+          "return_estimated": 0.012043368301872222,
+          "actual_return": 0.010778406679012642,
+          "signal": "SUBE",
+          "error_pct": 0.1251472740712467,
+          "train_start": "2026-07-07",
+          "train_end": "2026-08-24"
         }
       ],
       "history_metrics": {
         "n": 140,
-        "mae_vc": 0.28542303934828617,
-        "rmse_vc": 0.37247396154795714,
-        "mape_pct": 0.4119639901844971
+        "mae_vc": 0.2840579965556162,
+        "rmse_vc": 0.3717941110728125,
+        "mape_pct": 0.40992317291073216
       },
       "intraday_assets": [
         {
@@ -1950,13 +1941,13 @@
         },
         {
           "serie": "USD_PEN",
-          "ticker": "TUCAMBISTA",
+          "ticker": "BCRP PD04638PD",
           "timestamp": "2026-08-26",
           "precio_anterior": 3.34457142857143,
-          "precio_actual": 3.34375,
-          "retorno": -0.0002456005467286193,
-          "retorno_modelo": -0.0002456005467286193,
-          "estado": "TUCAMBISTA MIDPOINT (3.330/3.357) · PROVISIONAL · BASE BCRP PD04638PD · API 2026-08-25",
+          "precio_actual": 3.34528571428571,
+          "retorno": 0.0002135656928055063,
+          "retorno_modelo": 0.0002135656928055063,
+          "estado": "BCRP PD04638PD · API · TC INTERBANCARIO VENTA · OFICIAL",
           "usado_modelo": true
         },
         {
@@ -2055,11 +2046,11 @@
           "vc_estimated": 72.19059143835085,
           "return_estimated": 0.0117552099112569,
           "signal": "SUBE",
-          "actual_vc": null,
-          "actual_return_daily": null,
-          "error_vc": null,
-          "error_pct": null,
-          "direction_hit": null,
+          "actual_vc": 71.7441786,
+          "actual_return_daily": 0.010778406679012642,
+          "error_vc": 0.4464128383508523,
+          "error_pct": 0.6222286561252233,
+          "direction_hit": true,
           "source": "OPERACIONAL ROLLING30 · CIERRE",
           "quality_status": "OK",
           "quality_note": null,
@@ -2090,12 +2081,12 @@
         }
       ],
       "operational_metrics": {
-        "n": 3,
+        "n": 4,
         "start": "2026-08-20",
-        "end": "2026-08-24",
-        "mae_vc": 0.2637871074268645,
-        "rmse_vc": 0.33581660762901777,
-        "mape_pct": 0.3712642851178808,
+        "end": "2026-08-25",
+        "mae_vc": 0.30944354015786146,
+        "rmse_vc": 0.36660701170423937,
+        "mape_pct": 0.4340053778697137,
         "direction_accuracy_pct": 100.0
       }
     },
@@ -2121,44 +2112,35 @@
       ],
       "current": {
         "fecha": "2026-08-26",
-        "base_vc": 72.04859914969276,
-        "vc_estimated": 71.93104823081221,
-        "return_estimated": -0.0016315503738847006,
+        "base_vc": 71.7441786,
+        "vc_estimated": 71.65606018829088,
+        "return_estimated": -0.0012282308255336723,
         "signal": "BAJA",
         "actual_vc": null,
         "chain_source": "FACTORES SESIÓN",
-        "anchor_date": "2026-08-24",
-        "anchor_vc": 70.9791366,
-        "train_start": "2026-07-07",
-        "train_end": "2026-08-24",
+        "anchor_date": "2026-08-25",
+        "anchor_vc": 71.7441786,
+        "train_start": "2026-07-08",
+        "train_end": "2026-08-25",
         "train_n": 30,
         "coefficients": {
-          "intercept": 0.0009533252598821946,
-          "ret_.INX": -0.776424265623309,
-          "ret_CPER": 0.08714587182915494,
-          "ret_EEM_alt": 0.4801500608390357,
-          "ret_NDX": 0.6421922106645939,
-          "ret_SPBLSCUP": 0.2483580802538931,
-          "ret_USD_PEN_alt": -0.036731766885566584
+          "intercept": 0.0007423164732108517,
+          "ret_.INX": -0.8565521934540614,
+          "ret_CPER": 0.08639591613808605,
+          "ret_EEM_alt": 0.4643706862931718,
+          "ret_NDX": 0.71420413023645,
+          "ret_SPBLSCUP": 0.24090062770669587,
+          "ret_USD_PEN_alt": -0.04785344538279144
         },
-        "blind_chain_sessions": 2,
+        "blind_chain_sessions": 1,
         "fallback_frozen_sessions": []
       },
       "forward_chain": [
         {
-          "fecha": "2026-08-25",
-          "base_vc": 70.9791366,
-          "vc_estimated": 72.04859914969276,
-          "return_estimated": 0.01506728034351361,
-          "signal": "SUBE",
-          "actual_vc": null,
-          "chain_source": "FACTORES SESIÓN"
-        },
-        {
           "fecha": "2026-08-26",
-          "base_vc": 72.04859914969276,
-          "vc_estimated": 71.93104823081221,
-          "return_estimated": -0.0016315503738847006,
+          "base_vc": 71.7441786,
+          "vc_estimated": 71.65606018829088,
+          "return_estimated": -0.0012282308255336723,
           "signal": "BAJA",
           "actual_vc": null,
           "chain_source": "FACTORES SESIÓN"
@@ -3243,13 +3225,26 @@
           "error_pct": 0.09480056862067876,
           "train_start": "2026-07-06",
           "train_end": "2026-08-20"
+        },
+        {
+          "fecha": "2026-08-25",
+          "base_date": "2026-08-24",
+          "base_vc": 70.9791366,
+          "vc_estimated": 72.04859914969276,
+          "actual_vc": 71.7441786,
+          "return_estimated": 0.01506728034351361,
+          "actual_return": 0.010778406679012642,
+          "signal": "SUBE",
+          "error_pct": 0.4243139382639205,
+          "train_start": "2026-07-07",
+          "train_end": "2026-08-24"
         }
       ],
       "history_metrics": {
-        "n": 83,
-        "mae_vc": 0.30549310413111896,
-        "rmse_vc": 0.4020851838821384,
-        "mape_pct": 0.4374408904192251
+        "n": 84,
+        "mae_vc": 0.3054803356259005,
+        "rmse_vc": 0.4010624129699362,
+        "mape_pct": 0.43728461717928113
       },
       "intraday_assets": [
         {
@@ -3312,25 +3307,25 @@
           "serie": "SPBLSCUP",
           "ticker": "SPBLSCUP:INDEXSP",
           "timestamp": "2026-08-26",
-          "precio_anterior": 464.16,
-          "precio_actual": 462.25,
-          "retorno": -0.004114960358497122,
-          "retorno_modelo": -0.004114960358497122,
+          "precio_anterior": 462.25,
+          "precio_actual": 461.34,
+          "retorno": -0.0019686316928069214,
+          "retorno_modelo": -0.0019686316928069214,
           "estado": "GOOGLE EXACTO",
           "usado_modelo": true,
           "validado_modelo": true,
-          "google_stamp": "Aug 26, 5:14:55 PM UTC-4",
+          "google_stamp": "Aug 27, 5:25:35 PM UTC-4",
           "error_validacion": null
         },
         {
           "serie": "USD/PEN",
-          "ticker": "TUCAMBISTA",
+          "ticker": "BCRP PD04638PD",
           "timestamp": "2026-08-26",
           "precio_anterior": 3.34457142857143,
-          "precio_actual": 3.34375,
-          "retorno": -0.0002456005467286193,
-          "retorno_modelo": -0.0002456005467286193,
-          "estado": "TUCAMBISTA MIDPOINT (3.330/3.357) · PROVISIONAL · BASE BCRP PD04638PD · API 2026-08-25",
+          "precio_actual": 3.34528571428571,
+          "retorno": 0.0002135656928055063,
+          "retorno_modelo": 0.0002135656928055063,
+          "estado": "BCRP PD04638PD · API · TC INTERBANCARIO VENTA · OFICIAL",
           "usado_modelo": true
         }
       ],
@@ -3400,7 +3395,7 @@
           "error_vc": 0.7523797637701222,
           "error_pct": 1.0600012902525435,
           "direction_hit": false,
-          "source": "OPERACIONAL ROLLING30 · CIERRE · INCIDENTE DATOS DOCUMENTADO · INCIDENTE DATOS DOCUMENTADO · INCIDENTE DATOS DOCUMENTADO · INCIDENTE DATOS DOCUMENTADO",
+          "source": "OPERACIONAL ROLLING30 · CIERRE · INCIDENTE DATOS DOCUMENTADO · INCIDENTE DATOS DOCUMENTADO · INCIDENTE DATOS DOCUMENTADO · INCIDENTE DATOS DOCUMENTADO · INCIDENTE DATOS DOCUMENTADO",
           "quality_status": "EXCLUIR_SCORE",
           "quality_note": "Predicción operacional preservada, pero el cierre recibió CPER=38.76 y SPBLSCUP=500.00 por extracción inconsistente; además faltó la fila de factores 21/08 en la cadena. No representa limpiamente al modelo.",
           "include_in_score": false
@@ -3418,11 +3413,11 @@
           "vc_estimated": 72.06901638434466,
           "return_estimated": 0.0143932809568657,
           "signal": "SUBE",
-          "actual_vc": null,
-          "actual_return_daily": null,
-          "error_vc": null,
-          "error_pct": null,
-          "direction_hit": null,
+          "actual_vc": 71.7441786,
+          "actual_return_daily": 0.010778406679012642,
+          "error_vc": 0.32483778434466615,
+          "error_pct": 0.45277232339051565,
+          "direction_hit": true,
           "source": "OPERACIONAL ROLLING30 · CIERRE",
           "quality_status": "OK",
           "quality_note": null,
@@ -3453,12 +3448,12 @@
         }
       ],
       "operational_metrics": {
-        "n": 2,
+        "n": 3,
         "start": "2026-08-20",
-        "end": "2026-08-21",
-        "mae_vc": 0.16204412760615838,
-        "rmse_vc": 0.17873012134066918,
-        "mape_pct": 0.22744592197972177,
+        "end": "2026-08-25",
+        "mae_vc": 0.21630867985232763,
+        "rmse_vc": 0.2376331196661866,
+        "mape_pct": 0.3025547224499887,
         "direction_accuracy_pct": 100.0
       }
     }
@@ -3526,16 +3521,16 @@
   },
   "comparison": {
     "winner_blind3_mape": "NUEVOS TICKERS",
-    "vc_difference": 0.22743504041368112,
-    "return_difference": 0.00018306885757267259
+    "vc_difference": 0.08362437822395918,
+    "return_difference": 0.0011655911302601667
   },
   "shared_fx_operational": {
-    "value": 3.34375,
+    "value": 3.34528571428571,
     "previous_value": 3.34457142857143,
     "previous_date": "2026-08-25",
-    "return": -0.0002456005467286193,
-    "source": "TUCAMBISTA MIDPOINT (3.330/3.357) · PROVISIONAL · BASE BCRP PD04638PD · API 2026-08-25",
-    "provisional": true,
+    "return": 0.0002135656928055063,
+    "source": "BCRP PD04638PD · API · TC INTERBANCARIO VENTA · OFICIAL",
+    "provisional": false,
     "rule": "BCRP PD04638PD oficial de la fecha; si todavía no existe, TuCambista midpoint provisional. Mismo USD/PEN para ambos Rolling 30; Yahoo PEN=X excluido."
   },
   "operational_history_rule": "Cada predicción diaria se congela al cierre y queda inmutable. Cuando SBS publica el VC real, solo se completa actual_vc/error. Incidentes comprobados de datos se preservan en el histórico, se etiquetan y se excluyen del score limpio sin reescribir la predicción original."
