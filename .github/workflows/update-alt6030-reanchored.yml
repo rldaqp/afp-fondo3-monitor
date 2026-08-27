@@ -7,6 +7,7 @@ on:
       - migracion-github-actions
     paths:
       - ".github/workflows/update-alt6030-reanchored.yml"
+      - "public/index.html"
       - "scripts/sync_sbs_official_latest.py"
       - "scripts/apply_sbs_reference_corrections.py"
       - "scripts/update_live_market_hybrid.py"
@@ -87,12 +88,17 @@ jobs:
           live = json.loads(Path('public/data/live_market.json').read_text(encoding='utf-8'))
           dual = json.loads(Path('public/data/dual_rolling30_monitor.json').read_text(encoding='utf-8'))
           status = json.loads(Path('public/data/sbs_sync_status.json').read_text(encoding='utf-8'))
+          html = Path('public/index.html').read_text(encoding='utf-8')
 
           assert set(dual['models']) == {'qqq', 'new_tickers'}, dual.keys()
           assert dual['signal_date'] == live['signal_date'], (dual['signal_date'], live['signal_date'])
           assert float(dual['latest_sbs']['vc']) > 0
           assert status['source'].startswith('SBS OFICIAL')
           assert live.get('new_ticker_validation', {}).get('status') in {'OK', 'PENDIENTE/BLOQUEADO'}
+          assert 'V6-daily' in html
+          assert 'Modelo A · Rolling 30 + QQQ' in html
+          assert 'Modelo B · Rolling 30 + nuevos tickers' in html
+          assert 'Mercado ahora · factores realmente usados' in html
 
           for key in ('qqq', 'new_tickers'):
               model = dual['models'][key]
@@ -148,22 +154,26 @@ jobs:
             fi
           fi
 
-          # Publicación rápida de datos. Un fallo de carrera transitorio aquí no
-          # genera correo; el siguiente ciclo de 5 minutos vuelve a intentarlo.
+          # Publicación rápida del visor completo. Antes solo se copiaban los JSON,
+          # por lo que gh-pages podía conservar un index.html antiguo aunque los
+          # modelos ya estuvieran actualizados.
           tmp="$(mktemp -d)"
           if git clone --depth 1 --branch gh-pages "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" "$tmp/gh-pages"; then
             mkdir -p "$tmp/gh-pages/data"
+            cp public/index.html "$tmp/gh-pages/index.html"
             cp public/data/live_market.json "$tmp/gh-pages/data/live_market.json"
             cp public/data/dual_rolling30_monitor.json "$tmp/gh-pages/data/dual_rolling30_monitor.json"
             cp public/data/sbs_sync_status.json "$tmp/gh-pages/data/sbs_sync_status.json"
             cd "$tmp/gh-pages"
+            grep -q "V6-daily" index.html
+            grep -q "Mercado ahora · factores realmente usados" index.html
             git config user.name "github-actions[bot]"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git add data/live_market.json data/dual_rolling30_monitor.json data/sbs_sync_status.json
+            git add index.html data/live_market.json data/dual_rolling30_monitor.json data/sbs_sync_status.json
             if git diff --cached --quiet; then
-              echo "gh-pages ya está actualizado."
+              echo "gh-pages ya está actualizado, incluida la interfaz V6."
             else
-              git commit -m "Publicar visor dual Rolling 30"
+              git commit -m "Publicar visor dual Rolling 30 V6"
               git push origin HEAD:gh-pages || echo "Publicación rápida pendiente; se reintentará automáticamente."
             fi
           else
