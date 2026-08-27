@@ -1,0 +1,141 @@
+{
+  "rule": "Recalculo exacto de 24/08 como se habría hecho al cierre: ancla SBS disponible 20/08; 21 y 24 no se usan para entrenar ni reanclar. Se encadenan 21 y 24 con cierres diarios; USD/PEN es BCRP PD04638PD oficial de cada fecha.",
+  "anchor": {
+    "fecha": "2026-08-20",
+    "vc": 71.0427094
+  },
+  "bcrp": {
+    "2026-08-20": 3.355,
+    "2026-08-21": 3.34728571428571,
+    "2026-08-24": 3.34714285714286
+  },
+  "qqq": {
+    "train_start": "2026-07-02",
+    "train_end": "2026-08-20",
+    "train_n": 30,
+    "coefficients": {
+      "intercept": 0.0004960584288135347,
+      "ret_SPY": -0.8250296557997039,
+      "ret_EEM": 0.5008187222959488,
+      "ret_EPU": 0.30738539590533215,
+      "ret_MCHI": -0.2749303148882083,
+      "ret_USD_PEN": -0.19566205284862975,
+      "ret_QQQ": 0.6138913273579469
+    },
+    "chain": [
+      {
+        "fecha": "2026-08-21",
+        "base_vc": 71.0427094,
+        "return_estimated": 0.013867365648843931,
+        "vc_estimated": 72.02788462793437,
+        "factors": {
+          "ret_SPY": 0.0040912604472485,
+          "ret_EEM": 0.0075052533681507,
+          "ret_EPU": 0.0361551888796529,
+          "ret_MCHI": 0.0027022433870389,
+          "ret_USD_PEN": -0.0022993400042593537,
+          "ret_QQQ": 0.0035306004690811577
+        },
+        "closes": {
+          "SPY": 765.719970703125,
+          "EEM": 67.12000274658203,
+          "EPU": 94.0,
+          "MCHI": 55.65999984741211,
+          "QQQ": 713.4400024414062,
+          "USD_PEN_BCRP": 3.34728571428571
+        }
+      },
+      {
+        "fecha": "2026-08-24",
+        "base_vc": 72.02788462793437,
+        "return_estimated": -0.006212591254568605,
+        "vc_estimated": 71.58040482180978,
+        "factors": {
+          "ret_SPY": -0.0029384110198065,
+          "ret_EEM": -0.0150477070158031,
+          "ret_EPU": 0.0029787104180518,
+          "ret_MCHI": -0.0131153349665391,
+          "ret_USD_PEN": -4.267850283590224e-05,
+          "ret_QQQ": -0.009979809224073155
+        },
+        "closes": {
+          "SPY": 763.469970703125,
+          "EEM": 66.11000061035156,
+          "EPU": 94.27999877929688,
+          "MCHI": 54.93000030517578,
+          "QQQ": 706.3200073242188,
+          "USD_PEN_BCRP": 3.34714285714286
+        }
+      }
+    ],
+    "vc_24_blind": 71.58040482180978,
+    "error_pct_vs_sbs_24": 0.847105573005491,
+    "vc_24_one_step_after_21_known": 71.35974572849223
+  },
+  "new_tickers": {
+    "train_start": "2026-07-02",
+    "train_end": "2026-08-20",
+    "train_n": 30,
+    "coefficients": {
+      "intercept": 0.0007298401947244896,
+      "ret_.INX": -0.726034476728788,
+      "ret_CPER": 0.1034561133667889,
+      "ret_EEM_alt": 0.4696043752052208,
+      "ret_NDX": 0.5736482571605556,
+      "ret_SPBLSCUP": 0.26030775634587966,
+      "ret_USD_PEN_alt": -0.31132087979182654
+    },
+    "chain": [
+      {
+        "fecha": "2026-08-21",
+        "base_vc": 71.0427094,
+        "return_estimated": 0.013377498891836093,
+        "vc_estimated": 71.99308316627153,
+        "factors": {
+          "ret_.INX": 0.004346193543703691,
+          "ret_CPER": 0.016264376852939577,
+          "ret_EEM_alt": 0.007505253368150777,
+          "ret_NDX": 0.0032758940915034174,
+          "ret_SPBLSCUP": 0.030736512200582045,
+          "ret_USD_PEN_alt": -0.0022993400042593537
+        },
+        "closes": {
+          ".INX": 7674.3701171875,
+          "CPER": 39.9900016784668,
+          "EEM": 67.12000274658203,
+          "NDX": 29308.859375,
+          "SPBLSCUP": 460.43,
+          "USD_PEN_BCRP": 3.34728571428571
+        }
+      },
+      {
+        "fecha": "2026-08-24",
+        "base_vc": 71.99308316627153,
+        "return_estimated": -0.010351304939247876,
+        "vc_estimated": 71.24786080890082,
+        "factors": {
+          "ret_.INX": -0.0028028689752760405,
+          "ret_CPER": 0.0020004504376027743,
+          "ret_EEM_alt": -0.015047707015803158,
+          "ret_NDX": -0.009747212740175093,
+          "ret_SPBLSCUP": -0.0026062593662445,
+          "ret_USD_PEN_alt": -4.267850283590224e-05
+        },
+        "closes": {
+          ".INX": 7652.85986328125,
+          "CPER": 40.06999969482422,
+          "EEM": 66.11000061035156,
+          "NDX": 29023.1796875,
+          "SPBLSCUP": 459.2300000000001,
+          "USD_PEN_BCRP": 3.34714285714286
+        }
+      }
+    ],
+    "vc_24_blind": 71.24786080890082,
+    "error_pct_vs_sbs_24": 0.37859605198524715,
+    "vc_24_one_step_after_21_known": 71.06256189059819
+  },
+  "sbs_actual_21": 71.8058461,
+  "sbs_actual_24": 70.9791366,
+  "note": "Los valores one-step se muestran solo como diagnóstico posterior. Para medir el pronóstico real del 24 se usan vc_24_blind, que no conocen VC SBS del 21 ni del 24."
+}
