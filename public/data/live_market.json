@@ -1,10 +1,10 @@
 {
-  "generated_at_lima": "2026-08-28T17:45:34.274122-05:00",
+  "generated_at_lima": "2026-08-28T17:59:05.151261-05:00",
   "mode": "CIERRE DIARIO",
   "market_open": false,
   "signal_date": "2026-08-27",
-  "vc_estimated": 71.68351374985323,
-  "return_estimated": 0.0037689705829869924,
+  "vc_estimated": 71.41435514610457,
+  "return_estimated": 0.007158423542333535,
   "signal": "SUBE",
   "assets": [
     {
@@ -94,57 +94,72 @@
     {
       "serie": ".INX",
       "ticker": ".INX:INDEXSP",
-      "timestamp": "2026-08-28T15:55:00-04:00",
-      "precio_anterior": null,
-      "precio_actual": 7709.89990234375,
-      "retorno": -0.0027280246633185623,
-      "retorno_modelo": null,
-      "estado": "YAHOO ^GSPC · RESPALDO EQUIVALENTE · NUEVO 60/30 EXPERIMENTAL",
-      "usado_modelo": false
+      "timestamp": "2026-08-27",
+      "precio_anterior": 7675.7001953125,
+      "precio_actual": 7730.990234375,
+      "retorno": 0.0072032567265023495,
+      "retorno_modelo": 0.0072032567265023495,
+      "estado": "YAHOO ^GSPC · FALLBACK POR ERROR GOOGLE",
+      "usado_modelo": true,
+      "validado_modelo": true,
+      "google_stamp": "2026-08-27",
+      "error_validacion": "RuntimeError: Precio principal ambiguo/no identificado: []"
     },
     {
       "serie": "CPER",
       "ticker": "CPER:NYSEARCA",
-      "timestamp": "2026-08-28T15:55:00-04:00",
-      "precio_anterior": null,
-      "precio_actual": 39.67499923706055,
-      "retorno": -0.0076288221277633905,
-      "retorno_modelo": null,
-      "estado": "YAHOO CPER · RESPALDO EQUIVALENTE · NUEVO 60/30 EXPERIMENTAL",
-      "usado_modelo": false
+      "timestamp": "2026-08-27",
+      "precio_anterior": 40.060001373291016,
+      "precio_actual": 39.97999954223633,
+      "retorno": -0.0019970501326049828,
+      "retorno_modelo": -0.0019970501326049828,
+      "estado": "YAHOO CPER · FALLBACK POR ERROR GOOGLE",
+      "usado_modelo": true,
+      "validado_modelo": true,
+      "google_stamp": "2026-08-27",
+      "error_validacion": "RuntimeError: Precio principal ambiguo/no identificado: []"
     },
     {
       "serie": "EEM",
       "ticker": "EEM:NYSEARCA",
-      "timestamp": "2026-08-28T15:55:00-04:00",
-      "precio_anterior": null,
-      "precio_actual": 67.125,
-      "retorno": -0.007173504007886411,
-      "retorno_modelo": null,
-      "estado": "YAHOO EEM · RESPALDO EQUIVALENTE · NUEVO 60/30 EXPERIMENTAL",
-      "usado_modelo": false
+      "timestamp": "2026-08-27",
+      "precio_anterior": 67.16999816894531,
+      "precio_actual": 67.61000061035156,
+      "retorno": 0.006550579922595112,
+      "retorno_modelo": 0.006550579922595112,
+      "estado": "YAHOO EEM · FALLBACK POR ERROR GOOGLE",
+      "usado_modelo": true,
+      "validado_modelo": true,
+      "google_stamp": "2026-08-27",
+      "error_validacion": "RuntimeError: Precio principal ambiguo/no identificado: []"
     },
     {
       "serie": "NDX",
       "ticker": "NDX:INDEXNASDAQ",
-      "timestamp": "2026-08-28T15:55:00-04:00",
-      "precio_anterior": null,
-      "precio_actual": 29430.201171875,
-      "retorno": -0.007130507675726316,
-      "retorno_modelo": null,
-      "estado": "YAHOO ^NDX · RESPALDO EQUIVALENTE · NUEVO 60/30 EXPERIMENTAL",
-      "usado_modelo": false
+      "timestamp": "2026-08-27",
+      "precio_anterior": 29224.51953125,
+      "precio_actual": 29641.560546875,
+      "retorno": 0.01427024369653207,
+      "retorno_modelo": 0.01427024369653207,
+      "estado": "YAHOO ^NDX · FALLBACK POR ERROR GOOGLE",
+      "usado_modelo": true,
+      "validado_modelo": true,
+      "google_stamp": "2026-08-27",
+      "error_validacion": "RuntimeError: Precio principal ambiguo/no identificado: []"
     },
     {
       "serie": "SPBLSCUP",
       "ticker": "SPBLSCUP:INDEXSP",
-      "timestamp": "2026-08-20",
-      "precio_anterior": null,
-      "precio_actual": 446.7,
-      "retorno": null,
-      "retorno_modelo": null,
-      "estado": "ÚLTIMO CIERRE GOOGLE FINANCE GUARDADO · NUEVO 60/30 EXPERIMENTAL",
-      "usado_modelo": false
+      "timestamp": "2026-08-27",
+      "precio_anterior": 461.34,
+      "precio_actual": 454.7,
+      "retorno": -0.014392855594572262,
+      "retorno_modelo": -0.014392855594572262,
+      "estado": "GOOGLE EXACTO",
+      "usado_modelo": true,
+      "validado_modelo": true,
+      "google_stamp": "Aug 28, 5:30:20 PM UTC-4",
+      "error_validacion": null
     },
     {
       "serie": "USD/PEN",
@@ -167,7 +182,78 @@
     "USD/PEN"
   ],
   "experimental_note": "Seguimiento del nuevo 60/30. No modifica el OLS principal ni el challenger 60/30 vigente.",
-  "warning": "Cierre OLS pesado pendiente; cálculo provisional coherente con los activos del mismo día.",
-  "model_snapshot_source": "CIERRE PROVISIONAL MISMA FECHA",
-  "model_snapshot_date": "2026-08-27"
+  "experimental_google_rolling30_checked": true,
+  "experimental_google_rolling30_results": {
+    ".INX": {
+      "quote": ".INX:INDEXSP",
+      "price": 7730.990234375,
+      "previous": 7675.7001953125,
+      "return": 0.0072032567265023495,
+      "stamp": "2026-08-27",
+      "validation": "YAHOO ^GSPC · FALLBACK POR ERROR GOOGLE",
+      "valid_for_model": true,
+      "google_error": "RuntimeError: Precio principal ambiguo/no identificado: []"
+    },
+    "CPER": {
+      "quote": "CPER:NYSEARCA",
+      "price": 39.97999954223633,
+      "previous": 40.060001373291016,
+      "return": -0.0019970501326049828,
+      "stamp": "2026-08-27",
+      "validation": "YAHOO CPER · FALLBACK POR ERROR GOOGLE",
+      "valid_for_model": true,
+      "google_error": "RuntimeError: Precio principal ambiguo/no identificado: []"
+    },
+    "EEM": {
+      "quote": "EEM:NYSEARCA",
+      "price": 67.61000061035156,
+      "previous": 67.16999816894531,
+      "return": 0.006550579922595112,
+      "stamp": "2026-08-27",
+      "validation": "YAHOO EEM · FALLBACK POR ERROR GOOGLE",
+      "valid_for_model": true,
+      "google_error": "RuntimeError: Precio principal ambiguo/no identificado: []"
+    },
+    "NDX": {
+      "quote": "NDX:INDEXNASDAQ",
+      "price": 29641.560546875,
+      "previous": 29224.51953125,
+      "return": 0.01427024369653207,
+      "stamp": "2026-08-27",
+      "validation": "YAHOO ^NDX · FALLBACK POR ERROR GOOGLE",
+      "valid_for_model": true,
+      "google_error": "RuntimeError: Precio principal ambiguo/no identificado: []"
+    },
+    "SPBLSCUP": {
+      "quote": "SPBLSCUP:INDEXSP",
+      "price": 454.7,
+      "previous": 461.34,
+      "return": -0.014392855594572262,
+      "stamp": "Aug 28, 5:30:20 PM UTC-4",
+      "validation": "GOOGLE EXACTO",
+      "valid_for_model": true
+    }
+  },
+  "new_ticker_validation": {
+    "signal_date": "2026-08-27",
+    "status": "OK",
+    "problems": [],
+    "rule": "No se usa un cierre dudoso para Modelo B; se conserva la última sesión completa."
+  },
+  "historical_fx_validation": {
+    "source": "BCRP PD04638PD · TC INTERBANCARIO VENTA · OFICIAL",
+    "coverage_start": "2026-04-15",
+    "coverage_end": "2026-08-27",
+    "rule": "En el tramo cubierto por BCRP solo entran fechas con retorno oficial; n.d. queda fuera del entrenamiento.",
+    "markets_official_rows": 89,
+    "markets_nd_rows_excluded": 11,
+    "new_tickers_base_official_rows": 81,
+    "new_tickers_base_nd_rows_excluded": 2,
+    "focus_2026_08_24": {
+      "stored_return_before": 0.0005979073243647,
+      "official_return_after": -4.267850283590224e-05,
+      "official_value": 3.34714285714286,
+      "corrected": true
+    }
+  }
 }

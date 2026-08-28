@@ -3370,5 +3370,10 @@
         }
       }
     }
+  },
+  "history_chart_meta": {
+    "source": "ROLLING30 ONE-STEP DIARIO",
+    "horizon_sessions": 1,
+    "note": "El gráfico diario usa como base el VC SBS real de la sesión inmediatamente anterior. Blind3 queda solo como validación agregada."
   }
 }
