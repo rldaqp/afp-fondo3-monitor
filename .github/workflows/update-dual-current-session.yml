@@ -8,6 +8,7 @@ on:
     paths:
       - ".github/workflows/update-dual-current-session.yml"
       - "scripts/refresh_profuturo_current_session_v3.py"
+      - "scripts/patch_dual_20260824_exact.py"
   workflow_run:
     workflows:
       - "Actualizar mercado intradia Fondo 3"
@@ -16,6 +17,8 @@ on:
 
 permissions:
   contents: write
+  pages: write
+  id-token: write
 
 concurrency:
   group: fondo3-data-writes
@@ -26,6 +29,9 @@ jobs:
     if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     timeout-minutes: 12
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - name: Descargar repositorio
         uses: actions/checkout@v4
@@ -59,6 +65,7 @@ jobs:
           python scripts/refresh_profuturo_current_session_v3.py
           python scripts/build_dual_rolling30_monitor.py
           python scripts/patch_dual_rolling30_fx_operational.py
+          python scripts/patch_dual_20260824_exact.py
 
           python - <<'PY'
           import json
@@ -69,11 +76,14 @@ jobs:
           assert sd
           assert str(dual.get('signal_date') or '')[:10] == sd
           assert set(dual.get('models', {})) == {'qqq', 'new_tickers'}
+          assert dual.get('historical_corrections',{}).get('2026-08-24',{}).get('status') == 'CORREGIDO'
           for key in ('qqq', 'new_tickers'):
               cur = dual['models'][key]['current']
               assert str(cur.get('fecha') or '')[:10] == sd, (key, cur, sd)
               assert float(cur['vc_estimated']) > 0
               assert cur.get('signal') in {'SUBE', 'NEUTRO', 'BAJA'}
+              row24 = next(r for r in dual['models'][key].get('history_operational',[]) if str(r.get('fecha'))[:10]=='2026-08-24')
+              assert row24.get('quality_status') == 'CORREGIDO_EXACTO', (key,row24)
               for row in dual['models'][key].get('intraday_assets', []):
                   ts = str(row.get('timestamp') or '')[:10]
                   if ts and row.get('serie') not in {'USD_PEN', 'USD/PEN'}:
@@ -108,3 +118,17 @@ jobs:
             git commit -m "Publicar Profuturo con sesion vigente"
             git push origin HEAD:gh-pages
           fi
+
+      - name: Configurar Pages
+        uses: actions/configure-pages@v5
+        with:
+          enablement: true
+
+      - name: Subir sitio estatico actualizado
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./public
+
+      - name: Desplegar Pages actualizado
+        id: deployment
+        uses: actions/deploy-pages@v4
