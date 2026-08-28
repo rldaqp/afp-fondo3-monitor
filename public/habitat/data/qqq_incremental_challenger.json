@@ -1,5 +1,5 @@
 {
-  "generated_at_lima": "2026-08-27T20:31:01.306411-05:00",
+  "generated_at_lima": "2026-08-28T06:32:44.709084-05:00",
   "signal_date": "2026-08-27",
   "mode": "CIERRE DIARIO",
   "market_open": false,
@@ -8,19 +8,19 @@
   "vc_base": 33.53263989864718,
   "official": {
     "model": "OLS rolling 90 oficial Hábitat",
-    "return_estimated": 0.005274951352164106,
+    "return_estimated": 0.005274951352164118,
     "signal": "SUBE",
     "vc_estimated": 33.70952294282218
   },
   "challenger": {
     "model": "OLS rolling 90 Hábitat + QQQ incremental residualizado",
-    "return_estimated": 0.000750417206764453,
-    "signal": "NEUTRO",
-    "vc_estimated": 33.55780336861537
+    "return_estimated": 0.0123472590574362,
+    "signal": "SUBE",
+    "vc_estimated": 33.9466760903555
   },
   "qqq": {
     "return": 0.01369187666225713,
-    "residual": 0.013485382499629897,
+    "residual": 0.0028448146397956446,
     "previous_close": 711.3699951171875,
     "current_price": 721.1099853515625,
     "source": "CIERRE DIARIO YAHOO",
@@ -35,9 +35,9 @@
     ]
   },
   "comparison": {
-    "same_signal": false,
-    "vc_difference": -0.15171957420681537,
-    "return_difference_pp": -0.45245341453996524
+    "same_signal": true,
+    "vc_difference": 0.23715314753331995,
+    "return_difference_pp": 0.7072307705272081
   },
   "training": {
     "window": 90,
@@ -45,14 +45,14 @@
     "start": "2026-04-08",
     "end": "2026-08-25",
     "qqq_residualizer": {
-      "intercept": -0.00022999410365153453,
-      "ret_SPY": 1.0077860772918863,
-      "ret_NEM": -0.00894255197484988,
-      "ret_FCX": 0.027683805141094284,
-      "ret_EPU": -0.10532913015155698,
-      "ret_MCHI": -0.09390072917543187,
-      "ret_EEM": 0.41567318672639353,
-      "ret_USD_PEN": 0.09257788554451016
+      "intercept": -0.0002299941036515367,
+      "ret_SPY": 1.0077860772918883,
+      "ret_NEM": -0.00894255197485011,
+      "ret_FCX": 0.02768380514109403,
+      "ret_EPU": -0.1053291301515572,
+      "ret_MCHI": -0.09390072917543146,
+      "ret_EEM": 0.41567318672639336,
+      "ret_USD_PEN": 0.09257788554451038
     }
   },
   "performance_backtest": {
@@ -63,9 +63,9 @@
     "windows": {
       "30": {
         "n": 30,
-        "official_mae": 0.002891035361457152,
-        "challenger_mae": 0.0029755134255724743,
-        "mae_improvement_pct": -2.922069554788954,
+        "official_mae": 0.0028910353614571517,
+        "challenger_mae": 0.002975513425572475,
+        "mae_improvement_pct": -2.9220695547889997,
         "official_direction_accuracy": 0.8333333333333334,
         "challenger_direction_accuracy": 0.8666666666666667,
         "direction_delta_pp": 3.3333333333333326,
@@ -75,9 +75,9 @@
       },
       "60": {
         "n": 60,
-        "official_mae": 0.0032487425042695235,
-        "challenger_mae": 0.003226688458703704,
-        "mae_improvement_pct": 0.6788486787375677,
+        "official_mae": 0.0032487425042695252,
+        "challenger_mae": 0.0032266884587037054,
+        "mae_improvement_pct": 0.6788486787375808,
         "official_direction_accuracy": 0.8166666666666667,
         "challenger_direction_accuracy": 0.8333333333333334,
         "direction_delta_pp": 1.6666666666666718,
@@ -87,9 +87,9 @@
       },
       "90": {
         "n": 90,
-        "official_mae": 0.003135510733733937,
-        "challenger_mae": 0.0031407569168550513,
-        "mae_improvement_pct": -0.1673151064249981,
+        "official_mae": 0.0031355107337339384,
+        "challenger_mae": 0.0031407569168550517,
+        "mae_improvement_pct": -0.16731510642497038,
         "official_direction_accuracy": 0.8444444444444444,
         "challenger_direction_accuracy": 0.8555555555555555,
         "direction_delta_pp": 1.1111111111111072,
@@ -100,8 +100,8 @@
       "180": {
         "n": 180,
         "official_mae": 0.0032349107280942066,
-        "challenger_mae": 0.003175830172957819,
-        "mae_improvement_pct": 1.8263426753415888,
+        "challenger_mae": 0.0031758301729578184,
+        "mae_improvement_pct": 1.8263426753416019,
         "official_direction_accuracy": 0.8444444444444444,
         "challenger_direction_accuracy": 0.85,
         "direction_delta_pp": 0.5555555555555536,
@@ -111,9 +111,9 @@
       },
       "ALL": {
         "n": 302,
-        "official_mae": 0.0026493321897533,
-        "challenger_mae": 0.002563424270798673,
-        "mae_improvement_pct": 3.2426254165819373,
+        "official_mae": 0.0026493321897533006,
+        "challenger_mae": 0.0025634242707986725,
+        "mae_improvement_pct": 3.24262541658197,
         "official_direction_accuracy": 0.7615894039735099,
         "challenger_direction_accuracy": 0.7748344370860927,
         "direction_delta_pp": 1.3245033112582738,
@@ -129,7 +129,7 @@
         "ret_FCX": 3.024496827029066,
         "ret_EPU": 4.369297736405536,
         "ret_MCHI": 1.5591344953174715,
-        "ret_EEM": 3.846580488863915,
+        "ret_EEM": 3.846580488863917,
         "ret_USD_PEN": 1.9482607838778612,
         "ret_QQQ_residual": 1.0
       },
