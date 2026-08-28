@@ -7,7 +7,7 @@ on:
       - migracion-github-actions
     paths:
       - ".github/workflows/update-dual-current-session.yml"
-      - "scripts/refresh_profuturo_current_session.py"
+      - "scripts/refresh_profuturo_current_session_v2.py"
   workflow_run:
     workflows:
       - "Actualizar mercado intradia Fondo 3"
@@ -56,33 +56,24 @@ jobs:
           git fetch origin migracion-github-actions
           git reset --hard origin/migracion-github-actions
 
-          # Después del cierre, markets.csv puede seguir en T-1 aunque Yahoo ya
-          # publique T. Este paso reconstruye el snapshot de T directamente con
-          # cierres diarios de la sesión actual y evita mezclar fechas.
-          python scripts/refresh_profuturo_current_session.py
-
-          # El visor raíz lee dual_rolling30_monitor.json. Por eso el dual debe
-          # recalcularse después de cada snapshot y no solo en el workflow pesado.
+          python scripts/refresh_profuturo_current_session_v2.py
           python scripts/build_dual_rolling30_monitor.py
           python scripts/patch_dual_rolling30_fx_operational.py
 
           python - <<'PY'
           import json
           from pathlib import Path
-
           live = json.loads(Path('public/data/live_market.json').read_text(encoding='utf-8'))
           dual = json.loads(Path('public/data/dual_rolling30_monitor.json').read_text(encoding='utf-8'))
           sd = str(live.get('signal_date') or '')[:10]
-          assert sd, live
-          assert str(dual.get('signal_date') or '')[:10] == sd, (live, dual)
-          assert set(dual.get('models', {})) == {'qqq', 'new_tickers'}, dual
+          assert sd
+          assert str(dual.get('signal_date') or '')[:10] == sd
+          assert set(dual.get('models', {})) == {'qqq', 'new_tickers'}
           for key in ('qqq', 'new_tickers'):
               cur = dual['models'][key]['current']
               assert str(cur.get('fecha') or '')[:10] == sd, (key, cur, sd)
-              assert float(cur['vc_estimated']) > 0, (key, cur)
-              assert cur.get('signal') in {'SUBE', 'NEUTRO', 'BAJA'}, (key, cur)
-          # Todos los factores mostrados deben pertenecer a la misma sesión.
-          for key in ('qqq', 'new_tickers'):
+              assert float(cur['vc_estimated']) > 0
+              assert cur.get('signal') in {'SUBE', 'NEUTRO', 'BAJA'}
               for row in dual['models'][key].get('intraday_assets', []):
                   ts = str(row.get('timestamp') or '')[:10]
                   if ts and row.get('serie') not in {'USD_PEN', 'USD/PEN'}:
