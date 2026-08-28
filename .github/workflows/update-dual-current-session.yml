@@ -62,7 +62,30 @@ jobs:
           git fetch origin migracion-github-actions
           git reset --hard origin/migracion-github-actions
 
-          python scripts/refresh_profuturo_current_session_v3.py
+          # Si SPBLSCUP no vuelve a responder después del cierre, no se destruye
+          # un snapshot ya validado de la misma sesión. Se reutiliza únicamente si
+          # el live guardado pertenece a hoy y la validación de nuevos tickers está OK.
+          if ! python scripts/refresh_profuturo_current_session_v3.py; then
+            echo "Refresco directo no disponible; verificando snapshot vigente ya validado."
+            python - <<'PY'
+          import json
+          from datetime import datetime
+          from pathlib import Path
+          from zoneinfo import ZoneInfo
+
+          live=json.loads(Path('public/data/live_market.json').read_text(encoding='utf-8'))
+          today=datetime.now(ZoneInfo('America/New_York')).date().isoformat()
+          sd=str(live.get('signal_date') or '')[:10]
+          validation=live.get('new_ticker_validation',{})
+          assert sd==today,(sd,today)
+          assert validation.get('status')=='OK',validation
+          assets={str(r.get('serie')):r for r in live.get('experimental_assets',[])}
+          spb=assets.get('SPBLSCUP')
+          assert spb and str(spb.get('timestamp') or '')[:10]==today,spb
+          print('Se conserva snapshot validado de la misma sesión:',today,spb.get('precio_actual'),spb.get('retorno'))
+          PY
+          fi
+
           python scripts/build_dual_rolling30_monitor.py
           python scripts/patch_dual_rolling30_fx_operational.py
           python scripts/patch_dual_20260824_exact.py
@@ -91,6 +114,8 @@ jobs:
           print('DUAL ACTUAL VALIDADO', sd)
           print('Modelo A', dual['models']['qqq']['current'])
           print('Modelo B', dual['models']['new_tickers']['current'])
+          print('24/08 A', next(r for r in dual['models']['qqq']['history_operational'] if str(r.get('fecha'))[:10]=='2026-08-24'))
+          print('24/08 B', next(r for r in dual['models']['new_tickers']['history_operational'] if str(r.get('fecha'))[:10]=='2026-08-24'))
           PY
 
           git add public/data/live_market.json public/data/dual_rolling30_monitor.json data/rolling90/bcrp_pd04638_cache.csv
