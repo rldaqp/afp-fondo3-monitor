@@ -83,12 +83,13 @@ jobs:
           print('Modelo B', dual['models']['new_tickers']['current'])
           PY
 
-          git add public/data/live_market.json public/data/dual_rolling30_monitor.json
+          git add public/data/live_market.json public/data/dual_rolling30_monitor.json data/rolling90/bcrp_pd04638_cache.csv
           if git diff --cached --quiet; then
             echo "No hubo cambios en Profuturo."
           else
             git commit -m "Actualizar Profuturo con la sesion de mercado vigente"
-            git pull --rebase origin migracion-github-actions
+            git fetch origin migracion-github-actions
+            git rebase origin/migracion-github-actions
             git push origin HEAD:migracion-github-actions
           fi
 
