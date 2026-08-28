@@ -1,5 +1,5 @@
 {
-  "generated_at_lima": "2026-08-28T01:52:07.617825-05:00",
+  "generated_at_lima": "2026-08-28T05:56:22.206828-05:00",
   "fund": "PROFUTURO Fondo 3",
   "signal_date": "2026-08-27",
   "market_mode": "CIERRE DIARIO",
@@ -2099,7 +2099,7 @@
           "anchor_vc": 71.7441786,
           "base_vc": 71.56845947866222,
           "vc_estimated": 72.13537947140705,
-          "return_estimated": 0.007921366435361975,
+          "return_estimated": 0.0079213664353619,
           "signal": "SUBE",
           "actual_vc": null,
           "actual_return_daily": null,
@@ -3436,7 +3436,7 @@
           "error_vc": 0.7523797637701222,
           "error_pct": 1.0600012902525435,
           "direction_hit": false,
-          "source": "OPERACIONAL ROLLING30 · CIERRE · INCIDENTE DATOS DOCUMENTADO · INCIDENTE DATOS DOCUMENTADO · INCIDENTE DATOS DOCUMENTADO · INCIDENTE DATOS DOCUMENTADO · INCIDENTE DATOS DOCUMENTADO · INCIDENTE DATOS DOCUMENTADO",
+          "source": "OPERACIONAL ROLLING30 · CIERRE · INCIDENTE DATOS DOCUMENTADO · INCIDENTE DATOS DOCUMENTADO · INCIDENTE DATOS DOCUMENTADO · INCIDENTE DATOS DOCUMENTADO · INCIDENTE DATOS DOCUMENTADO · INCIDENTE DATOS DOCUMENTADO · INCIDENTE DATOS DOCUMENTADO",
           "quality_status": "EXCLUIR_SCORE",
           "quality_note": "Predicción operacional preservada, pero el cierre recibió CPER=38.76 y SPBLSCUP=500.00 por extracción inconsistente; además faltó la fila de factores 21/08 en la cadena. No representa limpiamente al modelo.",
           "include_in_score": false
@@ -3498,7 +3498,7 @@
           "anchor_vc": 71.7441786,
           "base_vc": 71.65606018829088,
           "vc_estimated": 72.16961896197206,
-          "return_estimated": 0.007166997073683663,
+          "return_estimated": 0.0071669970736836,
           "signal": "SUBE",
           "actual_vc": null,
           "actual_return_daily": null,
