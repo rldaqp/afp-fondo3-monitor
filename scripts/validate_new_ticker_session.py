@@ -64,46 +64,65 @@ def load_bcrp_history() -> pd.DataFrame:
 
 
 def normalize_historical_fx() -> dict:
-    """Corrige el FX histórico usado por ambos Rolling 30 con BCRP PD04638PD.
+    """Normaliza el FX histórico de ambos Rolling 30 con BCRP PD04638PD.
 
-    No se hardcodea el 24/08. Se reemplaza cada fecha para la que BCRP tiene dato
-    oficial. Así el 24/08 y la ventana de entrenamiento quedan coherentes con la
-    misma fuente oficial que usa el chequeo exacto.
+    No se hardcodea el 24/08. Dentro del tramo cubierto por la respuesta oficial
+    del BCRP se eliminan retornos heredados de otras fuentes y solo se conservan
+    fechas con dato oficial. Así una fecha BCRP n.d. no entra al entrenamiento
+    usando por accidente Yahoo/Google/otro CSV.
     """
     fx = load_bcrp_history()
     ret_map = fx.set_index("fecha")["ret_BCRP"]
     val_map = fx.set_index("fecha")["USD_PEN_BCRP"]
-    report = {"source": "BCRP PD04638PD · TC INTERBANCARIO VENTA · OFICIAL"}
+    coverage_start = pd.Timestamp(fx["fecha"].min()).normalize()
+    coverage_end = pd.Timestamp(fx["fecha"].max()).normalize()
+    report = {
+        "source": "BCRP PD04638PD · TC INTERBANCARIO VENTA · OFICIAL",
+        "coverage_start": coverage_start.date().isoformat(),
+        "coverage_end": coverage_end.date().isoformat(),
+        "rule": "En el tramo cubierto por BCRP solo entran fechas con retorno oficial; n.d. queda fuera del entrenamiento.",
+    }
 
     markets = pd.read_csv(MARKETS)
     md = pd.to_datetime(markets["fecha"], errors="coerce").dt.normalize()
     official_ret = md.map(ret_map)
     official_val = md.map(val_map)
+    covered = md.between(coverage_start, coverage_end)
     mask = official_ret.notna()
     before_24 = None
     after_24 = None
     focus = md.eq(pd.Timestamp("2026-08-24"))
     if focus.any() and "ret_USD_PEN" in markets.columns:
         before_24 = pd.to_numeric(markets.loc[focus, "ret_USD_PEN"], errors="coerce").iloc[-1]
+
+    # En cobertura BCRP no se deja sobrevivir un retorno proveniente de otra
+    # fuente. Primero se limpia y luego se cargan solo retornos oficiales.
+    markets.loc[covered, "ret_USD_PEN"] = np.nan
     markets.loc[mask, "ret_USD_PEN"] = official_ret.loc[mask].astype(float)
     if "USD_PEN" in markets.columns:
+        markets.loc[covered, "USD_PEN"] = np.nan
         markets.loc[official_val.notna(), "USD_PEN"] = official_val.loc[official_val.notna()].astype(float)
     if focus.any():
         after_24 = pd.to_numeric(markets.loc[focus, "ret_USD_PEN"], errors="coerce").iloc[-1]
     markets.to_csv(MARKETS, index=False)
-    report["markets_rows_overridden"] = int(mask.sum())
+    report["markets_official_rows"] = int(mask.sum())
+    report["markets_nd_rows_excluded"] = int((covered & official_ret.isna()).sum())
 
     if ALT_BASE.exists():
         base = pd.read_csv(ALT_BASE)
         bd = pd.to_datetime(base["fecha"], errors="coerce").dt.normalize()
         bret = bd.map(ret_map)
+        bcovered = bd.between(coverage_start, coverage_end)
         bmask = bret.notna()
         if "ret_USD_PEN" in base.columns:
+            base.loc[bcovered, "ret_USD_PEN"] = np.nan
             base.loc[bmask, "ret_USD_PEN"] = bret.loc[bmask].astype(float)
             base.to_csv(ALT_BASE, index=False)
-        report["new_tickers_base_rows_overridden"] = int(bmask.sum())
+        report["new_tickers_base_official_rows"] = int(bmask.sum())
+        report["new_tickers_base_nd_rows_excluded"] = int((bcovered & bret.isna()).sum())
     else:
-        report["new_tickers_base_rows_overridden"] = 0
+        report["new_tickers_base_official_rows"] = 0
+        report["new_tickers_base_nd_rows_excluded"] = 0
 
     fx24 = fx.loc[fx["fecha"].eq(pd.Timestamp("2026-08-24"))]
     report["focus_2026_08_24"] = {
