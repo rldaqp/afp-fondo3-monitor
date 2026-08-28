@@ -8,6 +8,7 @@ on:
       - ".github/workflows/rebuild-dual-v6-now.yml"
       - "scripts/build_dual_rolling30_monitor.py"
       - "scripts/patch_dual_rolling30_fx_operational.py"
+      - "scripts/patch_dual_20260824_exact.py"
       - "scripts/patch_google_rolling30_assets.py"
       - "scripts/validate_new_ticker_session.py"
       - "scripts/persist_dual_rolling30_shadow.py"
@@ -57,6 +58,8 @@ jobs:
           git reset --hard origin/migracion-github-actions
 
           cp public/data/live_market.json /tmp/live_before_rebuild.json
+          cp public/data/dual_rolling30_monitor.json /tmp/dual_before_rebuild.json
+          rm -f /tmp/dual_preserved
 
           python scripts/sync_sbs_official_latest.py
           python scripts/apply_sbs_reference_corrections.py
@@ -82,22 +85,47 @@ jobs:
               old['checked_at_lima']=datetime.now(ZoneInfo('America/Lima')).isoformat()
               old['note']=(f'Se conserva la sesión {old_date}: la consulta nueva solo devolvió {new_date}. El monitor no retrocede de sesión.')
               newp.write_text(json.dumps(old,ensure_ascii=False,indent=2),encoding='utf-8')
-              print('ANTI-REGRESION: restaurado',old_date,'en lugar de',new_date)
+              print('ANTI-REGRESION LIVE: restaurado',old_date,'en lugar de',new_date)
           else:
-              print('Sesión vigente:',new_date,'; previa:',old_date)
+              print('Sesión live vigente:',new_date,'; previa:',old_date)
           PY
 
           # Los nuevos tickers se validan antes de entrar al modelo. Google se
           # contrasta con Yahoo cuando existe equivalente; SPBLSCUP se bloquea si
           # presenta una divergencia no corroborada. Nunca se sustituye por 0%.
           python scripts/patch_google_rolling30_assets.py || true
-          python scripts/validate_new_ticker_session.py
+          python scripts/validate_new_ticker_session.py || true
 
           python scripts/build_dual_rolling30_monitor.py
           # Regla FX de ambos Rolling30: BCRP PD04638PD si ya existe la fecha;
           # si no, midpoint TuCambista provisional. Yahoo PEN=X queda excluido.
           python scripts/patch_dual_rolling30_fx_operational.py
           python scripts/persist_dual_rolling30_shadow.py
+
+          # Protección adicional: un rebuild pesado nunca puede sustituir un dual
+          # ya validado de una sesión más nueva por otro construido con T-1.
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          oldp=Path('/tmp/dual_before_rebuild.json')
+          newp=Path('public/data/dual_rolling30_monitor.json')
+          old=json.loads(oldp.read_text(encoding='utf-8'))
+          new=json.loads(newp.read_text(encoding='utf-8'))
+          od=str(old.get('signal_date') or '')[:10]
+          nd=str(new.get('signal_date') or '')[:10]
+          if od and nd and od > nd:
+              newp.write_text(json.dumps(old,ensure_ascii=False,indent=2),encoding='utf-8')
+              Path('/tmp/dual_preserved').write_text(od,encoding='utf-8')
+              print('ANTI-REGRESION DUAL: restaurado',od,'en lugar de',nd)
+          else:
+              print('Dual reconstruido vigente:',nd,'; previo:',od)
+          PY
+
+          # El 24/08 tuvo entradas operacionales contaminadas. El shadow conserva
+          # el pronóstico realmente emitido y excluido del score; el visor muestra
+          # el recálculo exacto reproducible con cierres correctos.
+          python scripts/patch_dual_20260824_exact.py
 
           python - <<'PY'
           import json
@@ -107,14 +135,29 @@ jobs:
           p=Path('public/data/dual_rolling30_monitor.json')
           live=json.loads(Path('public/data/live_market.json').read_text(encoding='utf-8'))
           d=json.loads(p.read_text(encoding='utf-8'))
+          preserved=Path('/tmp/dual_preserved').exists()
           assert set(d['models'])=={'qqq','new_tickers'}
-          assert d['signal_date']==live['signal_date'],(d['signal_date'],live['signal_date'])
+          if preserved:
+              assert str(d['signal_date'])[:10] > str(live['signal_date'])[:10],(d['signal_date'],live['signal_date'])
+          else:
+              assert d['signal_date']==live['signal_date'],(d['signal_date'],live['signal_date'])
           assert float(d['latest_sbs']['vc'])>0
+          assert d.get('historical_corrections',{}).get('2026-08-24',{}).get('status')=='CORREGIDO'
+
+          expected24={
+              'qqq': (71.58040482180978,-0.006212591254568605),
+              'new_tickers': (71.24786080890082,-0.010351304939247876),
+          }
           for k in ('qqq','new_tickers'):
               h=d['models'][k].get('history_one_step',[])
               assert len(h)>=30,(k,len(h))
               assert all(int(r.get('horizon_sessions',1))==1 for r in h),k
               assert len(d['models'][k].get('intraday_assets',[]))==6,k
+              row24=next(r for r in d['models'][k].get('history_operational',[]) if str(r.get('fecha'))[:10]=='2026-08-24')
+              ev,er=expected24[k]
+              assert row24.get('quality_status')=='CORREGIDO_EXACTO',(k,row24)
+              assert abs(float(row24['vc_estimated'])-ev)<1e-10,(k,row24)
+              assert abs(float(row24['return_estimated'])-er)<1e-12,(k,row24)
 
           def fx(k,name):
               return next(a for a in d['models'][k]['intraday_assets'] if str(a.get('serie'))==name)
@@ -128,12 +171,13 @@ jobs:
           assert 'YAHOO' not in str(a.get('estado','')).upper(),a
           assert 'YAHOO' not in str(b.get('estado','')).upper(),b
 
-          validation=live.get('new_ticker_validation',{})
-          if validation.get('status') != 'OK':
-              raise RuntimeError('Nuevos tickers no validados: '+json.dumps(validation,ensure_ascii=False))
+          if not preserved:
+              validation=live.get('new_ticker_validation',{})
+              if validation.get('status') != 'OK':
+                  raise RuntimeError('Nuevos tickers no validados: '+json.dumps(validation,ensure_ascii=False))
 
-          # El incidente del 24/08 se conserva como pronóstico realmente emitido,
-          # pero queda fuera del score limpio por datos de entrada comprobados.
+          # El incidente original del 24/08 queda documentado en shadow y fuera del
+          # score limpio; no se borra esa evidencia histórica.
           shadow=Path('data/rolling90/dual_rolling30_shadow.csv')
           if shadow.exists():
               sh=pd.read_csv(shadow)
@@ -148,7 +192,7 @@ jobs:
               'note':'El gráfico diario usa como base el VC SBS real de la sesión inmediatamente anterior. Blind3 queda solo como validación agregada.'
           }
           p.write_text(json.dumps(d,ensure_ascii=False,indent=2),encoding='utf-8')
-          print('V6 VALIDADO', d['signal_date'], d['generated_at_lima'], d['shared_fx_operational'])
+          print('V6 VALIDADO',d['signal_date'],'live=',live['signal_date'],'dual_preservado=',preserved,d['shared_fx_operational'])
           PY
 
           git add data/rolling90/sbs_profuturo_f3.csv data/rolling90/dual_rolling30_shadow.csv public/data/sbs_sync_status.json public/data/live_market.json public/data/dual_rolling30_monitor.json
@@ -158,6 +202,8 @@ jobs:
           git push origin HEAD:migracion-github-actions
 
       - uses: actions/configure-pages@v5
+        with:
+          enablement: true
       - uses: actions/upload-pages-artifact@v3
         with:
           path: public
