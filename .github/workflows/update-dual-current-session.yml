@@ -7,7 +7,7 @@ on:
       - migracion-github-actions
     paths:
       - ".github/workflows/update-dual-current-session.yml"
-      - "scripts/refresh_profuturo_current_session_v2.py"
+      - "scripts/refresh_profuturo_current_session_v3.py"
   workflow_run:
     workflows:
       - "Actualizar mercado intradia Fondo 3"
@@ -56,7 +56,7 @@ jobs:
           git fetch origin migracion-github-actions
           git reset --hard origin/migracion-github-actions
 
-          python scripts/refresh_profuturo_current_session_v2.py
+          python scripts/refresh_profuturo_current_session_v3.py
           python scripts/build_dual_rolling30_monitor.py
           python scripts/patch_dual_rolling30_fx_operational.py
 
