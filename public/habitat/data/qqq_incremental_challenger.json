@@ -1,5 +1,5 @@
 {
-  "generated_at_lima": "2026-08-28T06:32:44.709084-05:00",
+  "generated_at_lima": "2026-08-28T12:28:25.482314-05:00",
   "signal_date": "2026-08-27",
   "mode": "CIERRE DIARIO",
   "market_open": false,
@@ -8,19 +8,19 @@
   "vc_base": 33.53263989864718,
   "official": {
     "model": "OLS rolling 90 oficial Hábitat",
-    "return_estimated": 0.005274951352164118,
+    "return_estimated": 0.004622387701650165,
     "signal": "SUBE",
-    "vc_estimated": 33.70952294282218
+    "vc_estimated": 33.687640760918555
   },
   "challenger": {
     "model": "OLS rolling 90 Hábitat + QQQ incremental residualizado",
-    "return_estimated": 0.0123472590574362,
+    "return_estimated": 0.005966335440403158,
     "signal": "SUBE",
-    "vc_estimated": 33.9466760903555
+    "vc_estimated": 33.732706876484755
   },
   "qqq": {
     "return": 0.01369187666225713,
-    "residual": 0.0028448146397956446,
+    "residual": 0.004616660230182876,
     "previous_close": 711.3699951171875,
     "current_price": 721.1099853515625,
     "source": "CIERRE DIARIO YAHOO",
@@ -36,8 +36,8 @@
   },
   "comparison": {
     "same_signal": true,
-    "vc_difference": 0.23715314753331995,
-    "return_difference_pp": 0.7072307705272081
+    "vc_difference": 0.04506611556620044,
+    "return_difference_pp": 0.13439477387529927
   },
   "training": {
     "window": 90,
