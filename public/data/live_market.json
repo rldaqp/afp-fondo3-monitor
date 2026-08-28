@@ -1,5 +1,5 @@
 {
-  "generated_at_lima": "2026-08-28T05:55:58.333818-05:00",
+  "generated_at_lima": "2026-08-28T17:09:04.882522-05:00",
   "mode": "CIERRE DIARIO",
   "market_open": false,
   "signal_date": "2026-08-27",
@@ -76,20 +76,20 @@
     {
       "serie": "USD_PEN",
       "ticker": "BCRP PD04646PD",
-      "timestamp": "2026-08-26",
+      "timestamp": "2026-08-27",
       "precio_anterior": 3.344,
-      "precio_actual": 3.344,
-      "retorno": 0.0,
-      "retorno_modelo": 0.0,
-      "estado": "BCRP REZAGADO · MODELO USA 0 %",
+      "precio_actual": 3.346,
+      "retorno": 0.0005980861244019309,
+      "retorno_modelo": 0.0005980861244019309,
+      "estado": "BCRP MISMA FECHA · USADO POR MODELO",
       "usado_modelo": true
     }
   ],
   "action": "CIERRE",
   "engine": "LIVE INDEPENDIENTE",
-  "fx_rule": "Histórico/entrenamiento: BCRP. Predicción: BCRP si existe; si está rezagado, Yahoo PEN=X provisional; 0 % solo si ambas fuentes faltan.",
-  "fx_source": "YAHOO PEN=X PROVISIONAL",
-  "fx_provisional": true,
+  "fx_rule": "BCRP si existe; Yahoo PEN=X solo como respaldo provisional cuando BCRP aún no publicó la fecha.",
+  "fx_source": "BCRP",
+  "fx_provisional": false,
   "experimental_assets": [
     {
       "serie": ".INX",
@@ -151,25 +151,25 @@
       "serie": "SPBLSCUP",
       "ticker": "SPBLSCUP:INDEXSP",
       "timestamp": "2026-08-27",
-      "precio_anterior": 462.25,
-      "precio_actual": 461.34,
-      "retorno": -0.0019686316928069214,
-      "retorno_modelo": -0.0019686316928069214,
+      "precio_anterior": 461.34,
+      "precio_actual": 454.7,
+      "retorno": -0.014392855594572262,
+      "retorno_modelo": -0.014392855594572262,
       "estado": "GOOGLE EXACTO",
       "usado_modelo": true,
       "validado_modelo": true,
-      "google_stamp": "Aug 27, 5:25:35 PM UTC-4",
+      "google_stamp": "Aug 28, 5:30:20 PM UTC-4",
       "error_validacion": null
     },
     {
       "serie": "USD/PEN",
       "ticker": "USD/PEN",
-      "timestamp": "2026-08-26",
+      "timestamp": "2026-08-27",
       "precio_anterior": 3.344,
-      "precio_actual": 3.344,
-      "retorno": 0.0,
+      "precio_actual": 3.346,
+      "retorno": 0.0005980861244019309,
       "retorno_modelo": null,
-      "estado": "BCRP REZAGADO · MODELO USA 0 % · NUEVO 60/30 EXPERIMENTAL",
+      "estado": "BCRP MISMA FECHA · USADO POR MODELO · NUEVO 60/30 EXPERIMENTAL",
       "usado_modelo": false
     }
   ],
@@ -226,10 +226,10 @@
     },
     "SPBLSCUP": {
       "quote": "SPBLSCUP:INDEXSP",
-      "price": 461.34,
-      "previous": 462.25,
-      "return": -0.0019686316928069214,
-      "stamp": "Aug 27, 5:25:35 PM UTC-4",
+      "price": 454.7,
+      "previous": 461.34,
+      "return": -0.014392855594572262,
+      "stamp": "Aug 28, 5:30:20 PM UTC-4",
       "validation": "GOOGLE EXACTO",
       "valid_for_model": true
     }
@@ -239,5 +239,16 @@
     "status": "OK",
     "problems": [],
     "rule": "No se usa un cierre dudoso para Modelo B; se conserva la última sesión completa."
+  },
+  "historical_fx_validation": {
+    "source": "BCRP PD04638PD · TC INTERBANCARIO VENTA · OFICIAL",
+    "markets_rows_overridden": 89,
+    "new_tickers_base_rows_overridden": 81,
+    "focus_2026_08_24": {
+      "stored_return_before": 0.0005979073243647,
+      "official_return_after": -4.267850283590224e-05,
+      "official_value": 3.34714285714286,
+      "corrected": true
+    }
   }
 }

@@ -1,5 +1,5 @@
 {
-  "generated_at_lima": "2026-08-28T12:28:24.728643-05:00",
+  "generated_at_lima": "2026-08-28T17:09:08.927033-05:00",
   "mode": "CIERRE DIARIO",
   "market_open": false,
   "signal_date": "2026-08-27",
@@ -77,12 +77,12 @@
     {
       "serie": "USD_PEN",
       "ticker": "BCRP PD04646PD",
-      "timestamp": "2026-08-26",
+      "timestamp": "2026-08-27",
       "precio_anterior": 3.344,
-      "precio_actual": 3.344,
+      "precio_actual": 3.346,
       "retorno": 0.0005980861244019309,
       "retorno_modelo": 0.0005980861244019309,
-      "estado": "BCRP REZAGADO · MODELO USA 0 %",
+      "estado": "BCRP MISMA FECHA · USADO POR MODELO",
       "usado_modelo": true
     }
   ],
@@ -91,7 +91,7 @@
   "warning": null,
   "fx_source": "BCRP",
   "fx_provisional": false,
-  "fx_rule": "Histórico/entrenamiento: BCRP. Predicción: BCRP si existe; si está rezagado, Yahoo PEN=X provisional; 0 % solo si ambas fuentes faltan.",
+  "fx_rule": "BCRP si existe; Yahoo PEN=X solo como respaldo provisional cuando BCRP aún no publicó la fecha.",
   "model_snapshot_source": "PREDICCION OLS EXACTA DE HÁBITAT",
   "model_snapshot_date": "2026-08-27",
   "note": "Cierre diario de Hábitat alineado con el OLS exacto del mismo día."
