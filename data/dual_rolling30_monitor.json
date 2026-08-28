@@ -1971,7 +1971,28 @@
           "usado_modelo": true
         }
       ],
-      "source_note": "Modelo A: SPY, EEM, EPU, MCHI, QQQ y USD/PEN. Regla FX común: BCRP PD04638PD si existe dato oficial de la fecha; si BCRP aún no publicó, TuCambista midpoint provisional. Yahoo PEN=X no entra en los dos Rolling 30."
+      "source_note": "Modelo A: SPY, EEM, EPU, MCHI, QQQ y USD/PEN. Regla FX común: BCRP PD04638PD si existe dato oficial de la fecha; si BCRP aún no publicó, TuCambista midpoint provisional. Yahoo PEN=X no entra en los dos Rolling 30.",
+      "history_operational": [
+        {
+          "fecha": "2026-08-24",
+          "base_vc": 72.02788462793437,
+          "vc_estimated": 71.58040482180978,
+          "return_estimated": -0.006212591254568605,
+          "signal": "BAJA",
+          "actual_vc": 70.9791366,
+          "actual_return_daily": -0.011513122467057602,
+          "actual_return": -0.011513122467057602,
+          "anchor_date": "2026-08-20",
+          "anchor_vc": 71.0427094,
+          "error_vc": 0.6012682218097751,
+          "error_pct": 0.847105573005491,
+          "source": "RECALCULO EXACTO POST-INCIDENTE 24/08 · CIERRES DIARIOS VALIDOS · BCRP PD04638PD",
+          "quality_status": "CORREGIDO_EXACTO",
+          "quality_note": "Se sustituye en el visor la fila operacional contaminada del 24/08. El recálculo usa ancla SBS 20/08, encadena 21 y 24 sin conocer sus VC, y usa cierres correctos de factores y BCRP oficial.",
+          "include_in_score": true,
+          "correction_basis": "analysis/recheck_20260824_exact.json"
+        }
+      ]
     },
     "new_tickers": {
       "key": "new_tickers",
@@ -3226,7 +3247,28 @@
           "validado_modelo": true
         }
       ],
-      "source_note": "Modelo B: .INX, CPER, EEM, NDX, SPBLSCUP y USD/PEN. Regla FX común: BCRP PD04638PD si existe dato oficial de la fecha; si BCRP aún no publicó, TuCambista midpoint provisional. Yahoo PEN=X no entra en los dos Rolling 30."
+      "source_note": "Modelo B: .INX, CPER, EEM, NDX, SPBLSCUP y USD/PEN. Regla FX común: BCRP PD04638PD si existe dato oficial de la fecha; si BCRP aún no publicó, TuCambista midpoint provisional. Yahoo PEN=X no entra en los dos Rolling 30.",
+      "history_operational": [
+        {
+          "fecha": "2026-08-24",
+          "base_vc": 71.99308316627153,
+          "vc_estimated": 71.24786080890082,
+          "return_estimated": -0.010351304939247876,
+          "signal": "BAJA",
+          "actual_vc": 70.9791366,
+          "actual_return_daily": -0.011513122467057602,
+          "actual_return": -0.011513122467057602,
+          "anchor_date": "2026-08-20",
+          "anchor_vc": 71.0427094,
+          "error_vc": 0.2687242089008208,
+          "error_pct": 0.37859605198524715,
+          "source": "RECALCULO EXACTO POST-INCIDENTE 24/08 · CIERRES DIARIOS VALIDOS · BCRP PD04638PD",
+          "quality_status": "CORREGIDO_EXACTO",
+          "quality_note": "Se sustituye en el visor la fila operacional contaminada del 24/08. El recálculo usa ancla SBS 20/08, encadena 21 y 24 sin conocer sus VC, y usa cierres correctos de factores y BCRP oficial.",
+          "include_in_score": true,
+          "correction_basis": "analysis/recheck_20260824_exact.json"
+        }
+      ]
     }
   },
   "blind3": {
@@ -3303,5 +3345,30 @@
     "source": "TUCAMBISTA MIDPOINT (3.342/3.369) · PROVISIONAL · BASE BCRP PD04638PD · API 2026-08-27",
     "provisional": true,
     "rule": "BCRP PD04638PD oficial de la fecha; si todavía no existe, TuCambista midpoint provisional. Mismo USD/PEN para ambos Rolling 30; Yahoo PEN=X excluido."
+  },
+  "historical_corrections": {
+    "2026-08-24": {
+      "status": "CORREGIDO",
+      "reason": "Incidente documentado en datos operacionales del 24/08, especialmente CPER y SPBLSCUP del Modelo B y continuidad de la cadena 21→24.",
+      "basis": "analysis/recheck_20260824_exact.json",
+      "anchor": {
+        "fecha": "2026-08-20",
+        "vc": 71.0427094
+      },
+      "sbs_actual_21": 71.8058461,
+      "sbs_actual_24": 70.9791366,
+      "models": {
+        "qqq": {
+          "vc_estimated": 71.58040482180978,
+          "return_estimated": -0.006212591254568605,
+          "error_pct_vs_sbs_24": 0.847105573005491
+        },
+        "new_tickers": {
+          "vc_estimated": 71.24786080890082,
+          "return_estimated": -0.010351304939247876,
+          "error_pct_vs_sbs_24": 0.37859605198524715
+        }
+      }
+    }
   }
 }
