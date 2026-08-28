@@ -1,0 +1,118 @@
+name: Actualizar dual Profuturo sesion actual
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - migracion-github-actions
+    paths:
+      - ".github/workflows/update-dual-current-session.yml"
+      - "scripts/refresh_profuturo_current_session.py"
+  workflow_run:
+    workflows:
+      - "Actualizar mercado intradia Fondo 3"
+    types:
+      - completed
+
+permissions:
+  contents: write
+
+concurrency:
+  group: fondo3-data-writes
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Descargar repositorio
+        uses: actions/checkout@v4
+        with:
+          ref: migracion-github-actions
+          fetch-depth: 0
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: requirements-live.txt
+
+      - name: Instalar dependencias
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements-live.txt
+
+      - name: Refrescar cierre y reconstruir Rolling 30
+        env:
+          PYTHONUTF8: "1"
+          PYTHONIOENCODING: "utf-8"
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git fetch origin migracion-github-actions
+          git reset --hard origin/migracion-github-actions
+
+          # Después del cierre, markets.csv puede seguir en T-1 aunque Yahoo ya
+          # publique T. Este paso reconstruye el snapshot de T directamente con
+          # cierres diarios de la sesión actual y evita mezclar fechas.
+          python scripts/refresh_profuturo_current_session.py
+
+          # El visor raíz lee dual_rolling30_monitor.json. Por eso el dual debe
+          # recalcularse después de cada snapshot y no solo en el workflow pesado.
+          python scripts/build_dual_rolling30_monitor.py
+          python scripts/patch_dual_rolling30_fx_operational.py
+
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          live = json.loads(Path('public/data/live_market.json').read_text(encoding='utf-8'))
+          dual = json.loads(Path('public/data/dual_rolling30_monitor.json').read_text(encoding='utf-8'))
+          sd = str(live.get('signal_date') or '')[:10]
+          assert sd, live
+          assert str(dual.get('signal_date') or '')[:10] == sd, (live, dual)
+          assert set(dual.get('models', {})) == {'qqq', 'new_tickers'}, dual
+          for key in ('qqq', 'new_tickers'):
+              cur = dual['models'][key]['current']
+              assert str(cur.get('fecha') or '')[:10] == sd, (key, cur, sd)
+              assert float(cur['vc_estimated']) > 0, (key, cur)
+              assert cur.get('signal') in {'SUBE', 'NEUTRO', 'BAJA'}, (key, cur)
+          # Todos los factores mostrados deben pertenecer a la misma sesión.
+          for key in ('qqq', 'new_tickers'):
+              for row in dual['models'][key].get('intraday_assets', []):
+                  ts = str(row.get('timestamp') or '')[:10]
+                  if ts and row.get('serie') not in {'USD_PEN', 'USD/PEN'}:
+                      assert ts == sd, (key, row, sd)
+          print('DUAL ACTUAL VALIDADO', sd)
+          print('Modelo A', dual['models']['qqq']['current'])
+          print('Modelo B', dual['models']['new_tickers']['current'])
+          PY
+
+          git add public/data/live_market.json public/data/dual_rolling30_monitor.json
+          if git diff --cached --quiet; then
+            echo "No hubo cambios en Profuturo."
+          else
+            git commit -m "Actualizar Profuturo con la sesion de mercado vigente"
+            git pull --rebase origin migracion-github-actions
+            git push origin HEAD:migracion-github-actions
+          fi
+
+          tmp="$(mktemp -d)"
+          git clone --depth 1 --branch gh-pages "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" "$tmp/gh-pages"
+          mkdir -p "$tmp/gh-pages/data"
+          cp public/data/live_market.json "$tmp/gh-pages/data/live_market.json"
+          cp public/data/dual_rolling30_monitor.json "$tmp/gh-pages/data/dual_rolling30_monitor.json"
+          cd "$tmp/gh-pages"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/live_market.json data/dual_rolling30_monitor.json
+          if git diff --cached --quiet; then
+            echo "gh-pages ya está vigente."
+          else
+            git commit -m "Publicar Profuturo con sesion vigente"
+            git push origin HEAD:gh-pages
+          fi
