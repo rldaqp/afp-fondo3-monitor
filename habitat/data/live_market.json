@@ -1,11 +1,11 @@
 {
-  "generated_at_lima": "2026-08-28T01:19:22.008321-05:00",
+  "generated_at_lima": "2026-08-28T17:45:39.964998-05:00",
   "mode": "CIERRE DIARIO",
   "market_open": false,
   "signal_date": "2026-08-27",
   "vc_base": 33.53263989864718,
-  "vc_estimated": 33.70952294282218,
-  "return_estimated": 0.005274951352164106,
+  "vc_estimated": 33.687640760918555,
+  "return_estimated": 0.004622387701650165,
   "signal": "SUBE",
   "assets": [
     {
@@ -77,21 +77,21 @@
     {
       "serie": "USD_PEN",
       "ticker": "BCRP PD04646PD",
-      "timestamp": "2026-08-26",
+      "timestamp": "2026-08-27",
       "precio_anterior": 3.344,
-      "precio_actual": 3.344,
-      "retorno": 0.01973705846067708,
-      "retorno_modelo": 0.01973705846067708,
-      "estado": "BCRP REZAGADO · MODELO USA 0 %",
+      "precio_actual": 3.346,
+      "retorno": 0.0005980861244019309,
+      "retorno_modelo": 0.0005980861244019309,
+      "estado": "BCRP MISMA FECHA · USADO POR MODELO",
       "usado_modelo": true
     }
   ],
   "action": "CIERRE",
   "engine": "LIVE HABITAT INDEPENDIENTE",
   "warning": null,
-  "fx_source": "YAHOO PEN=X PROVISIONAL",
-  "fx_provisional": true,
-  "fx_rule": "Histórico/entrenamiento: BCRP. Predicción: BCRP si existe; si está rezagado, Yahoo PEN=X provisional; 0 % solo si ambas fuentes faltan.",
+  "fx_source": "BCRP",
+  "fx_provisional": false,
+  "fx_rule": "BCRP si existe; Yahoo PEN=X solo como respaldo provisional cuando BCRP aún no publicó la fecha.",
   "model_snapshot_source": "PREDICCION OLS EXACTA DE HÁBITAT",
   "model_snapshot_date": "2026-08-27",
   "note": "Cierre diario de Hábitat alineado con el OLS exacto del mismo día."
