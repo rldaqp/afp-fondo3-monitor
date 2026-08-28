@@ -1,5 +1,5 @@
 {
-  "generated_at_lima": "2026-08-28T17:10:11.304384-05:00",
+  "generated_at_lima": "2026-08-28T17:11:48.750515-05:00",
   "mode": "CIERRE DIARIO",
   "market_open": false,
   "signal_date": "2026-08-27",
@@ -242,8 +242,13 @@
   },
   "historical_fx_validation": {
     "source": "BCRP PD04638PD · TC INTERBANCARIO VENTA · OFICIAL",
-    "markets_rows_overridden": 89,
-    "new_tickers_base_rows_overridden": 81,
+    "coverage_start": "2026-04-15",
+    "coverage_end": "2026-08-27",
+    "rule": "En el tramo cubierto por BCRP solo entran fechas con retorno oficial; n.d. queda fuera del entrenamiento.",
+    "markets_official_rows": 89,
+    "markets_nd_rows_excluded": 11,
+    "new_tickers_base_official_rows": 81,
+    "new_tickers_base_nd_rows_excluded": 2,
     "focus_2026_08_24": {
       "stored_return_before": 0.0005979073243647,
       "official_return_after": -4.267850283590224e-05,
