@@ -1,0 +1,94 @@
+name: Reparar Profuturo 24-08 y publicar
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - migracion-github-actions
+    paths:
+      - ".github/workflows/repair-profuturo-20260824-and-deploy.yml"
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: fondo3-repair-pages
+  cancel-in-progress: true
+
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Descargar repositorio
+        uses: actions/checkout@v4
+        with:
+          ref: migracion-github-actions
+          fetch-depth: 0
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Corregir 24 de agosto y validar sesión visible
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git fetch origin migracion-github-actions
+          git reset --hard origin/migracion-github-actions
+
+          python scripts/patch_dual_20260824_exact.py
+
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          p=Path('public/data/dual_rolling30_monitor.json')
+          d=json.loads(p.read_text(encoding='utf-8'))
+          assert d['signal_date']=='2026-08-28', d['signal_date']
+          corr=d.get('historical_corrections',{}).get('2026-08-24',{})
+          assert corr.get('status')=='CORREGIDO', corr
+
+          expected={
+              'qqq': (71.58040482180978,-0.006212591254568605),
+              'new_tickers': (71.24786080890082,-0.010351304939247876),
+          }
+          for k,(vc,ret) in expected.items():
+              rows=[r for r in d['models'][k].get('history_operational',[]) if str(r.get('fecha'))[:10]=='2026-08-24']
+              assert len(rows)==1,(k,rows)
+              r=rows[0]
+              assert abs(float(r['vc_estimated'])-vc)<1e-10,(k,r)
+              assert abs(float(r['return_estimated'])-ret)<1e-12,(k,r)
+              assert abs(float(r['actual_vc'])-70.9791366)<1e-10,(k,r)
+              assert r.get('quality_status')=='CORREGIDO_EXACTO',(k,r)
+          print('REPARACION 24/08 VALIDADA')
+          print(json.dumps(corr,ensure_ascii=False,indent=2))
+          PY
+
+          git add public/data/dual_rolling30_monitor.json
+          if ! git diff --cached --quiet; then
+            git commit -m "Corregir histórico Profuturo del 24 de agosto"
+            git fetch origin migracion-github-actions
+            git rebase origin/migracion-github-actions
+            git push origin HEAD:migracion-github-actions
+          fi
+
+      - name: Configurar Pages
+        uses: actions/configure-pages@v5
+        with:
+          enablement: true
+
+      - name: Subir sitio reparado
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./public
+
+      - name: Publicar sitio reparado
+        id: deployment
+        uses: actions/deploy-pages@v4
