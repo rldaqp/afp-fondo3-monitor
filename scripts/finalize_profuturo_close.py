@@ -68,17 +68,17 @@ def _parse_tucambista(text: str) -> tuple[float, float]:
 def tucambista_quote(day: pd.Timestamp) -> dict:
     key = day.strftime("%Y-%m-%d")
     url = _tucambista_url(day)
+    verified = TUCAMBISTA_VERIFIED.get(key)
+    if verified:
+        buy, sell = float(verified["buy"]), float(verified["sell"])
+        return {"buy":buy, "sell":sell, "midpoint":(buy+sell)/2.0, "source":"TUCAMBISTA VERIFICADO POR FECHA", "url":url}
     try:
         r = requests.get(url, timeout=15, headers={"User-Agent":"Mozilla/5.0 Chrome/131 Safari/537.36", "Accept-Language":"es-PE,es;q=0.9"})
         r.raise_for_status()
         buy, sell = _parse_tucambista(r.text)
         source = "TUCAMBISTA WEB"
     except Exception as exc:
-        verified = TUCAMBISTA_VERIFIED.get(key)
-        if not verified:
-            raise RuntimeError(f"TuCambista no disponible para {key}: {exc}") from exc
-        buy, sell = float(verified["buy"]), float(verified["sell"])
-        source = "TUCAMBISTA VERIFICADO"
+        raise RuntimeError(f"TuCambista no disponible para {key}: {exc}") from exc
     return {"buy":buy, "sell":sell, "midpoint":(buy+sell)/2.0, "source":source, "url":url}
 
 
@@ -111,11 +111,11 @@ def apply_tucambista(live: dict, signal_date: pd.Timestamp) -> None:
         live["fx_source"], live["fx_provisional"] = "BCRP", False
         return
     quote = tucambista_quote(signal_date)
-    previous = float(fx.get("precio_actual") or fx.get("precio_anterior"))
+    previous = float(fx.get("precio_anterior") or fx.get("precio_actual"))
     current = float(quote["midpoint"])
     ret = current/previous - 1.0
     fx.update({"ticker":"TUCAMBISTA","timestamp":signal_date.strftime("%Y-%m-%d"),"precio_anterior":previous,"precio_actual":current,"retorno":ret,"retorno_modelo":ret,"estado":"TUCAMBISTA MIDPOINT · MISMO DIA · USADO POR MODELO","usado_modelo":True})
-    live.update({"fx_source":"TUCAMBISTA MIDPOINT","fx_provisional":True,"fx_buy":quote["buy"],"fx_sell":quote["sell"],"fx_midpoint":quote["midpoint"],"fx_url":quote["url"],"fx_rule":"BCRP para la fecha cuando existe; si BCRP aun no publica, TuCambista midpoint (Compra+Venta)/2 del mismo dia. Yahoo no se usa para USD/PEN."})
+    live.update({"fx_source":"TUCAMBISTA MIDPOINT","fx_provisional":True,"fx_buy":quote["buy"],"fx_sell":quote["sell"],"fx_midpoint":quote["midpoint"],"fx_quote_source":quote["source"],"fx_url":quote["url"],"fx_rule":"BCRP para la fecha cuando existe; si BCRP aun no publica, TuCambista midpoint (Compra+Venta)/2 del mismo dia. Yahoo no se usa para USD/PEN."})
 
 
 def predict(beta: dict, values: dict[str,float]) -> float:
@@ -199,7 +199,7 @@ def main() -> None:
     recalc_chain(live, latest, signal_date)
     finalize_experimental(live, signal_date)
     live["finalized_at_lima"] = datetime.now(LIMA).isoformat()
-    live["finalizer_version"] = "tucambista-final-close-v2"
+    live["finalizer_version"] = "tucambista-final-close-v3"
     LIVE_PATH.write_text(json.dumps(live,ensure_ascii=False,indent=2),encoding="utf-8")
     print(json.dumps({"signal_date":live.get("signal_date"),"fx_source":live.get("fx_source"),"fx_midpoint":live.get("fx_midpoint"),"vc_anchor_date":live.get("vc_anchor_date"),"vc_estimated":live.get("vc_estimated"),"return_estimated":live.get("return_estimated"),"signal":live.get("signal"),"new_ticker_validation":live.get("new_ticker_validation")},ensure_ascii=False,indent=2))
 
