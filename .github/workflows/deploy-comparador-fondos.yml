@@ -1,0 +1,54 @@
+name: Publicar comparador Fondo 3
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - migracion-github-actions
+    paths:
+      - ".github/workflows/deploy-comparador-fondos.yml"
+      - "public/comparador-fondos/**"
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages-static-deploy
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Descargar repositorio
+        uses: actions/checkout@v4
+        with:
+          ref: migracion-github-actions
+
+      - name: Validar comparador y series SBS
+        run: |
+          test -s public/comparador-fondos/index.html
+          test -s public/data/series.json
+          test -s public/habitat/data/series.json
+          grep -q "Si hubieras invertido S/10,000" public/comparador-fondos/index.html
+          grep -q "../data/series.json" public/comparador-fondos/index.html
+          grep -q "../habitat/data/series.json" public/comparador-fondos/index.html
+          grep -q "Hábitat" public/comparador-fondos/index.html
+          grep -q "Profuturo" public/comparador-fondos/index.html
+
+      - name: Configurar GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Subir sitio completo
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: public
+
+      - name: Publicar comparador
+        id: deployment
+        uses: actions/deploy-pages@v4
