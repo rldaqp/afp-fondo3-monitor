@@ -13,6 +13,7 @@ on:
       - "scripts/update_live_market_hybrid.py"
       - "scripts/patch_google_rolling30_assets.py"
       - "scripts/validate_new_ticker_session.py"
+      - "scripts/finalize_profuturo_close.py"
       - "scripts/build_dual_rolling30_monitor.py"
       - "scripts/build_dual_rolling30_resilient.py"
       - "scripts/patch_dual_rolling30_fx_operational.py"
@@ -72,13 +73,15 @@ jobs:
           python scripts/apply_sbs_reference_corrections.py
           python scripts/update_live_market_hybrid.py
           python scripts/patch_google_rolling30_assets.py || echo "Google Finance parcial; se conserva el respaldo vigente para este corte."
-          python scripts/validate_new_ticker_session.py
+          python scripts/validate_new_ticker_session.py || true
 
-          # Si un factor exclusivo del Modelo B aún no está validado, el Modelo A
-          # se actualiza y el Modelo B conserva su última sesión completa. Nunca se
-          # sustituye un cierre dudoso por 0% ni se reutiliza una fila invalidada.
+          # Una sesión ya cerrada se finaliza con cierres diarios exactos y
+          # TuCambista de la misma fecha. Así el ciclo de 5 minutos no puede
+          # reintroducir capturas 15:55 ni el USD/PEN de otro día.
+          python scripts/finalize_profuturo_close.py
+
           python scripts/build_dual_rolling30_resilient.py
-          python scripts/patch_dual_rolling30_fx_operational.py || echo "FX adicional no disponible; se conserva el FX común del constructor dual."
+          python scripts/patch_dual_rolling30_fx_operational.py
           python scripts/persist_dual_rolling30_shadow.py
 
           python - <<'PY'
@@ -94,7 +97,8 @@ jobs:
           assert dual['signal_date'] == live['signal_date'], (dual['signal_date'], live['signal_date'])
           assert float(dual['latest_sbs']['vc']) > 0
           assert status['source'].startswith('SBS OFICIAL')
-          assert live.get('new_ticker_validation', {}).get('status') in {'OK', 'PENDIENTE/BLOQUEADO'}
+          validation = live.get('new_ticker_validation', {})
+          assert validation.get('status') in {'OK', 'COMPLETO/VALIDADO'}, validation
           assert 'V6-daily' in html
           assert 'Modelo A · Rolling 30 + QQQ' in html
           assert 'Modelo B · Rolling 30 + nuevos tickers' in html
@@ -111,12 +115,25 @@ jobs:
               assert 'history_operational' in model
               assert 'operational_metrics' in model
 
-          print('SBS:', dual['latest_sbs'])
-          print('Fecha mercado:', dual['signal_date'])
-          print('Validación tickers:', live.get('new_ticker_validation'))
-          print('Modo degradado:', dual.get('degraded_mode', False), dual.get('degraded_reason'))
-          print('Rolling30 QQQ:', dual['models']['qqq']['current'])
-          print('Rolling30 nuevos:', dual['models']['new_tickers']['current'])
+          expected_date = str(dual['signal_date'])[:10]
+          bassets = dual['models']['new_tickers']['intraday_assets']
+          for name in ('.INX','CPER','EEM','NDX','SPBLSCUP','USD/PEN'):
+              row = next(a for a in bassets if str(a.get('serie')) == name)
+              assert str(row.get('timestamp',''))[:10] == expected_date, row
+              assert 'NO VALIDADO' not in str(row.get('estado','')).upper(), row
+          fx_a = next(a for a in dual['models']['qqq']['intraday_assets'] if str(a.get('serie')) == 'USD_PEN')
+          fx_b = next(a for a in bassets if str(a.get('serie')) == 'USD/PEN')
+          assert abs(float(fx_a['precio_actual']) - float(fx_b['precio_actual'])) < 1e-12
+          assert 'YAHOO' not in str(fx_a.get('estado','')).upper()
+          assert 'YAHOO' not in str(fx_b.get('estado','')).upper()
+          if expected_date == '2026-08-28':
+              assert abs(float(fx_a['precio_actual']) - 3.3535) < 1e-12, fx_a
+              assert abs(float(fx_b['precio_actual']) - 3.3535) < 1e-12, fx_b
+              assert '3.339/3.368' in str(fx_b.get('estado','')), fx_b
+
+          print('VISOR VALIDADO:', expected_date)
+          print('Modelo B:', [(a.get('serie'), a.get('precio_actual'), a.get('estado')) for a in bassets])
+          print('FX común:', fx_a.get('precio_actual'), fx_a.get('estado'))
           PY
 
           git add \
@@ -133,30 +150,18 @@ jobs:
             echo "Sin cambios para guardar."
           else
             git commit -m "Actualizar SBS y dos modelos Rolling 30"
-
             PUSHED=0
             for attempt in 1 2 3; do
-              if git push origin HEAD:migracion-github-actions; then
-                PUSHED=1
-                break
-              fi
+              if git push origin HEAD:migracion-github-actions; then PUSHED=1; break; fi
               echo "Rama ocupada; reintento ${attempt}/3..."
               git reset --hard HEAD
               git clean -fd
-              if ! git pull --rebase origin migracion-github-actions; then
-                git rebase --abort || true
-                echo "No se pudo rebasar en este intento."
-              fi
+              if ! git pull --rebase origin migracion-github-actions; then git rebase --abort || true; fi
               sleep 2
             done
-            if [ "$PUSHED" -ne 1 ]; then
-              echo "La rama siguió ocupada. El siguiente ciclo automático reintentará."
-            fi
+            if [ "$PUSHED" -ne 1 ]; then echo "La rama siguió ocupada. El siguiente ciclo automático reintentará."; fi
           fi
 
-          # Publicación rápida del visor completo. Antes solo se copiaban los JSON,
-          # por lo que gh-pages podía conservar un index.html antiguo aunque los
-          # modelos ya estuvieran actualizados.
           tmp="$(mktemp -d)"
           if git clone --depth 1 --branch gh-pages "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" "$tmp/gh-pages"; then
             mkdir -p "$tmp/gh-pages/data"
