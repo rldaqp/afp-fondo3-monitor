@@ -183,38 +183,54 @@
   "experimental_google_rolling30_checked": true,
   "experimental_google_rolling30_results": {
     ".INX": {
-      "quote": ".INX:INDEXSP",
-      "error": "RuntimeError: Precio principal ambiguo/no identificado: []",
-      "validation": "NO VALIDADO · NO USAR EN MODELO",
-      "valid_for_model": false
+      "quote": "^GSPC",
+      "price": 7711.759765625,
+      "previous": 7730.990234375,
+      "return": -0.0024874522107780628,
+      "session_date": "2026-08-28",
+      "validation": "CIERRE DIARIO DEFINITIVO · VALIDADO POST-CIERRE",
+      "valid_for_model": true,
+      "error": null
     },
     "CPER": {
-      "quote": "CPER:NYSEARCA",
-      "error": "RuntimeError: Precio principal ambiguo/no identificado: []",
-      "validation": "NO VALIDADO · NO USAR EN MODELO",
-      "valid_for_model": false
+      "quote": "CPER",
+      "price": 39.66999816894531,
+      "previous": 39.97999954223633,
+      "return": -0.007753911376700229,
+      "session_date": "2026-08-28",
+      "validation": "CIERRE DIARIO DEFINITIVO · VALIDADO POST-CIERRE",
+      "valid_for_model": true,
+      "error": null
     },
     "EEM": {
-      "quote": "EEM:NYSEARCA",
-      "error": "RuntimeError: Precio principal ambiguo/no identificado: []",
-      "validation": "NO VALIDADO · NO USAR EN MODELO",
-      "valid_for_model": false
+      "quote": "EEM",
+      "price": 67.13999938964844,
+      "previous": 67.61000061035156,
+      "return": -0.006951652365924765,
+      "session_date": "2026-08-28",
+      "validation": "CIERRE DIARIO DEFINITIVO · VALIDADO POST-CIERRE",
+      "valid_for_model": true,
+      "error": null
     },
     "NDX": {
-      "quote": "NDX:INDEXNASDAQ",
-      "error": "RuntimeError: Precio principal ambiguo/no identificado: []",
-      "validation": "NO VALIDADO · NO USAR EN MODELO",
-      "valid_for_model": false
+      "quote": "^NDX",
+      "price": 29433.4296875,
+      "previous": 29641.560546875,
+      "return": -0.007021589131444794,
+      "session_date": "2026-08-28",
+      "validation": "CIERRE DIARIO DEFINITIVO · VALIDADO POST-CIERRE",
+      "valid_for_model": true,
+      "error": null
     },
     "SPBLSCUP": {
       "quote": "SPBLSCUP:INDEXSP",
       "price": 454.7,
       "previous": 461.34,
       "return": -0.014392855594572262,
-      "stamp": "Aug 28, 5:30:20 PM UTC-4",
       "session_date": "2026-08-28",
       "validation": "GOOGLE EXACTO",
-      "valid_for_model": true
+      "valid_for_model": true,
+      "error": null
     }
   },
   "new_ticker_validation": {
@@ -246,7 +262,7 @@
   "vc_base": 71.9377875,
   "model_snapshot_source": "CIERRE RECALCULADO · ULTIMO SBS REAL + FACTORES DEFINITIVOS + TUCAMBISTA",
   "model_snapshot_date": "2026-08-28",
-  "finalized_at_lima": "2026-08-29T15:21:01.621739-05:00",
+  "finalized_at_lima": "2026-08-29T15:22:22.766784-05:00",
   "finalizer_version": "tucambista-final-close-v4",
   "fx_quote_source": "TUCAMBISTA VERIFICADO POR FECHA",
   "vc_anchor_date": "2026-08-26",
