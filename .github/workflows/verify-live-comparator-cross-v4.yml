@@ -1,0 +1,85 @@
+name: Verificar en vivo comparador y cruce AFP v4
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - migracion-github-actions
+    paths:
+      - ".github/workflows/verify-live-comparator-cross-v4.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Esperar propagación Pages
+        run: sleep 15
+
+      - name: Verificar assets visibles en GitHub Pages
+        run: |
+          base='https://rldaqp.github.io/afp-fondo3-monitor'
+          curl -fsSL "$base/comparador-fondos/?probe=$(date +%s)" -o /tmp/cmp.html
+          curl -fsSL "$base/?probe=$(date +%s)" -o /tmp/pro.html
+          curl -fsSL "$base/habitat/?probe=$(date +%s)" -o /tmp/hab.html
+          grep -q 'comparator_runtime_v4.js?rev=CMPV4-20260829' /tmp/cmp.html
+          grep -q 'data/cross_afp_operation_v2.js?rev=CROSSAFP2-20260829' /tmp/pro.html
+          grep -q 'data/cross_afp_operation_v2.js?rev=CROSSAFP2-20260829' /tmp/hab.html
+          curl -fsSL "$base/comparador-fondos/comparator_runtime_v4.js?probe=$(date +%s)" -o /tmp/cmp.js
+          curl -fsSL "$base/data/cross_afp_operation_v2.js?probe=$(date +%s)" -o /tmp/procross.js
+          curl -fsSL "$base/habitat/data/cross_afp_operation_v2.js?probe=$(date +%s)" -o /tmp/habcross.js
+          grep -q 'dualActualMap' /tmp/cmp.js
+          grep -q 'data-crossafp-row' /tmp/procross.js
+          grep -q 'data-crossafp-row' /tmp/habcross.js
+          echo 'ASSETS PUBLICOS V4/V2 CONFIRMADOS'
+
+      - name: Verificar cálculo con JSON públicos
+        run: |
+          base='https://rldaqp.github.io/afp-fondo3-monitor'
+          curl -fsSL "$base/data/series.json?probe=$(date +%s)" -o /tmp/pro_series.json
+          curl -fsSL "$base/habitat/data/series.json?probe=$(date +%s)" -o /tmp/hab_series.json
+          curl -fsSL "$base/data/dual_rolling30_monitor.json?probe=$(date +%s)" -o /tmp/pro_dual.json
+          curl -fsSL "$base/habitat/data/dual_rolling30_monitor.json?probe=$(date +%s)" -o /tmp/hab_dual.json
+          python - <<'PY'
+          import json
+          def load(p):
+              with open(p,encoding='utf-8') as f:return json.load(f)
+          def official(rows):
+              out={}
+              for r in rows:
+                  d=str(r.get('fecha') or '')[:10]
+                  try:v=float(r.get('vc'))
+                  except:continue
+                  if d and v>0 and (r.get('es_oficial') is True or 'SBS' in str(r.get('fuente') or '').upper()):out[d]=v
+              return out
+          def actual(db):
+              out={}
+              for key in ('qqq','new_tickers'):
+                  m=db.get('models',{}).get(key,{})
+                  for name in ('history_one_step','history_operational','forward_chain'):
+                      for r in m.get(name,[]) or []:
+                          d=str(r.get('fecha') or '')[:10]
+                          try:v=float(r.get('actual_vc'))
+                          except:continue
+                          if d and v>0:out[d]=v
+              l=db.get('latest_sbs') or {};d=str(l.get('fecha') or '')[:10]
+              try:v=float(l.get('vc'))
+              except:v=0
+              if d and v>0:out[d]=v
+              return out
+          ps,pd=load('/tmp/pro_series.json'),load('/tmp/pro_dual.json')
+          hs,hd=load('/tmp/hab_series.json'),load('/tmp/hab_dual.json')
+          p=official(ps);p.update(actual(pd));h=official(hs);h.update(actual(hd))
+          cap=30000.0
+          pr=p['2026-08-20']/p['2026-08-18']-1;hr=h['2026-08-20']/h['2026-08-18']-1
+          pg=cap*pr;hg=cap*hr
+          assert round(pg,2)==607.43,(p['2026-08-18'],p['2026-08-20'],pg)
+          assert round(pr*100,2)==2.02,pr
+          assert round(hg,2)==172.08,(h['2026-08-18'],h['2026-08-20'],hg)
+          assert round(hr*100,2)==0.57,hr
+          print(f'PUBLICO Profuturo: +S/{pg:.2f} · +{pr*100:.2f}%')
+          print(f'PUBLICO Habitat: +S/{hg:.2f} · +{hr*100:.2f}%')
+          print(f'PUBLICO ventaja Profuturo: S/{pg-hg:.2f}')
+          PY
