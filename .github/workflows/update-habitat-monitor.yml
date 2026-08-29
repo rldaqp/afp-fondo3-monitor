@@ -15,6 +15,7 @@ on:
       - "scripts/build_habitat_profuturo_parity.py"
       - "scripts/build_habitat_qqq_incremental_challenger.py"
       - "scripts/postprocess_habitat_qqq_incremental_ui.py"
+      - "scripts/postprocess_habitat_weight_charts.py"
       - "scripts/build_qqq_incremental_challenger.py"
       - "scripts/enrich_habitat_daily_sbs.py"
       - "scripts/postprocess_habitat_chart_clarity.py"
@@ -77,6 +78,7 @@ jobs:
           python scripts/postprocess_live_consistency.py
           python scripts/postprocess_trade_runtime_fixes.py habitat
           python scripts/postprocess_habitat_qqq_incremental_ui.py
+          python scripts/postprocess_habitat_weight_charts.py
 
       - name: Validar Hábitat OLS QQQ y Drive
         run: |
@@ -100,6 +102,9 @@ jobs:
           test -s public/habitat/data/qqq_incremental_challenger.json
           grep -q "QQQ INCREMENTAL · CHALLENGER" public/habitat/index.html
           grep -q "HABITAT_QQQ_INCREMENTAL_PANEL_V1" public/habitat/index.html
+          grep -q "HABITAT_FACTOR_WEIGHT_CHARTS_V1_OFFICIAL START" public/habitat/index.html
+          grep -q "HABITAT_FACTOR_WEIGHT_CHARTS_V1_CHALLENGER START" public/habitat/index.html
+          grep -q "coefficients_raw" public/habitat/data/qqq_incremental_challenger.json
           ! grep -q "SPY_QQQ_CHALLENGER_PANEL START" public/habitat/index.html
           ! grep -q "Mercado USA · SPY vs Nasdaq QQQ" public/habitat/index.html
           python - <<'PY'
@@ -123,10 +128,21 @@ jobs:
           assert abs(float(qqq['vc_base']) * (1.0 + float(qqq['official']['return_estimated'])) - float(qqq['official']['vc_estimated'])) < 1e-8
           assert int(qqq['training']['n']) == 90
 
+          challenger = qqq['challenger']
+          assert len(challenger['features']) == 8
+          assert set(challenger['features']) == set(challenger['coefficients_raw']) - {'intercept'}
+          assert len(challenger['contributions']) == 8
+          decomposed = float(challenger['coefficients_raw']['intercept']) + sum(
+              float(row['coefficient']) * float(row['value'])
+              for row in challenger['contributions']
+          )
+          assert abs(decomposed - float(challenger['return_estimated'])) < 1e-10
+
           # Profuturo ya usa una arquitectura dual Rolling30 distinta. No se
           # compara su lista de activos contra Hábitat: ese control heredado era
           # el que fallaba con AssertionError: SPY y generaba correos repetidos.
           print('Hábitat validado de forma independiente; Profuturo dual no se mezcla en esta prueba.')
+          print('Descomposición challenger validada:', decomposed)
           PY
           node --check /tmp/tradeHistoryScript.js
           node --check /tmp/tradeCloudScript.js
