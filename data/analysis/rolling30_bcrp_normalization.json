@@ -1,0 +1,71 @@
+{
+  "source": "BCRP PD04638PD · API",
+  "series": "BCRP PD04638PD",
+  "purpose": "Normalización temporal para los dos Rolling 30; evita usar la serie USD/PEN redondeada del markets.csv en el modelo A.",
+  "checked_2026_08_24_27": [
+    {
+      "fecha": "2026-08-24",
+      "USD_PEN": 3.34714285714286,
+      "ret_USD_PEN": -4.267850283590224e-05
+    },
+    {
+      "fecha": "2026-08-25",
+      "USD_PEN": 3.34457142857143,
+      "ret_USD_PEN": -0.0007682458386687463
+    },
+    {
+      "fecha": "2026-08-26",
+      "USD_PEN": 3.34528571428571,
+      "ret_USD_PEN": 0.0002135656928055063
+    },
+    {
+      "fecha": "2026-08-27",
+      "USD_PEN": 3.34514285714286,
+      "ret_USD_PEN": -4.2704018446082515e-05
+    }
+  ],
+  "changed_recent": [
+    {
+      "fecha": "2026-08-20",
+      "before_value": 3.352,
+      "after_value": 3.355,
+      "before_return": -0.0008941877794337,
+      "after_return": -0.0006808220926757258
+    },
+    {
+      "fecha": "2026-08-21",
+      "before_value": 3.345,
+      "after_value": 3.34728571428571,
+      "before_return": -0.00208830548926,
+      "after_return": -0.0022993400042593537
+    },
+    {
+      "fecha": "2026-08-24",
+      "before_value": 3.347,
+      "after_value": 3.34714285714286,
+      "before_return": 0.0005979073243647,
+      "after_return": -4.267850283590224e-05
+    },
+    {
+      "fecha": "2026-08-25",
+      "before_value": 3.344,
+      "after_value": 3.34457142857143,
+      "before_return": -0.0008963250672243,
+      "after_return": -0.0007682458386687463
+    },
+    {
+      "fecha": "2026-08-26",
+      "before_value": 3.344,
+      "after_value": 3.34528571428571,
+      "before_return": 0.0,
+      "after_return": 0.0002135656928055063
+    },
+    {
+      "fecha": "2026-08-27",
+      "before_value": 3.346,
+      "after_value": 3.34514285714286,
+      "before_return": 0.0005980861244019,
+      "after_return": -4.2704018446082515e-05
+    }
+  ]
+}
