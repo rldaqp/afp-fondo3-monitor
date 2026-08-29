@@ -1,0 +1,228 @@
+name: Instalar graficos de pesos Habitat
+
+on:
+  push:
+    branches:
+      - migracion-github-actions
+    paths:
+      - '.github/workflows/install-habitat-weight-charts.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: fondo3-data-writes
+  cancel-in-progress: false
+
+jobs:
+  install-and-deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Descargar repositorio
+        uses: actions/checkout@v4
+        with:
+          ref: migracion-github-actions
+          fetch-depth: 0
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+
+      - name: Instalar dependencias
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Exponer coeficientes efectivos del challenger QQQ
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('scripts/build_habitat_qqq_incremental_challenger.py')
+          s=p.read_text(encoding='utf-8')
+          marker='challenger_coefficients_raw'
+          if marker not in s:
+              old='''    qqq_resid = float(qqq_ret - np.r_[1.0, base_current] @ beta_resid)\n    challenger_ret = core.standardize_predict(challenger_model, np.r_[base_current, qqq_resid])\n\n    official_ret = float(live["return_estimated"])'''
+              new='''    qqq_resid = float(qqq_ret - np.r_[1.0, base_current] @ beta_resid)\n    challenger_input = np.r_[base_current, qqq_resid]\n    challenger_ret = core.standardize_predict(challenger_model, challenger_input)\n\n    # Convertir el modelo estandarizado a coeficientes efectivos en escala original.\n    # y = a_z + sum(b_z * (x-mu)/sd) = a_raw + sum(beta_raw*x)\n    challenger_mu = np.asarray(challenger_model["mu"], dtype=float)\n    challenger_sd = np.asarray(challenger_model["sd"], dtype=float)\n    challenger_coef_z = np.asarray(challenger_model["coef"], dtype=float)\n    challenger_beta_raw = challenger_coef_z / challenger_sd\n    challenger_intercept_raw = float(challenger_model["intercept"] - challenger_mu @ challenger_beta_raw)\n    challenger_features = [*BASE_FEATURES, "ret_QQQ_residual"]\n    challenger_coefficients_raw = {\n        "intercept": challenger_intercept_raw,\n        **{f: float(challenger_beta_raw[i]) for i, f in enumerate(challenger_features)},\n    }\n    challenger_contributions = [\n        {\n            "feature": f,\n            "value": float(challenger_input[i]),\n            "coefficient": float(challenger_beta_raw[i]),\n            "contribution_pp": float(challenger_beta_raw[i] * challenger_input[i] * 100.0),\n        }\n        for i, f in enumerate(challenger_features)\n    ]\n\n    official_ret = float(live["return_estimated"])'''
+              if old not in s:
+                  raise SystemExit('No se encontro bloque de prediccion challenger para parchear')
+              s=s.replace(old,new,1)
+              old2='''        "challenger": {\n            "model": "OLS rolling 90 Hábitat + QQQ incremental residualizado",\n            "return_estimated": challenger_ret,\n            "signal": core.classify(challenger_ret),\n            "vc_estimated": challenger_vc,\n        },'''
+              new2='''        "challenger": {\n            "model": "OLS rolling 90 Hábitat + QQQ incremental residualizado",\n            "return_estimated": challenger_ret,\n            "signal": core.classify(challenger_ret),\n            "vc_estimated": challenger_vc,\n            "features": challenger_features,\n            "coefficients_raw": challenger_coefficients_raw,\n            "contributions": challenger_contributions,\n            "coefficient_note": "Coeficientes efectivos en escala original, derivados exactamente del modelo estandarizado vigente.",\n        },'''
+              if old2 not in s:
+                  raise SystemExit('No se encontro bloque challenger JSON para parchear')
+              s=s.replace(old2,new2,1)
+              p.write_text(s,encoding='utf-8')
+              print('Builder challenger enriquecido con coeficientes efectivos')
+          else:
+              print('Builder challenger ya enriquecido')
+          PY
+
+      - name: Crear postproceso permanente de graficos de pesos
+        run: |
+          cat > scripts/postprocess_habitat_weight_charts.py <<'PY'
+          from __future__ import annotations
+
+          import re
+          from pathlib import Path
+
+          ROOT = Path(__file__).resolve().parents[1]
+          HTML = ROOT / 'public' / 'habitat' / 'index.html'
+          html = HTML.read_text(encoding='utf-8')
+
+          blocks = [
+              ('<!-- HABITAT_FACTOR_WEIGHT_CHARTS_V1_CSS START -->','<!-- HABITAT_FACTOR_WEIGHT_CHARTS_V1_CSS END -->'),
+              ('<!-- HABITAT_FACTOR_WEIGHT_CHARTS_V1_OFFICIAL START -->','<!-- HABITAT_FACTOR_WEIGHT_CHARTS_V1_OFFICIAL END -->'),
+              ('<!-- HABITAT_FACTOR_WEIGHT_CHARTS_V1_CHALLENGER START -->','<!-- HABITAT_FACTOR_WEIGHT_CHARTS_V1_CHALLENGER END -->'),
+              ('<!-- HABITAT_FACTOR_WEIGHT_CHARTS_V1_SCRIPT START -->','<!-- HABITAT_FACTOR_WEIGHT_CHARTS_V1_SCRIPT END -->'),
+          ]
+          for a,b in blocks:
+              html = re.sub(re.escape(a)+r'.*?'+re.escape(b),'',html,flags=re.S)
+
+          css = r'''
+          <!-- HABITAT_FACTOR_WEIGHT_CHARTS_V1_CSS START -->
+          <style id="habitatFactorWeightChartsStyles">
+          .hweight-panel{border-color:#334155}.hweight-head{display:flex;justify-content:space-between;gap:8px;align-items:flex-start;flex-wrap:wrap;margin-bottom:3px}.hweight-title{font-size:.96rem;font-weight:900}.hweight-kicker{font-size:.68rem;color:#94a3b8;line-height:1.4;margin-top:2px}.hweight-controls{display:flex;gap:4px;flex-wrap:wrap}.hweight-controls button{border:1px solid #35465d;background:#132238;color:#fff;border-radius:8px;padding:6px 9px;font-weight:800;font-size:.69rem;cursor:pointer}.hweight-controls button.active{background:#2563eb}.hweight-chart{height:315px;width:100%}.hweight-note{font-size:.66rem;color:#94a3b8;line-height:1.4;margin-top:3px}@media(max-width:620px){.hweight-chart{height:285px}.hweight-controls button{font-size:.64rem;padding:5px 7px}}
+          </style>
+          <!-- HABITAT_FACTOR_WEIGHT_CHARTS_V1_CSS END -->
+          '''
+          html = html.replace('</head>',css+'</head>',1)
+
+          official = r'''
+          <!-- HABITAT_FACTOR_WEIGHT_CHARTS_V1_OFFICIAL START -->
+          <section class="panel hweight-panel" id="habitatOfficialWeightPanel">
+            <div class="hweight-head"><div><div class="hweight-title">Pesos de los factores · OLS oficial Hábitat</div><div class="hweight-kicker">Rolling 90 · coeficientes estimados solo con Hábitat Fondo 3</div></div><div class="hweight-controls" data-weight-model="official"><button type="button" data-mode="beta" class="active">Peso β</button><button type="button" data-mode="aporte">Aporte sesión</button></div></div>
+            <div class="hweight-chart" id="habitatOfficialWeightChart"></div>
+            <div class="hweight-note">β es el coeficiente OLS vigente; no es un porcentaje de cartera ni tiene que sumar 100%. Aporte sesión = β × retorno observado del factor.</div>
+          </section>
+          <!-- HABITAT_FACTOR_WEIGHT_CHARTS_V1_OFFICIAL END -->
+          '''
+          qqq_marker='<!-- HABITAT_QQQ_INCREMENTAL_PANEL_V1 START -->'
+          if qqq_marker not in html:
+              raise RuntimeError('No se encontro panel QQQ de Habitat para insertar pesos')
+          html=html.replace(qqq_marker,official+qqq_marker,1)
+
+          challenger = r'''
+          <!-- HABITAT_FACTOR_WEIGHT_CHARTS_V1_CHALLENGER START -->
+          <section class="panel hweight-panel" id="habitatChallengerWeightPanel">
+            <div class="hweight-head"><div><div class="hweight-title">Pesos de los factores · QQQ incremental challenger</div><div class="hweight-kicker">Rolling 90 · QQQ residualizado contra los 7 factores del OLS oficial</div></div><div class="hweight-controls" data-weight-model="challenger"><button type="button" data-mode="beta" class="active">Peso β</button><button type="button" data-mode="aporte">Aporte sesión</button></div></div>
+            <div class="hweight-chart" id="habitatChallengerWeightChart"></div>
+            <div class="hweight-note">Los β del challenger se muestran en escala original, equivalentes exactamente al modelo estandarizado. QQQ residual es la parte de QQQ no explicada por los siete factores base.</div>
+          </section>
+          <!-- HABITAT_FACTOR_WEIGHT_CHARTS_V1_CHALLENGER END -->
+          '''
+          qqq_end='<!-- HABITAT_QQQ_INCREMENTAL_PANEL_V1 END -->'
+          if qqq_end not in html:
+              raise RuntimeError('No se encontro cierre del panel QQQ de Habitat')
+          html=html.replace(qqq_end,qqq_end+challenger,1)
+
+          script = r'''
+          <!-- HABITAT_FACTOR_WEIGHT_CHARTS_V1_SCRIPT START -->
+          <script id="habitatFactorWeightChartsScript">
+          (function(){'use strict';
+          const state={official:'beta',challenger:'beta'};
+          const labels={ret_SPY:'SPY',ret_NEM:'NEM',ret_FCX:'FCX',ret_EPU:'EPU',ret_MCHI:'MCHI',ret_EEM:'EEM',ret_USD_PEN:'USD/PEN',ret_QQQ_residual:'QQQ residual'};
+          const n=x=>Number.isFinite(Number(x))?Number(x):null;
+          const signed=(x,d=4)=>x==null?'—':(x>=0?'+':'')+Number(x).toFixed(d);
+          function plot(id,rows,mode){
+            const beta=mode==='beta'; const x=rows.map(r=>beta?r.beta:r.pp); const y=rows.map(r=>r.label);
+            const colors=x.map(v=>v==null?'#64748b':v>=0?'#4ade80':'#f87171');
+            const custom=rows.map(r=>[r.beta,r.ret==null?null:r.ret*100,r.pp]);
+            const text=rows.map(r=>beta?('β '+signed(r.beta,4)):(r.pp==null?'s/d':signed(r.pp,3)+' pp'));
+            Plotly.react(id,[{type:'bar',orientation:'h',x,y,marker:{color:colors},text,textposition:'auto',customdata:custom,hovertemplate:beta?'<b>%{y}</b><br>β %{customdata[0]:+.4f}<br>Retorno factor %{customdata[1]:+.3f}%<br>Aporte %{customdata[2]:+.3f} pp<extra></extra>':'<b>%{y}</b><br>Aporte %{customdata[2]:+.3f} pp<br>β %{customdata[0]:+.4f}<br>Retorno factor %{customdata[1]:+.3f}%<extra></extra>'}],{paper_bgcolor:'#0f1b2d',plot_bgcolor:'#0f1b2d',font:{color:'#e2e8f0',size:10},margin:{l:92,r:18,t:8,b:48},xaxis:{title:beta?'Coeficiente β':'Aporte al retorno estimado (pp)',gridcolor:'#243244',zeroline:true,zerolinecolor:'#cbd5e1'},yaxis:{autorange:'reversed',automargin:true},showlegend:false,bargap:.28},{responsive:true,displaylogo:false,displayModeBar:false});
+          }
+          function officialRows(latest,live){const assets=live.assets||[];return (latest.model_factors||[]).map(name=>{const f=name==='USD_PEN'?'ret_USD_PEN':'ret_'+name;const b=n((latest.coefficients||{})[f]);const a=assets.find(x=>String(x.serie)===name);const r=n(a&&(a.retorno_modelo??a.retorno));return{label:labels[f]||name,beta:b,ret:r,pp:b!=null&&r!=null?b*r*100:null}}).filter(r=>r.beta!=null)}
+          function challengerRows(q){const c=q.challenger||{},coef=c.coefficients_raw||{};const byF=new Map((c.contributions||[]).map(r=>[r.feature,r]));return (c.features||[]).map(f=>{const row=byF.get(f)||{};const b=n(coef[f]??row.coefficient),r=n(row.value),pp=n(row.contribution_pp);return{label:labels[f]||f.replace(/^ret_/,''),beta:b,ret:r,pp:pp!=null?pp:(b!=null&&r!=null?b*r*100:null)}}).filter(r=>r.beta!=null)}
+          Promise.all([fetch('data/latest.json?w='+Date.now(),{cache:'no-store'}).then(r=>r.json()),fetch('data/live_market.json?w='+Date.now(),{cache:'no-store'}).then(r=>r.json()),fetch('data/qqq_incremental_challenger.json?w='+Date.now(),{cache:'no-store'}).then(r=>r.json())]).then(([latest,live,q])=>{const data={official:officialRows(latest,live),challenger:challengerRows(q)};function draw(k){plot(k==='official'?'habitatOfficialWeightChart':'habitatChallengerWeightChart',data[k],state[k])}for(const k of['official','challenger']){document.querySelectorAll(`[data-weight-model="${k}"] button`).forEach(btn=>btn.addEventListener('click',()=>{state[k]=btn.dataset.mode;document.querySelectorAll(`[data-weight-model="${k}"] button`).forEach(b=>b.classList.toggle('active',b===btn));draw(k)}));draw(k)}}).catch(e=>{for(const id of['habitatOfficialWeightChart','habitatChallengerWeightChart']){const el=document.getElementById(id);if(el)el.innerHTML='<div class="error">No se pudo cargar el gráfico de pesos: '+e.message+'</div>'}console.error(e)});
+          })();
+          </script>
+          <!-- HABITAT_FACTOR_WEIGHT_CHARTS_V1_SCRIPT END -->
+          '''
+          html=html.replace('</body>',script+'</body>',1)
+          if html.count('HABITAT_FACTOR_WEIGHT_CHARTS_V1_OFFICIAL START')!=1: raise RuntimeError('Panel oficial duplicado')
+          if html.count('HABITAT_FACTOR_WEIGHT_CHARTS_V1_CHALLENGER START')!=1: raise RuntimeError('Panel challenger duplicado')
+          HTML.write_text(html,encoding='utf-8')
+          print('Graficos de pesos Habitat insertados')
+          PY
+
+      - name: Integrar postproceso al pipeline programado de Habitat
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('.github/workflows/update-habitat-monitor.yml')
+          s=p.read_text(encoding='utf-8')
+          path_line='      - "scripts/postprocess_habitat_weight_charts.py"\n'
+          if path_line not in s:
+              anchor='      - "scripts/postprocess_habitat_qqq_incremental_ui.py"\n'
+              if anchor not in s: raise SystemExit('No se encontro ancla paths Habitat')
+              s=s.replace(anchor,anchor+path_line,1)
+          run_line='          python scripts/postprocess_habitat_weight_charts.py\n'
+          if run_line not in s:
+              anchor='          python scripts/postprocess_habitat_qqq_incremental_ui.py\n'
+              if anchor not in s: raise SystemExit('No se encontro ancla run Habitat')
+              s=s.replace(anchor,anchor+run_line,1)
+          validation='          grep -q "HABITAT_FACTOR_WEIGHT_CHARTS_V1_OFFICIAL START" public/habitat/index.html\n          grep -q "HABITAT_FACTOR_WEIGHT_CHARTS_V1_CHALLENGER START" public/habitat/index.html\n          grep -q "coefficients_raw" public/habitat/data/qqq_incremental_challenger.json\n'
+          if 'HABITAT_FACTOR_WEIGHT_CHARTS_V1_OFFICIAL START' not in s:
+              anchor='          grep -q "HABITAT_QQQ_INCREMENTAL_PANEL_V1" public/habitat/index.html\n'
+              if anchor not in s: raise SystemExit('No se encontro ancla validacion Habitat')
+              s=s.replace(anchor,anchor+validation,1)
+          p.write_text(s,encoding='utf-8')
+          print('Pipeline Habitat actualizado para conservar graficos en cada ciclo')
+          PY
+
+      - name: Regenerar challenger y aplicar interfaz de pesos
+        env:
+          PYTHONUTF8: '1'
+          PYTHONIOENCODING: 'utf-8'
+        run: |
+          python scripts/build_habitat_qqq_incremental_challenger.py
+          python scripts/postprocess_habitat_qqq_incremental_ui.py
+          python scripts/postprocess_habitat_weight_charts.py
+
+      - name: Validar graficos y datos
+        run: |
+          grep -q 'HABITAT_FACTOR_WEIGHT_CHARTS_V1_OFFICIAL START' public/habitat/index.html
+          grep -q 'HABITAT_FACTOR_WEIGHT_CHARTS_V1_CHALLENGER START' public/habitat/index.html
+          grep -q 'habitatOfficialWeightChart' public/habitat/index.html
+          grep -q 'habitatChallengerWeightChart' public/habitat/index.html
+          grep -q 'Peso β' public/habitat/index.html
+          grep -q 'Aporte sesión' public/habitat/index.html
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          q=json.loads(Path('public/habitat/data/qqq_incremental_challenger.json').read_text(encoding='utf-8'))
+          c=q['challenger']
+          assert len(c['features'])==8
+          assert set(c['features'])==set(c['coefficients_raw'])-{'intercept'}
+          assert len(c['contributions'])==8
+          total=float(c['coefficients_raw']['intercept'])+sum(float(r['coefficient'])*float(r['value']) for r in c['contributions'])
+          assert abs(total-float(c['return_estimated']))<1e-10,(total,c['return_estimated'])
+          print('Descomposicion challenger exacta:',total)
+          PY
+
+      - name: Guardar implementacion
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add scripts/build_habitat_qqq_incremental_challenger.py scripts/postprocess_habitat_weight_charts.py .github/workflows/update-habitat-monitor.yml public/habitat/index.html public/habitat/data/qqq_incremental_challenger.json data/rolling90/habitat_qqq_incremental_shadow.csv
+          git commit -m 'Agregar graficos de pesos a Habitat oficial y challenger' || true
+          git push origin HEAD:migracion-github-actions
+
+      - name: Configurar Pages
+        uses: actions/configure-pages@v5
+
+      - name: Subir sitio completo
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: public
+
+      - name: Desplegar Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
