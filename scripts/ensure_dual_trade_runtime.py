@@ -10,17 +10,23 @@ TARGETS = [
         "name": "Profuturo",
         "html": ROOT / "public" / "index.html",
         "runtime": ROOT / "public" / "data" / "dual_trade_runtime_v1.js",
+        "cross_runtime": ROOT / "public" / "data" / "cross_afp_operation_v1.js",
         "src": "data/dual_trade_runtime_v1.js?rev=DUALTRADEV3",
+        "cross_src": "data/cross_afp_operation_v1.js?rev=CROSSAFP1",
         "fund_token": "const FUND='PROFUTURO';",
         "trade_key": "profuturo_fondo3_trade_history_v3",
+        "cross_token": "OTHER_LABEL='Hábitat Fondo 3'",
     },
     {
         "name": "Hábitat",
         "html": ROOT / "public" / "habitat" / "index.html",
         "runtime": ROOT / "public" / "habitat" / "data" / "dual_trade_runtime_v1.js",
+        "cross_runtime": ROOT / "public" / "habitat" / "data" / "cross_afp_operation_v1.js",
         "src": "data/dual_trade_runtime_v1.js?rev=DUALTRADEV3",
+        "cross_src": "data/cross_afp_operation_v1.js?rev=CROSSAFP1",
         "fund_token": "const FUND='HABITAT';",
         "trade_key": "habitat_fondo3_trade_history_v3",
+        "cross_token": "OTHER_LABEL='Profuturo Fondo 3'",
     },
 ]
 
@@ -32,23 +38,30 @@ def ensure_target(target: dict[str, object]) -> None:
     name = str(target["name"])
     html_path = Path(target["html"])
     runtime_path = Path(target["runtime"])
+    cross_runtime_path = Path(target["cross_runtime"])
     src = str(target["src"])
+    cross_src = str(target["cross_src"])
 
     html = html_path.read_text(encoding="utf-8")
     if "Rolling 30" not in html and "dualTakeover" not in html:
         raise RuntimeError(f"{html_path} no parece ser visor dual Rolling 30")
 
-    # Quita cualquier referencia previa para evitar dos paneles/listeners.
     html = re.sub(
         r'\n?<script\s+src="data/dual_trade_runtime_v1\.js(?:\?rev=[^"]+)?"\s*></script>',
         "",
         html,
         flags=re.I,
     )
+    html = re.sub(
+        r'\n?<script\s+src="data/cross_afp_operation_v1\.js(?:\?rev=[^"]+)?"\s*></script>',
+        "",
+        html,
+        flags=re.I,
+    )
     if "</body>" not in html:
         raise RuntimeError(f"{name}: HTML sin cierre </body>")
-    tag = f'<script src="{src}"></script>'
-    html = html.replace("</body>", tag + "\n</body>", 1)
+    tags = f'<script src="{src}"></script>\n<script src="{cross_src}"></script>'
+    html = html.replace("</body>", tags + "\n</body>", 1)
     html_path.write_text(html, encoding="utf-8")
 
     js = runtime_path.read_text(encoding="utf-8")
@@ -58,7 +71,9 @@ def ensure_target(target: dict[str, object]) -> None:
 
     check = html_path.read_text(encoding="utf-8")
     js_check = runtime_path.read_text(encoding="utf-8")
+    cross_check = cross_runtime_path.read_text(encoding="utf-8")
     assert check.count("dual_trade_runtime_v1.js") == 1, name
+    assert check.count("cross_afp_operation_v1.js") == 1, name
     for token in (
         "Registrar operación",
         "Conectar Drive",
@@ -67,13 +82,15 @@ def ensure_target(target: dict[str, object]) -> None:
         "fondo3_drive_sync_key_v1",
     ):
         assert token in js_check, f"{name}: falta {token}"
-    print(f"{name}: operaciones entrada/salida + Drive aseguradas")
+    for token in ("crossAfpBox", str(target["cross_token"]), "misma operación"):
+        assert token.lower() in cross_check.lower(), f"{name}: falta comparación {token}"
+    print(f"{name}: operaciones + Drive + comparación AFP aseguradas")
 
 
 def main() -> None:
     for target in TARGETS:
         ensure_target(target)
-    print("Runtime de operaciones + Drive validado en Profuturo y Hábitat")
+    print("Operaciones, Drive y comparación cruzada validados en Profuturo y Hábitat")
 
 
 if __name__ == "__main__":
