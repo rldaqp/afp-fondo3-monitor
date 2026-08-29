@@ -65,18 +65,49 @@ jobs:
           import json
           from pathlib import Path
 
-          live = json.loads(Path("public/data/live_market.json").read_text(encoding="utf-8"))
+          path = Path("public/data/live_market.json")
+          live = json.loads(path.read_text(encoding="utf-8"))
+
           assert live.get("fx_source") in {"BCRP", "TUCAMBISTA MIDPOINT"}, live
           assert "YAHOO PEN=X" not in str(live.get("fx_source", "")), live
           assert float(live.get("vc_estimated", 0)) > 0, live
+
           if not bool(live.get("market_open")):
               validation = live.get("new_ticker_validation") or {}
               assert validation.get("status") == "COMPLETO/VALIDADO", validation
               signal_date = str(live.get("signal_date", ""))[:10]
+              final_rows = {}
               for row in live.get("experimental_assets", []):
-                  if row.get("serie") in {".INX", "CPER", "EEM", "NDX"}:
+                  symbol = row.get("serie")
+                  if symbol in {".INX", "CPER", "EEM", "NDX"}:
                       assert str(row.get("timestamp", ""))[:10] == signal_date, row
                       assert row.get("validado_modelo") is True, row
+                      final_rows[symbol] = {
+                          "quote": row.get("ticker"),
+                          "price": row.get("precio_actual"),
+                          "previous": row.get("precio_anterior"),
+                          "return": row.get("retorno"),
+                          "session_date": signal_date,
+                          "validation": "CIERRE DIARIO DEFINITIVO · VALIDADO POST-CIERRE",
+                          "valid_for_model": True,
+                          "error": None,
+                      }
+              sp = next((r for r in live.get("experimental_assets", []) if r.get("serie") == "SPBLSCUP"), None)
+              if sp:
+                  final_rows["SPBLSCUP"] = {
+                      "quote": sp.get("ticker"),
+                      "price": sp.get("precio_actual"),
+                      "previous": sp.get("precio_anterior"),
+                      "return": sp.get("retorno"),
+                      "session_date": str(sp.get("timestamp", ""))[:10],
+                      "validation": sp.get("estado"),
+                      "valid_for_model": bool(sp.get("validado_modelo")),
+                      "error": sp.get("error_validacion"),
+                  }
+              live["experimental_google_rolling30_results"] = final_rows
+              live["experimental_google_rolling30_checked"] = True
+              path.write_text(json.dumps(live, ensure_ascii=False, indent=2), encoding="utf-8")
+
           print("Cierre finalizado:", live.get("signal_date"), live.get("fx_source"), live.get("vc_estimated"))
           PY
 
