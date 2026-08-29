@@ -112,7 +112,7 @@ function saveCurrent(){
 }
 
 function reconcile(rows){let changed=false;for(const r of rows){const e=actualAt(String(r.entry_date||'').slice(0,10));if(e!==null&&Number(r.entry_sbs_vc)!==e){r.entry_sbs_vc=e;changed=true}if(r.exit_date){const x=actualAt(String(r.exit_date).slice(0,10));if(x!==null&&Number(r.exit_sbs_vc)!==x){r.exit_sbs_vc=x;changed=true}}}if(changed)saveRows(rows);return rows;}
-function rowMetrics(r){const re=finite(r.entry_est_vc)&&finite(r.exit_est_vc)&&Number(r.entry_est_vc)!==0?Number(r.exit_est_vc)/Number(r.entry_est_vc)-1:null;const rr=finite(r.entry_sbs_vc)&&finite(r.exit_sbs_vc)&&Number(r.entry_sbs_vc)!==0?Number(r.exit_sbs_vc)/Number(r.entry_sbs_vc)-1:null;const cap=finite(r.capital)?Number(r.capital):null;return{re,rr,ge:re!==null&&cap!==null?cap*re:null,gr:rr!==null&&cap!==null?cap*rr:null};}
+function rowMetrics(r){const entryBase=finite(r.entry_sbs_vc)?Number(r.entry_sbs_vc):(finite(r.entry_est_vc)?Number(r.entry_est_vc):null);const re=entryBase!==null&&entryBase!==0&&finite(r.exit_est_vc)?Number(r.exit_est_vc)/entryBase-1:null;const rr=finite(r.entry_sbs_vc)&&finite(r.exit_sbs_vc)&&Number(r.entry_sbs_vc)!==0?Number(r.exit_sbs_vc)/Number(r.entry_sbs_vc)-1:null;const cap=finite(r.capital)?Number(r.capital):null;return{re,rr,ge:re!==null&&cap!==null?cap*re:null,gr:rr!==null&&cap!==null?cap*rr:null};}
 function renderHistory(){
   const rows=reconcile(loadRows()).sort((a,b)=>String(b.created_at||'').localeCompare(String(a.created_at||''))),body=$('tradeBody');if(!body)return;$('tradeCount').textContent=`${rows.length} ${rows.length===1?'operación':'operaciones'}`;
   if(!rows.length){body.innerHTML='<tr><td colspan="14" style="text-align:center;color:#9aa9bd">Sin operaciones guardadas.</td></tr>';return;}
