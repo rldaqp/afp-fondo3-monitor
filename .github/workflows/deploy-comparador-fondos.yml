@@ -9,6 +9,7 @@ on:
       - ".github/workflows/deploy-comparador-fondos.yml"
       - "public/comparador-fondos/**"
       - "scripts/ensure_dual_trade_runtime.py"
+      - "scripts/ensure_comparator_runtime.py"
 
 permissions:
   contents: read
@@ -31,22 +32,27 @@ jobs:
         with:
           ref: migracion-github-actions
 
-      - name: Asegurar operaciones y Drive en ambos visores
+      - name: Asegurar operaciones y comparador
         run: |
           python scripts/ensure_dual_trade_runtime.py
+          python scripts/ensure_comparator_runtime.py
           grep -q 'data/dual_trade_runtime_v1.js?rev=DUALTRADEV3' public/index.html
           grep -q 'data/dual_trade_runtime_v1.js?rev=DUALTRADEV3' public/habitat/index.html
           grep -q 'Conectar Drive' public/data/dual_trade_runtime_v1.js
           grep -q 'Conectar Drive' public/habitat/data/dual_trade_runtime_v1.js
+          grep -q 'comparator_runtime_v2.js?rev=CMPV2-20260829' public/comparador-fondos/index.html
+          grep -q 'Operaciones en Drive' public/comparador-fondos/comparator_runtime_v2.js
+          grep -q 'comparador_fondo3_last_query_v2' public/comparador-fondos/comparator_runtime_v2.js
 
       - name: Validar comparador y series SBS
         run: |
           test -s public/comparador-fondos/index.html
+          test -s public/comparador-fondos/comparator_runtime_v2.js
           test -s public/data/series.json
           test -s public/habitat/data/series.json
+          test -s public/data/dual_rolling30_monitor.json
+          test -s public/habitat/data/dual_rolling30_monitor.json
           grep -q "Si hubieras invertido S/10,000" public/comparador-fondos/index.html
-          grep -q "../data/series.json" public/comparador-fondos/index.html
-          grep -q "../habitat/data/series.json" public/comparador-fondos/index.html
           grep -q "Hábitat" public/comparador-fondos/index.html
           grep -q "Profuturo" public/comparador-fondos/index.html
 
