@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#07111f">
+<title>Fondo 3 · Hábitat vs Profuturo</title>
+<script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+<style>
+:root{color-scheme:dark;--bg:#07111f;--card:#0f1b2d;--inner:#0b1728;--line:#26364a;--text:#f8fafc;--muted:#9aa9bd;--active:#2563eb}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}.wrap{max-width:1050px;margin:auto;padding:14px}h1{font-size:1.45rem;margin:4px 0}.sub,.note{color:var(--muted);font-size:.76rem;line-height:1.45}.panel{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px;margin-top:13px}.head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;flex-wrap:wrap}.controls{display:flex;gap:5px;flex-wrap:wrap}.controls button{border:1px solid #35465d;background:#132238;color:#fff;border-radius:8px;padding:7px 9px;font-weight:800;font-size:.72rem;cursor:pointer}.controls button.active{background:var(--active)}#chart{height:500px;width:100%}.summary{font-size:.78rem;font-weight:800;margin-top:5px;color:#e2e8f0}.error{display:none;background:#451a1a;border:1px solid #7f1d1d;padding:10px;border-radius:9px;margin:10px 0}.back{display:inline-block;margin-top:12px;color:#bae6fd;text-decoration:none;font-size:.74rem}@media(max-width:650px){.wrap{padding:9px}.panel{padding:9px}#chart{height:430px}.controls{width:100%;overflow-x:auto;flex-wrap:nowrap}.controls button{white-space:nowrap}}
+</style>
+</head>
+<body>
+<main class="wrap">
+<h1>Fondo 3 · Hábitat vs Profuturo</h1>
+<div class="sub">Comparación directa de rentabilidad usando únicamente valores cuota oficiales SBS en fechas comunes.</div>
+<div id="error" class="error"></div>
+<section class="panel">
+  <div class="head">
+    <div>
+      <div style="font-size:.98rem;font-weight:900">Si hubieras invertido S/10,000</div>
+      <div class="sub" id="periodText">Cargando datos oficiales…</div>
+    </div>
+    <div class="controls" id="controls"></div>
+  </div>
+  <div class="summary" id="summary">—</div>
+  <div id="chart"></div>
+  <div class="note">Ambos fondos parten exactamente del mismo capital y de la misma fecha. El resultado refleja solo la variación del valor cuota SBS; no usa estimaciones de los modelos A/B.</div>
+</section>
+<a class="back" href="../">← Profuturo</a> · <a class="back" href="../habitat/">Hábitat</a>
+</main>
+<script>
+(()=>{'use strict';
+const INITIAL=10000;
+const state={period:'90'};
+let common=[];
+const $=id=>document.getElementById(id);
+const money=x=>new Intl.NumberFormat('es-PE',{style:'currency',currency:'PEN',minimumFractionDigits:2,maximumFractionDigits:2}).format(x);
+const pct=x=>(x>=0?'+':'')+(x*100).toFixed(2)+'%';
+const fmtDate=s=>{const p=String(s).slice(0,10).split('-');return p.length===3?`${p[2]}/${p[1]}/${p[0]}`:s};
+function officialMap(rows){const m=new Map();for(const r of(Array.isArray(rows)?rows:[])){const d=String(r?.fecha||'').slice(0,10),v=Number(r?.vc);const official=r?.es_oficial===true||String(r?.fuente||'').toUpperCase().includes('SBS');if(d&&Number.isFinite(v)&&v>0&&official)m.set(d,v)}return m}
+function selectRows(){if(!common.length)return[];if(state.period==='all')return common.slice();if(state.period==='2026')return common.filter(r=>r.fecha>='2026-01-01');const n=Number(state.period);return common.slice(Math.max(0,common.length-n));}
+function draw(){const rows=selectRows();if(rows.length<2)throw Error('No hay suficientes fechas SBS comunes para comparar.');const first=rows[0],last=rows.at(-1);const h=rows.map(r=>INITIAL*r.habitat/first.habitat),p=rows.map(r=>INITIAL*r.profuturo/first.profuturo);const rh=h.at(-1)/INITIAL-1,rp=p.at(-1)/INITIAL-1;const winner=rh>rp?'Hábitat':rp>rh?'Profuturo':'Empate';$('periodText').textContent=`${fmtDate(first.fecha)} → ${fmtDate(last.fecha)} · ${rows.length} fechas SBS comunes`;$('summary').textContent=`Hoy: Hábitat ${money(h.at(-1))} (${pct(rh)}) · Profuturo ${money(p.at(-1))} (${pct(rp)}) · Mayor rentabilidad: ${winner}`;
+Plotly.react('chart',[
+ {x:rows.map(r=>r.fecha),y:h,type:'scatter',mode:'lines',name:`Hábitat · ${money(h.at(-1))}`,line:{width:3},hovertemplate:'<b>Hábitat</b><br>%{x}<br>Capital: S/%{y:,.2f}<extra></extra>'},
+ {x:rows.map(r=>r.fecha),y:p,type:'scatter',mode:'lines',name:`Profuturo · ${money(p.at(-1))}`,line:{width:3},hovertemplate:'<b>Profuturo</b><br>%{x}<br>Capital: S/%{y:,.2f}<extra></extra>'}
+],{paper_bgcolor:'#0f1b2d',plot_bgcolor:'#0b1728',font:{color:'#e2e8f0',size:11},margin:{l:62,r:18,t:35,b:50},hovermode:'x unified',legend:{orientation:'h',y:1.12,x:0},xaxis:{gridcolor:'#243244',title:'Fecha SBS'},yaxis:{gridcolor:'#243244',title:'Valor de la inversión (S/)',tickprefix:'S/ '},showlegend:true},{responsive:true,displaylogo:false,displayModeBar:false});}
+function controls(){const box=$('controls');for(const [k,label] of [['30','30 sesiones'],['60','60 sesiones'],['90','90 sesiones'],['180','180 sesiones'],['2026','2026'],['all','Todo']]){const b=document.createElement('button');b.type='button';b.textContent=label;b.classList.toggle('active',state.period===k);b.onclick=()=>{state.period=k;[...box.children].forEach(x=>x.classList.toggle('active',x===b));try{draw()}catch(e){showError(e)}};box.appendChild(b)}}
+function showError(e){$('error').style.display='block';$('error').textContent=e.message||String(e)}
+controls();
+Promise.all([
+ fetch('../data/series.json?c='+Date.now(),{cache:'no-store'}).then(r=>{if(!r.ok)throw Error('No se pudo cargar Profuturo SBS');return r.json()}),
+ fetch('../habitat/data/series.json?c='+Date.now(),{cache:'no-store'}).then(r=>{if(!r.ok)throw Error('No se pudo cargar Hábitat SBS');return r.json()})
+]).then(([prof,hab])=>{const pm=officialMap(prof),hm=officialMap(hab);common=[...pm.keys()].filter(d=>hm.has(d)).sort().map(fecha=>({fecha,profuturo:pm.get(fecha),habitat:hm.get(fecha)}));if(common.length<2)throw Error('No se encontraron valores cuota SBS comunes.');draw()}).catch(showError);
+})();
+</script>
+</body>
+</html>
