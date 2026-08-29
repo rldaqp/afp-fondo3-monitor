@@ -1,5 +1,5 @@
 {
-  "generated_at_lima": "2026-08-29T00:35:03.851018-05:00",
+  "generated_at_lima": "2026-08-29T00:37:10.710212-05:00",
   "signal_date": "2026-08-28",
   "mode": "CIERRE DIARIO",
   "market_open": false,
@@ -8,13 +8,13 @@
   "vc_base": 33.86280220613483,
   "official": {
     "model": "OLS rolling 90 oficial Hábitat",
-    "return_estimated": -0.008795450982137933,
+    "return_estimated": -0.008795450982137925,
     "signal": "BAJA",
     "vc_estimated": 33.56496358921294
   },
   "challenger": {
     "model": "OLS rolling 90 Hábitat + QQQ incremental residualizado",
-    "return_estimated": -0.010791246055826363,
+    "return_estimated": -0.010791246055826374,
     "signal": "BAJA",
     "vc_estimated": 33.49738037538865,
     "features": [
@@ -28,71 +28,71 @@
       "ret_QQQ_residual"
     ],
     "coefficients_raw": {
-      "intercept": 0.00023166022346157462,
-      "ret_SPY": 0.17599550970682062,
-      "ret_NEM": 0.025896697076000345,
-      "ret_FCX": 0.002647306126258012,
-      "ret_EPU": 0.2584709113751325,
-      "ret_MCHI": -0.06678399083930243,
-      "ret_EEM": 0.37472486310440467,
-      "ret_USD_PEN": 0.34325800309627835,
-      "ret_QQQ_residual": 0.2856492338845503
+      "intercept": 0.00023166022346157679,
+      "ret_SPY": 0.1759955097068204,
+      "ret_NEM": 0.025896697076000313,
+      "ret_FCX": 0.0026473061262578907,
+      "ret_EPU": 0.25847091137513223,
+      "ret_MCHI": -0.06678399083930157,
+      "ret_EEM": 0.37472486310440445,
+      "ret_USD_PEN": 0.34325800309627685,
+      "ret_QQQ_residual": 0.2856492338845506
     },
     "contributions": [
       {
         "feature": "ret_SPY",
         "value": -0.002269485222937795,
-        "coefficient": 0.17599550970682062,
-        "contribution_pp": -0.03994192085830347
+        "coefficient": 0.1759955097068204,
+        "contribution_pp": -0.03994192085830341
       },
       {
         "feature": "ret_NEM",
         "value": -0.03257986354173481,
-        "coefficient": 0.025896697076000345,
-        "contribution_pp": -0.0843710856917734
+        "coefficient": 0.025896697076000313,
+        "contribution_pp": -0.0843710856917733
       },
       {
         "feature": "ret_FCX",
         "value": -0.025121158718456216,
-        "coefficient": 0.002647306126258012,
-        "contribution_pp": -0.006650339737406902
+        "coefficient": 0.0026473061262578907,
+        "contribution_pp": -0.006650339737406597
       },
       {
         "feature": "ret_EPU",
-        "value": -0.02265988282853093,
-        "coefficient": 0.2584709113751325,
-        "contribution_pp": -0.5856920566344105
+        "value": -0.02265988282853104,
+        "coefficient": 0.25847091137513223,
+        "contribution_pp": -0.5856920566344128
       },
       {
         "feature": "ret_MCHI",
         "value": 0.0060108926627600034,
-        "coefficient": -0.06678399083930243,
-        "contribution_pp": -0.04014314005257943
+        "coefficient": -0.06678399083930157,
+        "contribution_pp": -0.040143140052578914
       },
       {
         "feature": "ret_EEM",
         "value": -0.006951652365924765,
-        "coefficient": 0.37472486310440467,
-        "contribution_pp": -0.26049569811705686
+        "coefficient": 0.37472486310440445,
+        "contribution_pp": -0.2604956981170567
       },
       {
         "feature": "ret_USD_PEN",
         "value": -8.955824859946393e-05,
-        "coefficient": 0.34325800309627835,
-        "contribution_pp": -0.003074158557505205
+        "coefficient": 0.34325800309627685,
+        "contribution_pp": -0.0030741585575051926
       },
       {
         "feature": "ret_QQQ_residual",
-        "value": -0.0028679309643402833,
-        "coefficient": 0.2856492338845503,
-        "contribution_pp": -0.08192222827975816
+        "value": -0.002867930964340295,
+        "coefficient": 0.2856492338845506,
+        "contribution_pp": -0.08192222827975856
       }
     ],
     "coefficient_note": "Coeficientes efectivos en escala original, derivados exactamente del modelo estandarizado vigente."
   },
   "qqq": {
     "return": -0.006462222461472877,
-    "residual": -0.0028679309643402833,
+    "residual": -0.002867930964340295,
     "previous_close": 721.1099853515625,
     "current_price": 716.4500122070312,
     "source": "ÚLTIMO CORTE YAHOO",
@@ -109,7 +109,7 @@
   "comparison": {
     "same_signal": true,
     "vc_difference": -0.06758321382428534,
-    "return_difference_pp": -0.19957950736884303
+    "return_difference_pp": -0.19957950736884494
   },
   "training": {
     "window": 90,
@@ -136,8 +136,8 @@
       "30": {
         "n": 30,
         "official_mae": 0.003063136561048758,
-        "challenger_mae": 0.0031083041041675644,
-        "mae_improvement_pct": -1.474552055339707,
+        "challenger_mae": 0.003108304104167565,
+        "mae_improvement_pct": -1.474552055339721,
         "official_direction_accuracy": 0.8,
         "challenger_direction_accuracy": 0.8333333333333334,
         "direction_delta_pp": 3.3333333333333326,
@@ -147,9 +147,9 @@
       },
       "60": {
         "n": 60,
-        "official_mae": 0.003323380192979487,
+        "official_mae": 0.0033233801929794865,
         "challenger_mae": 0.003299732758113329,
-        "mae_improvement_pct": 0.7115476861814379,
+        "mae_improvement_pct": 0.7115476861814249,
         "official_direction_accuracy": 0.8,
         "challenger_direction_accuracy": 0.8166666666666667,
         "direction_delta_pp": 1.6666666666666607,
@@ -171,9 +171,9 @@
       },
       "180": {
         "n": 180,
-        "official_mae": 0.003246897917465507,
+        "official_mae": 0.0032468979174655075,
         "challenger_mae": 0.0031899468551011157,
-        "mae_improvement_pct": 1.754014564426059,
+        "mae_improvement_pct": 1.754014564426072,
         "official_direction_accuracy": 0.8388888888888889,
         "challenger_direction_accuracy": 0.8444444444444444,
         "direction_delta_pp": 0.5555555555555536,
@@ -184,8 +184,8 @@
       "ALL": {
         "n": 303,
         "official_mae": 0.0026583740115839493,
-        "challenger_mae": 0.0025721185704147566,
-        "mae_improvement_pct": 3.2446691396068372,
+        "challenger_mae": 0.002572118570414757,
+        "mae_improvement_pct": 3.2446691396068204,
         "official_direction_accuracy": 0.759075907590759,
         "challenger_direction_accuracy": 0.7722772277227723,
         "direction_delta_pp": 1.320132013201325,
