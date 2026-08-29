@@ -7,6 +7,7 @@ on:
     paths:
       - "public/**"
       - "scripts/ensure_dual_trade_runtime.py"
+      - "scripts/ensure_comparator_runtime.py"
       - ".github/workflows/deploy-pages-current.yml"
   workflow_dispatch:
 
@@ -31,15 +32,18 @@ jobs:
         with:
           ref: migracion-github-actions
 
-      - name: Asegurar operaciones y Drive en ambos visores
+      - name: Asegurar operaciones y comparador
         run: |
           python scripts/ensure_dual_trade_runtime.py
+          python scripts/ensure_comparator_runtime.py
           grep -q 'data/dual_trade_runtime_v1.js?rev=DUALTRADEV3' public/index.html
           grep -q 'data/dual_trade_runtime_v1.js?rev=DUALTRADEV3' public/habitat/index.html
           grep -q "const FUND='PROFUTURO';" public/data/dual_trade_runtime_v1.js
           grep -q "const FUND='HABITAT';" public/habitat/data/dual_trade_runtime_v1.js
           grep -q 'Conectar Drive' public/data/dual_trade_runtime_v1.js
           grep -q 'Conectar Drive' public/habitat/data/dual_trade_runtime_v1.js
+          grep -q 'comparator_runtime_v2.js?rev=CMPV2-20260829' public/comparador-fondos/index.html
+          grep -q 'Operaciones en Drive' public/comparador-fondos/comparator_runtime_v2.js
 
       - name: Configurar Pages
         uses: actions/configure-pages@v5
