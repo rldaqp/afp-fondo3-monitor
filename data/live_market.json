@@ -3,8 +3,8 @@
   "mode": "CIERRE DIARIO",
   "market_open": false,
   "signal_date": "2026-08-28",
-  "vc_estimated": 70.45876099448878,
-  "return_estimated": -0.013380981311961205,
+  "vc_estimated": 71.2299630366511,
+  "return_estimated": -0.013557270806546262,
   "signal": "BAJA",
   "assets": [
     {
@@ -78,16 +78,16 @@
       "ticker": "TUCAMBISTA",
       "timestamp": "2026-08-28",
       "precio_anterior": 3.346,
-      "precio_actual": 3.355,
-      "retorno": 0.0026897788404063316,
-      "retorno_modelo": 0.0026897788404063316,
+      "precio_actual": 3.3535,
+      "retorno": 0.0022414823670053874,
+      "retorno_modelo": 0.0022414823670053874,
       "estado": "TUCAMBISTA MIDPOINT · MISMO DIA · USADO POR MODELO",
       "usado_modelo": true
     }
   ],
   "action": "CIERRE",
   "engine": "LIVE INDEPENDIENTE",
-  "fx_rule": "BCRP para la fecha cuando existe; si BCRP aun no publica, TuCambista midpoint (Compra+Venta)/2 del mismo dia. Yahoo no se usa para USD/PEN.",
+  "fx_rule": "BCRP si existe para la fecha; si no, TuCambista midpoint del mismo día. Yahoo no se usa para USD/PEN.",
   "fx_source": "TUCAMBISTA MIDPOINT",
   "fx_provisional": true,
   "experimental_assets": [
@@ -162,8 +162,8 @@
       "ticker": "TUCAMBISTA",
       "timestamp": "2026-08-28",
       "precio_anterior": 3.346,
-      "precio_actual": 3.355,
-      "retorno": 0.0026897788404063316,
+      "precio_actual": 3.3535,
+      "retorno": 0.0022414823670053874,
       "retorno_modelo": null,
       "estado": "TUCAMBISTA MIDPOINT · MISMO DIA · USADO POR MODELO · NUEVO 60/30 EXPERIMENTAL",
       "usado_modelo": false,
@@ -221,7 +221,7 @@
     "signal_date": "2026-08-28",
     "status": "COMPLETO/VALIDADO",
     "problems": [],
-    "rule": "Fuera del horario de mercado se exige cierre diario exacto de la fecha; no se conservan capturas 15:55 como cierre."
+    "rule": "Post-cierre se exige cierre diario exacto; una captura 15:55 nunca se acepta como cierre."
   },
   "historical_fx_validation": {
     "source": "BCRP PD04638PD · TC INTERBANCARIO VENTA · OFICIAL",
@@ -239,13 +239,27 @@
       "corrected": true
     }
   },
-  "fx_buy": 3.34,
-  "fx_sell": 3.37,
-  "fx_midpoint": 3.355,
+  "fx_buy": 3.339,
+  "fx_sell": 3.368,
+  "fx_midpoint": 3.3535,
   "fx_url": "https://tucambista.pe/tipo-de-cambio-28-de-agosto",
-  "vc_base": 71.41435514610457,
-  "model_snapshot_source": "CIERRE RECALCULADO · FACTORES DEFINITIVOS + TUCAMBISTA",
+  "vc_base": 71.9377875,
+  "model_snapshot_source": "CIERRE RECALCULADO · ULTIMO SBS REAL + FACTORES DEFINITIVOS + TUCAMBISTA",
   "model_snapshot_date": "2026-08-28",
-  "finalized_at_lima": "2026-08-29T15:14:29.606610-05:00",
-  "finalizer_version": "tucambista-final-close-v1"
+  "finalized_at_lima": "2026-08-29T15:21:01.621739-05:00",
+  "finalizer_version": "tucambista-final-close-v4",
+  "fx_quote_source": "TUCAMBISTA VERIFICADO POR FECHA",
+  "vc_anchor_date": "2026-08-26",
+  "vc_chain_after_sbs": [
+    {
+      "fecha": "2026-08-27",
+      "ret_estimado": 0.003768970582986976,
+      "vc_estimado": 72.20891890489267
+    },
+    {
+      "fecha": "2026-08-28",
+      "ret_estimado": -0.013557270806546262,
+      "vc_estimado": 71.2299630366511
+    }
+  ]
 }
