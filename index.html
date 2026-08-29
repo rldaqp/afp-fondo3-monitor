@@ -47,4 +47,108 @@ function render(){validateDaily();const s=DB.latest_sbs||{},a=DB.models.qqq,b=DB
 fetch(DATA+'?ts='+Date.now(),{cache:'no-store'}).then(r=>{if(!r.ok)throw Error('HTTP '+r.status);return r.json()}).then(d=>{DB=d;if(!d.models?.qqq||!d.models?.new_tickers)throw Error('Faltan los dos Rolling 30');render()}).catch(e=>{const box=$('loadError');box.style.display='block';box.textContent='Visor detenido para evitar mostrar datos engañosos: '+e.message;console.error(e)});
 })();
 </script>
+
+
+<!-- FACTOR_WEIGHT_CHARTS_DUAL_V2 -->
+<style id="factorWeightChartsDualStyles">
+.weightbox{margin:8px 0 10px;padding:9px;background:#0b1728;border:1px solid #26364a;border-radius:10px}
+.weighthead{display:flex;justify-content:space-between;gap:8px;align-items:flex-start;flex-wrap:wrap;margin-bottom:3px}
+.weighthead h3{margin:0;font-size:.88rem}
+.weightcontrols{display:flex;gap:4px;flex-wrap:wrap}
+.weightcontrols button{border:1px solid #35465d;background:#132238;color:#fff;border-radius:8px;padding:5px 8px;font-weight:800;font-size:.67rem;cursor:pointer}
+.weightcontrols button.active{background:#2563eb}
+.weightnote{font-size:.61rem;color:#9aa9bd;line-height:1.35;margin:2px 0 4px}
+.weightchart{height:280px;width:100%}
+.weightfoot{font-size:.59rem;color:#7f8da3;line-height:1.35;margin-top:1px}
+@media(max-width:620px){.weightchart{height:265px}.weightcontrols button{font-size:.63rem;padding:5px 7px}}
+</style>
+<script>
+(()=>{'use strict';
+const KEYS=['qqq','new_tickers'];
+const state={qqq:'beta',new_tickers:'beta'};
+const n=x=>Number.isFinite(Number(x))?Number(x):null;
+const norm=x=>String(x||'').toUpperCase().replace(/^RET_/,'').replace(/_ALT$/,'').replace(/[^A-Z0-9]/g,'');
+const fmtSigned=(x,d=4)=>x==null?'—':(x>=0?'+':'')+Number(x).toFixed(d);
+
+function factorRows(model){
+  const features=model.features||[], labels=model.features_display||[], coeff=model.current?.coefficients||{}, assets=model.intraday_assets||[];
+  return features.map((f,i)=>{
+    const label=labels[i]||String(f).replace(/^ret_/,'').replace('_alt','');
+    const beta=n(coeff[f]);
+    const asset=assets.find(a=>norm(a.serie||a.ticker)===norm(label));
+    const ret=n(asset?.retorno_modelo??asset?.retorno);
+    const pp=beta!==null&&ret!==null?beta*ret*100:null;
+    return {label,beta,ret,pp};
+  }).filter(r=>r.beta!==null);
+}
+
+function draw(key,model){
+  const rows=factorRows(model);
+  const mode=state[key];
+  const isBeta=mode==='beta';
+  const x=rows.map(r=>isBeta?r.beta:r.pp);
+  const colors=x.map(v=>v==null?'#64748b':v>=0?'#4ade80':'#f87171');
+  const custom=rows.map(r=>[r.beta,r.ret==null?null:r.ret*100,r.pp]);
+  const text=rows.map(r=>isBeta?('β '+fmtSigned(r.beta,4)):(r.pp==null?'s/d':fmtSigned(r.pp,3)+' pp'));
+  const title=isBeta?'Coeficiente β':'Aporte al retorno estimado (pp)';
+  const hover=isBeta
+    ? '<b>%{y}</b><br>β %{customdata[0]:+.4f}<br>Retorno factor %{customdata[1]:+.3f}%<br>Aporte sesión %{customdata[2]:+.3f} pp<extra></extra>'
+    : '<b>%{y}</b><br>Aporte %{customdata[2]:+.3f} pp<br>β %{customdata[0]:+.4f}<br>Retorno factor %{customdata[1]:+.3f}%<extra></extra>';
+  Plotly.react('dWeights_'+key,[{
+    type:'bar',orientation:'h',
+    x,y:rows.map(r=>r.label),
+    marker:{color:colors},
+    text,textposition:'auto',
+    customdata:custom,
+    hovertemplate:hover
+  }],{
+    paper_bgcolor:'#0b1728',plot_bgcolor:'#0b1728',
+    font:{color:'#dbe7f5',size:10},
+    margin:{l:88,r:18,t:8,b:46},
+    xaxis:{title,gridcolor:'#213147',zeroline:true,zerolinecolor:'#cbd5e1',zerolinewidth:1},
+    yaxis:{autorange:'reversed',automargin:true},
+    showlegend:false,bargap:.28
+  },{responsive:true,displaylogo:false,displayModeBar:false});
+}
+
+function ensurePanel(key,model){
+  const host=document.getElementById('dM_'+key);
+  if(!host)return false;
+  let box=host.querySelector('.weightbox');
+  if(!box){
+    box=document.createElement('div');
+    box.className='weightbox';
+    box.innerHTML=`<div class="weighthead"><h3>Pesos de los factores · Rolling 30</h3><div class="weightcontrols"><button type="button" data-mode="beta" class="active">Peso β</button><button type="button" data-mode="aporte">Aporte sesión</button></div></div><div class="weightnote">El gráfico muestra los coeficientes OLS vigentes de cada ticker. β no es un porcentaje de cartera ni tiene que sumar 100%.</div><div class="weightchart" id="dWeights_${key}"></div><div class="weightfoot">Verde = efecto positivo · rojo = efecto negativo. En “Aporte sesión” se muestra β × retorno observado del factor, en puntos porcentuales del retorno estimado.</div>`;
+    const charts=host.querySelector('.charts');
+    if(charts)host.insertBefore(box,charts);else host.appendChild(box);
+    box.querySelectorAll('button[data-mode]').forEach(btn=>btn.addEventListener('click',()=>{
+      state[key]=btn.dataset.mode;
+      box.querySelectorAll('button[data-mode]').forEach(b=>b.classList.toggle('active',b===btn));
+      draw(key,model);
+    }));
+  }
+  draw(key,model);
+  return true;
+}
+
+async function renderWeights(){
+  try{
+    const r=await fetch('data/dual_rolling30_monitor.json?weights2='+Date.now(),{cache:'no-store'});
+    if(!r.ok)throw Error('HTTP '+r.status);
+    const db=await r.json();
+    let tries=0;
+    const go=()=>{
+      tries++;
+      let ok=true;
+      for(const key of KEYS){const m=db.models?.[key];ok=Boolean(m&&ensurePanel(key,m))&&ok;}
+      if(!ok&&tries<20)setTimeout(go,200);
+    };
+    go();
+  }catch(e){console.warn('weight charts',e)}
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',renderWeights);else renderWeights();
+})();
+</script>
+
+<script src="data/dual_trade_runtime_v1.js?rev=DUALTRADEV3"></script>
 </body></html>
