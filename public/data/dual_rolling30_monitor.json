@@ -1,5 +1,5 @@
 {
-  "generated_at_lima": "2026-08-29T15:33:03.442009-05:00",
+  "generated_at_lima": "2026-08-29T15:35:34.655899-05:00",
   "fund": "PROFUTURO Fondo 3",
   "signal_date": "2026-08-28",
   "market_mode": "CIERRE DIARIO",
@@ -2020,23 +2020,27 @@
           "include_in_score": true
         },
         {
+          "model_key": "qqq",
+          "model_name": "Rolling 30 · QQQ",
           "fecha": "2026-08-24",
-          "base_vc": 72.02788462793437,
-          "vc_estimated": 71.58040482180978,
-          "return_estimated": -0.006212591254568605,
+          "first_generated_at_lima": "2026-08-24T12:54:43.164023-05:00",
+          "last_updated_at_lima": "2026-08-24T15:14:51.744667-05:00",
+          "frozen": true,
+          "anchor_date": "2026-08-20",
+          "anchor_vc": 71.0427094,
+          "base_vc": 72.01282514070252,
+          "vc_estimated": 71.52639420892588,
+          "return_estimated": -0.0067547819548285,
           "signal": "BAJA",
           "actual_vc": 70.9791366,
           "actual_return_daily": -0.011513122467057602,
-          "actual_return": -0.011513122467057602,
-          "anchor_date": "2026-08-20",
-          "anchor_vc": 71.0427094,
-          "error_vc": 0.6012682218097751,
-          "error_pct": 0.847105573005491,
-          "source": "RECALCULO EXACTO POST-INCIDENTE 24/08 · CIERRES DIARIOS VALIDOS · BCRP PD04638PD",
-          "quality_status": "CORREGIDO_EXACTO",
-          "quality_note": "Se sustituye en el visor la fila operacional contaminada del 24/08. El recálculo usa ancla SBS 20/08, encadena 21 y 24 sin conocer sus VC, y usa cierres correctos de factores y BCRP oficial.",
-          "include_in_score": true,
-          "correction_basis": "analysis/recheck_20260824_exact.json"
+          "error_vc": 0.5472576089258752,
+          "error_pct": 0.7710119270820659,
+          "direction_hit": true,
+          "source": "OPERACIONAL ROLLING30 · CIERRE",
+          "quality_status": "OK",
+          "quality_note": null,
+          "include_in_score": true
         },
         {
           "model_key": "qqq",
@@ -3412,23 +3416,27 @@
           "include_in_score": true
         },
         {
+          "model_key": "new_tickers",
+          "model_name": "Rolling 30 · nuevos tickers",
           "fecha": "2026-08-24",
-          "base_vc": 71.99308316627153,
-          "vc_estimated": 71.24786080890082,
-          "return_estimated": -0.010351304939247876,
-          "signal": "BAJA",
-          "actual_vc": 70.9791366,
-          "actual_return_daily": -0.011513122467057602,
-          "actual_return": -0.011513122467057602,
+          "first_generated_at_lima": "2026-08-24T12:54:43.164023-05:00",
+          "last_updated_at_lima": "2026-08-24T15:14:51.744667-05:00",
+          "frozen": true,
           "anchor_date": "2026-08-20",
           "anchor_vc": 71.0427094,
-          "error_vc": 0.2687242089008208,
-          "error_pct": 0.37859605198524715,
-          "source": "RECALCULO EXACTO POST-INCIDENTE 24/08 · CIERRES DIARIOS VALIDOS · BCRP PD04638PD",
-          "quality_status": "CORREGIDO_EXACTO",
-          "quality_note": "Se sustituye en el visor la fila operacional contaminada del 24/08. El recálculo usa ancla SBS 20/08, encadena 21 y 24 sin conocer sus VC, y usa cierres correctos de factores y BCRP oficial.",
-          "include_in_score": true,
-          "correction_basis": "analysis/recheck_20260824_exact.json"
+          "base_vc": 71.0427094,
+          "vc_estimated": 71.73151636377013,
+          "return_estimated": 0.009695674187929,
+          "signal": "SUBE",
+          "actual_vc": 70.9791366,
+          "actual_return_daily": -0.011513122467057602,
+          "error_vc": 0.7523797637701222,
+          "error_pct": 1.0600012902525435,
+          "direction_hit": false,
+          "source": "OPERACIONAL ROLLING30 · CIERRE · INCIDENTE DATOS DOCUMENTADO · INCIDENTE DATOS DOCUMENTADO · INCIDENTE DATOS DOCUMENTADO · INCIDENTE DATOS DOCUMENTADO · INCIDENTE DATOS DOCUMENTADO · INCIDENTE DATOS DOCUMENTADO · INCIDENTE DATOS DOCUMENTADO · INCIDENTE DATOS DOCUMENTADO · INCIDENTE DATOS DOCUMENTADO · INCIDENTE DATOS DOCUMENTADO · INCIDENTE DATOS DOCUMENTADO · INCIDENTE DATOS DOCUMENTADO · INCIDENTE DATOS DOCUMENTADO · INCIDENTE DATOS DOCUMENTADO · INCIDENTE DATOS DOCUMENTADO · INCIDENTE DATOS DOCUMENTADO · INCIDENTE DATOS DOCUMENTADO · INCIDENTE DATOS DOCUMENTADO",
+          "quality_status": "EXCLUIR_SCORE",
+          "quality_note": "Predicción operacional preservada, pero el cierre recibió CPER=38.76 y SPBLSCUP=500.00 por extracción inconsistente; además faltó la fila de factores 21/08 en la cadena. No representa limpiamente al modelo.",
+          "include_in_score": false
         },
         {
           "model_key": "new_tickers",
@@ -3609,35 +3617,5 @@
     "provisional": true,
     "rule": "BCRP PD04638PD oficial de la fecha; si todavía no existe, TuCambista midpoint provisional de la misma fecha. Mismo USD/PEN para ambos Rolling 30; Yahoo PEN=X excluido."
   },
-  "operational_history_rule": "Cada predicción diaria se congela al cierre y queda inmutable. Cuando SBS publica el VC real, solo se completa actual_vc/error. Incidentes comprobados de datos se preservan en el histórico, se etiquetan y se excluyen del score limpio sin reescribir la predicción original.",
-  "historical_corrections": {
-    "2026-08-24": {
-      "status": "CORREGIDO",
-      "reason": "Incidente documentado en datos operacionales del 24/08, especialmente CPER y SPBLSCUP del Modelo B y continuidad de la cadena 21→24.",
-      "basis": "analysis/recheck_20260824_exact.json",
-      "anchor": {
-        "fecha": "2026-08-20",
-        "vc": 71.0427094
-      },
-      "sbs_actual_21": 71.8058461,
-      "sbs_actual_24": 70.9791366,
-      "models": {
-        "qqq": {
-          "vc_estimated": 71.58040482180978,
-          "return_estimated": -0.006212591254568605,
-          "error_pct_vs_sbs_24": 0.847105573005491
-        },
-        "new_tickers": {
-          "vc_estimated": 71.24786080890082,
-          "return_estimated": -0.010351304939247876,
-          "error_pct_vs_sbs_24": 0.37859605198524715
-        }
-      }
-    }
-  },
-  "history_chart_meta": {
-    "source": "ROLLING30 ONE-STEP DIARIO",
-    "horizon_sessions": 1,
-    "note": "El gráfico diario usa como base el VC SBS real de la sesión inmediatamente anterior. Blind3 queda solo como validación agregada."
-  }
+  "operational_history_rule": "Cada predicción diaria se congela al cierre y queda inmutable. Cuando SBS publica el VC real, solo se completa actual_vc/error. Incidentes comprobados de datos se preservan en el histórico, se etiquetan y se excluyen del score limpio sin reescribir la predicción original."
 }
