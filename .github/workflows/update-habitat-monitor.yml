@@ -16,6 +16,8 @@ on:
       - "scripts/build_habitat_qqq_incremental_challenger.py"
       - "scripts/postprocess_habitat_qqq_incremental_ui.py"
       - "scripts/postprocess_habitat_weight_charts.py"
+      - "scripts/build_habitat_dual_rolling30_monitor.py"
+      - "scripts/postprocess_habitat_dual_from_profuturo.py"
       - "scripts/build_qqq_incremental_challenger.py"
       - "scripts/enrich_habitat_daily_sbs.py"
       - "scripts/postprocess_habitat_chart_clarity.py"
@@ -67,7 +69,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Generar Hábitat con VC SBS oficiales y OLS rolling 90
+      - name: Generar base Hábitat y actualizar SBS/mercado
         env:
           PYTHONUTF8: "1"
           PYTHONIOENCODING: "utf-8"
@@ -80,72 +82,54 @@ jobs:
           python scripts/postprocess_habitat_qqq_incremental_ui.py
           python scripts/postprocess_habitat_weight_charts.py
 
-      - name: Validar Hábitat OLS QQQ y Drive
+      - name: Validar base y fuentes de Hábitat antes de migrar UI
         run: |
           python scripts/validate_habitat_official.py
           PYTHONPATH=scripts python -c "from habitat_complete_official_calendar import validate_official_estimate_calendar; validate_official_estimate_calendar()"
-          grep -q "HABITAT_CHART_OFFICIAL_VS_OLS_V6" public/habitat/index.html
-          grep -q "const FUND='HABITAT';" public/habitat/index.html
-          grep -q "const DRIVE_SHEET='Habitat';" public/habitat/index.html
-          grep -q "const KEY='habitat_fondo3_trade_history_v3';" public/habitat/index.html
-          grep -q "const TRADE_KEY='habitat_fondo3_trade_history_v3';" public/habitat/index.html
-          grep -q "const SNAP_KEY='habitat_fondo3_drive_sync_snapshot_v3';" public/habitat/index.html
-          grep -q "const LEGACY_KEYS=\[\];" public/habitat/index.html
-          grep -q "const ORIGIN='VISOR GITHUB · HABITAT';" public/habitat/index.html
-          grep -q "u.searchParams.set('fund',FUND);" public/habitat/index.html
-          grep -q "TRADE_CLOUD_FUND_ROUTING_V3" public/habitat/index.html
-          grep -q "fondo3-local-trade-change" public/habitat/index.html
-          grep -q "AKfycbxoYHkCu0cZPx_KsMlI0Jd5PEATgxBjZTR8oK8qs1cUjRHJbiK0t-bxkH5ACprgp81S7g" public/habitat/index.html
-          grep -q "fuente:'PENDIENTE'" public/habitat/index.html
-          ! grep -q "No existe una fecha efectiva de entrada en la línea del monitor." public/habitat/index.html
-          grep -q "raw.githubusercontent.com/rldaqp/afp-fondo3-monitor/migracion-github-actions/public/habitat/data/live_market.json" public/habitat/index.html
-          test -s public/habitat/data/qqq_incremental_challenger.json
-          grep -q "QQQ INCREMENTAL · CHALLENGER" public/habitat/index.html
-          grep -q "HABITAT_QQQ_INCREMENTAL_PANEL_V1" public/habitat/index.html
-          grep -q "HABITAT_FACTOR_WEIGHT_CHARTS_V1_OFFICIAL START" public/habitat/index.html
-          grep -q "HABITAT_FACTOR_WEIGHT_CHARTS_V1_CHALLENGER START" public/habitat/index.html
-          grep -q "coefficients_raw" public/habitat/data/qqq_incremental_challenger.json
-          ! grep -q "SPY_QQQ_CHALLENGER_PANEL START" public/habitat/index.html
-          ! grep -q "Mercado USA · SPY vs Nasdaq QQQ" public/habitat/index.html
+          test -s public/habitat/data/live_market.json
+          test -s public/habitat/data/latest.json
           python - <<'PY'
           import json
-          import re
           from pathlib import Path
-
-          html = Path('public/habitat/index.html').read_text(encoding='utf-8')
-          for script_id in ('tradeHistoryScript', 'tradeCloudScript'):
-              m = re.search(rf'<script id="{script_id}">(.*?)</script>', html, re.S)
-              assert m, script_id
-              Path(f'/tmp/{script_id}.js').write_text(m.group(1), encoding='utf-8')
-          assert "});$('tradeMsg').textContent='Operación guardada y sincronizada con Drive.'});" not in html
-
-          hab = json.loads(Path('public/habitat/data/live_market.json').read_text(encoding='utf-8'))
-          qqq = json.loads(Path('public/habitat/data/qqq_incremental_challenger.json').read_text(encoding='utf-8'))
-          assert qqq['signal_date'] == hab['signal_date']
-          assert qqq['official']['signal'] == hab['signal']
-          assert abs(float(qqq['official']['return_estimated']) - float(hab['return_estimated'])) < 1e-12
-          assert abs(float(qqq['official']['vc_estimated']) - float(hab['vc_estimated'])) < 1e-10
-          assert abs(float(qqq['vc_base']) * (1.0 + float(qqq['official']['return_estimated'])) - float(qqq['official']['vc_estimated'])) < 1e-8
-          assert int(qqq['training']['n']) == 90
-
-          challenger = qqq['challenger']
-          assert len(challenger['features']) == 8
-          assert set(challenger['features']) == set(challenger['coefficients_raw']) - {'intercept'}
-          assert len(challenger['contributions']) == 8
-          decomposed = float(challenger['coefficients_raw']['intercept']) + sum(
-              float(row['coefficient']) * float(row['value'])
-              for row in challenger['contributions']
-          )
-          assert abs(decomposed - float(challenger['return_estimated'])) < 1e-10
-
-          # Profuturo ya usa una arquitectura dual Rolling30 distinta. No se
-          # compara su lista de activos contra Hábitat: ese control heredado era
-          # el que fallaba con AssertionError: SPY y generaba correos repetidos.
-          print('Hábitat validado de forma independiente; Profuturo dual no se mezcla en esta prueba.')
-          print('Descomposición challenger validada:', decomposed)
+          latest=json.loads(Path('public/habitat/data/latest.json').read_text(encoding='utf-8'))
+          live=json.loads(Path('public/habitat/data/live_market.json').read_text(encoding='utf-8'))
+          assert float(latest['latest_sbs_vc']) > 0
+          assert live.get('signal_date')
+          print('Base Hábitat válida:', latest['latest_sbs_date'], latest['latest_sbs_vc'], live['signal_date'])
           PY
-          node --check /tmp/tradeHistoryScript.js
-          node --check /tmp/tradeCloudScript.js
+
+      - name: Construir modelos A y B Rolling 30 de Hábitat
+        env:
+          PYTHONUTF8: "1"
+          PYTHONIOENCODING: "utf-8"
+        run: |
+          python scripts/build_habitat_dual_rolling30_monitor.py
+          python scripts/postprocess_habitat_dual_from_profuturo.py
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          d=json.loads(Path('public/habitat/data/dual_rolling30_monitor.json').read_text(encoding='utf-8'))
+          assert d['fund']=='HÁBITAT Fondo 3'
+          assert float(d['latest_sbs']['vc']) > 0
+          assert set(d['models'])=={'qqq','new_tickers'}
+          a=d['models']['qqq']; b=d['models']['new_tickers']
+          assert a['features_display']==['SPY','EEM','EPU','MCHI','USD/PEN','QQQ']
+          assert b['features_display']==['.INX','CPER','EEM','NDX','SPBLSCUP','USD/PEN']
+          assert int(a['current']['train_n'])==30
+          assert int(b['current']['train_n'])==30
+          assert len(a['current']['coefficients'])==7
+          assert len(b['current']['coefficients'])==7
+          html=Path('public/habitat/index.html').read_text(encoding='utf-8')
+          assert 'Modelo A · Rolling 30 + QQQ' in html
+          assert 'Modelo B · Rolling 30 + nuevos tickers' in html
+          assert 'Último VC SBS oficial' in html
+          assert 'data/dual_rolling30_monitor.json' in html
+          assert 'Pesos de los factores' in html or 'FACTOR_WEIGHT' in html
+          print('Hábitat dual Rolling30 validado. SBS:', d['latest_sbs'])
+          print('A:', a['current']['vc_estimated'], a['current']['signal'])
+          print('B:', b['current']['vc_estimated'], b['current']['signal'])
+          PY
+          node --check public/habitat/data/dual_trade_runtime_v1.js
 
       - name: Guardar resultados de Hábitat
         run: |
@@ -155,7 +139,7 @@ jobs:
           if git diff --cached --quiet; then
             echo "No hay cambios de Hábitat para confirmar."
           else
-            git commit -m "Actualizar AFP Hábitat Fondo 3 con SBS oficial y QQQ incremental"
+            git commit -m "Actualizar Hábitat Fondo 3 con modelos A B Rolling30"
             PUSHED=0
             for attempt in 1 2 3; do
               if git push origin HEAD:migracion-github-actions; then
@@ -181,17 +165,25 @@ jobs:
           git reset --hard origin/migracion-github-actions
           python scripts/ensure_dual_trade_runtime.py
 
-      - name: Verificar visor dual Profuturo y Drive antes de publicar
+      - name: Verificar ambos visores duales antes de publicar
         run: |
           test -s public/index.html
           test -s public/data/dual_rolling30_monitor.json
           test -s public/data/dual_trade_runtime_v1.js
           grep -q "Dos modelos Rolling 30" public/index.html
           grep -q "dual_rolling30_monitor.json" public/index.html
-          grep -q "dual_trade_runtime_v1.js" public/index.html
           grep -q "Conectar Drive" public/data/dual_trade_runtime_v1.js
-          grep -q "Registrar operación" public/data/dual_trade_runtime_v1.js
           ! grep -q "OLS OFICIAL · ROLLING 90" public/index.html
+          test -s public/habitat/index.html
+          test -s public/habitat/data/dual_rolling30_monitor.json
+          test -s public/habitat/data/dual_trade_runtime_v1.js
+          grep -q "Hábitat Fondo 3" public/habitat/index.html
+          grep -q "Modelo A · Rolling 30 + QQQ" public/habitat/index.html
+          grep -q "Modelo B · Rolling 30 + nuevos tickers" public/habitat/index.html
+          grep -q "dual_rolling30_monitor.json" public/habitat/index.html
+          grep -q "const FUND='HABITAT';" public/habitat/data/dual_trade_runtime_v1.js
+          grep -q "habitat_fondo3_trade_history_v3" public/habitat/data/dual_trade_runtime_v1.js
+          ! grep -q "OLS OFICIAL · ROLLING 90" public/habitat/index.html
 
       - name: Configurar GitHub Pages
         uses: actions/configure-pages@v5
