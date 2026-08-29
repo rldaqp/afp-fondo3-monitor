@@ -1,0 +1,27 @@
+name: TMP comparar A sin QQQ
+on:
+  push:
+    branches:
+      - analysis-no-qqq-20260829
+    paths:
+      - '.github/workflows/tmp-compare-a-no-qqq.yml'
+      - 'scripts/tmp_compare_a_no_qqq.py'
+permissions:
+  contents: read
+jobs:
+  compare:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: analysis-no-qqq-20260829
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: requirements-live.txt
+      - run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements-live.txt
+      - run: python scripts/tmp_compare_a_no_qqq.py
