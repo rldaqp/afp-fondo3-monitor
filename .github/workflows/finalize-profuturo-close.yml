@@ -1,0 +1,109 @@
+name: Finalizar cierre Profuturo
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - migracion-github-actions
+    paths:
+      - ".github/workflows/finalize-profuturo-close.yml"
+      - "scripts/finalize_profuturo_close.py"
+  workflow_run:
+    workflows:
+      - "Actualizar mercado intradia Fondo 3"
+    types:
+      - completed
+
+permissions:
+  contents: write
+
+concurrency:
+  group: fondo3-data-writes
+  cancel-in-progress: false
+
+jobs:
+  finalize:
+    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+
+    steps:
+      - name: Descargar repositorio
+        uses: actions/checkout@v4
+        with:
+          ref: migracion-github-actions
+          fetch-depth: 0
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+          cache-dependency-path: requirements-live.txt
+
+      - name: Instalar dependencias
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements-live.txt
+
+      - name: Recalcular cierre y publicar
+        env:
+          PYTHONUTF8: "1"
+          PYTHONIOENCODING: "utf-8"
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git fetch origin migracion-github-actions
+          git reset --hard origin/migracion-github-actions
+
+          python scripts/finalize_profuturo_close.py
+          python scripts/build_reduced_6030_challenger.py
+          python scripts/build_reduced_6030_history.py
+
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          live = json.loads(Path("public/data/live_market.json").read_text(encoding="utf-8"))
+          assert live.get("fx_source") in {"BCRP", "TUCAMBISTA MIDPOINT"}, live
+          assert "YAHOO PEN=X" not in str(live.get("fx_source", "")), live
+          assert float(live.get("vc_estimated", 0)) > 0, live
+          if not bool(live.get("market_open")):
+              validation = live.get("new_ticker_validation") or {}
+              assert validation.get("status") == "COMPLETO/VALIDADO", validation
+              signal_date = str(live.get("signal_date", ""))[:10]
+              for row in live.get("experimental_assets", []):
+                  if row.get("serie") in {".INX", "CPER", "EEM", "NDX"}:
+                      assert str(row.get("timestamp", ""))[:10] == signal_date, row
+                      assert row.get("validado_modelo") is True, row
+          print("Cierre finalizado:", live.get("signal_date"), live.get("fx_source"), live.get("vc_estimated"))
+          PY
+
+          git add public/data/live_market.json public/data/reduced_6030_challenger.json public/data/reduced_6030_history.json data/rolling90/reduced_6030_shadow.csv data/rolling90/reduced_6030_state.json
+          if git diff --cached --quiet; then
+            echo "No hubo cambios adicionales."
+          else
+            git commit -m "Finalizar cierre Profuturo con TuCambista"
+            if ! git push origin HEAD:migracion-github-actions; then
+              git pull --rebase origin migracion-github-actions
+              git push origin HEAD:migracion-github-actions
+            fi
+          fi
+
+          tmp="$(mktemp -d)"
+          git clone --depth 1 --branch gh-pages "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" "$tmp/gh-pages"
+          mkdir -p "$tmp/gh-pages/data"
+          cp public/data/live_market.json "$tmp/gh-pages/data/live_market.json"
+          cp public/data/reduced_6030_challenger.json "$tmp/gh-pages/data/reduced_6030_challenger.json"
+          cp public/data/reduced_6030_history.json "$tmp/gh-pages/data/reduced_6030_history.json"
+          cd "$tmp/gh-pages"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/live_market.json data/reduced_6030_challenger.json data/reduced_6030_history.json
+          if git diff --cached --quiet; then
+            echo "gh-pages ya esta actualizado."
+          else
+            git commit -m "Publicar cierre final Profuturo"
+            git push origin HEAD:gh-pages
+          fi
