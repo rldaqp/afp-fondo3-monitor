@@ -40,13 +40,11 @@ jobs:
           old_marker = '<!-- FACTOR_BARS_DUAL_V1 -->'
           new_marker = '<!-- FACTOR_WEIGHT_CHARTS_DUAL_V2 -->'
 
-          # Eliminar la version V1 si existe. Esa version eran filas CSS, no un grafico Plotly.
           if old_marker in s:
               a = s.index(old_marker)
               b = s.index('</body>', a)
               s = s[:a] + s[b:]
 
-          # Si V2 ya existe, reemplazarla para que el workflow sea idempotente.
           if new_marker in s:
               a = s.index(new_marker)
               b = s.index('</body>', a)
@@ -165,10 +163,10 @@ jobs:
       - name: Validar graficos A y B
         run: |
           grep -q 'FACTOR_WEIGHT_CHARTS_DUAL_V2' public/index.html
-          grep -q 'dWeights_qqq' public/index.html
-          grep -q 'dWeights_new_tickers' public/index.html || grep -q 'dWeights_${key}' public/index.html
+          grep -q "const KEYS=\['qqq','new_tickers'\]" public/index.html
+          grep -q 'dWeights_${key}' public/index.html
           grep -q 'Pesos de los factores' public/index.html
-          grep -q "model.current?.coefficients" public/index.html
+          grep -q 'current?.coefficients' public/index.html
           ! grep -q 'FACTOR_BARS_DUAL_V1' public/index.html
 
       - name: Guardar cambio en rama operativa
