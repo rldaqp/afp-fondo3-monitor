@@ -22,16 +22,11 @@ def build_html() -> str:
     html = html.replace("PROFUTURO Fondo 3", "HÁBITAT Fondo 3")
     html = html.replace("Profuturo", "Hábitat")
     html = html.replace("PROFUTURO", "HABITAT")
+    # Solo cambia el texto visible; se conserva la clave/IDs blind3 porque el
+    # frontend dual ya los usa y el JSON Hábitat los rellena con 30 pares.
     html = html.replace("Validación blind3:", "Validación homogénea últimos 30 pares:")
-    html = html.replace("blind3", "validación 30")
-    # El reemplazo anterior puede tocar únicamente textos/IDs; restauramos el
-    # nombre de la clave JSON que el JS necesita para compatibilidad.
-    html = html.replace("DB.validación 30", "DB.blind3")
-    html = html.replace("validation 30", "blind3")
-    html = html.replace("winner_validación 30_mape", "winner_blind3_mape")
-    html = html.replace("winner_validaci\u00f3n 30_mape", "winner_blind3_mape")
-    # No debe quedar ninguna referencia al archivo de datos de la raíz fuera de
-    # la ruta relativa; dentro de /habitat esta apunta a /habitat/data.
+    html = html.replace("validación blind3", "validación homogénea de 30 pares")
+    html = html.replace("Validación blind3", "Validación homogénea de 30 pares")
     if "data/dual_rolling30_monitor.json" not in html:
         raise RuntimeError("La plantilla Profuturo ya no contiene el monitor dual esperado")
     if "Modelo A · Rolling 30 + QQQ" not in html or "Modelo B · Rolling 30 + nuevos tickers" not in html:
