@@ -10,9 +10,9 @@ TARGETS = [
         "name": "Profuturo",
         "html": ROOT / "public" / "index.html",
         "runtime": ROOT / "public" / "data" / "dual_trade_runtime_v1.js",
-        "cross_runtime": ROOT / "public" / "data" / "cross_afp_operation_v1.js",
+        "cross_runtime": ROOT / "public" / "data" / "cross_afp_operation_v3.js",
         "src": "data/dual_trade_runtime_v1.js?rev=DUALTRADEV3",
-        "cross_src": "data/cross_afp_operation_v1.js?rev=CROSSAFP1",
+        "cross_src": "data/cross_afp_operation_v3.js?rev=CROSSAFP3-20260829",
         "fund_token": "const FUND='PROFUTURO';",
         "trade_key": "profuturo_fondo3_trade_history_v3",
         "cross_token": "OTHER_LABEL='Hábitat Fondo 3'",
@@ -21,9 +21,9 @@ TARGETS = [
         "name": "Hábitat",
         "html": ROOT / "public" / "habitat" / "index.html",
         "runtime": ROOT / "public" / "habitat" / "data" / "dual_trade_runtime_v1.js",
-        "cross_runtime": ROOT / "public" / "habitat" / "data" / "cross_afp_operation_v1.js",
+        "cross_runtime": ROOT / "public" / "habitat" / "data" / "cross_afp_operation_v3.js",
         "src": "data/dual_trade_runtime_v1.js?rev=DUALTRADEV3",
-        "cross_src": "data/cross_afp_operation_v1.js?rev=CROSSAFP1",
+        "cross_src": "data/cross_afp_operation_v3.js?rev=CROSSAFP3-20260829",
         "fund_token": "const FUND='HABITAT';",
         "trade_key": "habitat_fondo3_trade_history_v3",
         "cross_token": "OTHER_LABEL='Profuturo Fondo 3'",
@@ -53,7 +53,7 @@ def ensure_target(target: dict[str, object]) -> None:
         flags=re.I,
     )
     html = re.sub(
-        r'\n?<script\s+src="data/cross_afp_operation_v1\.js(?:\?rev=[^"]+)?"\s*></script>',
+        r'\n?<script\s+src="data/cross_afp_operation_v\d+\.js(?:\?rev=[^"]+)?"\s*></script>',
         "",
         html,
         flags=re.I,
@@ -73,7 +73,7 @@ def ensure_target(target: dict[str, object]) -> None:
     js_check = runtime_path.read_text(encoding="utf-8")
     cross_check = cross_runtime_path.read_text(encoding="utf-8")
     assert check.count("dual_trade_runtime_v1.js") == 1, name
-    assert check.count("cross_afp_operation_v1.js") == 1, name
+    assert check.count("cross_afp_operation_v3.js") == 1, name
     for token in (
         "Registrar operación",
         "Conectar Drive",
@@ -82,15 +82,15 @@ def ensure_target(target: dict[str, object]) -> None:
         "fondo3_drive_sync_key_v1",
     ):
         assert token in js_check, f"{name}: falta {token}"
-    for token in ("crossAfpBox", str(target["cross_token"]), "misma operación"):
+    for token in ("crossAfpBox", "crossCompactHistory", "Histórico comparado", str(target["cross_token"]), "misma operación"):
         assert token.lower() in cross_check.lower(), f"{name}: falta comparación {token}"
-    print(f"{name}: operaciones + Drive + comparación AFP aseguradas")
+    print(f"{name}: operaciones + Drive + histórico comparado AFP asegurados")
 
 
 def main() -> None:
     for target in TARGETS:
         ensure_target(target)
-    print("Operaciones, Drive y comparación cruzada validados en Profuturo y Hábitat")
+    print("Operaciones, Drive e histórico comparado validados en Profuturo y Hábitat")
 
 
 if __name__ == "__main__":
