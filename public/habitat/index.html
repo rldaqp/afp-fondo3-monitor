@@ -145,6 +145,8 @@ h1{font-size:1.45rem;margin:5px 0}.sub,.note{color:var(--muted);font-size:.82rem
 
 
 
+
+
 <!-- HABITAT_QQQ_INCREMENTAL_UI_V1 START -->
 <style id="habitatQqqIncrementalStyles">
 .hqqqi-panel{border-color:#334155}.hqqqi-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;margin-bottom:10px}.hqqqi-title{font-size:.98rem;font-weight:900}.hqqqi-kicker{font-size:.7rem;color:#94a3b8;margin-top:3px;line-height:1.35}.hqqqi-badge{padding:5px 9px;border:1px solid #475569;border-radius:999px;font-size:.7rem;font-weight:900;white-space:nowrap}.hqqqi-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}.hqqqi-card{background:#0b1728;border:1px solid #243244;border-radius:12px;padding:11px}.hqqqi-label{font-size:.72rem;color:#94a3b8;font-weight:800}.hqqqi-signal{font-size:1.15rem;font-weight:950;margin-top:5px}.hqqqi-vc{font-size:1.18rem;font-weight:950;margin-top:4px}.hqqqi-ret{font-size:.76rem;color:#cbd5e1;margin-top:3px}.hqqqi-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:9px}.hqqqi-mini{background:#101d31;border:1px solid #243244;border-radius:9px;padding:8px}.hqqqi-mini span{display:block;color:#94a3b8;font-size:.65rem}.hqqqi-mini b{display:block;margin-top:3px;font-size:.8rem}.hqqqi-note{font-size:.68rem;color:#94a3b8;line-height:1.4;margin-top:8px}.hqqqi-details{margin-top:8px}.hqqqi-details summary{cursor:pointer;color:#cbd5e1;font-size:.72rem;font-weight:800}.hqqqi-table{width:100%;border-collapse:collapse;font-size:.69rem;margin-top:7px}.hqqqi-table th,.hqqqi-table td{padding:6px 4px;border-top:1px solid #243244;text-align:right}.hqqqi-table th:first-child,.hqqqi-table td:first-child{text-align:left}
@@ -152,7 +154,9 @@ h1{font-size:1.45rem;margin:5px 0}.sub,.note{color:var(--muted);font-size:.82rem
 @media(max-width:390px){.hqqqi-grid{grid-template-columns:1fr}.hqqqi-strip{grid-template-columns:1fr 1fr}}
 </style>
 <!-- HABITAT_QQQ_INCREMENTAL_UI_V1 END -->
-</head><body><main class="wrap">
+<!-- HABITAT_FACTOR_WEIGHT_CHARTS_V1_CSS START -->
+<style id="habitatFactorWeightChartsStyles">.hweight-panel{border-color:#334155}.hweight-head{display:flex;justify-content:space-between;gap:8px;align-items:flex-start;flex-wrap:wrap;margin-bottom:3px}.hweight-title{font-size:.96rem;font-weight:900}.hweight-kicker{font-size:.68rem;color:#94a3b8;line-height:1.4;margin-top:2px}.hweight-controls{display:flex;gap:4px;flex-wrap:wrap}.hweight-controls button{border:1px solid #35465d;background:#132238;color:#fff;border-radius:8px;padding:6px 9px;font-weight:800;font-size:.69rem;cursor:pointer}.hweight-controls button.active{background:#2563eb}.hweight-chart{height:315px;width:100%}.hweight-note{font-size:.66rem;color:#94a3b8;line-height:1.4;margin-top:3px}@media(max-width:620px){.hweight-chart{height:285px}.hweight-controls button{font-size:.64rem;padding:5px 7px}}</style>
+<!-- HABITAT_FACTOR_WEIGHT_CHARTS_V1_CSS END --></head><body><main class="wrap">
 <h1>Hábitat Fondo 3</h1><div class="sub">GitHub Actions · OLS Rolling 90 · umbral ±0.10% · modelo propio con datos oficiales SBS</div><div id="error"></div>
 <section class="grid"><div class="card"><div class="label">Último VC SBS</div><div class="value" id="sbsVc">—</div><div class="sub" id="sbsDate">—</div></div>
 <div class="card"><div class="label">VC más reciente</div><div class="value" id="estVc">—</div><div class="sub" id="estDate">—</div></div>
@@ -299,7 +303,11 @@ h1{font-size:1.45rem;margin:5px 0}.sub,.note{color:var(--muted);font-size:.82rem
 
 
 
-<!-- HABITAT_QQQ_INCREMENTAL_PANEL_V1 START -->
+
+
+<!-- HABITAT_FACTOR_WEIGHT_CHARTS_V1_OFFICIAL START -->
+<section class="panel hweight-panel" id="habitatOfficialWeightPanel"><div class="hweight-head"><div><div class="hweight-title">Pesos de los factores · OLS oficial Hábitat</div><div class="hweight-kicker">Rolling 90 · coeficientes estimados solo con Hábitat Fondo 3</div></div><div class="hweight-controls" data-weight-model="official"><button type="button" data-mode="beta" class="active">Peso β</button><button type="button" data-mode="aporte">Aporte sesión</button></div></div><div class="hweight-chart" id="habitatOfficialWeightChart"></div><div class="hweight-note">β es el coeficiente OLS vigente; no es un porcentaje de cartera ni tiene que sumar 100%. Aporte sesión = β × retorno observado del factor.</div></section>
+<!-- HABITAT_FACTOR_WEIGHT_CHARTS_V1_OFFICIAL END --><!-- HABITAT_QQQ_INCREMENTAL_PANEL_V1 START -->
 <section class="panel hqqqi-panel" id="habitatQqqIncrementalPanel">
   <div class="hqqqi-head">
     <div><div class="hqqqi-title">Comparación de VC estimado</div><div class="hqqqi-kicker">OLS oficial Hábitat vs QQQ incremental residualizado · mismo VC base · challenger en sombra</div></div>
@@ -329,7 +337,9 @@ h1{font-size:1.45rem;margin:5px 0}.sub,.note{color:var(--muted);font-size:.82rem
   </details>
   <div id="hqqqiNote" class="hqqqi-note">El OLS de Hábitat continúa siendo la señal oficial. QQQ se evalúa únicamente como información incremental.</div>
 </section>
-<!-- HABITAT_QQQ_INCREMENTAL_PANEL_V1 END -->
+<!-- HABITAT_QQQ_INCREMENTAL_PANEL_V1 END --><!-- HABITAT_FACTOR_WEIGHT_CHARTS_V1_CHALLENGER START -->
+<section class="panel hweight-panel" id="habitatChallengerWeightPanel"><div class="hweight-head"><div><div class="hweight-title">Pesos de los factores · QQQ incremental challenger</div><div class="hweight-kicker">Rolling 90 · QQQ residualizado contra los 7 factores del OLS oficial</div></div><div class="hweight-controls" data-weight-model="challenger"><button type="button" data-mode="beta" class="active">Peso β</button><button type="button" data-mode="aporte">Aporte sesión</button></div></div><div class="hweight-chart" id="habitatChallengerWeightChart"></div><div class="hweight-note">Los β del challenger se muestran en escala original, equivalentes exactamente al modelo estandarizado. QQQ residual es la parte de QQQ no explicada por los siete factores base.</div></section>
+<!-- HABITAT_FACTOR_WEIGHT_CHARTS_V1_CHALLENGER END -->
 <!-- HABITAT_SBS_INDICATORS_V1 START -->
 <section class="panel" id="sbsOfficialIndicators">
   <div class="chart-title">Indicadores oficiales SBS del Fondo 3</div>
@@ -1133,6 +1143,8 @@ h1{font-size:1.45rem;margin:5px 0}.sub,.note{color:var(--muted);font-size:.82rem
 
 
 
+
+
 <!-- HABITAT_QQQ_INCREMENTAL_SCRIPT_V1 START -->
 <script id="habitatQqqIncrementalScript">
 (function(){
@@ -1161,4 +1173,6 @@ h1{font-size:1.45rem;margin:5px 0}.sub,.note{color:var(--muted);font-size:.82rem
 })();
 </script>
 <!-- HABITAT_QQQ_INCREMENTAL_SCRIPT_V1 END -->
-</body></html>
+<!-- HABITAT_FACTOR_WEIGHT_CHARTS_V1_SCRIPT START -->
+<script id="habitatFactorWeightChartsScript">(function(){'use strict';const state={official:'beta',challenger:'beta'};const labels={ret_SPY:'SPY',ret_NEM:'NEM',ret_FCX:'FCX',ret_EPU:'EPU',ret_MCHI:'MCHI',ret_EEM:'EEM',ret_USD_PEN:'USD/PEN',ret_QQQ_residual:'QQQ residual'};const n=x=>Number.isFinite(Number(x))?Number(x):null;const signed=(x,d=4)=>x==null?'—':(x>=0?'+':'')+Number(x).toFixed(d);function plot(id,rows,mode){const beta=mode==='beta',x=rows.map(r=>beta?r.beta:r.pp),y=rows.map(r=>r.label),colors=x.map(v=>v==null?'#64748b':v>=0?'#4ade80':'#f87171'),custom=rows.map(r=>[r.beta,r.ret==null?null:r.ret*100,r.pp]),text=rows.map(r=>beta?('β '+signed(r.beta,4)):(r.pp==null?'s/d':signed(r.pp,3)+' pp'));Plotly.react(id,[{type:'bar',orientation:'h',x,y,marker:{color:colors},text,textposition:'auto',customdata:custom,hovertemplate:beta?'<b>%{y}</b><br>β %{customdata[0]:+.4f}<br>Retorno factor %{customdata[1]:+.3f}%<br>Aporte %{customdata[2]:+.3f} pp<extra></extra>':'<b>%{y}</b><br>Aporte %{customdata[2]:+.3f} pp<br>β %{customdata[0]:+.4f}<br>Retorno factor %{customdata[1]:+.3f}%<extra></extra>'}],{paper_bgcolor:'#0f1b2d',plot_bgcolor:'#0f1b2d',font:{color:'#e2e8f0',size:10},margin:{l:92,r:18,t:8,b:48},xaxis:{title:beta?'Coeficiente β':'Aporte al retorno estimado (pp)',gridcolor:'#243244',zeroline:true,zerolinecolor:'#cbd5e1'},yaxis:{autorange:'reversed',automargin:true},showlegend:false,bargap:.28},{responsive:true,displaylogo:false,displayModeBar:false})}function officialRows(latest,live){const assets=live.assets||[];return(latest.model_factors||[]).map(name=>{const f=name==='USD_PEN'?'ret_USD_PEN':'ret_'+name,b=n((latest.coefficients||{})[f]),a=assets.find(x=>String(x.serie)===name),r=n(a&&(a.retorno_modelo??a.retorno));return{label:labels[f]||name,beta:b,ret:r,pp:b!=null&&r!=null?b*r*100:null}}).filter(r=>r.beta!=null)}function challengerRows(q){const c=q.challenger||{},coef=c.coefficients_raw||{},byF=new Map((c.contributions||[]).map(r=>[r.feature,r]));return(c.features||[]).map(f=>{const row=byF.get(f)||{},b=n(coef[f]??row.coefficient),r=n(row.value),pp=n(row.contribution_pp);return{label:labels[f]||f.replace(/^ret_/,''),beta:b,ret:r,pp:pp!=null?pp:(b!=null&&r!=null?b*r*100:null)}}).filter(r=>r.beta!=null)}Promise.all([fetch('data/latest.json?w='+Date.now(),{cache:'no-store'}).then(r=>r.json()),fetch('data/live_market.json?w='+Date.now(),{cache:'no-store'}).then(r=>r.json()),fetch('data/qqq_incremental_challenger.json?w='+Date.now(),{cache:'no-store'}).then(r=>r.json())]).then(([latest,live,q])=>{const data={official:officialRows(latest,live),challenger:challengerRows(q)};function draw(k){plot(k==='official'?'habitatOfficialWeightChart':'habitatChallengerWeightChart',data[k],state[k])}for(const k of['official','challenger']){document.querySelectorAll(`[data-weight-model="${k}"] button`).forEach(btn=>btn.addEventListener('click',()=>{state[k]=btn.dataset.mode;document.querySelectorAll(`[data-weight-model="${k}"] button`).forEach(b=>b.classList.toggle('active',b===btn));draw(k)}));draw(k)}}).catch(e=>{for(const id of['habitatOfficialWeightChart','habitatChallengerWeightChart']){const el=document.getElementById(id);if(el)el.innerHTML='<div class="error">No se pudo cargar el gráfico de pesos: '+e.message+'</div>'}console.error(e)});})();</script>
+<!-- HABITAT_FACTOR_WEIGHT_CHARTS_V1_SCRIPT END --></body></html>

@@ -120,7 +120,30 @@ def main() -> None:
         qqq, signal_date, bool(live.get("market_open"))
     )
     qqq_resid = float(qqq_ret - np.r_[1.0, base_current] @ beta_resid)
-    challenger_ret = core.standardize_predict(challenger_model, np.r_[base_current, qqq_resid])
+    challenger_input = np.r_[base_current, qqq_resid]
+    challenger_ret = core.standardize_predict(challenger_model, challenger_input)
+
+    # Convertir el modelo estandarizado a coeficientes efectivos en escala original.
+    # y = a_z + sum(b_z * (x-mu)/sd) = a_raw + sum(beta_raw*x)
+    challenger_mu = np.asarray(challenger_model["mu"], dtype=float)
+    challenger_sd = np.asarray(challenger_model["sd"], dtype=float)
+    challenger_coef_z = np.asarray(challenger_model["coef"], dtype=float)
+    challenger_beta_raw = challenger_coef_z / challenger_sd
+    challenger_intercept_raw = float(challenger_model["intercept"] - challenger_mu @ challenger_beta_raw)
+    challenger_features = [*BASE_FEATURES, "ret_QQQ_residual"]
+    challenger_coefficients_raw = {
+        "intercept": challenger_intercept_raw,
+        **{f: float(challenger_beta_raw[i]) for i, f in enumerate(challenger_features)},
+    }
+    challenger_contributions = [
+        {
+            "feature": f,
+            "value": float(challenger_input[i]),
+            "coefficient": float(challenger_beta_raw[i]),
+            "contribution_pp": float(challenger_beta_raw[i] * challenger_input[i] * 100.0),
+        }
+        for i, f in enumerate(challenger_features)
+    ]
 
     official_ret = float(live["return_estimated"])
     official_vc = float(live["vc_estimated"])
@@ -152,6 +175,10 @@ def main() -> None:
             "return_estimated": challenger_ret,
             "signal": core.classify(challenger_ret),
             "vc_estimated": challenger_vc,
+            "features": challenger_features,
+            "coefficients_raw": challenger_coefficients_raw,
+            "contributions": challenger_contributions,
+            "coefficient_note": "Coeficientes efectivos en escala original, derivados exactamente del modelo estandarizado vigente.",
         },
         "qqq": {
             "return": qqq_ret,
