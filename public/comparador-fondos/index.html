@@ -7,8 +7,10 @@
 <title>Fondo 3 · Hábitat vs Profuturo</title>
 <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
 <style>
-:root{color-scheme:dark;--bg:#07111f;--card:#0f1b2d;--inner:#0b1728;--line:#26364a;--text:#f8fafc;--muted:#9aa9bd;--active:#2563eb;--green:#4ade80;--yellow:#fbbf24}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}.wrap{max-width:1050px;margin:auto;padding:14px}h1{font-size:1.45rem;margin:4px 0}.sub,.note{color:var(--muted);font-size:.76rem;line-height:1.45}.panel{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px;margin-top:13px}.head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;flex-wrap:wrap}.controls{display:flex;gap:5px;flex-wrap:wrap}.controls button{border:1px solid #35465d;background:#132238;color:#fff;border-radius:8px;padding:7px 9px;font-weight:800;font-size:.72rem;cursor:pointer}.controls button.active{background:var(--active)}#chart{height:500px;width:100%}.summary{font-size:.78rem;font-weight:800;margin-top:8px;color:#e2e8f0}.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:12px 0 4px}.metric{background:var(--inner);border:1px solid var(--line);border-radius:10px;padding:10px}.metric .label{font-size:.66rem;color:var(--muted);line-height:1.3}.metric .value{font-size:1.05rem;font-weight:900;margin-top:4px}.metric .detail{font-size:.62rem;color:var(--muted);margin-top:3px}.better{color:var(--green)}.error{display:none;background:#451a1a;border:1px solid #7f1d1d;padding:10px;border-radius:9px;margin:10px 0}.back{display:inline-block;margin-top:12px;color:#bae6fd;text-decoration:none;font-size:.74rem}@media(max-width:760px){.metrics{grid-template-columns:repeat(2,1fr)}}@media(max-width:650px){.wrap{padding:9px}.panel{padding:9px}#chart{height:430px}.controls{width:100%;overflow-x:auto;flex-wrap:nowrap}.controls button{white-space:nowrap}.metrics{grid-template-columns:repeat(2,1fr)}}
+:root{color-scheme:dark;--bg:#07111f;--card:#0f1b2d;--inner:#0b1728;--line:#26364a;--text:#f8fafc;--muted:#9aa9bd;--active:#2563eb;--green:#4ade80;--yellow:#fbbf24;--red:#f87171}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}.wrap{max-width:1050px;margin:auto;padding:14px}h1{font-size:1.45rem;margin:4px 0}h2{font-size:1.03rem;margin:0}.sub,.note{color:var(--muted);font-size:.76rem;line-height:1.45}.panel{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px;margin-top:13px}.head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;flex-wrap:wrap}.controls{display:flex;gap:5px;flex-wrap:wrap}.controls button,.opbtn{border:1px solid #35465d;background:#132238;color:#fff;border-radius:8px;padding:7px 9px;font-weight:800;font-size:.72rem;cursor:pointer}.controls button.active,.opbtn.active,.opbtn.primary{background:var(--active)}#chart{height:500px;width:100%}.summary{font-size:.78rem;font-weight:800;margin-top:8px;color:#e2e8f0}.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:12px 0 4px}.metric{background:var(--inner);border:1px solid var(--line);border-radius:10px;padding:10px}.metric .label{font-size:.66rem;color:var(--muted);line-height:1.3}.metric .value{font-size:1.05rem;font-weight:900;margin-top:4px}.metric .detail{font-size:.62rem;color:var(--muted);margin-top:3px}.better{color:var(--green)}.error{display:none;background:#451a1a;border:1px solid #7f1d1d;padding:10px;border-radius:9px;margin:10px 0}.back{display:inline-block;margin-top:12px;color:#bae6fd;text-decoration:none;font-size:.74rem}
+.opmodes{display:flex;gap:6px;margin-top:10px}.opinputs{display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:8px;align-items:end;margin-top:10px}.opinputs label{font-size:.66rem;color:var(--muted)}.opinputs input{width:100%;margin-top:4px;background:#07111f;color:#fff;border:1px solid #35465d;border-radius:8px;padding:9px}.ophidden{display:none!important}.opresults{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}.opfund{background:var(--inner);border:1px solid var(--line);border-radius:11px;padding:10px}.opfund.winner{border-color:#16a34a;box-shadow:0 0 0 1px rgba(34,197,94,.2) inset}.opfund h3{margin:0 0 8px;font-size:.9rem}.opmetrics{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}.opmini{background:#081422;border:1px solid #22344a;border-radius:8px;padding:7px}.opmini span{display:block;font-size:.61rem;color:var(--muted)}.opmini b{display:block;font-size:.82rem;margin-top:3px}.opmeta{font-size:.64rem;color:var(--muted);margin-top:8px;line-height:1.4}.opwinner{margin-top:10px;padding:10px;border:1px solid #29415e;border-radius:9px;background:#0a1625;font-size:.76rem;font-weight:850;line-height:1.45}.pos{color:var(--green)}.neg{color:var(--red)}
+@media(max-width:760px){.metrics{grid-template-columns:repeat(2,1fr)}.opinputs{grid-template-columns:1fr 1fr}.opresults{grid-template-columns:1fr}.opmetrics{grid-template-columns:repeat(3,1fr)}}@media(max-width:650px){.wrap{padding:9px}.panel{padding:9px}#chart{height:430px}.controls{width:100%;overflow-x:auto;flex-wrap:nowrap}.controls button{white-space:nowrap}.metrics{grid-template-columns:repeat(2,1fr)}.opmodes{width:100%}.opmodes .opbtn{flex:1}.opinputs{grid-template-columns:1fr 1fr}.opmetrics{grid-template-columns:1fr 1fr 1fr}}
 </style>
 </head>
 <body>
@@ -34,18 +36,39 @@
   <div id="chart"></div>
   <div class="note"><b>Cómo leerlo:</b> ambas líneas comienzan en S/10,000. Si una línea termina más arriba, ese Fondo 3 habría generado más dinero durante el período elegido. La rentabilidad mide cuánto ganó o perdió el capital. La volatilidad mide cuánto variaron los retornos diarios; se anualiza con √252 y una volatilidad menor indica un recorrido más estable. Solo se usan VC oficiales SBS en fechas comunes; no intervienen los modelos A/B.</div>
 </section>
+
+<section class="panel" id="operationPanel">
+  <div class="head">
+    <div><h2>Operación comparada · mismo dinero, mismas fechas</h2><div class="sub">Ingresa una operación y calcula cuánto habría valido en Hábitat y en Profuturo usando exclusivamente VC oficiales SBS.</div></div>
+  </div>
+  <div class="opmodes"><button type="button" class="opbtn active" data-opmode="inside">Sigo dentro</button><button type="button" class="opbtn" data-opmode="closed">Ya salí</button></div>
+  <div class="opinputs">
+    <label>Fecha de entrada<input type="date" id="opEntry"></label>
+    <label>Capital invertido (S/)<input type="number" id="opCapital" value="10000" min="1" step="100"></label>
+    <label id="opExitWrap" class="ophidden">Fecha de salida<input type="date" id="opExit"></label>
+    <button class="opbtn primary" id="opCalc" type="button">Calcular operación</button>
+  </div>
+  <div class="opwinner" id="opWinner">Cargando valores cuota SBS…</div>
+  <div class="opresults">
+    <div class="opfund" id="opHabCard"><h3>Hábitat Fondo 3</h3><div class="opmetrics"><div class="opmini"><span>Capital final</span><b id="opHabFinal">—</b></div><div class="opmini"><span>Ganancia / pérdida</span><b id="opHabGain">—</b></div><div class="opmini"><span>Rentabilidad</span><b id="opHabRet">—</b></div></div><div class="opmeta" id="opHabMeta">VC entrada — · VC salida —</div></div>
+    <div class="opfund" id="opProCard"><h3>Profuturo Fondo 3</h3><div class="opmetrics"><div class="opmini"><span>Capital final</span><b id="opProFinal">—</b></div><div class="opmini"><span>Ganancia / pérdida</span><b id="opProGain">—</b></div><div class="opmini"><span>Rentabilidad</span><b id="opProRet">—</b></div></div><div class="opmeta" id="opProMeta">VC entrada — · VC salida —</div></div>
+  </div>
+  <div class="note" style="margin-top:10px"><b>Fecha efectiva:</b> si eliges sábado, domingo o una fecha sin VC común, la entrada pasa a la siguiente fecha SBS disponible y la salida usa la última fecha SBS disponible hasta la fecha elegida. En “Sigo dentro”, el cierre se mueve automáticamente al último VC SBS común cada vez que se actualizan los datos.</div>
+</section>
+
 <a class="back" href="../">← Profuturo</a> · <a class="back" href="../habitat/">Hábitat</a>
 </main>
 <script>
 (()=>{'use strict';
 const INITIAL=10000;
-const state={period:'90'};
+const state={period:'90',opMode:'inside'};
 let common=[];
 const $=id=>document.getElementById(id);
 const money=x=>new Intl.NumberFormat('es-PE',{style:'currency',currency:'PEN',minimumFractionDigits:2,maximumFractionDigits:2}).format(x);
 const pct=x=>(x>=0?'+':'')+(x*100).toFixed(2)+'%';
 const pctAbs=x=>(x*100).toFixed(2)+'%';
 const fmtDate=s=>{const p=String(s).slice(0,10).split('-');return p.length===3?`${p[2]}/${p[1]}/${p[0]}`:s};
+const vc=x=>Number.isFinite(Number(x))?Number(x).toFixed(7):'—';
 function officialMap(rows){const m=new Map();for(const r of(Array.isArray(rows)?rows:[])){const d=String(r?.fecha||'').slice(0,10),v=Number(r?.vc);const official=r?.es_oficial===true||String(r?.fuente||'').toUpperCase().includes('SBS');if(d&&Number.isFinite(v)&&v>0&&official)m.set(d,v)}return m}
 function selectRows(){if(!common.length)return[];if(state.period==='all')return common.slice();if(state.period==='2026')return common.filter(r=>r.fecha>='2026-01-01');const n=Number(state.period);return common.slice(Math.max(0,common.length-n));}
 function volatility(values){if(values.length<3)return null;const rets=[];for(let i=1;i<values.length;i++)rets.push(values[i]/values[i-1]-1);if(rets.length<2)return null;const mean=rets.reduce((a,b)=>a+b,0)/rets.length;const variance=rets.reduce((a,b)=>a+(b-mean)**2,0)/(rets.length-1);return Math.sqrt(variance)*Math.sqrt(252)}
@@ -58,12 +81,41 @@ Plotly.react('chart',[
  {x:rows.map(r=>r.fecha),y:p,type:'scatter',mode:'lines',name:`Profuturo · ${money(p.at(-1))}`,line:{width:3},hovertemplate:'<b>Profuturo</b><br>%{x}<br>Capital: S/%{y:,.2f}<extra></extra>'}
 ],{paper_bgcolor:'#0f1b2d',plot_bgcolor:'#0b1728',font:{color:'#e2e8f0',size:11},margin:{l:62,r:18,t:35,b:50},hovermode:'x unified',legend:{orientation:'h',y:1.12,x:0},xaxis:{gridcolor:'#243244',title:'Fecha SBS'},yaxis:{gridcolor:'#243244',title:'Valor de la inversión (S/)',tickprefix:'S/ '},showlegend:true},{responsive:true,displaylogo:false,displayModeBar:false});}
 function controls(){const box=$('controls');for(const [k,label] of [['30','30 sesiones'],['60','60 sesiones'],['90','90 sesiones'],['180','180 sesiones'],['2026','2026'],['all','Todo']]){const b=document.createElement('button');b.type='button';b.textContent=label;b.classList.toggle('active',state.period===k);b.onclick=()=>{state.period=k;[...box.children].forEach(x=>x.classList.toggle('active',x===b));try{draw()}catch(e){showError(e)}};box.appendChild(b)}}
+function effectiveEntry(req){return common.find(r=>r.fecha>=req)||null}
+function effectiveExit(req){for(let i=common.length-1;i>=0;i--)if(common[i].fecha<=req)return common[i];return null}
+function setGain(id,value){const e=$(id);e.textContent=money(value);e.classList.toggle('pos',value>0);e.classList.toggle('neg',value<0)}
+function setRet(id,value){const e=$(id);e.textContent=pct(value);e.classList.toggle('pos',value>0);e.classList.toggle('neg',value<0)}
+function calcOperation(){
+  if(common.length<2){$('opWinner').textContent='Aún no hay datos SBS comunes suficientes.';return}
+  const req=$('opEntry').value,cap=Number($('opCapital').value||0);
+  if(!req||!Number.isFinite(cap)||cap<=0){$('opWinner').textContent='Completa una fecha de entrada y un capital mayor que cero.';return}
+  const entry=effectiveEntry(req);if(!entry){$('opWinner').textContent='No existe una fecha SBS común posterior a la entrada indicada.';return}
+  let exit=null;
+  if(state.opMode==='closed'){
+    const xreq=$('opExit').value;if(!xreq){$('opWinner').textContent='Indica la fecha de salida.';return}
+    exit=effectiveExit(xreq);
+  }else exit=common.at(-1);
+  if(!exit||exit.fecha<entry.fecha){$('opWinner').textContent='La fecha de salida efectiva debe ser igual o posterior a la entrada.';return}
+  const hFinal=cap*(exit.habitat/entry.habitat),pFinal=cap*(exit.profuturo/entry.profuturo);
+  const hGain=hFinal-cap,pGain=pFinal-cap,hRet=hFinal/cap-1,pRet=pFinal/cap-1;
+  $('opHabFinal').textContent=money(hFinal);$('opProFinal').textContent=money(pFinal);setGain('opHabGain',hGain);setGain('opProGain',pGain);setRet('opHabRet',hRet);setRet('opProRet',pRet);
+  $('opHabMeta').textContent=`VC ${vc(entry.habitat)} → ${vc(exit.habitat)}`;$('opProMeta').textContent=`VC ${vc(entry.profuturo)} → ${vc(exit.profuturo)}`;
+  const diff=Math.abs(hFinal-pFinal),winner=hFinal>pFinal?'Hábitat':pFinal>hFinal?'Profuturo':'Empate';
+  $('opHabCard').classList.toggle('winner',hFinal>pFinal);$('opProCard').classList.toggle('winner',pFinal>hFinal);
+  const requestedExit=state.opMode==='inside'?'último VC SBS común':fmtDate($('opExit').value);
+  $('opWinner').textContent=winner==='Empate'?`Empate · ${fmtDate(entry.fecha)} → ${fmtDate(exit.fecha)} · ambos terminan en ${money(hFinal)}.`:`Más rentable: ${winner} · ventaja ${money(diff)} sobre el mismo capital · fecha efectiva ${fmtDate(entry.fecha)} → ${fmtDate(exit.fecha)} (${requestedExit}).`;
+}
+function bindOperation(){
+  document.querySelectorAll('[data-opmode]').forEach(btn=>btn.onclick=()=>{state.opMode=btn.dataset.opmode;document.querySelectorAll('[data-opmode]').forEach(x=>x.classList.toggle('active',x===btn));$('opExitWrap').classList.toggle('ophidden',state.opMode!=='closed');if(state.opMode==='closed'&&!$('opExit').value&&common.length)$('opExit').value=common.at(-1).fecha;calcOperation()});
+  $('opCalc').onclick=calcOperation;$('opEntry').addEventListener('change',calcOperation);$('opCapital').addEventListener('change',calcOperation);$('opExit').addEventListener('change',calcOperation);
+}
+function seedOperation(){if(!common.length)return;const idx=Math.max(0,common.length-90);if(!$('opEntry').value)$('opEntry').value=common[idx].fecha;if(!$('opExit').value)$('opExit').value=common.at(-1).fecha;calcOperation()}
 function showError(e){$('error').style.display='block';$('error').textContent=e.message||String(e)}
-controls();
+controls();bindOperation();
 Promise.all([
  fetch('../data/series.json?c='+Date.now(),{cache:'no-store'}).then(r=>{if(!r.ok)throw Error('No se pudo cargar Profuturo SBS');return r.json()}),
  fetch('../habitat/data/series.json?c='+Date.now(),{cache:'no-store'}).then(r=>{if(!r.ok)throw Error('No se pudo cargar Hábitat SBS');return r.json()})
-]).then(([prof,hab])=>{const pm=officialMap(prof),hm=officialMap(hab);common=[...pm.keys()].filter(d=>hm.has(d)).sort().map(fecha=>({fecha,profuturo:pm.get(fecha),habitat:hm.get(fecha)}));if(common.length<2)throw Error('No se encontraron valores cuota SBS comunes.');draw()}).catch(showError);
+]).then(([prof,hab])=>{const pm=officialMap(prof),hm=officialMap(hab);common=[...pm.keys()].filter(d=>hm.has(d)).sort().map(fecha=>({fecha,profuturo:pm.get(fecha),habitat:hm.get(fecha)}));if(common.length<2)throw Error('No se encontraron valores cuota SBS comunes.');draw();seedOperation()}).catch(showError);
 })();
 </script>
 </body>
