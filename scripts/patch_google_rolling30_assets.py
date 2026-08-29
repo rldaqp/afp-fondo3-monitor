@@ -2,7 +2,9 @@ from __future__ import annotations
 
 import json
 import re
+from datetime import datetime
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 import numpy as np
 import pandas as pd
@@ -11,9 +13,10 @@ import yfinance as yf
 ROOT = Path(__file__).resolve().parents[1]
 LIVE_PATH = ROOT / "public" / "data" / "live_market.json"
 OUT_RETURNS = ROOT / "data" / "analysis" / "googlefinance_alt_rolling30_live_returns.csv"
+NY = ZoneInfo("America/New_York")
 
-# Los cuatro primeros tienen un equivalente exacto/operable en Yahoo que se usa
-# SOLO como control/fallback del cierre. SPBLSCUP no tiene equivalente Yahoo fiable.
+# Los cuatro primeros tienen equivalente exacto/operable en Yahoo y se usa
+# SOLO como control/fallback. SPBLSCUP debe quedar validado por Google Finance.
 SPECS = {
     ".INX": {"quote": ".INX:INDEXSP", "lo": 1000.0, "hi": 20000.0, "yahoo": "^GSPC"},
     "CPER": {"quote": "CPER:NYSEARCA", "lo": 5.0, "hi": 100.0, "yahoo": "CPER"},
@@ -55,7 +58,6 @@ def extract_close(raw: pd.DataFrame, ticker: str) -> pd.Series:
 
 
 def yahoo_close(ticker: str, signal_date: str) -> dict | None:
-    """Cierre Yahoo de la sesión, usado para validar .INX/CPER/EEM/NDX."""
     target = pd.Timestamp(signal_date).normalize()
     raw = yf.download(
         ticker,
@@ -88,10 +90,6 @@ def yahoo_close(ticker: str, signal_date: str) -> dict | None:
 
 
 def google_main_price(driver, name: str, body: str, lo: float, hi: float) -> float:
-    """Extrae el precio principal; nunca usa 'primer número que caiga en rango'."""
-    # SPBLSCUP: esta expresión por nombre del instrumento fue la que ya había
-    # funcionado correctamente con 446.70/460.43. Evita confundir 52-week high,
-    # rangos u otros números de la página con el nivel del índice.
     if name == "SPBLSCUP":
         m = re.search(
             r"S&P(?:/BVL)?\s+Peru\s+Select\s+20%\s+Capped\s+Index\s*\(USD\)\s+([\d,]+(?:\.\d+)?)",
@@ -103,8 +101,6 @@ def google_main_price(driver, name: str, body: str, lo: float, hi: float) -> flo
             if lo < v < hi:
                 return v
 
-    # Google Finance expone el quote principal mediante data-last-price. Se
-    # consulta el atributo real del DOM, no el texto de tarjetas auxiliares.
     candidates = []
     for el in driver.find_elements("css selector", "[data-last-price]"):
         raw = el.get_attribute("data-last-price")
@@ -117,8 +113,6 @@ def google_main_price(driver, name: str, body: str, lo: float, hi: float) -> flo
     if candidates:
         return float(candidates[0])
 
-    # Último recurso: el bloque visual de precio principal, pero únicamente si
-    # hay un candidato inequívoco. No se escanean números arbitrarios del body.
     visual = []
     for el in driver.find_elements("css selector", "div.YMlKec.fxKbKc"):
         try:
@@ -133,6 +127,37 @@ def google_main_price(driver, name: str, body: str, lo: float, hi: float) -> flo
     raise RuntimeError(f"Precio principal ambiguo/no identificado: {visual[:5]}")
 
 
+def google_session_stamp(driver, body: str) -> tuple[str | None, str | None]:
+    """Devuelve (stamp legible, YYYY-MM-DD NY). Nunca infiere la fecha desde live.signal_date."""
+    for el in driver.find_elements("css selector", "[data-last-normal-market-timestamp]"):
+        raw = el.get_attribute("data-last-normal-market-timestamp")
+        if not raw:
+            continue
+        try:
+            sec = int(raw)
+            if sec > 10_000_000_000:
+                sec //= 1000
+            dt = datetime.fromtimestamp(sec, tz=NY)
+            return dt.isoformat(), dt.date().isoformat()
+        except Exception:
+            pass
+
+    collapsed = re.sub(r"\s+", " ", body)
+    m = re.search(
+        r"(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+(\d{1,2}),\s+(?:(\d{4}),\s+)?[^\n]{0,60}?UTC[+-]\d+",
+        collapsed,
+        re.I,
+    )
+    if not m:
+        return None, None
+    year = int(m.group(3)) if m.group(3) else datetime.now(NY).year
+    try:
+        dt = pd.Timestamp(f"{m.group(1)} {m.group(2)} {year}")
+        return m.group(0), dt.date().isoformat()
+    except Exception:
+        return m.group(0), None
+
+
 def scrape_all(signal_date: str) -> dict[str, dict]:
     from selenium import webdriver
     from selenium.webdriver.common.by import By
@@ -140,12 +165,8 @@ def scrape_all(signal_date: str) -> dict[str, dict]:
 
     opts = webdriver.ChromeOptions()
     for arg in (
-        "--headless=new",
-        "--no-sandbox",
-        "--disable-dev-shm-usage",
-        "--disable-gpu",
-        "--window-size=1920,1080",
-        "--lang=en-US",
+        "--headless=new", "--no-sandbox", "--disable-dev-shm-usage", "--disable-gpu",
+        "--window-size=1920,1080", "--lang=en-US",
     ):
         opts.add_argument(arg)
 
@@ -175,45 +196,51 @@ def scrape_all(signal_date: str) -> dict[str, dict]:
                 if previous is None or not (lo < previous < hi):
                     raise RuntimeError("No se identificó Prev close")
                 ret = price / previous - 1.0
+                stamp, google_date = google_session_stamp(driver, body)
 
-                # Para instrumentos con equivalente Yahoo exacto, Google debe
-                # concordar con el cierre. Si no, se usa el cierre Yahoo validado.
-                validation = "GOOGLE EXACTO"
-                if ycheck is not None:
-                    price_gap = abs(price / float(ycheck["price"]) - 1.0)
-                    ret_gap = abs(ret - float(ycheck["return"]))
-                    if price_gap > 0.003 or ret_gap > 0.003:
+                # Regla crítica anti-desfase: un quote Google de T jamás se puede
+                # guardar bajo live.signal_date=T-1. Para instrumentos con Yahoo
+                # se usa el cierre Yahoo del target; SPBLSCUP queda bloqueado.
+                if google_date != signal_date:
+                    if ycheck is not None:
                         price = float(ycheck["price"])
                         previous = float(ycheck["previous"])
                         ret = float(ycheck["return"])
-                        validation = f"YAHOO {yahoo_ticker} · CORRIGE GOOGLE INCONSISTENTE"
+                        validation = f"YAHOO {yahoo_ticker} · GOOGLE FECHA {google_date or 'NO_CONFIRMADA'} != {signal_date}"
+                        stamp = signal_date
+                        google_date = signal_date
                     else:
-                        validation = f"GOOGLE EXACTO · VALIDADO YAHOO {yahoo_ticker}"
+                        raise RuntimeError(
+                            f"Google Finance corresponde a {google_date or 'fecha no confirmada'}, no a {signal_date}; no se persiste"
+                        )
+                else:
+                    validation = "GOOGLE EXACTO"
+                    if ycheck is not None:
+                        price_gap = abs(price / float(ycheck["price"]) - 1.0)
+                        ret_gap = abs(ret - float(ycheck["return"]))
+                        if price_gap > 0.003 or ret_gap > 0.003:
+                            price = float(ycheck["price"])
+                            previous = float(ycheck["previous"])
+                            ret = float(ycheck["return"])
+                            validation = f"YAHOO {yahoo_ticker} · CORRIGE GOOGLE INCONSISTENTE"
+                        else:
+                            validation = f"GOOGLE EXACTO · VALIDADO YAHOO {yahoo_ticker}"
 
-                # Un >12% diario en cualquiera de estos índices/ETF se bloquea.
-                # No sustituimos por 0%; el modelo debe quedar pendiente si no hay
-                # una fuente corroborada.
                 if abs(ret) > 0.12:
                     raise RuntimeError(f"Movimiento fuera de control: {ret:.3%}")
 
-                sm = re.search(
-                    r"(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+\d{1,2},\s+[^\n]+UTC[+-]\d+",
-                    body,
-                    re.I,
-                )
                 out[name] = {
                     "quote": quote,
                     "price": float(price),
                     "previous": float(previous),
                     "return": float(ret),
-                    "stamp": sm.group(0) if sm else "GOOGLE FINANCE · SESIÓN ACTUAL",
+                    "stamp": stamp or signal_date,
+                    "session_date": google_date or signal_date,
                     "validation": validation,
                     "valid_for_model": True,
                     "url": url,
                 }
             except Exception as exc:
-                # Si Google falla para un instrumento con equivalente exacto,
-                # Yahoo sigue siendo una validación aceptable del mismo cierre.
                 if ycheck is not None:
                     out[name] = {
                         "quote": quote,
@@ -221,6 +248,7 @@ def scrape_all(signal_date: str) -> dict[str, dict]:
                         "previous": float(ycheck["previous"]),
                         "return": float(ycheck["return"]),
                         "stamp": signal_date,
+                        "session_date": signal_date,
                         "validation": f"YAHOO {yahoo_ticker} · FALLBACK POR ERROR GOOGLE",
                         "valid_for_model": True,
                         "google_error": f"{type(exc).__name__}: {exc}",
@@ -242,21 +270,27 @@ def scrape_all(signal_date: str) -> dict[str, dict]:
 def persist_closed_returns(live: dict, scraped: dict[str, dict]) -> None:
     if bool(live.get("market_open")):
         return
-    if not all(bool(scraped.get(k, {}).get("valid_for_model")) and finite(scraped.get(k, {}).get("return")) for k in SPECS):
-        print("No se persiste cierre: faltan uno o más retornos validados")
+    signal_date = str(live.get("signal_date", ""))[:10]
+    if not signal_date:
         return
+    for k in SPECS:
+        r = scraped.get(k, {})
+        if not bool(r.get("valid_for_model")) or not finite(r.get("return")):
+            print("No se persiste cierre: falta retorno validado", k)
+            return
+        if str(r.get("session_date") or signal_date)[:10] != signal_date:
+            print("No se persiste cierre: fecha fuente distinta", k, r.get("session_date"), signal_date)
+            return
 
     row = {
-        "fecha": str(live.get("signal_date", ""))[:10],
+        "fecha": signal_date,
         "ret_.INX": scraped[".INX"]["return"],
         "ret_CPER": scraped["CPER"]["return"],
         "ret_EEM": scraped["EEM"]["return"],
         "ret_NDX": scraped["NDX"]["return"],
         "ret_SPBLSCUP": scraped["SPBLSCUP"]["return"],
-        "source": "CIERRE VALIDADO · GOOGLE FINANCE/YAHOO EQUIVALENTE",
+        "source": "CIERRE VALIDADO · GOOGLE FINANCE/YAHOO EQUIVALENTE · FECHA FUENTE CONFIRMADA",
     }
-    if not row["fecha"]:
-        return
     OUT_RETURNS.parent.mkdir(parents=True, exist_ok=True)
     if OUT_RETURNS.exists():
         df = pd.read_csv(OUT_RETURNS)
@@ -288,9 +322,7 @@ def main() -> None:
 
         if not bool(result.get("valid_for_model")) or not finite(result.get("return")):
             row.update({
-                "ticker": result["quote"],
-                "retorno_modelo": None,
-                "usado_modelo": False,
+                "ticker": result["quote"], "retorno_modelo": None, "usado_modelo": False,
                 "validado_modelo": False,
                 "estado": result.get("validation") or "NO VALIDADO · NO USAR EN MODELO",
                 "error_validacion": result.get("error"),
@@ -298,21 +330,15 @@ def main() -> None:
             print(name, result.get("error"))
             continue
 
-        row.update(
-            {
-                "ticker": result["quote"],
-                "timestamp": str(live.get("signal_date") or result.get("stamp")),
-                "precio_anterior": result["previous"],
-                "precio_actual": result["price"],
-                "retorno": result["return"],
-                "retorno_modelo": result["return"],
-                "estado": result.get("validation") or "CIERRE VALIDADO",
-                "usado_modelo": True,
-                "validado_modelo": True,
-                "google_stamp": result.get("stamp"),
-                "error_validacion": result.get("google_error"),
-            }
-        )
+        row.update({
+            "ticker": result["quote"],
+            "timestamp": result.get("session_date") or signal_date,
+            "precio_anterior": result["previous"], "precio_actual": result["price"],
+            "retorno": result["return"], "retorno_modelo": result["return"],
+            "estado": result.get("validation") or "CIERRE VALIDADO", "usado_modelo": True,
+            "validado_modelo": True, "google_stamp": result.get("stamp"),
+            "error_validacion": result.get("google_error"),
+        })
 
     live["experimental_google_rolling30_checked"] = True
     live["experimental_google_rolling30_results"] = {
