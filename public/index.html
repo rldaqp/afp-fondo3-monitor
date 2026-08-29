@@ -48,20 +48,105 @@ fetch(DATA+'?ts='+Date.now(),{cache:'no-store'}).then(r=>{if(!r.ok)throw Error('
 })();
 </script>
 
-<!-- FACTOR_BARS_DUAL_V1 -->
-<style id="factorBarsDualStyles">
-.factorpanel{margin:8px 0 10px;padding:9px;background:#0b1728;border:1px solid #26364a;border-radius:10px}.factorpanel h3{margin:0 0 3px;font-size:.86rem}.factornote{font-size:.61rem;color:#9aa9bd;line-height:1.35;margin-bottom:8px}.factorrows{display:grid;gap:7px}.factorrow{display:grid;grid-template-columns:76px minmax(120px,1fr) 168px;gap:8px;align-items:center;font-size:.68rem}.factorname{font-weight:900;white-space:nowrap}.factortrack{height:10px;background:#172338;border-radius:999px;overflow:hidden;position:relative}.factorfill{height:100%;border-radius:999px;min-width:2px}.factorfill.pos{background:#22c55e}.factorfill.neg{background:#ef4444}.factorfill.zero{background:#64748b}.factorstat{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}.factorstat .beta{color:#cbd5e1}.factorstat .pp.pos{color:#4ade80}.factorstat .pp.neg{color:#f87171}.factorstat .pp.zero{color:#fbbf24}.factorfoot{font-size:.58rem;color:#7f8da3;margin-top:7px;line-height:1.35}@media(max-width:700px){.factorrow{grid-template-columns:62px 1fr 126px;gap:6px;font-size:.63rem}.factorstat{white-space:normal;line-height:1.25}.factortrack{height:9px}}
+
+<!-- FACTOR_WEIGHT_CHARTS_DUAL_V2 -->
+<style id="factorWeightChartsDualStyles">
+.weightbox{margin:8px 0 10px;padding:9px;background:#0b1728;border:1px solid #26364a;border-radius:10px}
+.weighthead{display:flex;justify-content:space-between;gap:8px;align-items:flex-start;flex-wrap:wrap;margin-bottom:3px}
+.weighthead h3{margin:0;font-size:.88rem}
+.weightcontrols{display:flex;gap:4px;flex-wrap:wrap}
+.weightcontrols button{border:1px solid #35465d;background:#132238;color:#fff;border-radius:8px;padding:5px 8px;font-weight:800;font-size:.67rem;cursor:pointer}
+.weightcontrols button.active{background:#2563eb}
+.weightnote{font-size:.61rem;color:#9aa9bd;line-height:1.35;margin:2px 0 4px}
+.weightchart{height:280px;width:100%}
+.weightfoot{font-size:.59rem;color:#7f8da3;line-height:1.35;margin-top:1px}
+@media(max-width:620px){.weightchart{height:265px}.weightcontrols button{font-size:.63rem;padding:5px 7px}}
 </style>
 <script>
 (()=>{'use strict';
-const MODEL_KEYS=['qqq','new_tickers'];
-const safeNum=x=>Number.isFinite(Number(x))?Number(x):null;
-const parseRet=t=>{if(!t)return null;const m=String(t).replace(',','.').match(/([+-]?\d+(?:\.\d+)?)\s*%/);return m?Number(m[1])/100:null};
-const labelFor=(f,d)=>d||String(f).replace(/^ret_/,'').replace('_alt','');
-function chipReturn(key,label){const box=document.getElementById('tickerbar_'+key);if(!box)return null;for(const chip of box.querySelectorAll('.tickerchip')){const sym=(chip.querySelector('.sym')?.textContent||'').trim();if(sym===label||sym.replace(/^\./,'')===String(label).replace(/^\./,'')){return parseRet(chip.querySelector('.ret')?.textContent)}}return null}
-function panel(key,model){const host=document.getElementById('dM_'+key);if(!host||host.querySelector('.factorpanel'))return;const features=model.features||[],labels=model.features_display||[],coef=model.current?.coefficients||{};const rows=features.map((f,i)=>{const label=labelFor(f,labels[i]);const beta=safeNum(coef[f]);const ret=chipReturn(key,label);const pp=beta!==null&&ret!==null?beta*ret*100:null;return{f,label,beta,ret,pp}});const finite=rows.filter(r=>r.pp!==null);const max=Math.max(...finite.map(r=>Math.abs(r.pp)),0.000001);const box=document.createElement('div');box.className='factorpanel';box.innerHTML='<h3>Pesos y aporte de los factores · sesión actual</h3><div class="factornote">β = coeficiente OLS Rolling 30 vigente. Aporte = β × retorno observado del ticker. La longitud de la barra compara la magnitud del aporte dentro de cada modelo.</div><div class="factorrows">'+rows.map(r=>{const v=r.pp,w=v===null?0:Math.max(2,Math.abs(v)/max*100),cl=v===null||Math.abs(v)<1e-12?'zero':v>0?'pos':'neg',beta=r.beta===null?'—':(r.beta>=0?'+':'')+r.beta.toFixed(4),pp=v===null?'sin retorno':(v>=0?'+':'')+v.toFixed(3)+' pp';return `<div class="factorrow"><div class="factorname">${r.label}</div><div class="factortrack"><div class="factorfill ${cl}" style="width:${w.toFixed(1)}%"></div></div><div class="factorstat"><span class="beta">β ${beta}</span> · <span class="pp ${cl}">${pp}</span></div></div>`}).join('')+'</div><div class="factorfoot">Verde = aporte al alza del retorno estimado · rojo = aporte a la baja. El intercepto no se muestra como ticker.</div>';const charts=host.querySelector('.charts');if(charts)host.insertBefore(box,charts);else host.appendChild(box)}
-async function render(){try{const r=await fetch('data/dual_rolling30_monitor.json?weights='+Date.now(),{cache:'no-store'});if(!r.ok)return;const db=await r.json();let tries=0;const go=()=>{tries++;for(const k of MODEL_KEYS){const m=db.models?.[k];if(m)panel(k,m)}if(tries<12&&MODEL_KEYS.some(k=>!document.querySelector('#dM_'+k+' .factorpanel')))setTimeout(go,250)};setTimeout(go,250)}catch(e){console.warn('factor bars',e)}}
-if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',render);else render();
+const KEYS=['qqq','new_tickers'];
+const state={qqq:'beta',new_tickers:'beta'};
+const n=x=>Number.isFinite(Number(x))?Number(x):null;
+const norm=x=>String(x||'').toUpperCase().replace(/^RET_/,'').replace(/_ALT$/,'').replace(/[^A-Z0-9]/g,'');
+const fmtSigned=(x,d=4)=>x==null?'—':(x>=0?'+':'')+Number(x).toFixed(d);
+
+function factorRows(model){
+  const features=model.features||[], labels=model.features_display||[], coeff=model.current?.coefficients||{}, assets=model.intraday_assets||[];
+  return features.map((f,i)=>{
+    const label=labels[i]||String(f).replace(/^ret_/,'').replace('_alt','');
+    const beta=n(coeff[f]);
+    const asset=assets.find(a=>norm(a.serie||a.ticker)===norm(label));
+    const ret=n(asset?.retorno_modelo??asset?.retorno);
+    const pp=beta!==null&&ret!==null?beta*ret*100:null;
+    return {label,beta,ret,pp};
+  }).filter(r=>r.beta!==null);
+}
+
+function draw(key,model){
+  const rows=factorRows(model);
+  const mode=state[key];
+  const isBeta=mode==='beta';
+  const x=rows.map(r=>isBeta?r.beta:r.pp);
+  const colors=x.map(v=>v==null?'#64748b':v>=0?'#4ade80':'#f87171');
+  const custom=rows.map(r=>[r.beta,r.ret==null?null:r.ret*100,r.pp]);
+  const text=rows.map(r=>isBeta?('β '+fmtSigned(r.beta,4)):(r.pp==null?'s/d':fmtSigned(r.pp,3)+' pp'));
+  const title=isBeta?'Coeficiente β':'Aporte al retorno estimado (pp)';
+  const hover=isBeta
+    ? '<b>%{y}</b><br>β %{customdata[0]:+.4f}<br>Retorno factor %{customdata[1]:+.3f}%<br>Aporte sesión %{customdata[2]:+.3f} pp<extra></extra>'
+    : '<b>%{y}</b><br>Aporte %{customdata[2]:+.3f} pp<br>β %{customdata[0]:+.4f}<br>Retorno factor %{customdata[1]:+.3f}%<extra></extra>';
+  Plotly.react('dWeights_'+key,[{
+    type:'bar',orientation:'h',
+    x,y:rows.map(r=>r.label),
+    marker:{color:colors},
+    text,textposition:'auto',
+    customdata:custom,
+    hovertemplate:hover
+  }],{
+    paper_bgcolor:'#0b1728',plot_bgcolor:'#0b1728',
+    font:{color:'#dbe7f5',size:10},
+    margin:{l:88,r:18,t:8,b:46},
+    xaxis:{title,gridcolor:'#213147',zeroline:true,zerolinecolor:'#cbd5e1',zerolinewidth:1},
+    yaxis:{autorange:'reversed',automargin:true},
+    showlegend:false,bargap:.28
+  },{responsive:true,displaylogo:false,displayModeBar:false});
+}
+
+function ensurePanel(key,model){
+  const host=document.getElementById('dM_'+key);
+  if(!host)return false;
+  let box=host.querySelector('.weightbox');
+  if(!box){
+    box=document.createElement('div');
+    box.className='weightbox';
+    box.innerHTML=`<div class="weighthead"><h3>Pesos de los factores · Rolling 30</h3><div class="weightcontrols"><button type="button" data-mode="beta" class="active">Peso β</button><button type="button" data-mode="aporte">Aporte sesión</button></div></div><div class="weightnote">El gráfico muestra los coeficientes OLS vigentes de cada ticker. β no es un porcentaje de cartera ni tiene que sumar 100%.</div><div class="weightchart" id="dWeights_${key}"></div><div class="weightfoot">Verde = efecto positivo · rojo = efecto negativo. En “Aporte sesión” se muestra β × retorno observado del factor, en puntos porcentuales del retorno estimado.</div>`;
+    const charts=host.querySelector('.charts');
+    if(charts)host.insertBefore(box,charts);else host.appendChild(box);
+    box.querySelectorAll('button[data-mode]').forEach(btn=>btn.addEventListener('click',()=>{
+      state[key]=btn.dataset.mode;
+      box.querySelectorAll('button[data-mode]').forEach(b=>b.classList.toggle('active',b===btn));
+      draw(key,model);
+    }));
+  }
+  draw(key,model);
+  return true;
+}
+
+async function renderWeights(){
+  try{
+    const r=await fetch('data/dual_rolling30_monitor.json?weights2='+Date.now(),{cache:'no-store'});
+    if(!r.ok)throw Error('HTTP '+r.status);
+    const db=await r.json();
+    let tries=0;
+    const go=()=>{
+      tries++;
+      let ok=true;
+      for(const key of KEYS){const m=db.models?.[key];ok=Boolean(m&&ensurePanel(key,m))&&ok;}
+      if(!ok&&tries<20)setTimeout(go,200);
+    };
+    go();
+  }catch(e){console.warn('weight charts',e)}
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',renderWeights);else renderWeights();
 })();
 </script>
 
