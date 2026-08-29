@@ -1,0 +1,96 @@
+name: Corregir comparador SBS y cruce por operación
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - migracion-github-actions
+    paths:
+      - ".github/workflows/fix-comparator-real-sbs-cross-history.yml"
+      - "public/comparador-fondos/comparator_runtime_v4.js"
+      - "public/data/cross_afp_operation_v2.js"
+      - "public/habitat/data/cross_afp_operation_v2.js"
+      - "scripts/validate_comparator_operation_20260818_20.py"
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: github-pages
+  cancel-in-progress: false
+
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Descargar repositorio
+        uses: actions/checkout@v4
+        with:
+          ref: migracion-github-actions
+          fetch-depth: 0
+
+      - name: Instalar versiones corregidas
+        run: |
+          python - <<'PY'
+          import re
+          from pathlib import Path
+
+          comp=Path('public/comparador-fondos/index.html')
+          txt=comp.read_text(encoding='utf-8')
+          txt=re.sub(r'\n?<script\s+src="comparator_runtime_v\d+\.js\?rev=[^"]+"\s*></script>','',txt,flags=re.I)
+          txt=re.sub(r'\n?<script\s+src="comparator_runtime_v\d+\.js"\s*></script>','',txt,flags=re.I)
+          txt=txt.replace('</body>','<script src="comparator_runtime_v4.js?rev=CMPV4-20260829"></script>\n</body>',1)
+          comp.write_text(txt,encoding='utf-8')
+
+          for p in [Path('public/index.html'),Path('public/habitat/index.html')]:
+              t=p.read_text(encoding='utf-8')
+              t=re.sub(r'\n?<script\s+src="data/cross_afp_operation_v\d+\.js\?rev=[^"]+"\s*></script>','',t,flags=re.I)
+              t=re.sub(r'\n?<script\s+src="data/cross_afp_operation_v\d+\.js"\s*></script>','',t,flags=re.I)
+              t=t.replace('</body>','<script src="data/cross_afp_operation_v2.js?rev=CROSSAFP2-20260829"></script>\n</body>',1)
+              p.write_text(t,encoding='utf-8')
+          PY
+
+      - name: Validar sintaxis y caso real 18 a 20 agosto
+        run: |
+          node --check public/comparador-fondos/comparator_runtime_v4.js
+          node --check public/data/cross_afp_operation_v2.js
+          node --check public/habitat/data/cross_afp_operation_v2.js
+          python scripts/validate_comparator_operation_20260818_20.py
+          grep -q 'comparator_runtime_v4.js?rev=CMPV4-20260829' public/comparador-fondos/index.html
+          grep -q 'data/cross_afp_operation_v2.js?rev=CROSSAFP2-20260829' public/index.html
+          grep -q 'data/cross_afp_operation_v2.js?rev=CROSSAFP2-20260829' public/habitat/index.html
+          grep -q 'Misma operación en' public/data/cross_afp_operation_v2.js
+          grep -q 'data-crossafp-row' public/data/cross_afp_operation_v2.js
+          grep -q 'data-crossafp-row' public/habitat/data/cross_afp_operation_v2.js
+
+      - name: Guardar enlaces corregidos
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/index.html public/habitat/index.html public/comparador-fondos/index.html
+          if git diff --cached --quiet; then
+            echo "Los enlaces ya estaban correctos."
+          else
+            git commit -m "Usar SBS dual y mostrar comparativa bajo operaciones"
+            git pull --rebase origin migracion-github-actions
+            git push origin HEAD:migracion-github-actions
+          fi
+
+      - name: Configurar Pages
+        uses: actions/configure-pages@v5
+        with:
+          enablement: true
+
+      - name: Subir sitio verificado
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: public
+
+      - name: Publicar Pages verificado
+        id: deployment
+        uses: actions/deploy-pages@v4
