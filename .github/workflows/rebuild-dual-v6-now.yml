@@ -12,6 +12,7 @@ on:
       - "scripts/patch_google_rolling30_assets.py"
       - "scripts/validate_new_ticker_session.py"
       - "scripts/persist_dual_rolling30_shadow.py"
+      - "scripts/finalize_profuturo_close.py"
   workflow_dispatch:
 
 permissions:
@@ -90,11 +91,11 @@ jobs:
               print('Sesión live vigente:',new_date,'; previa:',old_date)
           PY
 
-          # Los nuevos tickers se validan antes de entrar al modelo. Google se
-          # contrasta con Yahoo cuando existe equivalente; SPBLSCUP se bloquea si
-          # presenta una divergencia no corroborada. Nunca se sustituye por 0%.
+          # Validar cierres y luego aplicar la capa final: TuCambista por fecha,
+          # cierres diarios exactos y recálculo desde el último VC SBS real.
           python scripts/patch_google_rolling30_assets.py || true
           python scripts/validate_new_ticker_session.py || true
+          python scripts/finalize_profuturo_close.py
 
           python scripts/build_dual_rolling30_monitor.py
           # Regla FX de ambos Rolling30: BCRP PD04638PD si ya existe la fecha;
@@ -102,8 +103,6 @@ jobs:
           python scripts/patch_dual_rolling30_fx_operational.py
           python scripts/persist_dual_rolling30_shadow.py
 
-          # Protección adicional: un rebuild pesado nunca puede sustituir un dual
-          # ya validado de una sesión más nueva por otro construido con T-1.
           python - <<'PY'
           import json
           from pathlib import Path
@@ -122,9 +121,6 @@ jobs:
               print('Dual reconstruido vigente:',nd,'; previo:',od)
           PY
 
-          # El 24/08 tuvo entradas operacionales contaminadas. El shadow conserva
-          # el pronóstico realmente emitido y excluido del score; el visor muestra
-          # el recálculo exacto reproducible con cierres correctos.
           python scripts/patch_dual_20260824_exact.py
 
           python - <<'PY'
@@ -173,11 +169,14 @@ jobs:
 
           if not preserved:
               validation=live.get('new_ticker_validation',{})
-              if validation.get('status') != 'OK':
+              if validation.get('status') not in {'OK','COMPLETO/VALIDADO'}:
                   raise RuntimeError('Nuevos tickers no validados: '+json.dumps(validation,ensure_ascii=False))
+              expected_date=str(live.get('signal_date') or '')[:10]
+              for row in d['models']['new_tickers'].get('intraday_assets',[]):
+                  if str(row.get('serie')) in {'.INX','CPER','EEM','NDX','SPBLSCUP','USD/PEN'}:
+                      assert str(row.get('timestamp',''))[:10] == expected_date,(row,expected_date)
+                      assert 'NO VALIDADO' not in str(row.get('estado','')).upper(),row
 
-          # El incidente original del 24/08 queda documentado en shadow y fuera del
-          # score limpio; no se borra esa evidencia histórica.
           shadow=Path('data/rolling90/dual_rolling30_shadow.csv')
           if shadow.exists():
               sh=pd.read_csv(shadow)
@@ -197,7 +196,7 @@ jobs:
 
           git add data/rolling90/sbs_profuturo_f3.csv data/rolling90/dual_rolling30_shadow.csv public/data/sbs_sync_status.json public/data/live_market.json public/data/dual_rolling30_monitor.json
           if test -f data/analysis/googlefinance_alt_rolling30_live_returns.csv; then git add data/analysis/googlefinance_alt_rolling30_live_returns.csv; fi
-          git commit -m "Reconstruir visor dual V6 con histórico diario y FX BCRP TuCambista" || true
+          git commit -m "Reconstruir visor dual V6 con cierre final y FX TuCambista" || true
           git pull --rebase origin migracion-github-actions || true
           git push origin HEAD:migracion-github-actions
 
