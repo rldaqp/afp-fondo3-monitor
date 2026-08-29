@@ -3425,18 +3425,26 @@
   },
   {
     "fecha": "2026-08-26",
-    "vc": 33.53263989864718,
-    "fuente": "MODELO OLS",
-    "es_oficial": false,
-    "senal": "BAJA",
-    "ret_estimado": -0.002570817856238386
+    "vc": 33.7030493,
+    "fuente": "SBS OFICIAL",
+    "es_oficial": true,
+    "senal": null,
+    "ret_estimado": null
   },
   {
     "fecha": "2026-08-27",
-    "vc": 33.687640760918555,
+    "vc": 33.86280220613483,
     "fuente": "MODELO OLS",
     "es_oficial": false,
     "senal": "SUBE",
-    "ret_estimado": 0.004622387701650165
+    "ret_estimado": 0.004740013424685016
+  },
+  {
+    "fecha": "2026-08-28",
+    "vc": 33.56496358921294,
+    "fuente": "MODELO OLS",
+    "es_oficial": false,
+    "senal": "BAJA",
+    "ret_estimado": -0.008795450982137933
   }
 ]
