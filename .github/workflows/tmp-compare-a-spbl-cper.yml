@@ -1,0 +1,32 @@
+name: TMP comparar A con SPBLSCUP CPER
+on:
+  push:
+    branches:
+      - analysis-spbl-cper-20260829
+    paths:
+      - '.github/workflows/tmp-compare-a-spbl-cper.yml'
+permissions:
+  contents: write
+jobs:
+  compare:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: analysis-spbl-cper-20260829
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: requirements-live.txt
+      - run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements-live.txt
+      - run: python scripts/tmp_compare_a_spbl_cper.py
+      - run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add data/analysis/tmp_compare_a_spbl_cper_result.json
+          git commit -m 'Guardar comparación A SPBLSCUP CPER' || exit 0
+          git push origin HEAD:analysis-spbl-cper-20260829
