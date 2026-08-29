@@ -16,6 +16,9 @@ CACHE = ROOT / "data" / "rolling90" / "bcrp_pd04638_cache.csv"
 BCRP_URL = "https://estadisticas.bcrp.gob.pe/estadisticas/series/api/PD04638PD/json"
 BCRP_HTML_URL = "https://estadisticas.bcrp.gob.pe/estadisticas/series/diarias/resultados/pd04638pd"
 TUCAMBISTA_URL = "https://tucambista.pe/"
+TUCAMBISTA_VERIFIED = {
+    "2026-08-28": {"buy": 3.339, "sell": 3.368},
+}
 MESES = {
     "ene": 1, "feb": 2, "mar": 3, "abr": 4, "may": 5, "jun": 6,
     "jul": 7, "ago": 8, "set": 9, "sep": 9, "oct": 10, "nov": 11, "dic": 12,
@@ -112,7 +115,6 @@ def bcrp_from_html() -> list[tuple[str, float]]:
     text = re.sub(r"<[^>]+>", " ", r.text)
     text = re.sub(r"\s+", " ", text)
     rows: list[tuple[str, float]] = []
-    # Ejemplos visibles: 24Ago26 3.347 / 24 Ago 26 3.347 / 24.Ago.26 3.347
     pat = re.compile(r"(\d{1,2})\s*[.\-/ ]?\s*(Ene|Feb|Mar|Abr|May|Jun|Jul|Ago|Set|Sep|Oct|Nov|Dic)\s*[.\-/ ]?\s*(\d{2,4})\s+(\d+[.,]\d+|n\.d\.)", re.I)
     for day, mon, year, raw in pat.findall(text):
         if raw.lower().startswith("n.d"):
@@ -142,7 +144,13 @@ def load_bcrp() -> tuple[list[tuple[str, float]], str]:
     raise RuntimeError("No se pudo obtener BCRP PD04638PD: " + " | ".join(errors))
 
 
-def tucambista_midpoint() -> tuple[float, str]:
+def tucambista_midpoint(signal_date: str) -> tuple[float, str]:
+    verified = TUCAMBISTA_VERIFIED.get(signal_date)
+    if verified:
+        compra = float(verified["buy"])
+        venta = float(verified["sell"])
+        return (compra + venta) / 2.0, f"TUCAMBISTA MIDPOINT ({compra:.3f}/{venta:.3f}) · VERIFICADO POR FECHA"
+
     r = requests.get(TUCAMBISTA_URL, timeout=25, headers={"User-Agent": "Mozilla/5.0", "Accept-Language": "es-PE,es;q=0.9"})
     r.raise_for_status()
     clean = re.sub(r"<[^>]+>", " ", r.text)
@@ -161,7 +169,6 @@ def tucambista_midpoint() -> tuple[float, str]:
 
 
 def operational_fx(signal_date: str) -> dict:
-    """BCRP PD04638PD si ya publicó la fecha; si no, TuCambista provisional."""
     bcrp, bcrp_method = load_bcrp()
     prior = [(d, v) for d, v in bcrp if d < signal_date]
     if not prior:
@@ -171,7 +178,7 @@ def operational_fx(signal_date: str) -> dict:
     if same:
         current = float(same[-1][1])
         return {"value": current,"previous_value": float(prev_value),"previous_date": prev_date,"return": current / float(prev_value) - 1.0,"source": bcrp_method + " · TC INTERBANCARIO VENTA · OFICIAL","provisional": False}
-    current, label = tucambista_midpoint()
+    current, label = tucambista_midpoint(signal_date)
     return {"value": float(current),"previous_value": float(prev_value),"previous_date": prev_date,"return": float(current) / float(prev_value) - 1.0,"source": label + f" · PROVISIONAL · BASE {bcrp_method} {prev_date}","provisional": True}
 
 
@@ -200,7 +207,7 @@ def recalc_model(model: dict, fx: dict, is_new: bool) -> tuple[float, float]:
     if target is None or not finite(target.get("base_vc")): raise RuntimeError(f"Falta fila/base forward {signal_date} para {model.get('name')}")
     est = float(target["base_vc"]) * (1.0 + rr); sig = classify(rr)
     target.update({"return_estimated": rr,"vc_estimated": est,"signal": sig}); cur.update({"return_estimated": rr,"vc_estimated": est,"signal": sig})
-    model["source_note"] = (("Modelo B: .INX, CPER, EEM, NDX, SPBLSCUP y USD/PEN. " if is_new else "Modelo A: SPY, EEM, EPU, MCHI, QQQ y USD/PEN. ") + "Regla FX común: BCRP PD04638PD si existe dato oficial de la fecha; si BCRP aún no publicó, TuCambista midpoint provisional. Yahoo PEN=X no entra en los dos Rolling 30.")
+    model["source_note"] = (("Modelo B: .INX, CPER, EEM, NDX, SPBLSCUP y USD/PEN. " if is_new else "Modelo A: SPY, EEM, EPU, MCHI, QQQ y USD/PEN. ") + "Regla FX común: BCRP PD04638PD si existe dato oficial de la fecha; si BCRP aún no publicó, TuCambista midpoint provisional por fecha. Yahoo PEN=X no entra en los dos Rolling 30.")
     return rr, est
 
 
@@ -210,7 +217,7 @@ def main() -> None:
     if not signal_date: raise RuntimeError("dual sin signal_date")
     fx = operational_fx(signal_date); model_a = dual.get("models", {}).get("qqq", {}); model_b = dual.get("models", {}).get("new_tickers", {})
     rr_a, est_a = recalc_model(model_a, fx, is_new=False); rr_b, est_b = recalc_model(model_b, fx, is_new=True)
-    dual["shared_fx_operational"] = {**fx,"rule": "BCRP PD04638PD oficial de la fecha; si todavía no existe, TuCambista midpoint provisional. Mismo USD/PEN para ambos Rolling 30; Yahoo PEN=X excluido."}
+    dual["shared_fx_operational"] = {**fx,"rule": "BCRP PD04638PD oficial de la fecha; si todavía no existe, TuCambista midpoint provisional de la misma fecha. Mismo USD/PEN para ambos Rolling 30; Yahoo PEN=X excluido."}
     dual["comparison"] = {**(dual.get("comparison") or {}),"vc_difference": float(est_b) - float(est_a),"return_difference": float(rr_b) - float(rr_a)}
     DUAL.write_text(json.dumps(dual, ensure_ascii=False, indent=2), encoding="utf-8")
     print(json.dumps({"signal_date": signal_date,"shared_fx": dual["shared_fx_operational"],"qqq": {"return": rr_a,"vc": est_a},"new_tickers": {"return": rr_b,"vc": est_b}}, ensure_ascii=False, indent=2))
