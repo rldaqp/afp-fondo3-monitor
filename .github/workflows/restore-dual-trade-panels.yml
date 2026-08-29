@@ -1,0 +1,66 @@
+name: Restaurar operaciones y Drive duales
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - migracion-github-actions
+    paths:
+      - ".github/workflows/restore-dual-trade-panels.yml"
+      - "scripts/ensure_dual_trade_runtime.py"
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: restore-dual-trades
+  cancel-in-progress: true
+
+jobs:
+  restore:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Descargar repositorio
+        uses: actions/checkout@v4
+        with:
+          ref: migracion-github-actions
+          fetch-depth: 0
+
+      - name: Restaurar paneles de operaciones y Drive
+        run: |
+          python scripts/ensure_dual_trade_runtime.py
+          grep -q 'data/dual_trade_runtime_v1.js?rev=DUALTRADEV3' public/index.html
+          grep -q 'data/dual_trade_runtime_v1.js?rev=DUALTRADEV3' public/habitat/index.html
+          grep -q 'Registrar operación' public/data/dual_trade_runtime_v1.js
+          grep -q 'Registrar operación' public/habitat/data/dual_trade_runtime_v1.js
+          grep -q 'Conectar Drive' public/data/dual_trade_runtime_v1.js
+          grep -q 'Conectar Drive' public/habitat/data/dual_trade_runtime_v1.js
+
+      - name: Guardar restauración en rama
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/index.html public/habitat/index.html public/data/dual_trade_runtime_v1.js public/habitat/data/dual_trade_runtime_v1.js
+          if git diff --cached --quiet; then
+            echo "Los paneles ya estaban fijados en la rama."
+          else
+            git commit -m "Fijar operaciones y Drive en Profuturo y Habitat"
+            git push origin HEAD:migracion-github-actions
+          fi
+
+      - name: Configurar Pages
+        uses: actions/configure-pages@v5
+
+      - name: Subir sitio con operaciones restauradas
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: public
+
+      - name: Publicar Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
