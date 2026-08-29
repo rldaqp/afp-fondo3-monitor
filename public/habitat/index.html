@@ -1,1184 +1,153 @@
 <!doctype html>
-<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#07111f"><title>Hábitat Fondo 3 · Rolling 90</title>
+<html lang="es">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#07111f">
+<title>Hábitat Fondo 3 · Dos modelos Rolling 30</title>
 <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
 <style>
-:root{color-scheme:dark;--bg:#07111f;--card:#0f1b2d;--muted:#94a3b8;--line:#243244;--text:#f8fafc}*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}.wrap{max-width:980px;margin:auto;padding:14px}
-h1{font-size:1.45rem;margin:5px 0}.sub,.note{color:var(--muted);font-size:.82rem}.grid,.metricrow{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin:14px 0}
-.card,.panel{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:13px}.panel{margin:11px 0}.label{color:var(--muted);font-size:.76rem}.value{font-size:1.14rem;font-weight:700;margin-top:5px}.signal{font-size:1.5rem}.up{color:#4ade80}.down{color:#f87171}.flat{color:#fbbf24}
-.tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}.tabs button,.primary{border:1px solid #334155;background:#132238;color:#fff;border-radius:10px;padding:11px;font-weight:650}.tabs button.active,.primary{background:#2563eb}
-.inputs{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:12px}input{width:100%;background:#07111f;color:#fff;border:1px solid #334155;border-radius:9px;padding:10px}label{font-size:.76rem;color:var(--muted)}.hidden{display:none}.chart{height:365px}.error{background:#451a1a;padding:12px;border-radius:10px}
-@media(max-width:700px){.grid,.metricrow{grid-template-columns:repeat(2,1fr)}.inputs{grid-template-columns:1fr}.chart{height:320px}}
+:root{color-scheme:dark;--bg:#07111f;--card:#0f1b2d;--inner:#0b1728;--line:#26364a;--text:#f8fafc;--muted:#9aa9bd;--blue:#38bdf8;--orange:#fb923c;--green:#4ade80;--red:#f87171;--yellow:#fbbf24;--active:#2563eb}*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}.wrap{max-width:1180px;margin:auto;padding:14px}h1{margin:0;font-size:1.5rem}h2{font-size:1.03rem;margin:0}h3{font-size:.88rem;margin:0}.sub,.small{color:var(--muted);font-size:.74rem;line-height:1.4}.topgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:12px 0}.card,.model,.chartbox,.validation{border:1px solid var(--line);background:var(--card);border-radius:12px}.card{padding:11px}.label{font-size:.68rem;color:var(--muted)}.value{font-size:1.08rem;font-weight:900;margin-top:4px}.signal{font-size:.88rem;font-weight:900;margin-top:3px}.up{color:var(--green)}.down{color:var(--red)}.flat{color:var(--yellow)}
+.globaldock{position:sticky;top:0;z-index:100;background:rgba(7,17,31,.985);border:1px solid #3a506b;border-radius:11px;padding:7px 8px;margin:8px 0 12px;box-shadow:0 8px 22px rgba(0,0,0,.34);backdrop-filter:blur(8px)}.docktitle{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:5px}.docktitle b{font-size:.78rem}.fxcommon{font-size:.62rem;color:#cbd5e1;background:#0a1625;border:1px solid #29415e;border-radius:7px;padding:5px 7px;margin-bottom:6px}.dockrow{display:grid;grid-template-columns:88px 1fr;gap:7px;align-items:center;margin:4px 0}.dockname{font-size:.68rem;font-weight:900;white-space:nowrap}.tickerbar{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:5px}.tickerchip{background:#101e32;border:1px solid #2a3e58;border-radius:8px;padding:5px 6px;min-width:0}.tickerchip .sym{font-size:.69rem;font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.tickerchip .line{display:flex;justify-content:space-between;gap:4px;align-items:baseline;margin-top:1px}.tickerchip .price{font-size:.75rem;font-weight:850;white-space:nowrap}.tickerchip .ret{font-size:.68rem;font-weight:900;white-space:nowrap}.tickerchip .src{font-size:.52rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px}
+.validation{padding:8px 10px;margin:8px 0 12px;background:#0a1625}.validation b{font-size:.72rem}.validation span{font-size:.68rem;color:var(--muted)}.model{padding:11px;margin:13px 0 18px}.modelhead{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;margin-bottom:7px}.modelmeta{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:8px}.mini{background:var(--inner);border:1px solid var(--line);border-radius:8px;padding:7px}.mini b{display:block;margin-top:2px;font-size:.85rem}.charts{display:grid;grid-template-columns:1fr;gap:8px}.chartbox{padding:8px;background:var(--inner)}.charttop{display:flex;justify-content:space-between;gap:8px;align-items:flex-start;flex-wrap:wrap}.controls{display:flex;gap:4px;flex-wrap:wrap}.controls button{border:1px solid #35465d;background:#132238;color:#fff;border-radius:8px;padding:6px 9px;font-weight:800;font-size:.72rem;cursor:pointer}.controls button.active{background:var(--active)}.count{font-size:.62rem;color:var(--muted);margin-top:3px}.chart{height:300px}.legendnote{font-size:.61rem;color:var(--muted);line-height:1.35;margin-top:3px}.error{display:none;background:#451a1a;border:1px solid #7f1d1d;padding:10px;border-radius:9px;margin:10px 0}.footer{font-size:.66rem;color:var(--muted);padding:6px 2px 18px}
+@media(max-width:900px){.topgrid,.modelmeta{grid-template-columns:repeat(2,1fr)}.tickerbar{grid-template-columns:repeat(3,1fr)}.chart{height:285px}.dockrow{grid-template-columns:78px 1fr}}
+@media(max-width:620px){.wrap{padding:8px}.globaldock{top:0;margin-left:-8px;margin-right:-8px;border-radius:0;padding:6px 8px}.dockrow{display:block}.dockname{margin-bottom:3px}.tickerbar{display:flex;overflow-x:auto;gap:5px;scrollbar-width:thin}.tickerchip{min-width:116px}.chart{height:270px}.modelhead{display:block}.modelhead .small{margin-top:3px}.docktitle .small{display:none}}
 </style>
-<style>
-.chart-title{font-size:.96rem;font-weight:800;margin:0 0 8px;color:#f8fafc}
-.chart-controls{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:10px}
-.chart-controls button{flex:1 1 auto;min-width:60px;border:1px solid #334155;background:#132238;color:#fff;border-radius:9px;padding:9px 8px;font-weight:700}
-.chart-controls button.primary{background:#2563eb}
-#ret{font-size:1rem;font-weight:800;color:#e2e8f0;margin-top:6px;line-height:1.25}
-.monitor-help{margin:8px 0 10px;padding:10px 12px;border:1px solid #243244;border-radius:10px;background:#0b1728;color:#cbd5e1;font-size:.84rem;line-height:1.4}
-#detail{margin-top:10px;line-height:1.5}
-.market-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;margin-bottom:10px}.market-mode{font-weight:850}.market-time{font-size:.74rem;color:#94a3b8;text-align:right;line-height:1.45}
-.market-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.market-item{background:#0b1728;border:1px solid #243244;border-radius:11px;padding:10px}.market-symbol{font-size:.82rem;color:#cbd5e1;font-weight:800}.market-price{font-size:1.05rem;font-weight:850;margin-top:3px}.market-ret{font-size:.9rem;font-weight:800;margin-top:3px}.market-source{font-size:.68rem;color:#94a3b8;margin-top:4px;white-space:normal;line-height:1.28;overflow-wrap:anywhere}
-.pos{color:#4ade80}.neg{color:#f87171}.zero{color:#fbbf24}
-@media(max-width:700px){.wrap{padding:10px}.card,.panel{padding:11px}.value{font-size:1.2rem}#ret{font-size:1.02rem}.chart{height:300px}.chart-controls button{padding:9px 5px;font-size:.79rem}.market-grid{grid-template-columns:repeat(2,1fr)}.market-head{display:block}.market-time{text-align:left;margin-top:5px}}
-</style>
-
-<!-- MODEL_INSIGHTS_UI_V1 -->
-<style id="modelInsightsStyles">
-.insight-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:9px}
-.insight-title{font-size:.96rem;font-weight:850}.insight-badge{padding:4px 8px;border-radius:999px;font-size:.7rem;font-weight:850;border:1px solid #334155}
-.insight-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.insight-card{background:#0b1728;border:1px solid #243244;border-radius:11px;padding:10px;min-width:0}.insight-label{font-size:.7rem;color:#94a3b8}.insight-value{font-size:1.02rem;font-weight:850;margin-top:4px;overflow-wrap:anywhere}.insight-sub{font-size:.68rem;color:#94a3b8;margin-top:3px;line-height:1.3}
-.insight-details{margin-top:10px;border-top:1px solid #243244;padding-top:8px}.insight-details summary{cursor:pointer;font-size:.78rem;font-weight:800;color:#cbd5e1;padding:5px 0}.factor-list{display:grid;gap:7px;margin-top:9px}.factor-row{display:grid;grid-template-columns:64px 1fr 58px;gap:7px;align-items:center;font-size:.72rem}.factor-track{height:7px;background:#172338;border-radius:999px;overflow:hidden}.factor-fill{height:100%;border-radius:999px;background:#64748b}.factor-fill.posbar{background:#22c55e}.factor-fill.negbar{background:#ef4444}.factor-value{text-align:right;font-variant-numeric:tabular-nums}.perf-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:7px;margin-top:10px}.perf-item{background:#0b1728;border:1px solid #243244;border-radius:9px;padding:8px}.perf-item b{display:block;font-size:.82rem}.perf-item span{font-size:.68rem;color:#94a3b8}.quality-ok{color:#4ade80}.quality-warn{color:#fbbf24}.quality-bad{color:#f87171}
-@media(max-width:700px){.insight-grid{grid-template-columns:repeat(2,1fr)}.insight-card{padding:9px}.insight-value{font-size:1.05rem}.factor-row{grid-template-columns:58px 1fr 55px}}
-@media(max-width:390px){.insight-grid{grid-template-columns:1fr 1fr;gap:6px}.insight-label{font-size:.66rem}.insight-sub{font-size:.64rem}.factor-row{grid-template-columns:54px 1fr 51px;gap:5px}}
-</style>
-
-<!-- INVESTMENT_SIGNAL_1PCT_CSS START -->
-<style id="investmentSignal1PctStyles">
-.vc-precision-compact{display:none;margin-top:4px;font-size:.72rem;font-weight:800;color:#cbd5e1;line-height:1.25}
-</style>
-<!-- INVESTMENT_SIGNAL_1PCT_CSS END -->
-
-<!-- REDUCED_6030_CHALLENGER_CSS START -->
-<style id="reduced6030Styles">
-.r6030-panel{border-color:#334155}.r6030-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;margin-bottom:10px}.r6030-title{font-size:.98rem;font-weight:900}.r6030-kicker{font-size:.7rem;color:#94a3b8;margin-top:3px;line-height:1.4}.r6030-badge{padding:5px 9px;border:1px solid #475569;border-radius:999px;font-size:.7rem;font-weight:900;white-space:nowrap}.r6030-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}.r6030-card{background:#0b1728;border:1px solid #243244;border-radius:12px;padding:11px}.r6030-label{font-size:.72rem;color:#94a3b8;font-weight:800}.r6030-signal{font-size:1.15rem;font-weight:950;margin-top:5px}.r6030-vc{font-size:1.18rem;font-weight:950;margin-top:4px}.r6030-ret{font-size:.76rem;color:#cbd5e1;margin-top:3px}.r6030-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:9px}.r6030-mini{background:#101d31;border:1px solid #243244;border-radius:9px;padding:8px}.r6030-mini span{display:block;color:#94a3b8;font-size:.65rem}.r6030-mini b{display:block;margin-top:3px;font-size:.8rem}.r6030-note{font-size:.69rem;color:#94a3b8;line-height:1.45;margin-top:9px}.r6030-details{margin-top:9px}.r6030-details summary{cursor:pointer;color:#cbd5e1;font-size:.72rem;font-weight:800}.r6030-table{width:100%;border-collapse:collapse;font-size:.7rem;margin-top:7px}.r6030-table th,.r6030-table td{padding:6px 4px;border-top:1px solid #243244;text-align:right}.r6030-table th:first-child,.r6030-table td:first-child{text-align:left}.r6030-history{margin-top:10px;padding:10px;border:1px solid #243244;border-radius:11px;background:#0b1728}.r6030-history-title{font-size:.73rem;font-weight:850;color:#cbd5e1;margin-bottom:7px}.r6030-history-controls{display:grid;grid-template-columns:1fr auto;gap:7px}.r6030-history input{background:#07111f;color:#fff;border:1px solid #334155;border-radius:9px;padding:9px}.r6030-history button{border:1px solid #334155;background:#132238;color:#fff;border-radius:9px;padding:9px 12px;font-weight:800}.r6030-history-result{margin-top:8px;font-size:.72rem;line-height:1.45;color:#cbd5e1}
-@media(max-width:700px){.r6030-head{display:block}.r6030-badge{display:inline-block;margin-top:7px}.r6030-grid{grid-template-columns:1fr 1fr}.r6030-strip{grid-template-columns:1fr 1fr}.r6030-mini:last-child{grid-column:1/-1}.r6030-vc{font-size:1.08rem}}
-@media(max-width:390px){.r6030-grid{grid-template-columns:1fr}.r6030-strip{grid-template-columns:1fr 1fr}.r6030-history-controls{grid-template-columns:1fr}}
-</style>
-<!-- REDUCED_6030_CHALLENGER_CSS END -->
-<style>#huberChallengerBox{display:none!important}</style>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<!-- HABITAT_QQQ_INCREMENTAL_UI_V1 START -->
-<style id="habitatQqqIncrementalStyles">
-.hqqqi-panel{border-color:#334155}.hqqqi-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;margin-bottom:10px}.hqqqi-title{font-size:.98rem;font-weight:900}.hqqqi-kicker{font-size:.7rem;color:#94a3b8;margin-top:3px;line-height:1.35}.hqqqi-badge{padding:5px 9px;border:1px solid #475569;border-radius:999px;font-size:.7rem;font-weight:900;white-space:nowrap}.hqqqi-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}.hqqqi-card{background:#0b1728;border:1px solid #243244;border-radius:12px;padding:11px}.hqqqi-label{font-size:.72rem;color:#94a3b8;font-weight:800}.hqqqi-signal{font-size:1.15rem;font-weight:950;margin-top:5px}.hqqqi-vc{font-size:1.18rem;font-weight:950;margin-top:4px}.hqqqi-ret{font-size:.76rem;color:#cbd5e1;margin-top:3px}.hqqqi-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:9px}.hqqqi-mini{background:#101d31;border:1px solid #243244;border-radius:9px;padding:8px}.hqqqi-mini span{display:block;color:#94a3b8;font-size:.65rem}.hqqqi-mini b{display:block;margin-top:3px;font-size:.8rem}.hqqqi-note{font-size:.68rem;color:#94a3b8;line-height:1.4;margin-top:8px}.hqqqi-details{margin-top:8px}.hqqqi-details summary{cursor:pointer;color:#cbd5e1;font-size:.72rem;font-weight:800}.hqqqi-table{width:100%;border-collapse:collapse;font-size:.69rem;margin-top:7px}.hqqqi-table th,.hqqqi-table td{padding:6px 4px;border-top:1px solid #243244;text-align:right}.hqqqi-table th:first-child,.hqqqi-table td:first-child{text-align:left}
-@media(max-width:700px){.hqqqi-head{display:block}.hqqqi-badge{display:inline-block;margin-top:7px}.hqqqi-grid{grid-template-columns:1fr 1fr}.hqqqi-strip{grid-template-columns:1fr 1fr}.hqqqi-mini:last-child{grid-column:1/-1}.hqqqi-vc{font-size:1.08rem}}
-@media(max-width:390px){.hqqqi-grid{grid-template-columns:1fr}.hqqqi-strip{grid-template-columns:1fr 1fr}}
-</style>
-<!-- HABITAT_QQQ_INCREMENTAL_UI_V1 END -->
-<!-- HABITAT_FACTOR_WEIGHT_CHARTS_V1_CSS START -->
-<style id="habitatFactorWeightChartsStyles">.hweight-panel{border-color:#334155}.hweight-head{display:flex;justify-content:space-between;gap:8px;align-items:flex-start;flex-wrap:wrap;margin-bottom:3px}.hweight-title{font-size:.96rem;font-weight:900}.hweight-kicker{font-size:.68rem;color:#94a3b8;line-height:1.4;margin-top:2px}.hweight-controls{display:flex;gap:4px;flex-wrap:wrap}.hweight-controls button{border:1px solid #35465d;background:#132238;color:#fff;border-radius:8px;padding:6px 9px;font-weight:800;font-size:.69rem;cursor:pointer}.hweight-controls button.active{background:#2563eb}.hweight-chart{height:315px;width:100%}.hweight-note{font-size:.66rem;color:#94a3b8;line-height:1.4;margin-top:3px}@media(max-width:620px){.hweight-chart{height:285px}.hweight-controls button{font-size:.64rem;padding:5px 7px}}</style>
-<!-- HABITAT_FACTOR_WEIGHT_CHARTS_V1_CSS END --></head><body><main class="wrap">
-<h1>Hábitat Fondo 3</h1><div class="sub">GitHub Actions · OLS Rolling 90 · umbral ±0.10% · modelo propio con datos oficiales SBS</div><div id="error"></div>
-<section class="grid"><div class="card"><div class="label">Último VC SBS</div><div class="value" id="sbsVc">—</div><div class="sub" id="sbsDate">—</div></div>
-<div class="card"><div class="label">VC más reciente</div><div class="value" id="estVc">—</div><div class="sub" id="estDate">—</div></div>
-<div class="card"><div class="label">Señal</div><div class="value signal" id="signal">—</div><div class="sub" id="ret">—</div><div id="vcPrecisionCompact" class="vc-precision-compact"></div></div>
-<div class="card"><div class="label">Ventana vigente</div><div class="value">90</div><div class="sub" id="window">—</div></div></section><div id="monitorHelp" class="monitor-help"><b>Retorno estimado del VC:</b> variación diaria estimada por el OLS. Cada punto se dibuja desde el eje 0. Durante mercado abierto es provisional; al cierre usa cierres diarios.</div>
-
-
-<div id="huberValue" style="display:none"></div><div id="huberSub" style="display:none"></div>
-<!-- REDUCED_6030_CHALLENGER_PANEL START -->
-<section class="panel r6030-panel" id="reduced6030Panel">
-  <div class="r6030-head">
-    <div>
-      <div class="r6030-title">Comparación de VC estimado</div>
-      <div class="r6030-kicker">OLS oficial vs Challenger 60/30 · sin NEM ni FCX + QQQ · cadena ciega sin reanclaje SBS dentro del bloque</div>
-    </div>
-    <div id="r6030Badge" class="r6030-badge">Cargando…</div>
-  </div>
-  <div class="r6030-grid">
-    <div class="r6030-card">
-      <div class="r6030-label">OLS OFICIAL · ROLLING 90</div>
-      <div id="r6030OfficialSignal" class="r6030-signal">—</div>
-      <div id="r6030OfficialVc" class="r6030-vc">—</div>
-      <div id="r6030OfficialRet" class="r6030-ret">—</div>
-    </div>
-    <div class="r6030-card">
-      <div class="r6030-label">60/30 SIN NEM-FCX + QQQ · CHALLENGER</div>
-      <div id="r6030ChallengerSignal" class="r6030-signal">—</div>
-      <div id="r6030ChallengerVc" class="r6030-vc">—</div>
-      <div id="r6030ChallengerRet" class="r6030-ret">—</div>
-    </div>
-  </div>
-  <div class="r6030-strip">
-    <div class="r6030-mini"><span>Diferencia de VC</span><b id="r6030VcDiff">—</b></div>
-    <div class="r6030-mini"><span>Ciclo congelado</span><b id="r6030Cycle">—</b></div>
-    <div class="r6030-mini"><span>Backtest ciego · MAE VC</span><b id="r6030Backtest">—</b></div>
-  </div>
-  <div class="r6030-history">
-    <div class="r6030-history-title">Ver Challenger 60/30 en otra fecha</div>
-    <div class="r6030-history-controls"><input type="date" id="r6030Date"><button type="button" id="r6030DateBtn">Ver fecha</button></div>
-    <div id="r6030DateResult" class="r6030-history-result">Elige una fecha para comparar VC estimado, VC SBS y error.</div>
-  </div>
-  <details class="r6030-details"><summary>Ver validación y reglas del challenger</summary>
-    <div style="overflow-x:auto"><table class="r6030-table"><thead><tr><th>Modelo</th><th>MAE VC</th><th>RMSE VC</th><th>Error final medio</th></tr></thead><tbody id="r6030Rows"></tbody></table></div>
-    <div id="r6030Forward" class="r6030-note"></div>
-  </details>
-  <div id="r6030Note" class="r6030-note">El OLS rolling 90 continúa siendo oficial. El 60/30 es el único challenger y se contrasta en sombra contra SBS.</div>
+</head>
+<body>
+<main class="wrap" id="dualTakeoverV4" data-version="V6-daily">
+<h1>Hábitat Fondo 3</h1><div class="sub">Comparación operativa · dos modelos OLS Rolling 30 · histórico diario one-step separado de la validación homogénea de 30 pares</div><div id="loadError" class="error"></div>
+<section class="topgrid">
+<div class="card"><div class="label">Último VC SBS oficial</div><div class="value" id="dSbs">—</div><div class="small" id="dSbsDate">—</div></div>
+<div class="card"><div class="label">Modelo A · Rolling 30 + QQQ</div><div class="value" id="dAVc">—</div><div class="signal" id="dASig">—</div><div class="small" id="dADate">—</div></div>
+<div class="card"><div class="label">Modelo B · Rolling 30 + nuevos tickers</div><div class="value" id="dBVc">—</div><div class="signal" id="dBSig">—</div><div class="small" id="dBDate">—</div></div>
+<div class="card"><div class="label">Mejor MAPE diario one-step</div><div class="value" id="dWin">—</div><div class="small" id="dDiff">—</div></div>
 </section>
-<!-- REDUCED_6030_CHALLENGER_PANEL END -->
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<!-- HABITAT_FACTOR_WEIGHT_CHARTS_V1_OFFICIAL START -->
-<section class="panel hweight-panel" id="habitatOfficialWeightPanel"><div class="hweight-head"><div><div class="hweight-title">Pesos de los factores · OLS oficial Hábitat</div><div class="hweight-kicker">Rolling 90 · coeficientes estimados solo con Hábitat Fondo 3</div></div><div class="hweight-controls" data-weight-model="official"><button type="button" data-mode="beta" class="active">Peso β</button><button type="button" data-mode="aporte">Aporte sesión</button></div></div><div class="hweight-chart" id="habitatOfficialWeightChart"></div><div class="hweight-note">β es el coeficiente OLS vigente; no es un porcentaje de cartera ni tiene que sumar 100%. Aporte sesión = β × retorno observado del factor.</div></section>
-<!-- HABITAT_FACTOR_WEIGHT_CHARTS_V1_OFFICIAL END --><!-- HABITAT_QQQ_INCREMENTAL_PANEL_V1 START -->
-<section class="panel hqqqi-panel" id="habitatQqqIncrementalPanel">
-  <div class="hqqqi-head">
-    <div><div class="hqqqi-title">Comparación de VC estimado</div><div class="hqqqi-kicker">OLS oficial Hábitat vs QQQ incremental residualizado · mismo VC base · challenger en sombra</div></div>
-    <div id="hqqqiBadge" class="hqqqi-badge">Cargando…</div>
-  </div>
-  <div class="hqqqi-grid">
-    <div class="hqqqi-card">
-      <div class="hqqqi-label">OLS OFICIAL · HÁBITAT</div>
-      <div id="hqqqiOfficialSignal" class="hqqqi-signal">—</div>
-      <div id="hqqqiOfficialVc" class="hqqqi-vc">—</div>
-      <div id="hqqqiOfficialRet" class="hqqqi-ret">—</div>
-    </div>
-    <div class="hqqqi-card">
-      <div class="hqqqi-label">QQQ INCREMENTAL · CHALLENGER</div>
-      <div id="hqqqiChallengerSignal" class="hqqqi-signal">—</div>
-      <div id="hqqqiChallengerVc" class="hqqqi-vc">—</div>
-      <div id="hqqqiChallengerRet" class="hqqqi-ret">—</div>
-    </div>
-  </div>
-  <div class="hqqqi-strip">
-    <div class="hqqqi-mini"><span>Diferencia de VC</span><b id="hqqqiVcDiff">—</b></div>
-    <div class="hqqqi-mini"><span>Backtest 90d · MAE</span><b id="hqqqiMae90">—</b></div>
-    <div class="hqqqi-mini"><span>Prueba futura SBS</span><b id="hqqqiForward">—</b></div>
-  </div>
-  <details class="hqqqi-details"><summary>Ver desempeño 30 / 60 / 90 / 180 / histórico</summary>
-    <div style="overflow-x:auto"><table class="hqqqi-table"><thead><tr><th>Ventana</th><th>MAE OLS</th><th>MAE QQQ inc.</th><th>Acierto OLS</th><th>Acierto QQQ inc.</th><th>Δ MAE</th></tr></thead><tbody id="hqqqiRows"></tbody></table></div>
-  </details>
-  <div id="hqqqiNote" class="hqqqi-note">El OLS de Hábitat continúa siendo la señal oficial. QQQ se evalúa únicamente como información incremental.</div>
+<section class="globaldock" id="globalTickerDock">
+<div class="docktitle"><b>Mercado ahora · factores realmente usados</b><span class="small">permanece visible mientras bajas</span></div>
+<div class="fxcommon" id="fxCommon">USD/PEN común: cargando…</div>
+<div class="dockrow"><div class="dockname">Modelo A</div><div class="tickerbar" id="tickerbar_qqq"></div></div>
+<div class="dockrow"><div class="dockname">Modelo B</div><div class="tickerbar" id="tickerbar_new_tickers"></div></div>
 </section>
-<!-- HABITAT_QQQ_INCREMENTAL_PANEL_V1 END --><!-- HABITAT_FACTOR_WEIGHT_CHARTS_V1_CHALLENGER START -->
-<section class="panel hweight-panel" id="habitatChallengerWeightPanel"><div class="hweight-head"><div><div class="hweight-title">Pesos de los factores · QQQ incremental challenger</div><div class="hweight-kicker">Rolling 90 · QQQ residualizado contra los 7 factores del OLS oficial</div></div><div class="hweight-controls" data-weight-model="challenger"><button type="button" data-mode="beta" class="active">Peso β</button><button type="button" data-mode="aporte">Aporte sesión</button></div></div><div class="hweight-chart" id="habitatChallengerWeightChart"></div><div class="hweight-note">Los β del challenger se muestran en escala original, equivalentes exactamente al modelo estandarizado. QQQ residual es la parte de QQQ no explicada por los siete factores base.</div></section>
-<!-- HABITAT_FACTOR_WEIGHT_CHARTS_V1_CHALLENGER END -->
-<!-- HABITAT_SBS_INDICATORS_V1 START -->
-<section class="panel" id="sbsOfficialIndicators">
-  <div class="chart-title">Indicadores oficiales SBS del Fondo 3</div>
-  <div class="sub" id="officialIndicatorDate">Última información oficial: —</div>
-  <div class="insight-grid" style="margin-top:10px">
-    <div class="insight-card"><div class="insight-label">Valor cuota oficial</div><div class="insight-value" id="officialUnitValue">—</div></div>
-    <div class="insight-card"><div class="insight-label">Cuotas del fondo</div><div class="insight-value" id="officialFundQuotas">—</div></div>
-    <div class="insight-card"><div class="insight-label">Valor total del fondo</div><div class="insight-value" id="officialFundValue">—</div></div>
-    <div class="insight-card"><div class="insight-label">Variación diaria</div><div class="insight-value" id="officialChange1d">—</div></div>
-    <div class="insight-card"><div class="insight-label">Variación 7 días</div><div class="insight-value" id="officialChange7d">—</div></div>
-    <div class="insight-card"><div class="insight-label">Variación 30 días</div><div class="insight-value" id="officialChange30d">—</div></div>
-    <div class="insight-card"><div class="insight-label">Variación 90 días</div><div class="insight-value" id="officialChange90d">—</div></div>
-    <div class="insight-card"><div class="insight-label">Acumulado del año</div><div class="insight-value" id="officialChangeYtd">—</div></div>
-  </div>
-  <div class="note" style="margin-top:9px">Fuente: Variables SPP de la SBS.</div>
-</section>
-<!-- HABITAT_SBS_INDICATORS_V1 END -->
-
-<section class="panel" id="modelInsightsPanel">
-  <div class="insight-head"><div class="insight-title">Confianza y calidad del modelo</div><div id="qualityBadge" class="insight-badge">Cargando…</div></div>
-  <div class="insight-grid">
-    <div class="insight-card"><div class="insight-label">Acierto de esta señal</div><div class="insight-value" id="confidenceValue">—</div><div class="insight-sub" id="confidenceSub">Histórico reciente</div></div>
-    <div class="insight-card"><div class="insight-label">Banda histórica 80%</div><div class="insight-value" id="bandValue">—</div><div class="insight-sub">Error empírico del VC</div></div>
-    <div class="insight-card"><div class="insight-label">Calidad de datos</div><div class="insight-value" id="qualityValue">—</div><div class="insight-sub" id="qualitySub">Ventana y fuentes</div></div>
-    <div class="insight-card"><div class="insight-label">OLS vs sin cambio</div><div class="insight-value" id="benchmarkValue">—</div><div class="insight-sub">Comparación por MAE</div></div>
-  </div>
-
-  <details class="insight-details"><summary>Ver qué mueve la señal y rendimiento</summary>
-    <div class="note">Aporte aproximado de cada factor al retorno estimado: coeficiente × retorno observado.</div>
-    <div id="factorList" class="factor-list"></div>
-    <div id="perfGrid" class="perf-grid"></div>
-    <div id="qualityNotes" class="note" style="margin-top:9px"></div>
-  </details>
-</section>
-<section class="panel"><div class="tabs"><button class="active" data-mode="monitor">Solo monitorear</button><button data-mode="inside">Sigo dentro</button><button data-mode="closed">Ya salí</button></div>
-<div id="operation" class="hidden"><div class="inputs"><div><label>Fecha de entrada</label><input type="date" id="entry"></div><div><label>Capital invertido (S/)</label><input type="number" id="capital" value="25000" min="1" step="100"></div><div id="exitBox" class="hidden"><label>Fecha de salida</label><input type="date" id="exit"></div></div>
-<button class="primary" id="calc" style="width:100%;margin-top:10px">Calcular</button><div class="metricrow"><div class="card"><div class="label">Capital</div><div class="value" id="mCapital">—</div></div><div class="card"><div class="label">Valor actual/final</div><div class="value" id="mFinal">—</div></div><div class="card"><div class="label">Ganancia/pérdida</div><div class="value" id="mGain">—</div></div><div class="card"><div class="label">Rentabilidad</div><div class="value" id="mRent">—</div></div></div><div class="note" id="detail"></div><div id="opChart" class="chart"></div></div></section>
-<!-- TRADE_HISTORY_V1_START -->
-<style id="tradeHistoryStyles">
-.trade-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;margin-top:10px}
-.trade-table{width:100%;min-width:1460px;border-collapse:separate;border-spacing:0;font-size:.74rem}
-.trade-table th,.trade-table td{padding:8px 7px;border-bottom:1px solid #243244;text-align:right;white-space:nowrap}
-.trade-table th{color:#94a3b8;font-weight:750;background:#0b1728;position:sticky;top:0;z-index:1}
-.trade-table th:first-child,.trade-table td:first-child,.trade-table th:nth-child(2),.trade-table td:nth-child(2){text-align:left}
-.trade-actions{display:flex;gap:5px;justify-content:flex-end}.trade-btn{border:1px solid #334155;background:#132238;color:#fff;border-radius:8px;padding:7px 9px;font-weight:750;font-size:.72rem}.trade-btn.ok{background:#166534}.trade-btn.del{background:#7f1d1d}.trade-btn.close{background:#1d4ed8}
-.trade-badge{display:inline-block;padding:3px 7px;border-radius:999px;font-size:.67rem;font-weight:800}.trade-open{background:#78350f;color:#fde68a}.trade-closed{background:#164e63;color:#a5f3fc}.trade-confirmed{background:#14532d;color:#bbf7d0}.trade-pending{color:#fbbf24}.trade-real{color:#4ade80}.trade-diff-pos,.trade-pl-pos{color:#4ade80}.trade-diff-neg,.trade-pl-neg{color:#f87171}
-.trade-toolbar{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;margin-top:10px}.trade-save{width:100%;border:1px solid #1d4ed8;background:#2563eb;color:#fff;border-radius:10px;padding:11px;font-weight:800}.trade-msg{color:#94a3b8;font-size:.75rem;line-height:1.4;margin-top:7px}
-.trade-total td{font-weight:850;background:#0b1728;border-top:2px solid #475569;border-bottom:0}.trade-total td:first-child{color:#f8fafc}
-@media(max-width:700px){.trade-toolbar{grid-template-columns:1fr}.trade-table{font-size:.72rem}.trade-table th,.trade-table td{padding:7px 6px}}
-</style>
-
-<section class="panel" id="tradeHistoryPanel">
-  <div class="chart-title">Histórico de entradas y salidas</div>
-  <div class="note">Cada vez que presiones <b>OK · Guardar</b>, el VC estimado queda congelado. Cuando la SBS publique el VC oficial de esa fecha, se completa automáticamente. La última fila muestra el balance total.</div>
-  <div class="trade-toolbar">
-    <button class="trade-save" id="tradeSaveBtn" type="button">✓ OK · Guardar operación actual</button>
-    <div class="note" id="tradeCount">0 operaciones</div>
-  </div>
-  <div id="tradeMsg" class="trade-msg">El histórico se guarda en este navegador del celular.</div><!-- TRADE_CLOUD_V1_START -->
-<style id="tradeCloudStyles">
-.cloud-box{margin-top:10px;padding:10px;border:1px solid #243244;border-radius:10px;background:#0b1728}
-.cloud-title{font-size:.78rem;font-weight:800;margin-bottom:7px;color:#e2e8f0}.cloud-grid{display:grid;grid-template-columns:2fr 1.3fr auto;gap:7px}
-.cloud-grid input{width:100%;background:#07111f;color:#fff;border:1px solid #334155;border-radius:8px;padding:9px;font-size:.75rem}.cloud-grid button{border:1px solid #1d4ed8;background:#2563eb;color:#fff;border-radius:8px;padding:9px 11px;font-weight:800}
-.cloud-status{margin-top:7px;color:#94a3b8;font-size:.72rem;line-height:1.35}.cloud-ok{color:#4ade80}.cloud-warn{color:#fbbf24}.cloud-bad{color:#f87171}
-@media(max-width:700px){.cloud-grid{grid-template-columns:1fr}.cloud-grid button{width:100%}}
-</style>
-
-<div class="cloud-box" id="tradeCloudBox">
-  <div class="cloud-title">Respaldo y sincronización en Google Drive · Hábitat</div>
-  <div class="cloud-grid">
-    <input id="tradeCloudUrl" type="url" inputmode="url" placeholder="URL de Apps Script que termina en /exec">
-    <input id="tradeCloudKey" type="password" autocomplete="off" placeholder="Clave de la pestaña Config">
-    <button id="tradeCloudConnect" type="button">Conectar Drive</button>
-  </div>
-  <div id="tradeCloudStatus" class="cloud-status">Las operaciones de Hábitat se guardan únicamente en la hoja Hábitat.</div>
-</div>
-
-  <div class="trade-wrap">
-    <table class="trade-table">
-      <thead><tr>
-        <th>Estado</th><th>Entrada</th><th>VC est. entrada</th><th>VC SBS entrada</th>
-        <th>Salida</th><th>VC est. salida</th><th>VC SBS salida</th>
-        <th>Ret. estimado</th><th>Ret. SBS</th><th>Dif. retorno</th>
-        <th>Gan./Pérd. est.</th><th>Gan./Pérd. SBS</th><th>Capital</th><th>Acciones</th>
-      </tr></thead>
-      <tbody id="tradeHistoryBody"><tr><td colspan="14" style="text-align:center;color:#94a3b8">Sin operaciones guardadas.</td></tr></tbody>
-    </table>
-  </div>
-</section>
-<section class="panel"><div class="chart-title">VC real vs VC estimado</div><div class="chart-controls vc-controls" aria-label="Rango del VC"><button id="vc7" data-days="7">7 días</button><button id="vc15" data-days="15">15 días</button><button id="vc30" data-days="30">30 días</button><button id="vc90" data-days="90" class="primary">90 días</button><button id="vcAll" data-days="all">Todo</button></div><div id="vcChart" class="chart"></div></section><section class="panel"><div class="chart-title">Retorno estimado diario del VC y señal</div><div class="chart-controls ret-controls" aria-label="Rango de retornos"><button id="ret7" data-days="7">7 días</button><button id="ret15" data-days="15">15 días</button><button id="ret30" data-days="30">30 días</button><button id="ret90" data-days="90" class="primary">90 días</button><button id="retAll" data-days="all">Todo</button></div><div id="signalChart" class="chart"></div></section>
-<section class="panel" id="marketPanel">
-  <div class="market-head"><div><div class="chart-title">Mercado ahora</div><div id="marketMode" class="market-mode">Cargando…</div></div><div id="marketTime" class="market-time">—</div></div>
-  <div id="marketGrid" class="market-grid"></div>
-  <div class="note" style="margin-top:9px">SPY, NEM, FCX, EPU y MCHI: Yahoo Finance. USD/PEN: BCRP para histórico y entrenamiento. Si BCRP aún no publicó la fecha, el modelo usa Yahoo PEN=X de forma provisional; solo usa 0 % cuando ninguna de las dos fuentes está disponible.</div>
-</section>
-<section class="panel"><b>Auditoría</b><div class="note" id="audit">Cargando…</div></section>
-<div class="note" style="margin:12px 0">El modelo de Hábitat se entrena por separado y no reutiliza coeficientes de Profuturo. Usa la misma metodología de Profuturo: OLS, siete factores, ventana móvil de 90 observaciones y las mismas reglas de fuentes.</div></main>
+<section class="validation"><b>Validación homogénea últimos 30 pares:</b> <span id="blind3Text">cargando…</span></section>
+<section class="model dv4m" id="dM_qqq"><div class="modelhead"><div><h2>Modelo A · Rolling 30 + QQQ</h2><div class="sub">SPY · EEM · EPU · MCHI · USD/PEN · QQQ</div></div><div class="small" id="metaA">—</div></div><div class="modelmeta"><div class="mini"><span class="label">VC estimado</span><b id="aVc2">—</b></div><div class="mini"><span class="label">Retorno actual</span><b id="aRet">—</b></div><div class="mini"><span class="label">Ancla SBS</span><b id="aAnchor">—</b></div><div class="mini"><span class="label">MAPE diario</span><b id="aMape">—</b></div></div><div class="charts"><div class="chartbox"><div class="charttop"><h3>VC estimado diario vs VC real SBS</h3><div class="controls" data-k="qqq" data-t="Vc"></div></div><div class="count" id="dVcN_qqq">—</div><div class="chart" id="dVc_qqq"></div><div class="legendnote">Histórico: cada punto usa como base el VC SBS real de la sesión inmediatamente anterior. Los días posteriores al último SBS se encadenan y quedan pendientes de validación.</div></div><div class="chartbox"><div class="charttop"><h3>Retorno diario estimado vs retorno real SBS</h3><div class="controls" data-k="qqq" data-t="Ret"></div></div><div class="count" id="dRetN_qqq">—</div><div class="chart" id="dRet_qqq"></div><div class="legendnote">Verde = SUBE · rojo = BAJA · amarillo = NEUTRO · punto abierto = SBS aún pendiente. Blind3 no se dibuja en esta serie.</div></div></div></section>
+<section class="model dv4m" id="dM_new_tickers"><div class="modelhead"><div><h2>Modelo B · Rolling 30 + nuevos tickers</h2><div class="sub">.INX · CPER · EEM · NDX · SPBLSCUP · USD/PEN</div></div><div class="small" id="metaB">—</div></div><div class="modelmeta"><div class="mini"><span class="label">VC estimado</span><b id="bVc2">—</b></div><div class="mini"><span class="label">Retorno actual</span><b id="bRet">—</b></div><div class="mini"><span class="label">Ancla SBS</span><b id="bAnchor">—</b></div><div class="mini"><span class="label">MAPE diario</span><b id="bMape">—</b></div></div><div class="charts"><div class="chartbox"><div class="charttop"><h3>VC estimado diario vs VC real SBS</h3><div class="controls" data-k="new_tickers" data-t="Vc"></div></div><div class="count" id="dVcN_new_tickers">—</div><div class="chart" id="dVc_new_tickers"></div><div class="legendnote">Histórico: cada punto usa como base el VC SBS real de la sesión inmediatamente anterior. Los días posteriores al último SBS se encadenan y quedan pendientes de validación.</div></div><div class="chartbox"><div class="charttop"><h3>Retorno diario estimado vs retorno real SBS</h3><div class="controls" data-k="new_tickers" data-t="Ret"></div></div><div class="count" id="dRetN_new_tickers">—</div><div class="chart" id="dRet_new_tickers"></div><div class="legendnote">Verde = SUBE · rojo = BAJA · amarillo = NEUTRO · punto abierto = SBS aún pendiente. Blind3 no se dibuja en esta serie.</div></div></div></section>
+<div class="footer" id="updated">Cargando…</div>
+</main>
 <script>
-(function(){
-  let richSignals=[],allSeries=[],operationSeries=[],latestData=null,liveData=null,modelInsights=null,vcDays=90,retDays=90;
-  const $=id=>document.getElementById(id),money=x=>new Intl.NumberFormat('es-PE',{style:'currency',currency:'PEN'}).format(x),pct=x=>(Number(x)*100).toFixed(2)+'%';
-  const fmt=x=>{if(!x)return'—';let[y,m,d]=String(x).slice(0,10).split('-');return d+'/'+m+'/'+y};
-  const signalColor=s=>s==='SUBE'?'#4ade80':s==='BAJA'?'#f87171':'#fbbf24',cls=x=>Number(x)>0?'pos':Number(x)<0?'neg':'zero';
-  function cutoff(items,days){if(days==='all'||!items.length)return items;const ds=items.map(x=>x.fecha).sort(),mx=new Date(ds.at(-1)+'T00:00:00'),mn=new Date(mx);mn.setDate(mn.getDate()-Number(days));return items.filter(x=>new Date(x.fecha+'T00:00:00')>=mn)}
-  function active(sel,days){document.querySelectorAll(sel+' button').forEach(b=>b.classList.toggle('primary',String(b.dataset.days)===String(days)))}
-  function clock(iso,tz){try{return new Intl.DateTimeFormat('es-PE',{timeZone:tz,hour:'2-digit',minute:'2-digit',hour12:false}).format(new Date(iso))}catch(e){return'—'}}
-
-
-  function liveSnapshotActive(){
-    if(!liveData||!Number.isFinite(Number(liveData.vc_estimated)))return false;
-    const mode=String(liveData.mode||'');
-    if(!mode.startsWith('INTRAD')&&!mode.startsWith('CIERRE'))return false;
-    const d=String(liveData.signal_date||'').slice(0,10);
-    if(mode.startsWith('CIERRE')){const latest=String((latestData&&latestData.latest_estimate_date)||'').slice(0,10);return !latest||d>=latest}
-    try{
-      const parts=Object.fromEntries(new Intl.DateTimeFormat('en-US',{timeZone:'America/Lima',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date()).filter(x=>x.type!=='literal').map(x=>[x.type,x.value]));
-      return d===`${parts.year}-${parts.month}-${parts.day}`;
-    }catch(e){return d===new Date().toISOString().slice(0,10)}
-  }
-  function liveSnapshotLabel(){return String((liveData&&liveData.mode)||'').startsWith('INTRAD')?'INTRADÍA PROVISIONAL':'CIERRE DIARIO'}
-
-  function renderVC(){
-    // HABITAT_CHART_OFFICIAL_VS_OLS_V6
-    const officialSource=allSeries.filter(x=>x.es_oficial===true&&Number.isFinite(Number(x.vc)));
-    const official=cutoff(officialSource,vcDays);
-    let estSource=richSignals.filter(x=>x.vc_estimado!=null&&Number.isFinite(Number(x.vc_estimado)));
-    if(liveSnapshotActive()){
-      const point={fecha:liveData.signal_date,vc_estimado:Number(liveData.vc_estimated),ret_estimado:Number(liveData.return_estimated),senal:liveData.signal,tipo:'INTRADIA'};
-      estSource=estSource.filter(x=>x.fecha!==point.fecha).concat([point]).sort((a,b)=>a.fecha.localeCompare(b.fecha));
-    }
-    const est=cutoff(estSource,vcDays);
-    const q=modelInsights&&modelInsights.uncertainty?Number(modelInsights.uncertainty.relative_q80||0):0;
-    let pendingStep=0,lower=[],upper=[];
-    est.forEach(x=>{
-      let scale=1;
-      if(x.tipo==='PENDIENTE'||x.tipo==='INTRADIA'){pendingStep+=1;scale=Math.sqrt(pendingStep)}
-      const v=Number(x.vc_estimado);
-      lower.push(v*(1-q*scale));
-      upper.push(v*(1+q*scale));
-    });
-
-    const traces=[];
-    if(q>0&&est.length){
-      traces.push(
-        {x:est.map(x=>x.fecha),y:lower,mode:'lines',line:{width:0},hoverinfo:'skip',showlegend:false},
-        {x:est.map(x=>x.fecha),y:upper,mode:'lines',line:{width:0},fill:'tonexty',fillcolor:'rgba(96,165,250,.12)',name:'Banda histórica 80%',hoverinfo:'skip'}
-      );
-    }
-
-    traces.push({
-      x:official.map(x=>x.fecha),
-      y:official.map(x=>Number(x.vc)),
-      mode:'lines+markers',
-      connectgaps:false,
-      name:'VC SBS real (oficial)',
-      line:{width:2,color:'#22c55e'},
-      marker:{size:5,color:'#22c55e'},
-      hovertemplate:'<b>%{x}</b><br>VC SBS oficial: %{y:.7f}<extra></extra>'
-    });
-
-    traces.push({
-      x:est.map(x=>x.fecha),
-      y:est.map(x=>Number(x.vc_estimado)),
-      mode:'lines+markers',
-      connectgaps:false,
-      name:'VC estimado OLS',
-      line:{width:2,color:'#ef4444'},
-      marker:{size:5,color:'#ef4444'},
-      customdata:est.map(x=>[x.senal,x.tipo]),
-      hovertemplate:'<b>%{x}</b><br>VC estimado OLS: %{y:.7f}<br>Señal: %{customdata[0]}<br>Tipo: %{customdata[1]}<extra></extra>'
-    });
-
-    Plotly.react('vcChart',traces,{
-      title:vcDays==='all'?'Todo el historial':`Últimos ${vcDays} días`,
-      paper_bgcolor:'#0f1b2d',plot_bgcolor:'#0f1b2d',font:{color:'#fff',size:11},
-      margin:{l:48,r:18,t:45,b:45},legend:{orientation:'h',font:{size:10}}
-    },{responsive:true});
-    active('.vc-controls',vcDays);
-  }
-
-  function renderSignals(){
-    let signalSource=richSignals.filter(x=>x.ret_estimado!=null);
-    if(liveSnapshotActive()){const point={fecha:liveData.signal_date,vc_estimado:Number(liveData.vc_estimated),ret_estimado:Number(liveData.return_estimated),senal:liveData.signal,tipo:liveSnapshotLabel()};signalSource=signalSource.filter(x=>x.fecha!==point.fecha).concat([point]).sort((a,b)=>a.fecha.localeCompare(b.fecha))}
-    const p=cutoff(signalSource,retDays);
-    const sx=[],sy=[];
-    p.forEach(x=>{sx.push(x.fecha,x.fecha,null);sy.push(0,Number(x.ret_estimado)*100,null)});
-    Plotly.react('signalChart',[
-      {x:sx,y:sy,mode:'lines',name:'Tallo desde 0',line:{width:1},hoverinfo:'skip',showlegend:false},
-      {x:p.map(x=>x.fecha),y:p.map(x=>Number(x.ret_estimado)*100),mode:'markers',name:'Retorno estimado VC',showlegend:false,marker:{color:p.map(x=>signalColor(x.senal)),size:9},customdata:p.map(x=>x.senal),hovertemplate:'<b>%{x}</b><br>Retorno estimado VC: %{y:+.3f}%<br>Señal: %{customdata}<extra></extra>'}
-    ],{title:retDays==='all'?'Todo el historial':`Últimos ${retDays} días`,paper_bgcolor:'#0f1b2d',plot_bgcolor:'#0f1b2d',font:{color:'#fff',size:11},margin:{l:48,r:18,t:45,b:45},showlegend:false,shapes:[{type:'line',xref:'paper',x0:0,x1:1,y0:0,y1:0,line:{width:1}},{type:'line',xref:'paper',x0:0,x1:1,y0:.1,y1:.1,line:{dash:'dot'}},{type:'line',xref:'paper',x0:0,x1:1,y0:-.1,y1:-.1,line:{dash:'dot'}}]},{responsive:true});active('.ret-controls',retDays)
-  }
-
-  function renderTop(){if(!latestData)return;const live=liveData&&liveSnapshotActive(),vc=live?Number(liveData.vc_estimated):Number(latestData.latest_estimated_vc),r=live?Number(liveData.return_estimated):Number(latestData.latest_return_estimated),s=live?liveData.signal:latestData.signal,d=live?liveData.signal_date:latestData.latest_estimate_date;$('estVc').textContent=vc.toFixed(7);$('estDate').textContent=fmt(d)+' · '+(live?'INTRADÍA PROVISIONAL':'CIERRE DIARIO');$('signal').textContent=s;$('signal').className='value signal '+(s==='SUBE'?'up':s==='BAJA'?'down':'flat');$('ret').textContent=`Retorno estimado VC (día): ${(r*100).toFixed(3)}%`;const h=$('monitorHelp');if(h)h.innerHTML=`<b>${live?'INTRADÍA PROVISIONAL':'CIERRE DIARIO'} · Retorno estimado del VC: ${(r*100).toFixed(3)}% · Señal ${s}</b><br>${live?'Usa el último corte intradía disponible de Yahoo y puede cambiar hasta el cierre.':'Usa cierres diarios disponibles. No es la rentabilidad acumulada de tu inversión.'}`}
-
-  function insightPct(x,d=1){return x==null||!Number.isFinite(Number(x))?'—':(Number(x)*100).toFixed(d)+'%'}
-  function liveContributions(){
-    if(!(liveData&&liveSnapshotActive()&&latestData&&latestData.coefficients))return null;
-    const beta=latestData.coefficients,map={SPY:'ret_SPY',NEM:'ret_NEM',FCX:'ret_FCX',EPU:'ret_EPU',MCHI:'ret_MCHI',EEM:'ret_EEM',USD_PEN:'ret_USD_PEN'},out=[];
-    out.push({label:'Constante',contribution_pp:Number(beta.intercept||0)*100});
-    (liveData.assets||[]).forEach(a=>{const k=map[a.serie],r=Number(a.retorno_modelo);if(k&&Number.isFinite(r)&&Number.isFinite(Number(beta[k])))out.push({label:a.serie==='USD_PEN'?'USD/PEN':a.serie,contribution_pp:Number(beta[k])*r*100})});
-    return out.sort((a,b)=>Math.abs(b.contribution_pp)-Math.abs(a.contribution_pp));
-  }
-  function classifyModelReturn(r){return Number(r)>.001?'SUBE':Number(r)<-.001?'BAJA':'NEUTRO'}
-  function currentHuber(){
-    const h=modelInsights&&modelInsights.challenger_huber;if(!h||h.status!=='CHALLENGER ACTIVO')return null;
-    if(liveData&&liveSnapshotActive()&&h.coefficients){
-      const beta=h.coefficients,map={SPY:'ret_SPY',NEM:'ret_NEM',FCX:'ret_FCX',EPU:'ret_EPU',MCHI:'ret_MCHI',EEM:'ret_EEM',USD_PEN:'ret_USD_PEN'};
-      let r=Number(beta.intercept||0),used=0;
-      (liveData.assets||[]).forEach(a=>{const k=map[a.serie],v=Number(a.retorno_modelo);if(k&&Number.isFinite(v)&&Number.isFinite(Number(beta[k]))){r+=Number(beta[k])*v;used+=1}});
-      if(used===7)return {fecha:liveData.signal_date,ret_estimado:r,senal:classifyModelReturn(r),live:true};
-    }
-    return h.current||null;
-  }
-  function renderInsights(){
-    if(!modelInsights)return;
-    const c=modelInsights.confidence||{},u=modelInsights.uncertainty||{},q=modelInsights.quality||{},b=modelInsights.benchmarks||{},p=modelInsights.performance||{},h=modelInsights.challenger_huber||{},hp=h.performance||{},hc=h.comparison_vs_ols||{};
-    const acc=c.historical_accuracy;
-    $('confidenceValue').textContent=acc==null?'—':(Number(acc)*100).toFixed(0)+'% · '+(c.label||'');
-    $('confidenceSub').textContent=`${modelInsights.current_signal||'—'} · n=${c.n||0} · no es probabilidad garantizada`;
-    $('bandValue').textContent=u.relative_q80==null?'—':'±'+(Number(u.relative_q80)*100).toFixed(2)+'%';
-    $('qualityValue').textContent=q.status||'—';
-    $('qualitySub').textContent=`OLS ${q.training_n||0}/90 · Huber ${h.training&&h.training.n?h.training.n:0}/90 · FX ${q.fx_provisional?'provisional':'confirmado'}`;
-    const qc=q.status==='OK'?'quality-ok':q.status==='REVISAR'?'quality-bad':'quality-warn';
-    $('qualityValue').className='insight-value '+qc;$('qualityBadge').className='insight-badge '+qc;$('qualityBadge').textContent=q.status||'—';
-    const imp=b.ols_mae_improvement_vs_zero;
-    $('benchmarkValue').textContent=imp==null?'—':(imp>=0?'Mejor ':'Peor ')+(Math.abs(Number(imp))*100).toFixed(0)+'%';
-
-    const hub=currentHuber(),olsSignal=liveData&&liveSnapshotActive()?liveData.signal:(latestData?latestData.signal:modelInsights.current_signal);
-    if(hub){
-      const same=String(hub.senal)===String(olsSignal),hv=$('huberValue'),hs=$('huberSub');
-      hv.textContent=`${hub.senal} · ${(Number(hub.ret_estimado)*100).toFixed(3)}%`;
-      hv.className='challenger-value '+(hub.senal==='SUBE'?'up':hub.senal==='BAJA'?'down':'flat');
-      const score=hp.classification_accuracy==null?'—':`${hp.correct||0}/${hp.window_n||0} · ${(Number(hp.classification_accuracy)*100).toFixed(1)}%`;
-      hs.textContent=`${same?'Coincide':'Difiere'} con OLS · ${score}${hub.live?' · intradía':''} · OLS sigue oficial`;
-      hs.className='challenger-sub '+(same?'challenger-ok':'challenger-diff');
-    }else{
-      $('huberValue').textContent=h.status||'NO DISPONIBLE';$('huberValue').className='challenger-value challenger-warn';$('huberSub').textContent=h.error||'OLS continúa como señal principal.';
-    }
-
-    const contrib=liveContributions()||(modelInsights.contributions||[]);
-    const max=Math.max(...contrib.map(x=>Math.abs(Number(x.contribution_pp)||0)),0.0001);
-    $('factorList').innerHTML=contrib.map(x=>{const v=Number(x.contribution_pp)||0,w=Math.max(2,Math.abs(v)/max*100),cl=v>0?'posbar':v<0?'negbar':'';return `<div class="factor-row"><b>${x.label==='Base'?'Constante':x.label}</b><div class="factor-track"><div class="factor-fill ${cl}" style="width:${w.toFixed(1)}%"></div></div><div class="factor-value ${v>0?'pos':v<0?'neg':'zero'}">${v>=0?'+':''}${v.toFixed(3)} pp</div></div>`}).join('')||'<div class="note">Sin contribuciones disponibles.</div>';
-    const items=[
-      ['Acierto OLS',insightPct(p.classification_accuracy,0)],
-      ['MAE OLS',p.mae_return_pp==null?'—':Number(p.mae_return_pp).toFixed(2)+' pp'],
-      ['Acierto Huber',hp.classification_accuracy==null?'—':insightPct(hp.classification_accuracy,0)],
-      ['MAE Huber',hp.mae_return_pp==null?'—':Number(hp.mae_return_pp).toFixed(2)+' pp'],
-      ['Mejora Huber',hc.net_correct==null?'—':`${Number(hc.net_correct)>=0?'+':''}${Number(hc.net_correct)} aciertos`],
-      ['Errores corregidos',hc.corrected_errors==null?'—':`${hc.corrected_errors} · nuevos ${hc.new_errors||0}`],
-      ['Acierto SUBE OLS',insightPct(p.sube_accuracy,0)+' · n='+Number(p.sube_n||0)],
-      ['Acierto BAJA OLS',insightPct(p.baja_accuracy,0)+' · n='+Number(p.baja_n||0)]
-    ];
-    $('perfGrid').innerHTML=items.map(x=>`<div class="perf-item"><b>${x[1]}</b><span>${x[0]}</span></div>`).join('');
-    const notes=[...(q.critical||[]),...(q.warnings||[])];$('qualityNotes').textContent=notes.length?notes.join(' · '):'Controles de integridad sin alertas. Huber se registra como challenger y no reemplaza la señal OLS.';
-  }
-
-  function renderMarket(){
-    if(!liveData)return;
-    if(!liveSnapshotActive()){
-      // MARKET_INDICATORS_PRESERVED_V2
-      const vc=latestData?Number(latestData.latest_estimated_vc):NaN,r=latestData?Number(latestData.latest_return_estimated):NaN,s=latestData?latestData.signal:'â€”';
-      const assets=(liveData&&Array.isArray(liveData.assets))?liveData.assets:[];
-      const stamps=assets.map(a=>a.timestamp).filter(Boolean).sort();
-      const lastStamp=stamps.length?stamps.at(-1):null;
-      $('marketMode').textContent=assets.length?'ULTIMO CORTE DE INDICADORES · CIERRE OLS VIGENTE':'CIERRE DIARIO';
-      $('marketMode').className='market-mode zero';
-      $('marketTime').innerHTML=`VC cierre OLS: ${fmt(latestData&&latestData.latest_estimate_date)}<br>${lastStamp?'Indicadores: '+(String(lastStamp).includes('T')?clock(lastStamp,'America/Lima')+' Lima':fmt(lastStamp)):'Indicadores sin corte disponible'}`;
-      const cards=assets.map(a=>{const p=Number(a.precio_actual),rr=Number(a.retorno);return `<div class="market-item"><div class="market-symbol">${a.serie}</div><div class="market-price">${Number.isFinite(p)?p.toFixed(a.serie==='USD_PEN'?4:2):'—'}</div><div class="market-ret ${cls(rr)}">${Number.isFinite(rr)?(rr>=0?'+':'')+(rr*100).toFixed(2)+'%':'—'}</div><div class="market-source">${a.estado||'Ultimo dato disponible'} · corte informativo</div></div>`}).join('');
-      const closeCard=Number.isFinite(vc)?`<div class="market-item"><div class="market-symbol">VC estimado cierre</div><div class="market-price">${vc.toFixed(7)}</div><div class="market-ret ${cls(r)}">${r>=0?'+':''}${(r*100).toFixed(3)}%</div><div class="market-source">Mismo valor del grafico · Señal ${s}</div></div>`:'<div class="note">Cierre todavia no disponible.</div>';
-      $('marketGrid').innerHTML=(cards||'<div class="note">No hay indicadores guardados.</div>')+closeCard;
-      renderTop();return;
-    }
-    $('marketMode').textContent=liveData.mode||'—';$('marketMode').className='market-mode '+(liveData.market_open?'pos':'zero');
-    const stamps=(liveData.assets||[]).map(a=>a.timestamp).filter(x=>String(x||'').includes('T'));
-    if(liveData.market_open&&stamps.length){const last=stamps.sort().at(-1);$('marketTime').innerHTML=`Corte Yahoo: ${clock(last,'America/New_York')} NY · ${clock(last,'America/Lima')} Lima<br>Visor actualizado: ${clock(liveData.generated_at_lima,'America/Lima')} Lima`}
-    else{$('marketTime').innerHTML=`Cierre utilizado: ${fmt(liveData.signal_date)}<br>Visor actualizado: ${clock(liveData.generated_at_lima,'America/Lima')} Lima`}
-    $('marketGrid').innerHTML=(liveData.assets||[]).map(a=>`<div class="market-item"><div class="market-symbol">${a.serie}</div><div class="market-price">${a.precio_actual==null?'—':Number(a.precio_actual).toFixed(a.serie==='USD_PEN'?4:2)}</div><div class="market-ret ${cls(a.retorno)}">${Number(a.retorno)>=0?'+':''}${(Number(a.retorno)*100).toFixed(2)}%</div><div class="market-source">${a.estado||''}${a.retorno_modelo!=null&&Number(a.retorno_modelo)!==Number(a.retorno)?'<br>Modelo: '+(Number(a.retorno_modelo)*100).toFixed(2)+'%':''}</div></div>`).join('')||'<div class="note">Cotización intradía no disponible; se mantiene el último cierre.</div>';renderTop();renderInsights()
-  }
-
-  // El gráfico y la simulación comparten todos los VC oficiales SBS; la serie de
-  // operación añade después los VC pendientes del modelo y se valida contra series.json.
-  function calcNotebook(){
-    const bt=document.querySelector('.tabs button.active'),mode=bt?bt.dataset.mode:'monitor';if(mode==='monitor')return;
-    const entryDate=$('entry').value,capital=Number($('capital').value);if(!entryDate||!capital||capital<=0){$('detail').textContent='Completa fecha y capital.';return}
-    const exitDate=mode==='closed'?$('exit').value:operationSeries.at(-1)?.fecha;
-    let interval=operationSeries.filter(x=>x.fecha>=entryDate&&x.fecha<=exitDate&&Number.isFinite(Number(x.vc)));
-    if(!interval.length){$('detail').textContent='No existe un valor cuota disponible en la línea temporal del monitor entre las fechas seleccionadas.';return}
-    const a=interval[0];let b=interval.at(-1),liveUsed=false;
-    if(mode==='inside'&&liveData&&liveSnapshotActive()){b={fecha:liveData.signal_date,vc:Number(liveData.vc_estimated),fuente:'MODELO OLS · INTRADÍA PROVISIONAL'};liveUsed=true}
-    const vi=Number(a.vc),vo=Number(b.vc),units=capital/vi,final=units*vo,gain=final-capital,rent=final/capital-1;
-    $('mCapital').textContent=money(capital);$('mFinal').textContent=money(final);$('mGain').textContent=money(gain);$('mRent').textContent=pct(rent);
-    const provisional=liveUsed||b.fuente!=='SBS OFICIAL',tag=provisional?'RESULTADO PROVISIONAL · VC MODELO':'RESULTADO CON VC OFICIAL SBS',adjusted=(a.fecha!==entryDate||(mode==='closed'&&b.fecha!==$('exit').value))?' · Fechas ajustadas a las observaciones disponibles del monitor.':'';
-    $('detail').innerHTML=`<b>${tag}</b><br>Entrada efectiva: ${fmt(a.fecha)} · VC ${vi.toFixed(7)} · ${a.fuente}<br>${mode==='closed'?'Salida':'Valoración'} efectiva: ${fmt(b.fecha)} · VC ${vo.toFixed(7)} · ${b.fuente}<br>Número de cuotas: ${units.toFixed(6)}<br>Fórmula de operación: ${money(capital)} × (${vo.toFixed(7)} / ${vi.toFixed(7)}) = <b>${money(final)}</b><br>Ganancia/pérdida: <b>${money(gain)}</b>${adjusted}${mode==='closed'?'<br><b>Operación cerrada: no se utiliza intradía.</b>':''}`;
-    let g=interval.slice();if(liveUsed)g=[...g,b];Plotly.react('opChart',[{x:g.map(x=>x.fecha),y:g.map(x=>Number(x.vc)),mode:'lines+markers',name:'VC'},{x:g.map(x=>x.fecha),y:g.map(x=>units*Number(x.vc)-capital),mode:'lines+markers',name:'Ganancia',yaxis:'y2'}],{title:'Valor cuota y ganancia/pérdida',paper_bgcolor:'#0f1b2d',plot_bgcolor:'#0f1b2d',font:{color:'#fff',size:11},margin:{l:48,r:48,t:55,b:45},yaxis2:{overlaying:'y',side:'right'},legend:{orientation:'h'}},{responsive:true})
-  }
-
-  function fetchLiveJson(primary,fallback){return fetch(primary,{cache:'no-store'}).catch(()=>fetch(fallback,{cache:'no-store'})).then(r=>r.json())}
-  function loadLive(){const ts=Date.now();return fetchLiveJson('data/live_market.json?ts='+ts,'https://raw.githubusercontent.com/rldaqp/afp-fondo3-monitor/migracion-github-actions/public/habitat/data/live_market.json?ts='+ts).then(x=>{liveData=x;renderMarket();return x}).catch(()=>null)}
-  Promise.all([
-    fetch('data/signals.json?ts='+Date.now(),{cache:'no-store'}).then(r=>r.json()),
-    fetch('data/series.json?ts='+Date.now(),{cache:'no-store'}).then(r=>r.json()),
-    fetch('data/operation_series.json?ts='+Date.now(),{cache:'no-store'}).then(r=>r.json()),
-    fetch('data/latest.json?ts='+Date.now(),{cache:'no-store'}).then(r=>r.json()),
-    fetch('data/model_insights.json?ts='+Date.now(),{cache:'no-store'}).then(r=>r.json()),
-    loadLive()
-  ]).then(([sig,ser,op,latest,insights])=>{
-    richSignals=sig.sort((a,b)=>a.fecha.localeCompare(b.fecha));allSeries=ser.sort((a,b)=>a.fecha.localeCompare(b.fecha));operationSeries=op.sort((a,b)=>a.fecha.localeCompare(b.fecha));latestData=latest;modelInsights=insights;
-    renderVC();renderSignals();renderTop();renderMarket();renderInsights();
-    document.querySelectorAll('.vc-controls button').forEach(b=>b.onclick=()=>{vcDays=b.dataset.days==='all'?'all':Number(b.dataset.days);renderVC()});
-    document.querySelectorAll('.ret-controls button').forEach(b=>b.onclick=()=>{retDays=b.dataset.days==='all'?'all':Number(b.dataset.days);renderSignals()});
-    $('calc').onclick=calcNotebook;
-    if(operationSeries.length){$('entry').min=operationSeries[0].fecha;$('entry').max=operationSeries.at(-1).fecha;$('exit').min=operationSeries[0].fecha;$('exit').max=operationSeries.at(-1).fecha}
-    setInterval(loadLive,60000)
-  }).catch(e=>{const box=$('error');if(box)box.innerHTML='<div class="error">No se pudieron cargar resultados: '+e+'</div>'});
+(()=>{'use strict';const DATA='data/dual_rolling30_monitor.json';let DB=null;const state={qqq:{Vc:'30',Ret:'30'},new_tickers:{Vc:'30',Ret:'30'}};const $=id=>document.getElementById(id);const num=x=>(x===null||x===undefined||x==='')?null:(Number.isFinite(Number(x))?Number(x):null);const vc=x=>{const n=num(x);return n===null?'—':n.toFixed(7)};const pct=(x,d=3)=>{const n=num(x);return n===null?'—':(n>=0?'+':'')+(n*100).toFixed(d)+'%'};const pctP=(x,d=4)=>{const n=num(x);return n===null?'—':n.toFixed(d)+'%'};const dateFmt=s=>{if(!s)return'—';const p=String(s).slice(0,10).split('-');return p.length===3?`${p[2]}/${p[1]}/${p[0]}`:String(s)};const cls=s=>s==='SUBE'?'up':s==='BAJA'?'down':'flat';const sigColor=s=>s==='SUBE'?'#4ade80':s==='BAJA'?'#f87171':'#fbbf24';
+function validateDaily(){for(const k of['qqq','new_tickers']){const h=DB.models[k].history_one_step||[];if(!h.length)throw Error(`Modelo ${k}: histórico vacío`);const bad=h.filter(r=>Number(r.horizon_sessions||1)!==1);if(bad.length)throw Error(`Modelo ${k}: el histórico recibido todavía es blind3 (${bad.length} filas con horizonte 3). No se dibuja para evitar una comparación engañosa; falta regenerar el one-step diario.`)}}
+function setSignal(id,s,r){const e=$(id);e.textContent=(s||'—')+(num(r)!==null?' · '+pct(r):'');e.className='signal '+cls(s)}function actualRet(r){const ar=num(r.actual_return_daily??r.actual_return);if(ar!==null)return ar;const a=num(r.actual_vc),b=num(r.base_vc);return a!==null&&b!==null&&b!==0?a/b-1:null}
+function mergeRows(m){const map=new Map();for(const r of(m.history_one_step||[]))map.set(String(r.fecha).slice(0,10),{...r,_kind:'Histórico diario one-step'});for(const r of(m.history_operational||[])){const k=String(r.fecha).slice(0,10),p=map.get(k)||{};map.set(k,{...p,...r,actual_vc:r.actual_vc??p.actual_vc,actual_return_daily:r.actual_return_daily??p.actual_return_daily,actual_return:r.actual_return??p.actual_return,_kind:'Seguimiento operativo'})}for(const r of(m.forward_chain||[])){const k=String(r.fecha).slice(0,10),p=map.get(k);if(!p)map.set(k,{...r,_kind:'Pendiente SBS'});else if(p._kind!=='Seguimiento operativo')map.set(k,{...p,...r,actual_vc:p.actual_vc??r.actual_vc,_kind:p._kind})}return[...map.values()].filter(r=>r.fecha).sort((a,b)=>String(a.fecha).localeCompare(String(b.fecha)))}
+function range(rows,d){if(d==='all')return rows.slice();const last=new Date(rows.at(-1).fecha+'T00:00:00');const cut=new Date(last);cut.setDate(cut.getDate()-Number(d));return rows.filter(r=>new Date(r.fecha+'T00:00:00')>=cut)}function controls(k,t){const box=document.querySelector(`.controls[data-k="${k}"][data-t="${t}"]`);box.innerHTML='';for(const d of['7','15','30','90','all']){const b=document.createElement('button');b.type='button';b.dataset.d=d;b.textContent=d==='all'?'Todo':d+' días';if(state[k][t]===d)b.classList.add('active');b.onclick=()=>{state[k][t]=d;[...box.children].forEach(x=>x.classList.toggle('active',x===b));draw(k,t)};box.appendChild(b)}}function note(k,t,rows){const lr=[...rows].reverse().find(r=>num(r.actual_vc)!==null);$(`d${t}N_${k}`).textContent=`${rows.length} puntos · ${dateFmt(rows[0]?.fecha)} → ${dateFmt(rows.at(-1)?.fecha)} · SBS real hasta ${dateFmt(lr?.fecha)}`}
+const base={paper_bgcolor:'#0b1728',plot_bgcolor:'#0b1728',font:{color:'#dbe7f5',size:10},margin:{l:50,r:10,t:12,b:38},xaxis:{type:'date',gridcolor:'#213147',zeroline:false,tickformat:'%d %b'},yaxis:{gridcolor:'#213147',zeroline:false},showlegend:true,legend:{orientation:'h',x:0,y:1.11,font:{size:9}},hovermode:'x unified'},config={responsive:true,displaylogo:false,displayModeBar:false};
+function drawVc(k){const rows=range(mergeRows(DB.models[k]),state[k].Vc);note(k,'Vc',rows);const x=rows.map(r=>r.fecha),est=rows.map(r=>num(r.vc_estimated)),real=rows.map(r=>num(r.actual_vc));Plotly.react(`dVc_${k}`,[{x,y:est,type:'scatter',mode:'lines+markers',name:'VC estimado Rolling 30',connectgaps:false,line:{color:'#38bdf8',width:2},marker:{color:'#38bdf8',size:6,symbol:rows.map(r=>num(r.actual_vc)===null?'circle-open':'circle')},customdata:rows.map(r=>[r._kind,r.signal||'—']),hovertemplate:'%{x|%d/%m/%Y}<br>Estimado %{y:.7f}<br>%{customdata[0]} · %{customdata[1]}<extra></extra>'},{x,y:real,type:'scatter',mode:'lines+markers',name:'VC real SBS',connectgaps:false,line:{color:'#fb923c',width:2},marker:{color:'#fb923c',size:6,symbol:'diamond'},hovertemplate:'%{x|%d/%m/%Y}<br>SBS %{y:.7f}<extra></extra>'}],{...base,yaxis:{...base.yaxis,title:'Valor cuota',autorange:true}},config)}
+function drawRet(k){const rows=range(mergeRows(DB.models[k]),state[k].Ret);note(k,'Ret',rows);const x=rows.map(r=>r.fecha),est=rows.map(r=>{const n=num(r.return_estimated);return n===null?null:n*100}),real=rows.map(r=>{const n=actualRet(r);return n===null?null:n*100}),shapes=[];rows.forEach((r,i)=>{if(est[i]!==null)shapes.push({type:'line',x0:r.fecha,x1:r.fecha,y0:0,y1:est[i],line:{color:'#48647f',width:1}});if(real[i]!==null)shapes.push({type:'line',x0:r.fecha,x1:r.fecha,y0:0,y1:real[i],line:{color:'#7c2d12',width:1}})});shapes.push({type:'line',xref:'paper',x0:0,x1:1,y0:.1,y1:.1,line:{color:'#94a3b8',width:1,dash:'dot'}},{type:'line',xref:'paper',x0:0,x1:1,y0:-.1,y1:-.1,line:{color:'#94a3b8',width:1,dash:'dot'}});Plotly.react(`dRet_${k}`,[{x,y:est,type:'scatter',mode:'markers',name:'Retorno estimado',marker:{size:7,color:rows.map(r=>sigColor(r.signal)),symbol:rows.map(r=>num(r.actual_vc)===null?'circle-open':'circle'),line:{width:1}},customdata:rows.map(r=>[r.signal||'—',r._kind]),hovertemplate:'%{x|%d/%m/%Y}<br>Estimado %{y:.3f}%<br>%{customdata[0]} · %{customdata[1]}<extra></extra>'},{x,y:real,type:'scatter',mode:'markers',name:'Retorno real SBS',marker:{size:7,color:'#fb923c',symbol:'diamond'},hovertemplate:'%{x|%d/%m/%Y}<br>SBS %{y:.3f}%<extra></extra>'}],{...base,shapes,yaxis:{...base.yaxis,title:'Retorno %',autorange:true,zeroline:true,zerolinecolor:'#cbd5e1',zerolinewidth:1}},config)}function draw(k,t){t==='Vc'?drawVc(k):drawRet(k)}
+function assetHtml(z){const r=num(z.retorno_modelo??z.retorno),p=num(z.precio_actual),sym=String(z.serie||z.ticker||'—').replace('_','/'),price=p===null?'s/p':p.toFixed(p<10?4:2),c=r===null?'flat':r>0?'up':r<0?'down':'flat',src=String(z.estado||'Último corte').replace(' · ULTIMO CORTE','');return`<div class="tickerchip"><div class="sym">${sym}</div><div class="line"><span class="price">${price}</span><span class="ret ${c}">${pct(r)}</span></div><div class="src" title="${src}">${src}</div></div>`}function renderAssets(k){const a=DB.models[k].intraday_assets||[];$(`tickerbar_${k}`).innerHTML=a.map(assetHtml).join('')}
+function findFx(k){const names=k==='qqq'?['USD_PEN','USD/PEN']:['USD/PEN','USD_PEN'];return(DB.models[k].intraday_assets||[]).find(a=>names.includes(String(a.serie)))}
+function render(){validateDaily();const s=DB.latest_sbs||{},a=DB.models.qqq,b=DB.models.new_tickers,ac=a.current||{},bc=b.current||{};$('dSbs').textContent=vc(s.vc);$('dSbsDate').textContent='SBS · '+dateFmt(s.fecha);$('dAVc').textContent=vc(ac.vc_estimated);$('dBVc').textContent=vc(bc.vc_estimated);$('dADate').textContent=`${dateFmt(ac.fecha)} · ${pct(ac.return_estimated)}`;$('dBDate').textContent=`${dateFmt(bc.fecha)} · ${pct(bc.return_estimated)}`;setSignal('dASig',ac.signal,ac.return_estimated);setSignal('dBSig',bc.signal,bc.return_estimated);const ma=num(a.history_metrics?.mape_pct),mb=num(b.history_metrics?.mape_pct);$('dWin').textContent=ma!==null&&mb!==null&&ma<=mb?'Modelo A':'Modelo B';$('dDiff').textContent=`MAPE diario A ${pctP(ma)} · B ${pctP(mb)}`;$('aVc2').textContent=vc(ac.vc_estimated);$('bVc2').textContent=vc(bc.vc_estimated);$('aRet').textContent=`${pct(ac.return_estimated)} · ${ac.signal}`;$('bRet').textContent=`${pct(bc.return_estimated)} · ${bc.signal}`;$('aAnchor').textContent=`${vc(ac.anchor_vc)} · ${dateFmt(ac.anchor_date)}`;$('bAnchor').textContent=`${vc(bc.anchor_vc)} · ${dateFmt(bc.anchor_date)}`;$('aMape').textContent=pctP(ma);$('bMape').textContent=pctP(mb);$('metaA').textContent=`Rolling 30 · ${dateFmt(ac.train_start)}–${dateFmt(ac.train_end)}`;$('metaB').textContent=`Rolling 30 · ${dateFmt(bc.train_start)}–${dateFmt(bc.train_end)}`;for(const k of['qqq','new_tickers']){renderAssets(k);for(const t of['Vc','Ret']){controls(k,t);draw(k,t)}}const fa=findFx('qqq'),fb=findFx('new_tickers'),pa=num(fa?.precio_actual),pb=num(fb?.precio_actual),ra=num(fa?.retorno_modelo??fa?.retorno),rb=num(fb?.retorno_modelo??fb?.retorno),same=pa!==null&&pb!==null&&Math.abs(pa-pb)<1e-9&&ra!==null&&rb!==null&&Math.abs(ra-rb)<1e-12;$('fxCommon').textContent=same?`USD/PEN compartido por ambos modelos: ${pa.toFixed(4)} · retorno ${pct(ra)} · ${fa?.estado||''}`:`ALERTA USD/PEN: A ${pa??'—'} / ${pct(ra)} · B ${pb??'—'} / ${pct(rb)}. Los dos modelos no están usando el mismo corte.`;const bl=DB.blind3||{},qa=bl.qqq_common||{},qb=bl.new_tickers_common||{};$('blind3Text').textContent=`se mantiene solo como prueba agregada de robustez (3 VC ocultos), no como línea diaria. MAPE A ${pctP(qa.mape_pct)} · B ${pctP(qb.mape_pct)}.`;$('updated').textContent=`Datos: ${DB.generated_at_lima||'—'} · ${DB.market_mode||''} · Histórico visible = one-step diario.`}
+fetch(DATA+'?ts='+Date.now(),{cache:'no-store'}).then(r=>{if(!r.ok)throw Error('HTTP '+r.status);return r.json()}).then(d=>{DB=d;if(!d.models?.qqq||!d.models?.new_tickers)throw Error('Faltan los dos Rolling 30');render()}).catch(e=>{const box=$('loadError');box.style.display='block';box.textContent='Visor detenido para evitar mostrar datos engañosos: '+e.message;console.error(e)});
 })();
 </script>
 
-<script id="tradeHistoryScript">
-(function(){
-  'use strict';
-  const FUND='HABITAT';
-  const ORIGIN='VISOR GITHUB · HABITAT';
-  const KEY='habitat_fondo3_trade_history_v3';
-  let signals=[],timeline=[],live=null;
-  const $=id=>document.getElementById(id);
-  const finite=x=>x!==null&&x!==undefined&&x!==''&&Number.isFinite(Number(x));
-  const fmt=d=>{if(!d)return '—';const p=String(d).slice(0,10).split('-');return p.length===3?`${p[2]}/${p[1]}/${p[0]}`:String(d)};
-  const vc=x=>finite(x)?Number(x).toFixed(7):'—';
-  const pct=x=>finite(x)?`${Number(x)>=0?'+':''}${(Number(x)*100).toFixed(2)}%`:'—';
-  const pp=x=>finite(x)?`${Number(x)>=0?'+':''}${(Number(x)*100).toFixed(2)} pp`:'—';
-  const money=x=>finite(x)?new Intl.NumberFormat('es-PE',{style:'currency',currency:'PEN'}).format(Number(x)):'—';
-  const uid=()=>`${Date.now()}-${Math.random().toString(16).slice(2)}`;
 
-  const LEGACY_KEYS=[];
-  function readRowsFrom(k){try{const x=JSON.parse(localStorage.getItem(k)||'[]');return Array.isArray(x)?x:[]}catch(e){return []}}
-  function normalizeRows(list,source){return (Array.isArray(list)?list:[]).filter(x=>x&&typeof x==='object').map((x,i)=>x.id?x:{...x,id:`legacy-${source}-${i}-${x.created_at||''}-${x.entry_date||''}-${x.exit_date||''}`})}
-  function loadRows(){return normalizeRows(readRowsFrom(KEY),KEY).filter(r=>String(r.fund||FUND).toUpperCase()===FUND)}
-  function saveRows(rows){const clean=(Array.isArray(rows)?rows:[]).filter(r=>String(r.fund||FUND).toUpperCase()===FUND).map(r=>({...r,fund:FUND,origin:ORIGIN}));localStorage.setItem(KEY,JSON.stringify(clean));window.dispatchEvent(new Event('fondo3-local-trade-change'))}
-  function fetchTradeLiveJson(primary,fallback){return fetch(primary,{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.json()}).catch(()=>fetch(fallback,{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.json()}))}
-  function signalAt(date){return signals.find(x=>x.fecha===date)||null}
-  function officialRow(date){return timeline.find(x=>x.fecha===date&&x.fuente==='SBS OFICIAL')||null}
-  function officialAt(date){const row=officialRow(date);return row&&finite(row.vc)?Number(row.vc):null}
-  function estimateAt(date){
-    if(live&&live.market_open&&live.signal_date===date&&finite(live.vc_estimated))return Number(live.vc_estimated);
-    const s=signalAt(date);return s&&finite(s.vc_estimado)?Number(s.vc_estimado):null;
-  }
-  function entryEffective(requested){
-    if(live&&live.market_open&&live.signal_date===requested)return {fecha:requested,vc:live.vc_estimated,fuente:'MODELO OLS · INTRADÍA PROVISIONAL'};
-    return timeline.find(x=>x.fecha>=requested)||null;
-  }
-  function exitEffective(requested){
-    if(live&&live.market_open&&live.signal_date===requested)return {fecha:requested,vc:live.vc_estimated,fuente:'MODELO OLS · INTRADÍA PROVISIONAL'};
-    return [...timeline].reverse().find(x=>x.fecha<=requested)||null;
-  }
-
-  function reconcile(rows){
-    let changed=false;
-    rows.forEach(r=>{
-      const requested=r.entry_requested||r.entry_date;
-      const ep=entryEffective(requested);
-      if(ep){
-        if(r.entry_date!==ep.fecha){r.entry_date=ep.fecha;changed=true}
-        if(!finite(r.entry_est_vc)){const ee=estimateAt(ep.fecha);if(finite(ee)){r.entry_est_vc=Number(ee);changed=true}}
-        const ei=officialAt(ep.fecha);
-        if(ei!==null&&r.entry_sbs_vc!==ei){r.entry_sbs_vc=ei;changed=true}
-      }
-      if(r.exit_date){
-        const xo=officialAt(r.exit_date);
-        if(xo!==null&&r.exit_sbs_vc!==xo){r.exit_sbs_vc=xo;changed=true}
-      }
-    });
-    if(changed)saveRows(rows);
-    return rows;
-  }
-
-  function metrics(r){
-    // Rentabilidad de la OPERACION: las cuotas compradas se fijan con el VC real SBS de entrada.
-    // Mientras ese VC aún no exista, se usa provisionalmente el VC estimado de entrada.
-    // El VC estimado de salida queda congelado al guardar la operación.
-    const entryBase=finite(r.entry_sbs_vc)?Number(r.entry_sbs_vc):(finite(r.entry_est_vc)?Number(r.entry_est_vc):null);
-    const re=entryBase!==null&&finite(r.exit_est_vc)&&entryBase!==0?Number(r.exit_est_vc)/entryBase-1:null;
-    const rr=finite(r.entry_sbs_vc)&&finite(r.exit_sbs_vc)&&Number(r.entry_sbs_vc)!==0?Number(r.exit_sbs_vc)/Number(r.entry_sbs_vc)-1:null;
-    const cap=finite(r.capital)?Number(r.capital):null;
-    const ge=re!==null&&cap!==null?cap*re:null;
-    const gr=rr!==null&&cap!==null?cap*rr:null;
-    return {re,rr,diff:re!==null&&rr!==null?rr-re:null,ge,gr};
-  }
-
-  function render(){
-    const rows=reconcile(loadRows()).sort((a,b)=>String(b.created_at).localeCompare(String(a.created_at)));
-    const body=$('tradeHistoryBody');if(!body)return;
-    $('tradeCount').textContent=`${rows.length} ${rows.length===1?'operación':'operaciones'}`;
-    if(!rows.length){body.innerHTML='<tr><td colspan="14" style="text-align:center;color:#94a3b8">Sin operaciones guardadas.</td></tr>';return}
-
-    const rendered=rows.map(r=>{
-      const m=metrics(r),closed=!!r.exit_date,confirmed=!!r.confirmed;
-      const state=closed?'<span class="trade-badge trade-closed">CERRADA</span>':'<span class="trade-badge trade-open">ABIERTA</span>';
-      const ok=confirmed?'<span class="trade-badge trade-confirmed">OK</span>':`<button class="trade-btn ok" data-trade-ok="${r.id}">✓ OK</button>`;
-      const close=!closed?`<button class="trade-btn close" data-trade-close="${r.id}">Cerrar</button>`:'';
-      const sbsE=finite(r.entry_sbs_vc)?`<span class="trade-real">${vc(r.entry_sbs_vc)}</span>`:'<span class="trade-pending">Pendiente</span>';
-      const sbsX=closed?(finite(r.exit_sbs_vc)?`<span class="trade-real">${vc(r.exit_sbs_vc)}</span>`:'<span class="trade-pending">Pendiente</span>'):'—';
-      const dc=m.diff===null?'':(m.diff>=0?'trade-diff-pos':'trade-diff-neg');
-      const gec=m.ge===null?'':(m.ge>=0?'trade-pl-pos':'trade-pl-neg');
-      const grc=m.gr===null?'':(m.gr>=0?'trade-pl-pos':'trade-pl-neg');
-      return `<tr>
-        <td>${state}${confirmed?' '+ok:''}</td><td>${fmt(r.entry_date)}</td><td>${vc(r.entry_est_vc)}</td><td>${sbsE}</td>
-        <td>${closed?fmt(r.exit_date):'—'}</td><td>${closed?vc(r.exit_est_vc):'—'}</td><td>${sbsX}</td>
-        <td>${pct(m.re)}</td><td>${pct(m.rr)}</td><td class="${dc}">${pp(m.diff)}</td>
-        <td class="${gec}">${money(m.ge)}</td><td class="${grc}">${money(m.gr)}</td><td>${money(r.capital)}</td>
-        <td><div class="trade-actions">${!confirmed?ok:''}${close}<button class="trade-btn del" data-trade-del="${r.id}">Eliminar</button></div></td>
-      </tr>`
-    }).join('');
-
-    const ms=rows.map(r=>({r,m:metrics(r)}));
-    const totalCapital=rows.reduce((s,r)=>s+(finite(r.capital)?Number(r.capital):0),0);
-    const estBase=ms.reduce((s,x)=>s+(x.m.ge!==null&&finite(x.r.capital)?Number(x.r.capital):0),0);
-    const realBase=ms.reduce((s,x)=>s+(x.m.gr!==null&&finite(x.r.capital)?Number(x.r.capital):0),0);
-    const totalGe=ms.reduce((s,x)=>s+(x.m.ge!==null?x.m.ge:0),0);
-    const totalGr=ms.reduce((s,x)=>s+(x.m.gr!==null?x.m.gr:0),0);
-    const totalRe=estBase>0?totalGe/estBase:null;
-    const totalRr=realBase>0?totalGr/realBase:null;
-    const totalDiff=totalRe!==null&&totalRr!==null?totalRr-totalRe:null;
-    const gec=totalGe>=0?'trade-pl-pos':'trade-pl-neg';
-    const grc=realBase>0?(totalGr>=0?'trade-pl-pos':'trade-pl-neg'):'';
-    const dc=totalDiff===null?'':(totalDiff>=0?'trade-diff-pos':'trade-diff-neg');
-    const totalRow=`<tr class="trade-total">
-      <td>TOTAL</td><td>${rows.length} ops.</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td>
-      <td>${pct(totalRe)}</td><td>${pct(totalRr)}</td><td class="${dc}">${pp(totalDiff)}</td>
-      <td class="${gec}">${money(totalGe)}</td><td class="${grc}">${realBase>0?money(totalGr):'Pendiente'}</td><td>${money(totalCapital)}</td><td>—</td>
-    </tr>`;
-
-    body.innerHTML=rendered+totalRow;
-    body.querySelectorAll('[data-trade-ok]').forEach(b=>b.onclick=()=>confirmRow(b.dataset.tradeOk));
-    body.querySelectorAll('[data-trade-del]').forEach(b=>b.onclick=()=>deleteRow(b.dataset.tradeDel));
-    body.querySelectorAll('[data-trade-close]').forEach(b=>b.onclick=()=>prepareClose(b.dataset.tradeClose));
-  }
-
-  function confirmRow(id){const rows=loadRows(),r=rows.find(x=>x.id===id);if(!r)return;r.confirmed=true;r.confirmed_at=new Date().toISOString();saveRows(rows);render();$('tradeMsg').textContent='Operación marcada OK.'}
-  function deleteRow(id){if(!confirm('¿Eliminar esta operación del histórico?'))return;saveRows(loadRows().filter(x=>x.id!==id));render();$('tradeMsg').textContent='Operación eliminada.'}
-  function prepareClose(id){
-    const r=loadRows().find(x=>x.id===id);if(!r)return;
-    const tab=document.querySelector('.tabs button[data-mode="closed"]');if(tab)tab.click();
-    if($('entry'))$('entry').value=r.entry_requested||r.entry_date;
-    if($('capital'))$('capital').value=r.capital||25000;
-    if($('exit'))$('exit').value=live&&live.signal_date?live.signal_date:(timeline.at(-1)?.fecha||'');
-    document.querySelector('.tabs')?.scrollIntoView({behavior:'smooth',block:'center'});
-    $('tradeMsg').textContent='Operación abierta cargada. Indica la fecha de salida, calcula y presiona OK · Guardar.';
-  }
-
-  function saveCurrent(){
-    const mode=document.querySelector('.tabs button.active')?.dataset.mode||'monitor';
-    if(mode==='monitor'){$('tradeMsg').textContent='Selecciona “Sigo dentro” o “Ya salí” antes de guardar.';return}
-    const er=$('entry')?.value,cap=Number($('capital')?.value||0);
-    if(!er||!finite(cap)||cap<=0){$('tradeMsg').textContent='Completa fecha de entrada y capital.';return}
-    const ep=entryEffective(er)||{fecha:er,vc:null,fuente:'PENDIENTE'};
-    const entryEst=estimateAt(ep.fecha),entryOfficial=officialAt(ep.fecha);
-    let exitDate=null,exitRequested=null,exitEst=null,exitOfficial=null;
-    if(mode==='closed'){
-      exitRequested=$('exit')?.value;
-      if(!exitRequested){$('tradeMsg').textContent='Indica la fecha de salida.';return}
-      const xp=exitEffective(exitRequested);if(!xp||xp.fecha<ep.fecha){$('tradeMsg').textContent='La fecha de salida no es válida.';return}
-      exitDate=xp.fecha;exitEst=estimateAt(exitDate);exitOfficial=officialAt(exitDate);
-      if(!finite(exitEst)&&exitOfficial===null){$('tradeMsg').textContent='Todavía no existe un VC estimado u oficial para la fecha efectiva de salida.';return}
-    }
-    const rows=loadRows();
-    let row=rows.find(x=>!x.exit_date&&x.entry_date===ep.fecha);
-    if(row&&mode==='closed'){
-      row.exit_requested=exitRequested;row.exit_date=exitDate;row.exit_est_vc=finite(exitEst)?Number(exitEst):null;row.exit_sbs_vc=exitOfficial;row.closed_at=new Date().toISOString();row.confirmed=false;
-    }else{
-      row={id:uid(),fund:FUND,origin:ORIGIN,created_at:new Date().toISOString(),confirmed:false,capital:cap,entry_requested:er,entry_date:ep.fecha,entry_est_vc:finite(entryEst)?Number(entryEst):null,entry_sbs_vc:entryOfficial,exit_requested:exitRequested,exit_date:exitDate,exit_est_vc:finite(exitEst)?Number(exitEst):null,exit_sbs_vc:exitDate?exitOfficial:null};
-      rows.push(row);
-    }
-    row.fund=FUND;row.origin=ORIGIN;
-    saveRows(rows);render();
-    $('tradeMsg').textContent=mode==='closed'?'Operación cerrada guardada. La SBS usa la serie oficial completa; el estimado solo aparece cuando el modelo lo generó.':'Entrada guardada como operación abierta.';
-  }
-
-  async function boot(){
-    if($('tradeSaveBtn'))$('tradeSaveBtn').onclick=saveCurrent;
-    try{
-      const [s,t,l]=await Promise.all([
-        fetch('data/signals.json?ts='+Date.now(),{cache:'no-store'}).then(r=>r.json()),
-        fetch('data/series.json?ts='+Date.now(),{cache:'no-store'}).then(r=>r.json()),
-        fetchTradeLiveJson('data/live_market.json?ts='+Date.now(),'https://raw.githubusercontent.com/rldaqp/afp-fondo3-monitor/migracion-github-actions/public/habitat/data/live_market.json?ts='+Date.now()).catch(()=>null)
-      ]);
-      signals=(s||[]).sort((a,b)=>a.fecha.localeCompare(b.fecha));timeline=(t||[]).sort((a,b)=>a.fecha.localeCompare(b.fecha));live=l;
-      render();
-    }catch(e){$('tradeMsg').textContent='No se pudo cargar la bitácora: '+e}
-  }
-  window.addEventListener('fondo3-cloud-synced',()=>{render();$('tradeMsg').textContent='Operación guardada y sincronizada con Drive.'});
-  boot();
-})();
-</script>
-<!-- TRADE_HISTORY_V1_END -->
-
-<script id="tradeCloudScript">
-(function(){
-  'use strict';
-  const FUND='HABITAT';
-  const DRIVE_SHEET='Habitat';
-  const TRADE_KEY='habitat_fondo3_trade_history_v3';
-  const LEGACY_KEYS=[];
-  const URL_KEY='habitat_fondo3_drive_sync_url_v3';
-  const SECRET_KEY='fondo3_drive_sync_key_v1';
-  const SNAP_KEY='habitat_fondo3_drive_sync_snapshot_v3';
-  const DEFAULT_URL='https://script.google.com/macros/s/AKfycbxoYHkCu0cZPx_KsMlI0Jd5PEATgxBjZTR8oK8qs1cUjRHJbiK0t-bxkH5ACprgp81S7g/exec';
-  let syncing=false,timer=null,pending=false;
-  const $=id=>document.getElementById(id);
-  const read=(k,fb)=>{try{const x=JSON.parse(localStorage.getItem(k)||'');return x??fb}catch(e){return fb}};
-  function normalizeRows(list,source){return (Array.isArray(list)?list:[]).filter(x=>x&&typeof x==='object').map((x,i)=>x.id?x:{...x,id:`legacy-${source}-${i}-${x.created_at||''}-${x.entry_date||''}-${x.exit_date||''}`})}
-  function migrateRows(){return normalizeRows(read(TRADE_KEY,[]),TRADE_KEY).filter(r=>String(r.fund||FUND).toUpperCase()===FUND)}
-  const rows=()=>migrateRows();
-  const snapshot=()=>read(SNAP_KEY,null);
-  const stable=x=>JSON.stringify(x,Object.keys(x||{}).sort());
-  const setStatus=(txt,cls='')=>{const el=$('tradeCloudStatus');if(el){el.textContent=txt;el.className='cloud-status '+cls}};
-  const cfg=()=>({url:(localStorage.getItem(URL_KEY)||DEFAULT_URL).trim(),key:(localStorage.getItem(SECRET_KEY)||'').trim()});
-
-  function jsonp(action,extra={}){
-    const c=cfg();
-    if(!c.url||!c.key)return Promise.reject(new Error('Falta URL o clave de Drive'));
-    return new Promise((resolve,reject)=>{
-      const cb='__f3cb_'+Date.now()+'_'+Math.random().toString(16).slice(2);
-      const s=document.createElement('script');
-      const timeout=setTimeout(()=>done(new Error('Apps Script no devolvio JSONP. Revisa que la Web app este publicada para cualquier usuario y que soporte Hábitat/Habitat.')),15000);
-      function done(err,data){clearTimeout(timeout);delete window[cb];s.remove();err?reject(err):resolve(data)}
-      window[cb]=data=>{if(!data||data.ok!==true)done(new Error(data&&data.error?data.error:'Respuesta inválida'));else done(null,data)};
-      const u=new URL(c.url);
-      u.searchParams.set('action',action);u.searchParams.set('fund',FUND);u.searchParams.set('key',c.key);u.searchParams.set('callback',cb);u.searchParams.set('_',Date.now());
-      Object.entries(extra).forEach(([k,v])=>u.searchParams.set(k,String(v)));
-      s.onerror=()=>done(new Error('No se pudo contactar Apps Script'));
-      s.src=u.toString();document.head.appendChild(s);
-    });
-  }
-
-  function mapById(list){const m=new Map();(Array.isArray(list)?list:[]).forEach(x=>{if(x&&x.id)m.set(String(x.id),x)});return m}
-
-  async function syncNow(initial=false){
-    const c=cfg();if(!c.url||!c.key)return;
-    if(syncing){pending=true;return}
-    syncing=true;setStatus('Sincronizando Hábitat con Drive…','cloud-warn');
-    try{
-      // TRADE_CLOUD_FUND_ROUTING_V3
-      const probe=await jsonp('ping');
-      if(probe.routing!==true||String(probe.fund||'').toUpperCase()!==FUND){
-        throw new Error(`El puente de Drive aún no está actualizado para la hoja ${DRIVE_SHEET}.`);
-      }
-      const current=rows(),old=snapshot();
-      if(old===null){
-        for(const r of current){await jsonp('upsert',{payload:JSON.stringify({...r,fund:FUND})})}
-      }else{
-        const cm=mapById(current),sm=mapById(old);
-        for(const [id,r] of cm){const prev=sm.get(id);if(!prev||stable(prev)!==stable(r))await jsonp('upsert',{payload:JSON.stringify({...r,fund:FUND})})}
-        for(const id of sm.keys()){if(!cm.has(id))await jsonp('delete',{id})}
-      }
-      const out=await jsonp('list');
-      const remote=(Array.isArray(out.rows)?out.rows:[]).filter(r=>String(r.fund||FUND).toUpperCase()===FUND);
-      if(!pending)localStorage.setItem(TRADE_KEY,JSON.stringify(remote));
-      localStorage.setItem(SNAP_KEY,JSON.stringify(remote));
-      setStatus(`Drive Hábitat conectado · ${remote.length} ${remote.length===1?'operación':'operaciones'} sincronizadas.`,'cloud-ok');
-      window.dispatchEvent(new Event('fondo3-cloud-synced'));
-      if(!initial)setTimeout(()=>location.reload(),180);
-    }catch(e){setStatus('Drive no sincronizó: '+e.message,'cloud-bad')}
-    finally{syncing=false;if(pending){pending=false;setTimeout(()=>syncNow(true),0)}}
-  }
-
-  async function connect(){
-    const url=($('tradeCloudUrl')?.value||DEFAULT_URL).trim(),key=($('tradeCloudKey')?.value||'').trim();
-    if(!/^https:\/\/script\.google\.com\/macros\/s\/.+\/exec(?:\?.*)?$/.test(url)){setStatus('La URL /exec de Apps Script no es válida.','cloud-bad');return}
-    if(key.length<12){setStatus('La clave de sincronización no es válida.','cloud-bad');return}
-    localStorage.setItem(URL_KEY,url);localStorage.setItem(SECRET_KEY,key);
-    try{await syncNow(true)}catch(e){setStatus('No se pudo conectar: '+e.message,'cloud-bad')}
-  }
-
-  function boot(){
-    localStorage.setItem(URL_KEY,DEFAULT_URL);
-    const c=cfg();if($('tradeCloudUrl'))$('tradeCloudUrl').value=c.url;if($('tradeCloudKey'))$('tradeCloudKey').value=c.key;
-    if($('tradeCloudConnect'))$('tradeCloudConnect').onclick=connect;
-    if(c.url&&c.key){setStatus('Drive Hábitat configurado. Verificando…','cloud-warn');setTimeout(()=>syncNow(true),900)}
-    window.addEventListener('fondo3-local-trade-change',()=>{pending=true;syncNow(true)});
-    timer=setInterval(()=>syncNow(true),30000);
-  }
-  boot();
-})();
-</script>
-<!-- TRADE_CLOUD_V1_END -->
-
-<!-- INVESTMENT_SIGNAL_1PCT_SCRIPT START -->
-<script id="investmentSignal1PctScript">
-(function(){
-  'use strict';
-  const THRESHOLD_PCT=1.0;
-  const target=document.getElementById('vcPrecisionCompact');
-  const retNode=document.getElementById('ret');
-  if(!target||!retNode)return;
-
-  let accuracy=null;
-  function currentReturnPct(){
-    const txt=String(retNode.textContent||'').replace(',', '.');
-    const m=txt.match(/([+-]?\d+(?:\.\d+)?)\s*%/);
-    return m?Number(m[1]):NaN;
-  }
-  function render(){
-    const r=currentReturnPct();
-    if(Number.isFinite(r)&&Math.abs(r)>=THRESHOLD_PCT&&Number.isFinite(accuracy)){
-      target.textContent='Precisión VC: '+accuracy.toFixed(1)+'%';
-      target.style.display='block';
-    }else{
-      target.textContent='';
-      target.style.display='none';
-    }
-  }
-
-  fetch('data/vc_accuracy_1pct.json?ts='+Date.now(),{cache:'no-store'})
-    .then(r=>{if(!r.ok)throw new Error(String(r.status));return r.json()})
-    .then(x=>{accuracy=Number(x.accuracy)*100;render()})
-    .catch(()=>{accuracy=null;render()});
-
-  new MutationObserver(render).observe(retNode,{childList:true,subtree:true,characterData:true});
-  render();
-})();
-</script>
-<!-- INVESTMENT_SIGNAL_1PCT_SCRIPT END -->
-
-<!-- REDUCED_6030_CHALLENGER_SCRIPT START -->
-<script id="reduced6030Script">
-(function(){
-  'use strict';
-  const $=id=>document.getElementById(id);
-  const pct=(x,d=3)=>x==null||!Number.isFinite(Number(x))?'—':(Number(x)*100).toFixed(d)+'%';
-  const vc=x=>x==null||!Number.isFinite(Number(x))?'—':Number(x).toFixed(7);
-  const num=x=>x==null||!Number.isFinite(Number(x))?'—':Number(x).toFixed(4);
-  const cls=s=>s==='SUBE'?'up':s==='BAJA'?'down':'flat';
-  const fmt=d=>{if(!d)return '—';const p=String(d).slice(0,10).split('-');return p.length===3?`${p[2]}/${p[1]}/${p[0]}`:String(d)};
-  function setSignal(id,s){const el=$(id);if(!el)return;el.textContent=s||'—';el.className='r6030-signal '+cls(s)}
-  function renderDate(history,date){
-    const box=$('r6030DateResult');if(!box)return;
-    const operational=(history.operational_history||[]).find(x=>x.fecha===date);
-    const backtest=(history.backtest_history||[]).find(x=>x.fecha===date);
-    const r=operational||backtest;
-    if(!r){box.textContent='No hay una observación 60/30 para esa fecha.';return}
-    const isAnchor=String(r.source||'').includes('ANCLA');
-    const parts=[`Fecha ${fmt(r.fecha)} · ${r.source||'60/30'}`];
-    if(isAnchor){parts.push(`VC ancla SBS ${vc(r.actual_vc||r.challenger_vc)}. Es el punto de partida del ciclo, no una predicción.`)}
-    else{
-      parts.push(`Challenger VC ${vc(r.challenger_vc)} · retorno ${pct(r.challenger_return)}`);
-      if(r.actual_vc!=null)parts.push(`SBS real ${vc(r.actual_vc)} · error ${num(r.challenger_abs_error)}`);
-      else parts.push('SBS real pendiente');
-      if(r.official_vc!=null)parts.push(`OLS comparativo ${vc(r.official_vc)}`);
-    }
-    box.textContent=parts.join(' · ');
-  }
-  Promise.all([
-    fetch('data/reduced_6030_challenger.json?v='+Date.now(),{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.json()}),
-    fetch('data/reduced_6030_history.json?v='+Date.now(),{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.json()}).catch(()=>({backtest_history:[],operational_history:[]}))
-  ]).then(([d,history])=>{
-    const o=d.official||{},c=d.challenger||{},cmp=d.comparison||{},cy=d.cycle||{},bt=d.blind_backtest||{},fw=d.forward_sbs||{};
-    setSignal('r6030OfficialSignal',o.signal);setSignal('r6030ChallengerSignal',c.signal);
-    $('r6030OfficialVc').textContent='VC '+vc(o.vc_estimated);$('r6030ChallengerVc').textContent='VC '+vc(c.vc_estimated);
-    $('r6030OfficialRet').textContent='Retorno '+pct(o.return_estimated);$('r6030ChallengerRet').textContent='Retorno '+pct(c.return_estimated);
-    const diff=Number(cmp.vc_difference);$('r6030VcDiff').textContent=Number.isFinite(diff)?(diff>=0?'+':'')+diff.toFixed(7):'—';
-    const same=!!cmp.same_signal;$('r6030Badge').textContent=same?'MISMA SEÑAL':'SEÑALES DISTINTAS';$('r6030Badge').className='r6030-badge '+(same?'challenger-ok':'challenger-diff');
-    $('r6030Cycle').textContent=`${cy.cycle_day||0}/${cy.freeze_horizon||30} · entrenó ${cy.train_n||60}`;
-    const bo=bt.official_current_7f||{},bc=bt.challenger_6030||{};
-    $('r6030Backtest').textContent=`${num(bo.vc_mae)} → ${num(bc.vc_mae)}`;
-    $('r6030Rows').innerHTML=`<tr><td>OLS actual</td><td>${num(bo.vc_mae)}</td><td>${num(bo.vc_rmse)}</td><td>${num(bo.mean_endpoint_abs_error)}</td></tr><tr><td>60/30 challenger</td><td>${num(bc.vc_mae)}</td><td>${num(bc.vc_rmse)}</td><td>${num(bc.mean_endpoint_abs_error)}</td></tr>`;
-    const imp=bt.mae_improvement_pct==null?'—':Number(bt.mae_improvement_pct).toFixed(1)+'%';
-    $('r6030Forward').textContent=`Backtest ciego: mejora MAE ${imp}; bloques ganados ${bt.challenger_better_blocks||0}/${bt.n_blocks||0}. Prueba futura SBS: ${fw.evaluated||0} evaluados · ${fw.pending||0} pendientes.`;
-    $('r6030Note').textContent=`Ciclo desde ${cy.cycle_start||'—'} · ancla SBS ${cy.anchor_date||'—'} VC ${vc(cy.anchor_vc)} · entrenamiento ${cy.train_start||'—'} a ${cy.train_end||'—'}. SPY, EEM, EPU, MCHI, USD/PEN y QQQ; NEM y FCX excluidos. Los coeficientes quedan congelados 30 sesiones y el VC no se reancla con SBS dentro del bloque.`;
-    const input=$('r6030Date');
-    const dates=[...(history.backtest_history||[]),...(history.operational_history||[])].map(x=>x.fecha).filter(Boolean).sort();
-    if(input&&dates.length){input.min=dates[0];input.max=dates.at(-1);input.value=d.signal_date||dates.at(-1)}
-    const show=()=>renderDate(history,input&&input.value?input.value:(d.signal_date||''));
-    if($('r6030DateBtn'))$('r6030DateBtn').onclick=show;if(input)input.onchange=show;show();
-  }).catch(e=>{const b=$('r6030Badge'),n=$('r6030Note');if(b)b.textContent='NO DISPONIBLE';if(n)n.textContent='No se pudo cargar el challenger 60/30: '+e.message});
-})();
-</script>
-<!-- REDUCED_6030_CHALLENGER_SCRIPT END -->
-
-<!-- HABITAT_SBS_INDICATORS_JS_V1 START -->
+<!-- FACTOR_WEIGHT_CHARTS_DUAL_V2 -->
+<style id="factorWeightChartsDualStyles">
+.weightbox{margin:8px 0 10px;padding:9px;background:#0b1728;border:1px solid #26364a;border-radius:10px}
+.weighthead{display:flex;justify-content:space-between;gap:8px;align-items:flex-start;flex-wrap:wrap;margin-bottom:3px}
+.weighthead h3{margin:0;font-size:.88rem}
+.weightcontrols{display:flex;gap:4px;flex-wrap:wrap}
+.weightcontrols button{border:1px solid #35465d;background:#132238;color:#fff;border-radius:8px;padding:5px 8px;font-weight:800;font-size:.67rem;cursor:pointer}
+.weightcontrols button.active{background:#2563eb}
+.weightnote{font-size:.61rem;color:#9aa9bd;line-height:1.35;margin:2px 0 4px}
+.weightchart{height:280px;width:100%}
+.weightfoot{font-size:.59rem;color:#7f8da3;line-height:1.35;margin-top:1px}
+@media(max-width:620px){.weightchart{height:265px}.weightcontrols button{font-size:.63rem;padding:5px 7px}}
+</style>
 <script>
-(async function(){
-  const pctOfficial = value => value == null || Number.isNaN(Number(value)) ? '—' : `${Number(value) >= 0 ? '+' : ''}${(Number(value) * 100).toFixed(2)}%`;
-  const numberOfficial = value => value == null ? '—' : new Intl.NumberFormat('es-PE', {maximumFractionDigits:2}).format(Number(value));
-  const moneyOfficial = value => value == null ? '—' : `S/ ${new Intl.NumberFormat('es-PE', {maximumFractionDigits:2}).format(Number(value))}`;
-  try {
-    const response = await fetch('data/latest.json', {cache:'no-store'});
-    if (!response.ok) throw new Error(`HTTP ${response.status}`);
-    const latest = await response.json();
-    const data = latest.official_indicators || {};
-    const displayDate = data.date ? data.date.split('-').reverse().join('/') : '—';
-    document.getElementById('officialIndicatorDate').textContent = `Última información oficial: ${displayDate}`;
-    document.getElementById('officialUnitValue').textContent = data.unit_value == null ? '—' : Number(data.unit_value).toFixed(7);
-    document.getElementById('officialFundQuotas').textContent = numberOfficial(data.fund_quotas);
-    document.getElementById('officialFundValue').textContent = moneyOfficial(data.fund_value_pen);
-    document.getElementById('officialChange1d').textContent = pctOfficial(data.change_1d);
-    document.getElementById('officialChange7d').textContent = pctOfficial(data.change_7d);
-    document.getElementById('officialChange30d').textContent = pctOfficial(data.change_30d);
-    document.getElementById('officialChange90d').textContent = pctOfficial(data.change_90d);
-    document.getElementById('officialChangeYtd').textContent = pctOfficial(data.change_ytd);
-  } catch (error) {
-    document.getElementById('officialIndicatorDate').textContent = `No se pudieron cargar los indicadores SBS: ${error.message}`;
+(()=>{'use strict';
+const KEYS=['qqq','new_tickers'];
+const state={qqq:'beta',new_tickers:'beta'};
+const n=x=>Number.isFinite(Number(x))?Number(x):null;
+const norm=x=>String(x||'').toUpperCase().replace(/^RET_/,'').replace(/_ALT$/,'').replace(/[^A-Z0-9]/g,'');
+const fmtSigned=(x,d=4)=>x==null?'—':(x>=0?'+':'')+Number(x).toFixed(d);
+
+function factorRows(model){
+  const features=model.features||[], labels=model.features_display||[], coeff=model.current?.coefficients||{}, assets=model.intraday_assets||[];
+  return features.map((f,i)=>{
+    const label=labels[i]||String(f).replace(/^ret_/,'').replace('_alt','');
+    const beta=n(coeff[f]);
+    const asset=assets.find(a=>norm(a.serie||a.ticker)===norm(label));
+    const ret=n(asset?.retorno_modelo??asset?.retorno);
+    const pp=beta!==null&&ret!==null?beta*ret*100:null;
+    return {label,beta,ret,pp};
+  }).filter(r=>r.beta!==null);
+}
+
+function draw(key,model){
+  const rows=factorRows(model);
+  const mode=state[key];
+  const isBeta=mode==='beta';
+  const x=rows.map(r=>isBeta?r.beta:r.pp);
+  const colors=x.map(v=>v==null?'#64748b':v>=0?'#4ade80':'#f87171');
+  const custom=rows.map(r=>[r.beta,r.ret==null?null:r.ret*100,r.pp]);
+  const text=rows.map(r=>isBeta?('β '+fmtSigned(r.beta,4)):(r.pp==null?'s/d':fmtSigned(r.pp,3)+' pp'));
+  const title=isBeta?'Coeficiente β':'Aporte al retorno estimado (pp)';
+  const hover=isBeta
+    ? '<b>%{y}</b><br>β %{customdata[0]:+.4f}<br>Retorno factor %{customdata[1]:+.3f}%<br>Aporte sesión %{customdata[2]:+.3f} pp<extra></extra>'
+    : '<b>%{y}</b><br>Aporte %{customdata[2]:+.3f} pp<br>β %{customdata[0]:+.4f}<br>Retorno factor %{customdata[1]:+.3f}%<extra></extra>';
+  Plotly.react('dWeights_'+key,[{
+    type:'bar',orientation:'h',
+    x,y:rows.map(r=>r.label),
+    marker:{color:colors},
+    text,textposition:'auto',
+    customdata:custom,
+    hovertemplate:hover
+  }],{
+    paper_bgcolor:'#0b1728',plot_bgcolor:'#0b1728',
+    font:{color:'#dbe7f5',size:10},
+    margin:{l:88,r:18,t:8,b:46},
+    xaxis:{title,gridcolor:'#213147',zeroline:true,zerolinecolor:'#cbd5e1',zerolinewidth:1},
+    yaxis:{autorange:'reversed',automargin:true},
+    showlegend:false,bargap:.28
+  },{responsive:true,displaylogo:false,displayModeBar:false});
+}
+
+function ensurePanel(key,model){
+  const host=document.getElementById('dM_'+key);
+  if(!host)return false;
+  let box=host.querySelector('.weightbox');
+  if(!box){
+    box=document.createElement('div');
+    box.className='weightbox';
+    box.innerHTML=`<div class="weighthead"><h3>Pesos de los factores · Rolling 30</h3><div class="weightcontrols"><button type="button" data-mode="beta" class="active">Peso β</button><button type="button" data-mode="aporte">Aporte sesión</button></div></div><div class="weightnote">El gráfico muestra los coeficientes OLS vigentes de cada ticker. β no es un porcentaje de cartera ni tiene que sumar 100%.</div><div class="weightchart" id="dWeights_${key}"></div><div class="weightfoot">Verde = efecto positivo · rojo = efecto negativo. En “Aporte sesión” se muestra β × retorno observado del factor, en puntos porcentuales del retorno estimado.</div>`;
+    const charts=host.querySelector('.charts');
+    if(charts)host.insertBefore(box,charts);else host.appendChild(box);
+    box.querySelectorAll('button[data-mode]').forEach(btn=>btn.addEventListener('click',()=>{
+      state[key]=btn.dataset.mode;
+      box.querySelectorAll('button[data-mode]').forEach(b=>b.classList.toggle('active',b===btn));
+      draw(key,model);
+    }));
   }
+  draw(key,model);
+  return true;
+}
+
+async function renderWeights(){
+  try{
+    const r=await fetch('data/dual_rolling30_monitor.json?weights2='+Date.now(),{cache:'no-store'});
+    if(!r.ok)throw Error('HTTP '+r.status);
+    const db=await r.json();
+    let tries=0;
+    const go=()=>{
+      tries++;
+      let ok=true;
+      for(const key of KEYS){const m=db.models?.[key];ok=Boolean(m&&ensurePanel(key,m))&&ok;}
+      if(!ok&&tries<20)setTimeout(go,200);
+    };
+    go();
+  }catch(e){console.warn('weight charts',e)}
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',renderWeights);else renderWeights();
 })();
 </script>
-<!-- HABITAT_SBS_INDICATORS_JS_V1 END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<!-- HABITAT_QQQ_INCREMENTAL_SCRIPT_V1 START -->
-<script id="habitatQqqIncrementalScript">
-(function(){
-  'use strict';
-  const $=id=>document.getElementById(id);
-  const pct=(x,d=3)=>x==null||!Number.isFinite(Number(x))?'—':(Number(x)*100).toFixed(d)+'%';
-  const vc=x=>x==null||!Number.isFinite(Number(x))?'—':Number(x).toFixed(7);
-  const cls=s=>s==='SUBE'?'up':s==='BAJA'?'down':'flat';
-  const fmtMae=x=>x==null||!Number.isFinite(Number(x))?'—':(Number(x)*100).toFixed(3)+'%';
-  const fmtAcc=x=>x==null||!Number.isFinite(Number(x))?'—':(Number(x)*100).toFixed(1)+'%';
-  function setSignal(id,s){const el=$(id);el.textContent=s||'—';el.className='hqqqi-signal '+cls(s)}
-  fetch('data/qqq_incremental_challenger.json?v='+Date.now(),{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.json()}).then(d=>{
-    const o=d.official||{},c=d.challenger||{},cmp=d.comparison||{},bt=d.performance_backtest||{},w=bt.windows||{},f=d.shadow_forward||{};
-    setSignal('hqqqiOfficialSignal',o.signal);setSignal('hqqqiChallengerSignal',c.signal);
-    $('hqqqiOfficialVc').textContent='VC '+vc(o.vc_estimated);$('hqqqiChallengerVc').textContent='VC '+vc(c.vc_estimated);
-    $('hqqqiOfficialRet').textContent='Retorno '+pct(o.return_estimated);$('hqqqiChallengerRet').textContent='Retorno '+pct(c.return_estimated);
-    const diff=Number(cmp.vc_difference);$('hqqqiVcDiff').textContent=Number.isFinite(diff)?(diff>=0?'+':'')+diff.toFixed(7):'—';
-    const same=!!cmp.same_signal;$('hqqqiBadge').textContent=same?'MISMA SEÑAL':'SEÑALES DISTINTAS';$('hqqqiBadge').className='hqqqi-badge '+(same?'challenger-ok':'challenger-diff');
-    const m90=w['90']||{};$('hqqqiMae90').textContent=`${fmtMae(m90.official_mae)} → ${fmtMae(m90.challenger_mae)}`;
-    $('hqqqiForward').textContent=(f.n||0)+' evaluados · '+(f.pending||0)+' pendientes';
-    const labels={'30':'30 días','60':'60 días','90':'90 días','180':'180 días','ALL':'Histórico'};
-    $('hqqqiRows').innerHTML=['30','60','90','180','ALL'].map(k=>{const r=w[k]||{};const imp=r.mae_improvement_pct;return `<tr><td>${labels[k]}</td><td>${fmtMae(r.official_mae)}</td><td>${fmtMae(r.challenger_mae)}</td><td>${fmtAcc(r.official_direction_accuracy)}</td><td>${fmtAcc(r.challenger_direction_accuracy)}</td><td>${imp==null?'—':(Number(imp)>=0?'+':'')+Number(imp).toFixed(2)+'%'}</td></tr>`}).join('');
-    const source=d.qqq&&d.qqq.source?d.qqq.source:'QQQ';
-    $('hqqqiNote').textContent=`Fecha ${d.signal_date||'—'} · ${source} · QQQ residual ${pct(d.qqq&&d.qqq.residual,3)}. Ambos VC usan exactamente la misma base; el OLS de Hábitat sigue oficial.`;
-  }).catch(e=>{$('hqqqiBadge').textContent='NO DISPONIBLE';$('hqqqiNote').textContent='No se pudo cargar el challenger QQQ incremental de Hábitat: '+e.message});
-})();
-</script>
-<!-- HABITAT_QQQ_INCREMENTAL_SCRIPT_V1 END -->
-<!-- HABITAT_FACTOR_WEIGHT_CHARTS_V1_SCRIPT START -->
-<script id="habitatFactorWeightChartsScript">(function(){'use strict';const state={official:'beta',challenger:'beta'};const labels={ret_SPY:'SPY',ret_NEM:'NEM',ret_FCX:'FCX',ret_EPU:'EPU',ret_MCHI:'MCHI',ret_EEM:'EEM',ret_USD_PEN:'USD/PEN',ret_QQQ_residual:'QQQ residual'};const n=x=>Number.isFinite(Number(x))?Number(x):null;const signed=(x,d=4)=>x==null?'—':(x>=0?'+':'')+Number(x).toFixed(d);function plot(id,rows,mode){const beta=mode==='beta',x=rows.map(r=>beta?r.beta:r.pp),y=rows.map(r=>r.label),colors=x.map(v=>v==null?'#64748b':v>=0?'#4ade80':'#f87171'),custom=rows.map(r=>[r.beta,r.ret==null?null:r.ret*100,r.pp]),text=rows.map(r=>beta?('β '+signed(r.beta,4)):(r.pp==null?'s/d':signed(r.pp,3)+' pp'));Plotly.react(id,[{type:'bar',orientation:'h',x,y,marker:{color:colors},text,textposition:'auto',customdata:custom,hovertemplate:beta?'<b>%{y}</b><br>β %{customdata[0]:+.4f}<br>Retorno factor %{customdata[1]:+.3f}%<br>Aporte %{customdata[2]:+.3f} pp<extra></extra>':'<b>%{y}</b><br>Aporte %{customdata[2]:+.3f} pp<br>β %{customdata[0]:+.4f}<br>Retorno factor %{customdata[1]:+.3f}%<extra></extra>'}],{paper_bgcolor:'#0f1b2d',plot_bgcolor:'#0f1b2d',font:{color:'#e2e8f0',size:10},margin:{l:92,r:18,t:8,b:48},xaxis:{title:beta?'Coeficiente β':'Aporte al retorno estimado (pp)',gridcolor:'#243244',zeroline:true,zerolinecolor:'#cbd5e1'},yaxis:{autorange:'reversed',automargin:true},showlegend:false,bargap:.28},{responsive:true,displaylogo:false,displayModeBar:false})}function officialRows(latest,live){const assets=live.assets||[];return(latest.model_factors||[]).map(name=>{const f=name==='USD_PEN'?'ret_USD_PEN':'ret_'+name,b=n((latest.coefficients||{})[f]),a=assets.find(x=>String(x.serie)===name),r=n(a&&(a.retorno_modelo??a.retorno));return{label:labels[f]||name,beta:b,ret:r,pp:b!=null&&r!=null?b*r*100:null}}).filter(r=>r.beta!=null)}function challengerRows(q){const c=q.challenger||{},coef=c.coefficients_raw||{},byF=new Map((c.contributions||[]).map(r=>[r.feature,r]));return(c.features||[]).map(f=>{const row=byF.get(f)||{},b=n(coef[f]??row.coefficient),r=n(row.value),pp=n(row.contribution_pp);return{label:labels[f]||f.replace(/^ret_/,''),beta:b,ret:r,pp:pp!=null?pp:(b!=null&&r!=null?b*r*100:null)}}).filter(r=>r.beta!=null)}Promise.all([fetch('data/latest.json?w='+Date.now(),{cache:'no-store'}).then(r=>r.json()),fetch('data/live_market.json?w='+Date.now(),{cache:'no-store'}).then(r=>r.json()),fetch('data/qqq_incremental_challenger.json?w='+Date.now(),{cache:'no-store'}).then(r=>r.json())]).then(([latest,live,q])=>{const data={official:officialRows(latest,live),challenger:challengerRows(q)};function draw(k){plot(k==='official'?'habitatOfficialWeightChart':'habitatChallengerWeightChart',data[k],state[k])}for(const k of['official','challenger']){document.querySelectorAll(`[data-weight-model="${k}"] button`).forEach(btn=>btn.addEventListener('click',()=>{state[k]=btn.dataset.mode;document.querySelectorAll(`[data-weight-model="${k}"] button`).forEach(b=>b.classList.toggle('active',b===btn));draw(k)}));draw(k)}}).catch(e=>{for(const id of['habitatOfficialWeightChart','habitatChallengerWeightChart']){const el=document.getElementById(id);if(el)el.innerHTML='<div class="error">No se pudo cargar el gráfico de pesos: '+e.message+'</div>'}console.error(e)});})();</script>
-<!-- HABITAT_FACTOR_WEIGHT_CHARTS_V1_SCRIPT END --></body></html>
+</body></html>
