@@ -1,0 +1,28 @@
+name: TMP medir R2 A B
+on:
+  push:
+    branches:
+      - analysis-spbl-cper-20260829
+    paths:
+      - '.github/workflows/tmp-measure-ab-r2.yml'
+permissions:
+  contents: write
+jobs:
+  measure:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: analysis-spbl-cper-20260829
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install numpy
+      - run: python scripts/tmp_measure_ab_r2.py
+      - run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add data/analysis/tmp_ab_r2_result.json
+          git commit -m 'Guardar R2 últimos 30 modelos A y B' || exit 0
+          git push origin HEAD:analysis-spbl-cper-20260829
