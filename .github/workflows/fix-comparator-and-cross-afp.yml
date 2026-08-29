@@ -1,0 +1,85 @@
+name: Corregir comparador y cruce AFP
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - migracion-github-actions
+    paths:
+      - ".github/workflows/fix-comparator-and-cross-afp.yml"
+      - "public/comparador-fondos/comparator_runtime_v3.js"
+      - "public/data/cross_afp_operation_v1.js"
+      - "public/habitat/data/cross_afp_operation_v1.js"
+      - "scripts/ensure_dual_trade_runtime.py"
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: github-pages
+  cancel-in-progress: true
+
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Descargar repositorio
+        uses: actions/checkout@v4
+        with:
+          ref: migracion-github-actions
+          fetch-depth: 0
+
+      - name: Instalar comparadores y validar sintaxis
+        run: |
+          python scripts/ensure_dual_trade_runtime.py
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          p=Path('public/comparador-fondos/index.html')
+          s=p.read_text(encoding='utf-8')
+          s=re.sub(r'\n?<script\s+src="comparator_runtime_v3\.js(?:\?rev=[^"]+)?"\s*></script>','',s,flags=re.I)
+          assert '</body>' in s
+          s=s.replace('</body>','<script src="comparator_runtime_v3.js?rev=CMPV3-20260829"></script>\n</body>',1)
+          p.write_text(s,encoding='utf-8')
+          PY
+          node --check public/comparador-fondos/comparator_runtime_v3.js
+          node --check public/data/cross_afp_operation_v1.js
+          node --check public/habitat/data/cross_afp_operation_v1.js
+          grep -q 'comparator_runtime_v3.js?rev=CMPV3-20260829' public/comparador-fondos/index.html
+          grep -q 'cross_afp_operation_v1.js?rev=CROSSAFP1' public/index.html
+          grep -q 'cross_afp_operation_v1.js?rev=CROSSAFP1' public/habitat/index.html
+          grep -q 'La misma operación en' public/data/cross_afp_operation_v1.js
+          grep -q 'La misma operación en' public/habitat/data/cross_afp_operation_v1.js
+
+      - name: Guardar enlaces persistentes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/index.html public/habitat/index.html public/comparador-fondos/index.html
+          if git diff --cached --quiet; then
+            echo "Enlaces ya persistentes."
+          else
+            git commit -m "Fijar comparador v3 y cruce automatico AFP"
+            git fetch origin migracion-github-actions
+            git rebase origin/migracion-github-actions
+            git push origin HEAD:migracion-github-actions
+          fi
+
+      - name: Configurar Pages
+        uses: actions/configure-pages@v5
+        with:
+          enablement: true
+
+      - name: Subir sitio corregido
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: public
+
+      - name: Publicar Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
