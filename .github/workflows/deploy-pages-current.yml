@@ -6,6 +6,7 @@ on:
       - migracion-github-actions
     paths:
       - "public/**"
+      - "scripts/ensure_dual_trade_runtime.py"
       - ".github/workflows/deploy-pages-current.yml"
   workflow_dispatch:
 
@@ -29,6 +30,16 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: migracion-github-actions
+
+      - name: Asegurar operaciones y Drive en ambos visores
+        run: |
+          python scripts/ensure_dual_trade_runtime.py
+          grep -q 'data/dual_trade_runtime_v1.js?rev=DUALTRADEV3' public/index.html
+          grep -q 'data/dual_trade_runtime_v1.js?rev=DUALTRADEV3' public/habitat/index.html
+          grep -q "const FUND='PROFUTURO';" public/data/dual_trade_runtime_v1.js
+          grep -q "const FUND='HABITAT';" public/habitat/data/dual_trade_runtime_v1.js
+          grep -q 'Conectar Drive' public/data/dual_trade_runtime_v1.js
+          grep -q 'Conectar Drive' public/habitat/data/dual_trade_runtime_v1.js
 
       - name: Configurar Pages
         uses: actions/configure-pages@v5
