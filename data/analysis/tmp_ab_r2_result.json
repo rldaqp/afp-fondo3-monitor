@@ -1,0 +1,22 @@
+{
+  "source_generated_at_lima": "2026-08-28T19:24:03.217711-05:00",
+  "latest_sbs": {
+    "fecha": "2026-08-26",
+    "vc": 71.9377875
+  },
+  "method": "R2 = Pearson correlation squared between vc_estimated and actual_vc over each current model latest 30 completed history_one_step pairs.",
+  "modelo_a_qqq": {
+    "n": 30,
+    "start": "2026-07-09",
+    "end": "2026-08-26",
+    "corr_vc": 0.9534225245128493,
+    "r2_corr": 0.9090145102484546
+  },
+  "modelo_b_new_tickers": {
+    "n": 30,
+    "start": "2026-07-09",
+    "end": "2026-08-26",
+    "corr_vc": 0.9421565113139557,
+    "r2_corr": 0.887658891811284
+  }
+}
