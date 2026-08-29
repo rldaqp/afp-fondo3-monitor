@@ -1,0 +1,139 @@
+name: Publicar comparador v5 e histórico Drive comparado
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - migracion-github-actions
+    paths:
+      - ".github/workflows/publish-comparator-drive-history-v5.yml"
+      - "public/comparador-fondos/comparator_runtime_v5.js"
+      - "public/data/cross_afp_operation_v3.js"
+      - "public/habitat/data/cross_afp_operation_v3.js"
+      - "scripts/ensure_dual_trade_runtime.py"
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: github-pages
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Descargar repositorio
+        uses: actions/checkout@v4
+        with:
+          ref: migracion-github-actions
+          fetch-depth: 0
+
+      - name: Instalar comparador v5 e histórico v3
+        run: |
+          python - <<'PY'
+          import re
+          from pathlib import Path
+          p=Path('public/comparador-fondos/index.html')
+          t=p.read_text(encoding='utf-8')
+          t=re.sub(r'\n?<script\s+src="comparator_runtime_v\d+\.js(?:\?rev=[^"]+)?"\s*></script>','',t,flags=re.I)
+          t=t.replace('</body>','<script src="comparator_runtime_v5.js?rev=CMPV5-20260829"></script>\n</body>',1)
+          p.write_text(t,encoding='utf-8')
+          PY
+          python scripts/ensure_dual_trade_runtime.py
+
+      - name: Validar JavaScript y comportamiento requerido
+        run: |
+          node --check public/comparador-fondos/comparator_runtime_v5.js
+          node --check public/data/cross_afp_operation_v3.js
+          node --check public/habitat/data/cross_afp_operation_v3.js
+          grep -q 'Histórico comparado · operaciones de Drive' public/comparador-fondos/comparator_runtime_v5.js
+          grep -q 'officialHybrid' public/comparador-fondos/comparator_runtime_v5.js
+          grep -q 'crossCompactHistory' public/data/cross_afp_operation_v3.js
+          grep -q 'crossCompactHistory' public/habitat/data/cross_afp_operation_v3.js
+          grep -q 'comparator_runtime_v5.js?rev=CMPV5-20260829' public/comparador-fondos/index.html
+          grep -q 'data/cross_afp_operation_v3.js?rev=CROSSAFP3-20260829' public/index.html
+          grep -q 'data/cross_afp_operation_v3.js?rev=CROSSAFP3-20260829' public/habitat/index.html
+          python scripts/validate_comparator_operation_20260818_20.py
+
+      - name: Validar operación Drive 18 a 20 agosto en ambas AFP
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          def actual(db):
+              out={}
+              for key in ('qqq','new_tickers'):
+                  m=db['models'][key]
+                  for name in ('history_one_step','history_operational','forward_chain'):
+                      for r in m.get(name,[]) or []:
+                          d=str(r.get('fecha') or '')[:10]
+                          try:v=float(r.get('actual_vc'))
+                          except:continue
+                          if d and v>0:out[d]=v
+              l=db.get('latest_sbs') or {}
+              if l.get('fecha') and l.get('vc'):out[str(l['fecha'])[:10]]=float(l['vc'])
+              return out
+          p=actual(json.loads(Path('public/data/dual_rolling30_monitor.json').read_text(encoding='utf-8')))
+          h=actual(json.loads(Path('public/habitat/data/dual_rolling30_monitor.json').read_text(encoding='utf-8')))
+          cap=30000.0
+          pr=p['2026-08-20']/p['2026-08-18']-1
+          hr=h['2026-08-20']/h['2026-08-18']-1
+          pg=cap*pr; hg=cap*hr
+          assert round(pg,2)==607.43,(pg,pr)
+          assert round(pr*100,2)==2.02,pr
+          assert round(hg,2)==172.08,(hg,hr)
+          assert round(hr*100,2)==0.57,hr
+          assert round(pg-hg,2)==435.35,(pg,hg)
+          print('VALIDADO Profuturo +S/607.43 +2.02%')
+          print('VALIDADO Habitat +S/172.08 +0.57%')
+          print('VALIDADO ventaja Profuturo S/435.35')
+          PY
+
+      - name: Guardar referencias persistentes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/index.html public/habitat/index.html public/comparador-fondos/index.html
+          if git diff --cached --quiet; then
+            echo "Referencias ya vigentes."
+          else
+            git commit -m "Usar comparador v5 e histórico Drive comparado v3"
+            git pull --rebase origin migracion-github-actions
+            git push origin HEAD:migracion-github-actions
+          fi
+
+      - name: Configurar Pages
+        uses: actions/configure-pages@v5
+        with:
+          enablement: true
+
+      - name: Subir sitio
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: public
+
+      - name: Publicar Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+      - name: Verificar versión pública y cálculo
+        run: |
+          sleep 15
+          base='https://rldaqp.github.io/afp-fondo3-monitor'
+          curl -fsSL "$base/comparador-fondos/?probe=$(date +%s)" -o /tmp/cmp.html
+          curl -fsSL "$base/?probe=$(date +%s)" -o /tmp/pro.html
+          curl -fsSL "$base/habitat/?probe=$(date +%s)" -o /tmp/hab.html
+          grep -q 'comparator_runtime_v5.js?rev=CMPV5-20260829' /tmp/cmp.html
+          grep -q 'data/cross_afp_operation_v3.js?rev=CROSSAFP3-20260829' /tmp/pro.html
+          grep -q 'data/cross_afp_operation_v3.js?rev=CROSSAFP3-20260829' /tmp/hab.html
+          curl -fsSL "$base/comparador-fondos/comparator_runtime_v5.js?probe=$(date +%s)" -o /tmp/cmp.js
+          curl -fsSL "$base/data/cross_afp_operation_v3.js?probe=$(date +%s)" -o /tmp/procross.js
+          grep -q 'Histórico comparado · operaciones de Drive' /tmp/cmp.js
+          grep -q 'Histórico comparado · operaciones de Drive' /tmp/procross.js
+          echo 'PUBLICO V5/V3 CONFIRMADO'
