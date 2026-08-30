@@ -1,0 +1,29 @@
+name: Backtest polinomial Excel 3 dias pre24
+on:
+  push:
+    paths:
+      - 'scripts/backtest_poly_excel_3day_pre24.py'
+      - '.github/workflows/backtest-poly-excel-3day-pre24.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: migracion-github-actions
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install pandas numpy
+      - name: Ejecutar
+        run: python scripts/backtest_poly_excel_3day_pre24.py
+      - name: Guardar
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add analysis/backtest_poly_excel_3day_pre24.json
+          git diff --cached --quiet || git commit -m 'Guardar backtest polinomial Excel 3 dias pre24'
+          git push origin HEAD:migracion-github-actions
