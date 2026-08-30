@@ -7,12 +7,14 @@ on:
     paths:
       - ".github/workflows/rebuild-dual-v6-now.yml"
       - "scripts/build_dual_rolling30_monitor.py"
+      - "scripts/normalize_markets_bcrp_for_rolling30.py"
       - "scripts/patch_dual_rolling30_fx_operational.py"
       - "scripts/patch_dual_20260824_exact.py"
       - "scripts/patch_google_rolling30_assets.py"
       - "scripts/validate_new_ticker_session.py"
       - "scripts/persist_dual_rolling30_shadow.py"
       - "scripts/finalize_profuturo_close.py"
+      - "data/rolling90/bcrp_pd04640_cache.csv"
   workflow_dispatch:
 
 permissions:
@@ -64,6 +66,12 @@ jobs:
 
           python scripts/sync_sbs_official_latest.py
           python scripts/apply_sbs_reference_corrections.py
+
+          # Antes de recalcular cualquier Rolling 30, normalizar TODO USD/PEN con
+          # la serie oficial SBS Venta PD04640PD. Los n.d. históricos se rellenan
+          # con el último valor oficial disponible.
+          python scripts/normalize_markets_bcrp_for_rolling30.py
+
           python scripts/patch_spblscup_google_selenium.py || true
           python scripts/update_live_market_hybrid.py
 
@@ -91,15 +99,13 @@ jobs:
               print('Sesión live vigente:',new_date,'; previa:',old_date)
           PY
 
-          # Validar cierres y luego aplicar la capa final: TuCambista por fecha,
-          # cierres diarios exactos y recálculo desde el último VC SBS real.
           python scripts/patch_google_rolling30_assets.py || true
           python scripts/validate_new_ticker_session.py || true
           python scripts/finalize_profuturo_close.py
 
           python scripts/build_dual_rolling30_monitor.py
-          # Regla FX de ambos Rolling30: BCRP PD04638PD si ya existe la fecha;
-          # si no, midpoint TuCambista provisional. Yahoo PEN=X queda excluido.
+          # Regla FX de ambos Rolling30: SBS Venta BCRP PD04640PD si ya existe
+          # la fecha; si no, midpoint TuCambista provisional. Yahoo PEN=X excluido.
           python scripts/patch_dual_rolling30_fx_operational.py
           python scripts/persist_dual_rolling30_shadow.py
 
@@ -139,6 +145,22 @@ jobs:
               assert d['signal_date']==live['signal_date'],(d['signal_date'],live['signal_date'])
           assert float(d['latest_sbs']['vc'])>0
           assert d.get('historical_corrections',{}).get('2026-08-24',{}).get('status')=='CORREGIDO'
+
+          # La base histórica usada para volver a entrenar debe ser SBS Venta.
+          mk=pd.read_csv('data/rolling90/markets.csv')
+          mk['fecha']=pd.to_datetime(mk['fecha'],errors='coerce').dt.strftime('%Y-%m-%d')
+          expected_fx={
+              '2026-07-23':3.404,
+              '2026-07-27':3.411,
+              '2026-07-28':3.411,
+              '2026-07-29':3.411,
+              '2026-08-06':3.394,
+              '2026-08-17':3.370,
+          }
+          for date,value in expected_fx.items():
+              row=mk.loc[mk['fecha'].eq(date),'USD_PEN']
+              if not row.empty:
+                  assert abs(float(row.iloc[-1])-value)<1e-12,(date,row.iloc[-1],value)
 
           expected24={
               'qqq': (71.58040482180978,-0.006212591254568605),
@@ -194,9 +216,11 @@ jobs:
           print('V6 VALIDADO',d['signal_date'],'live=',live['signal_date'],'dual_preservado=',preserved,d['shared_fx_operational'])
           PY
 
-          git add data/rolling90/sbs_profuturo_f3.csv data/rolling90/dual_rolling30_shadow.csv public/data/sbs_sync_status.json public/data/live_market.json public/data/dual_rolling30_monitor.json
+          git add data/rolling90/sbs_profuturo_f3.csv data/rolling90/markets.csv data/rolling90/dual_rolling30_shadow.csv public/data/sbs_sync_status.json public/data/live_market.json public/data/dual_rolling30_monitor.json
+          if test -f data/rolling90/bcrp_pd04640_cache.csv; then git add data/rolling90/bcrp_pd04640_cache.csv; fi
+          if test -f data/analysis/rolling30_bcrp_normalization.json; then git add data/analysis/rolling30_bcrp_normalization.json; fi
           if test -f data/analysis/googlefinance_alt_rolling30_live_returns.csv; then git add data/analysis/googlefinance_alt_rolling30_live_returns.csv; fi
-          git commit -m "Reconstruir visor dual V6 con cierre final y FX TuCambista" || true
+          git commit -m "Reconstruir visor dual V6 con SBS Venta PD04640PD" || true
           git pull --rebase origin migracion-github-actions || true
           git push origin HEAD:migracion-github-actions
 
