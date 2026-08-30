@@ -28,26 +28,47 @@ def fit_predict(train,row):
     beta=np.linalg.lstsq(X,y,rcond=None)[0]
     return float(np.dot(np.asarray(rv),beta))
 
-# SBS VC history from visor series
-s=json.loads(Path('public/data/series.json').read_text(encoding='utf-8'))
-rows=s if isinstance(s,list) else (s.get('series') or s.get('data') or s.get('rows') or [])
+# SBS reales: usar actual_vc del history_one_step limpio del visor
+mon=json.loads(Path('public/data/dual_rolling30_monitor.json').read_text(encoding='utf-8'))
+a=mon['models']['qqq']
 vcrows=[]
-for r in rows:
+for r in a.get('history_one_step',[]):
     d=str(r.get('fecha',''))[:10]
-    try:v=float(r.get('vc'))
+    v=r.get('actual_vc')
+    try:v=float(v)
     except:continue
     if d and v>0: vcrows.append((pd.Timestamp(d),v))
 vc=pd.DataFrame(vcrows,columns=['fecha','VC']).drop_duplicates('fecha').sort_values('fecha')
 
-# Model A factors
+# Factores históricos del Modelo A
 m=pd.read_csv('data/rolling90/markets.csv')
 m['fecha']=pd.to_datetime(m['fecha'])
-keep=['fecha','SPY','EEM','EPU','MCHI','USD_PEN']
-m=m[keep].copy()
+m=m[['fecha','SPY','EEM','EPU','MCHI','USD_PEN']].copy()
+
+# Extender mercado 21-26 agosto con cierres de Yahoo; USD/PEN se toma del cache BCRP PD04638PD
+try:
+    import yfinance as yf
+    ext=yf.download(['SPY','EEM','EPU','MCHI'],start='2026-08-21',end='2026-08-27',auto_adjust=False,progress=False,group_by='ticker',threads=False)
+    fx=pd.read_csv('data/rolling90/bcrp_pd04638_cache.csv')
+    fx['fecha']=pd.to_datetime(fx['fecha'])
+    # detectar columna valor
+    valcols=[c for c in fx.columns if c!='fecha']
+    fx=fx[['fecha',valcols[-1]]].rename(columns={valcols[-1]:'USD_PEN'})
+    add=[]
+    for ds in ['2026-08-21','2026-08-24','2026-08-25','2026-08-26']:
+        d=pd.Timestamp(ds)
+        def close(sym):
+            try:return float(ext.loc[d,(sym,'Close')])
+            except:return np.nan
+        z=fx.loc[fx.fecha.eq(d),'USD_PEN']
+        add.append({'fecha':d,'SPY':close('SPY'),'EEM':close('EEM'),'EPU':close('EPU'),'MCHI':close('MCHI'),
+                    'USD_PEN':float(z.iloc[0]) if len(z) else np.nan})
+    m=pd.concat([m,pd.DataFrame(add)],ignore_index=True).drop_duplicates('fecha',keep='last').sort_values('fecha')
+except Exception as e:
+    print('extension mercado fallo',repr(e))
 
 q=pd.read_csv('data/analysis/qqq_googlefinance_closes_20260401_20260820.csv')
 q['fecha']=pd.to_datetime(q['fecha'])
-# audited/known closes after 20 Aug
 extra=pd.DataFrame([
  {'fecha':'2026-08-21','QQQ':713.4400024414062},
  {'fecha':'2026-08-24','QQQ':706.3200073242188},
@@ -71,9 +92,6 @@ for i in range(30,len(df)):
 pdff=pd.DataFrame(pred)
 last30=pdff.tail(30).copy()
 
-# clean A same dates
-mon=json.loads(Path('public/data/dual_rolling30_monitor.json').read_text(encoding='utf-8'))
-a=mon['models']['qqq']
 amap={str(r.get('fecha'))[:10]:float(r['vc_estimated']) for r in a.get('history_one_step',[]) if r.get('vc_estimated') is not None and r.get('actual_vc') is not None}
 common=last30[last30.fecha.isin(amap)].copy(); common['A_vc']=common.fecha.map(amap)
 
