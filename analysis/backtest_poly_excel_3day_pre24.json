@@ -1,0 +1,2166 @@
+{
+  "spec": "Backtest Excel-style polynomial levels. Each origin uses prior 30 known SBS VC + Model A factor levels; choose degree maximizing in-sample R2; then freeze equation and predict next 3 valid SBS dates without retraining. All test dates strictly before 2026-08-24.",
+  "factors": [
+    "SPY",
+    "EEM",
+    "EPU",
+    "MCHI",
+    "USD_PEN",
+    "QQQ"
+  ],
+  "train_n": 30,
+  "holdout_days": 3,
+  "n_blocks": 51,
+  "aggregate_order_1_4": {
+    "n": 153,
+    "pearson_r": 0.20353855938037843,
+    "predictive_r2": -14.85677495450009,
+    "mae": 3.400406561982619,
+    "rmse": 6.039138606958738,
+    "mape_pct": 4.843270566415875,
+    "bias": -0.190368179198305
+  },
+  "aggregate_order_1_5": {
+    "n": 153,
+    "pearson_r": 0.08567283466100882,
+    "predictive_r2": -1636.2443989230637,
+    "mae": 21.600273302335914,
+    "rmse": 61.36550645094654,
+    "mape_pct": 31.005096037030537,
+    "bias": -11.058333965823545
+  },
+  "final_block_pre24": {
+    "train_start": "2026-06-30",
+    "train_end": "2026-08-18",
+    "selected_degree_1_4": 4,
+    "train_r2_1_4": 0.9975072940674251,
+    "rank_1_4": 25,
+    "cond_1_4": 269.71979699978783,
+    "selected_degree_1_5": 5,
+    "train_r2_1_5": 1.0,
+    "rank_1_5": 30,
+    "cond_1_5": 2120.999409767013,
+    "predictions": [
+      {
+        "fecha": "2026-08-19",
+        "vc_sbs": 70.327616,
+        "vc_pred_order_le4": 71.01044886107908,
+        "error_pct_le4": 0.970931335251124,
+        "vc_pred_order_le5": 72.90783605040755,
+        "error_pct_le5": 3.6688575515023025,
+        "horizon": 1
+      },
+      {
+        "fecha": "2026-08-20",
+        "vc_sbs": 71.0427094,
+        "vc_pred_order_le4": 72.04661396524234,
+        "error_pct_le4": 1.4131000544896688,
+        "vc_pred_order_le5": 74.4711242791755,
+        "error_pct_le5": 4.825850404820686,
+        "horizon": 2
+      },
+      {
+        "fecha": "2026-08-21",
+        "vc_sbs": 71.8058461,
+        "vc_pred_order_le4": 74.09198830346229,
+        "error_pct_le4": 3.183782836119642,
+        "vc_pred_order_le5": -14.021507558158,
+        "error_pct_le5": -119.52697213348205,
+        "horizon": 3
+      }
+    ]
+  },
+  "blocks": [
+    {
+      "train_start": "2026-04-15",
+      "train_end": "2026-05-28",
+      "selected_degree_1_4": 4,
+      "train_r2_1_4": 0.9836629071930777,
+      "rank_1_4": 25,
+      "cond_1_4": 980.6084106217368,
+      "selected_degree_1_5": 5,
+      "train_r2_1_5": 1.0,
+      "rank_1_5": 30,
+      "cond_1_5": 4798.9344954325625,
+      "predictions": [
+        {
+          "fecha": "2026-05-29",
+          "vc_sbs": 71.15447420000001,
+          "vc_pred_order_le4": 72.41995867117626,
+          "error_pct_le4": 1.778503018122568,
+          "vc_pred_order_le5": 64.59726255850684,
+          "error_pct_le5": -9.215459344218113,
+          "horizon": 1
+        },
+        {
+          "fecha": "2026-06-01",
+          "vc_sbs": 71.1479104,
+          "vc_pred_order_le4": 83.02944463862858,
+          "error_pct_le4": 16.69976556139108,
+          "vc_pred_order_le5": 40.54219480022062,
+          "error_pct_le5": -43.01702668105257,
+          "horizon": 2
+        },
+        {
+          "fecha": "2026-06-02",
+          "vc_sbs": 72.00246680000001,
+          "vc_pred_order_le4": 92.27715540072685,
+          "error_pct_le4": 28.15832498773063,
+          "vc_pred_order_le5": 18.048778889009604,
+          "error_pct_le5": -74.9331103625333,
+          "horizon": 3
+        }
+      ]
+    },
+    {
+      "train_start": "2026-04-16",
+      "train_end": "2026-05-29",
+      "selected_degree_1_4": 4,
+      "train_r2_1_4": 0.9878387294500781,
+      "rank_1_4": 25,
+      "cond_1_4": 782.7378411159119,
+      "selected_degree_1_5": 5,
+      "train_r2_1_5": 1.0,
+      "rank_1_5": 30,
+      "cond_1_5": 2030.6225543470698,
+      "predictions": [
+        {
+          "fecha": "2026-06-01",
+          "vc_sbs": 71.1479104,
+          "vc_pred_order_le4": 79.9617318905316,
+          "error_pct_le4": 12.388025791593172,
+          "vc_pred_order_le5": 93.37404152461792,
+          "error_pct_le5": 31.23933085267101,
+          "horizon": 1
+        },
+        {
+          "fecha": "2026-06-02",
+          "vc_sbs": 72.00246680000001,
+          "vc_pred_order_le4": 88.88091682031897,
+          "error_pct_le4": 23.44148856344317,
+          "vc_pred_order_le5": 121.9614941062571,
+          "error_pct_le5": 69.38516071265643,
+          "horizon": 2
+        },
+        {
+          "fecha": "2026-06-03",
+          "vc_sbs": 71.1049439,
+          "vc_pred_order_le4": 75.86011036524955,
+          "error_pct_le4": 6.6875328274459855,
+          "vc_pred_order_le5": 75.28087167839777,
+          "error_pct_le5": 5.872907774557401,
+          "horizon": 3
+        }
+      ]
+    },
+    {
+      "train_start": "2026-04-17",
+      "train_end": "2026-06-01",
+      "selected_degree_1_4": 4,
+      "train_r2_1_4": 0.9879181802591548,
+      "rank_1_4": 25,
+      "cond_1_4": 714.728226480057,
+      "selected_degree_1_5": 5,
+      "train_r2_1_5": 1.0,
+      "rank_1_5": 30,
+      "cond_1_5": 1810.2973138647233,
+      "predictions": [
+        {
+          "fecha": "2026-06-02",
+          "vc_sbs": 72.00246680000001,
+          "vc_pred_order_le4": 71.94866798958702,
+          "error_pct_le4": -0.07471801009598655,
+          "vc_pred_order_le5": 72.9048005346009,
+          "error_pct_le5": 1.253198362088459,
+          "horizon": 1
+        },
+        {
+          "fecha": "2026-06-03",
+          "vc_sbs": 71.1049439,
+          "vc_pred_order_le4": 72.37185309705274,
+          "error_pct_le4": 1.7817455827466633,
+          "vc_pred_order_le5": 67.2471428306815,
+          "error_pct_le5": -5.4255032881314165,
+          "horizon": 2
+        },
+        {
+          "fecha": "2026-06-04",
+          "vc_sbs": 70.506511,
+          "vc_pred_order_le4": 71.2252172385504,
+          "error_pct_le4": 1.01934733169593,
+          "vc_pred_order_le5": 69.35901838068109,
+          "error_pct_le5": -1.6274987984002065,
+          "horizon": 3
+        }
+      ]
+    },
+    {
+      "train_start": "2026-04-20",
+      "train_end": "2026-06-02",
+      "selected_degree_1_4": 4,
+      "train_r2_1_4": 0.9903409856160789,
+      "rank_1_4": 25,
+      "cond_1_4": 612.6536290594914,
+      "selected_degree_1_5": 5,
+      "train_r2_1_5": 1.0,
+      "rank_1_5": 30,
+      "cond_1_5": 4208.936775130111,
+      "predictions": [
+        {
+          "fecha": "2026-06-03",
+          "vc_sbs": 71.1049439,
+          "vc_pred_order_le4": 74.45005766711769,
+          "error_pct_le4": 4.7044742371531445,
+          "vc_pred_order_le5": 63.58594494956701,
+          "error_pct_le5": -10.574509363241324,
+          "horizon": 1
+        },
+        {
+          "fecha": "2026-06-04",
+          "vc_sbs": 70.506511,
+          "vc_pred_order_le4": 72.14185200951476,
+          "error_pct_le4": 2.3194184286253527,
+          "vc_pred_order_le5": 67.17930652131975,
+          "error_pct_le5": -4.719003155155777,
+          "horizon": 2
+        },
+        {
+          "fecha": "2026-06-05",
+          "vc_sbs": 67.0292273,
+          "vc_pred_order_le4": 64.97063815443694,
+          "error_pct_le4": -3.0711813763711127,
+          "vc_pred_order_le5": 67.80607608887235,
+          "error_pct_le5": 1.158970228607048,
+          "horizon": 3
+        }
+      ]
+    },
+    {
+      "train_start": "2026-04-21",
+      "train_end": "2026-06-03",
+      "selected_degree_1_4": 4,
+      "train_r2_1_4": 0.9913633146111447,
+      "rank_1_4": 25,
+      "cond_1_4": 791.0026597956524,
+      "selected_degree_1_5": 5,
+      "train_r2_1_5": 1.0,
+      "rank_1_5": 30,
+      "cond_1_5": 2867.5082475495324,
+      "predictions": [
+        {
+          "fecha": "2026-06-04",
+          "vc_sbs": 70.506511,
+          "vc_pred_order_le4": 70.8965909265455,
+          "error_pct_le4": 0.553253764812589,
+          "vc_pred_order_le5": 70.02699600205324,
+          "error_pct_le5": -0.6801003072563927,
+          "horizon": 1
+        },
+        {
+          "fecha": "2026-06-05",
+          "vc_sbs": 67.0292273,
+          "vc_pred_order_le4": 66.42661880048254,
+          "error_pct_le4": -0.8990234913799466,
+          "vc_pred_order_le5": 67.16199851843217,
+          "error_pct_le5": 0.19807958972573037,
+          "horizon": 2
+        },
+        {
+          "fecha": "2026-06-08",
+          "vc_sbs": 67.10059100000001,
+          "vc_pred_order_le4": 67.05132159339033,
+          "error_pct_le4": -0.07342618876439166,
+          "vc_pred_order_le5": 70.92961791798866,
+          "error_pct_le5": 5.706398201453489,
+          "horizon": 3
+        }
+      ]
+    },
+    {
+      "train_start": "2026-04-22",
+      "train_end": "2026-06-04",
+      "selected_degree_1_4": 4,
+      "train_r2_1_4": 0.9987154703021845,
+      "rank_1_4": 25,
+      "cond_1_4": 778.2574226950551,
+      "selected_degree_1_5": 5,
+      "train_r2_1_5": 1.0,
+      "rank_1_5": 30,
+      "cond_1_5": 2990.85338632677,
+      "predictions": [
+        {
+          "fecha": "2026-06-05",
+          "vc_sbs": 67.0292273,
+          "vc_pred_order_le4": 67.19821621679964,
+          "error_pct_le4": 0.25211228535173547,
+          "vc_pred_order_le5": 67.52177308985438,
+          "error_pct_le5": 0.7348224195542485,
+          "horizon": 1
+        },
+        {
+          "fecha": "2026-06-08",
+          "vc_sbs": 67.10059100000001,
+          "vc_pred_order_le4": 70.56502820529658,
+          "error_pct_le4": 5.163050211132392,
+          "vc_pred_order_le5": 72.76253335524576,
+          "error_pct_le5": 8.43799178347886,
+          "horizon": 2
+        },
+        {
+          "fecha": "2026-06-09",
+          "vc_sbs": 68.1275219,
+          "vc_pred_order_le4": 41.71489265025553,
+          "error_pct_le4": -38.769396732958924,
+          "vc_pred_order_le5": 59.82554718481755,
+          "error_pct_le5": -12.18593379540267,
+          "horizon": 3
+        }
+      ]
+    },
+    {
+      "train_start": "2026-04-23",
+      "train_end": "2026-06-05",
+      "selected_degree_1_4": 4,
+      "train_r2_1_4": 0.9993158356108294,
+      "rank_1_4": 25,
+      "cond_1_4": 696.3966959911769,
+      "selected_degree_1_5": 5,
+      "train_r2_1_5": 1.0,
+      "rank_1_5": 30,
+      "cond_1_5": 6301.1830089379055,
+      "predictions": [
+        {
+          "fecha": "2026-06-08",
+          "vc_sbs": 67.10059100000001,
+          "vc_pred_order_le4": 70.18942961820092,
+          "error_pct_le4": 4.603295697054155,
+          "vc_pred_order_le5": 69.60278321729062,
+          "error_pct_le5": 3.7290166599137864,
+          "horizon": 1
+        },
+        {
+          "fecha": "2026-06-09",
+          "vc_sbs": 68.1275219,
+          "vc_pred_order_le4": 42.56686220800431,
+          "error_pct_le4": -37.51884551079744,
+          "vc_pred_order_le5": 102.63968665330005,
+          "error_pct_le5": 50.658183052596904,
+          "horizon": 2
+        },
+        {
+          "fecha": "2026-06-10",
+          "vc_sbs": 67.22211700000001,
+          "vc_pred_order_le4": 67.35566132963933,
+          "error_pct_le4": 0.19866129720269576,
+          "vc_pred_order_le5": 66.71146140141454,
+          "error_pct_le5": -0.7596541456519001,
+          "horizon": 3
+        }
+      ]
+    },
+    {
+      "train_start": "2026-04-24",
+      "train_end": "2026-06-08",
+      "selected_degree_1_4": 4,
+      "train_r2_1_4": 0.9966050643130652,
+      "rank_1_4": 25,
+      "cond_1_4": 582.4198561988587,
+      "selected_degree_1_5": 5,
+      "train_r2_1_5": 1.0,
+      "rank_1_5": 30,
+      "cond_1_5": 2819.433228892063,
+      "predictions": [
+        {
+          "fecha": "2026-06-09",
+          "vc_sbs": 68.1275219,
+          "vc_pred_order_le4": 63.472882247936056,
+          "error_pct_le4": -6.832245650878354,
+          "vc_pred_order_le5": 124.12045334616735,
+          "error_pct_le5": 82.18841649393289,
+          "horizon": 1
+        },
+        {
+          "fecha": "2026-06-10",
+          "vc_sbs": 67.22211700000001,
+          "vc_pred_order_le4": 64.47403836274137,
+          "error_pct_le4": -4.0880572643355535,
+          "vc_pred_order_le5": 67.10182545887679,
+          "error_pct_le5": -0.17894637433573113,
+          "horizon": 2
+        },
+        {
+          "fecha": "2026-06-11",
+          "vc_sbs": 70.0832019,
+          "vc_pred_order_le4": 68.15037656732142,
+          "error_pct_le4": -2.7579010094836875,
+          "vc_pred_order_le5": 76.06479636269466,
+          "error_pct_le5": 8.534990269465204,
+          "horizon": 3
+        }
+      ]
+    },
+    {
+      "train_start": "2026-04-27",
+      "train_end": "2026-06-09",
+      "selected_degree_1_4": 4,
+      "train_r2_1_4": 0.9986467401815937,
+      "rank_1_4": 25,
+      "cond_1_4": 630.3969995619008,
+      "selected_degree_1_5": 5,
+      "train_r2_1_5": 1.0,
+      "rank_1_5": 30,
+      "cond_1_5": 3801.86974137902,
+      "predictions": [
+        {
+          "fecha": "2026-06-10",
+          "vc_sbs": 67.22211700000001,
+          "vc_pred_order_le4": 65.29756752733041,
+          "error_pct_le4": -2.862970639067486,
+          "vc_pred_order_le5": 67.21060614299303,
+          "error_pct_le5": -0.01712361573942278,
+          "horizon": 1
+        },
+        {
+          "fecha": "2026-06-11",
+          "vc_sbs": 70.0832019,
+          "vc_pred_order_le4": 69.17253612561407,
+          "error_pct_le4": -1.2994066333974597,
+          "vc_pred_order_le5": 70.0560622274357,
+          "error_pct_le5": -0.03872493240680841,
+          "horizon": 2
+        },
+        {
+          "fecha": "2026-06-12",
+          "vc_sbs": 71.0335702,
+          "vc_pred_order_le4": 68.89888326032818,
+          "error_pct_le4": -3.005180414924191,
+          "vc_pred_order_le5": 72.36028460561359,
+          "error_pct_le5": 1.8677287399156972,
+          "horizon": 3
+        }
+      ]
+    },
+    {
+      "train_start": "2026-04-28",
+      "train_end": "2026-06-10",
+      "selected_degree_1_4": 4,
+      "train_r2_1_4": 0.9986705880554034,
+      "rank_1_4": 25,
+      "cond_1_4": 664.3296522694186,
+      "selected_degree_1_5": 5,
+      "train_r2_1_5": 1.0,
+      "rank_1_5": 30,
+      "cond_1_5": 3123.670053170594,
+      "predictions": [
+        {
+          "fecha": "2026-06-11",
+          "vc_sbs": 70.0832019,
+          "vc_pred_order_le4": 70.104432170108,
+          "error_pct_le4": 0.03029295113867736,
+          "vc_pred_order_le5": 70.11503066151023,
+          "error_pct_le5": 0.04541567828999504,
+          "horizon": 1
+        },
+        {
+          "fecha": "2026-06-12",
+          "vc_sbs": 71.0335702,
+          "vc_pred_order_le4": 69.28427806780573,
+          "error_pct_le4": -2.4626273567117885,
+          "vc_pred_order_le5": 70.93858885503481,
+          "error_pct_le5": -0.1337133199102447,
+          "horizon": 2
+        },
+        {
+          "fecha": "2026-06-15",
+          "vc_sbs": 73.1777194,
+          "vc_pred_order_le4": 70.57940715083664,
+          "error_pct_le4": -3.5506876552965583,
+          "vc_pred_order_le5": 73.11685429154774,
+          "error_pct_le5": -0.08317437185978438,
+          "horizon": 3
+        }
+      ]
+    },
+    {
+      "train_start": "2026-04-29",
+      "train_end": "2026-06-11",
+      "selected_degree_1_4": 4,
+      "train_r2_1_4": 0.9987417054345651,
+      "rank_1_4": 25,
+      "cond_1_4": 763.743630291914,
+      "selected_degree_1_5": 5,
+      "train_r2_1_5": 1.0,
+      "rank_1_5": 30,
+      "cond_1_5": 7355.208051698922,
+      "predictions": [
+        {
+          "fecha": "2026-06-12",
+          "vc_sbs": 71.0335702,
+          "vc_pred_order_le4": 69.41450465834917,
+          "error_pct_le4": -2.279296306087719,
+          "vc_pred_order_le5": 67.94011815524219,
+          "error_pct_le5": -4.354915620949329,
+          "horizon": 1
+        },
+        {
+          "fecha": "2026-06-15",
+          "vc_sbs": 73.1777194,
+          "vc_pred_order_le4": 70.84240310648944,
+          "error_pct_le4": -3.191294170764436,
+          "vc_pred_order_le5": 70.83249858263424,
+          "error_pct_le5": -3.204829060805303,
+          "horizon": 2
+        },
+        {
+          "fecha": "2026-06-16",
+          "vc_sbs": 72.5840362,
+          "vc_pred_order_le4": 68.18780085971113,
+          "error_pct_le4": -6.05675238033796,
+          "vc_pred_order_le5": 66.67319170031307,
+          "error_pct_le5": -8.14344972963481,
+          "horizon": 3
+        }
+      ]
+    },
+    {
+      "train_start": "2026-04-30",
+      "train_end": "2026-06-12",
+      "selected_degree_1_4": 4,
+      "train_r2_1_4": 0.997971119585432,
+      "rank_1_4": 25,
+      "cond_1_4": 694.6080973638905,
+      "selected_degree_1_5": 5,
+      "train_r2_1_5": 1.0,
+      "rank_1_5": 30,
+      "cond_1_5": 5942.095242285101,
+      "predictions": [
+        {
+          "fecha": "2026-06-15",
+          "vc_sbs": 73.1777194,
+          "vc_pred_order_le4": 72.41430221258642,
+          "error_pct_le4": -1.0432371952460495,
+          "vc_pred_order_le5": 76.61167690353828,
+          "error_pct_le5": 4.6926271161414235,
+          "horizon": 1
+        },
+        {
+          "fecha": "2026-06-16",
+          "vc_sbs": 72.5840362,
+          "vc_pred_order_le4": 70.79930678438457,
+          "error_pct_le4": -2.4588456485083565,
+          "vc_pred_order_le5": 70.2835502220121,
+          "error_pct_le5": -3.16941038060915,
+          "horizon": 2
+        },
+        {
+          "fecha": "2026-06-17",
+          "vc_sbs": 72.6023076,
+          "vc_pred_order_le4": 67.43159045529222,
+          "error_pct_le4": -7.121973551027705,
+          "vc_pred_order_le5": 64.4579962085763,
+          "error_pct_le5": -11.217703211714024,
+          "horizon": 3
+        }
+      ]
+    },
+    {
+      "train_start": "2026-05-04",
+      "train_end": "2026-06-15",
+      "selected_degree_1_4": 4,
+      "train_r2_1_4": 0.9980160792183158,
+      "rank_1_4": 25,
+      "cond_1_4": 791.4925137215441,
+      "selected_degree_1_5": 5,
+      "train_r2_1_5": 1.0,
+      "rank_1_5": 30,
+      "cond_1_5": 3182.829749757722,
+      "predictions": [
+        {
+          "fecha": "2026-06-16",
+          "vc_sbs": 72.5840362,
+          "vc_pred_order_le4": 68.90656247899813,
+          "error_pct_le4": -5.0665048590972095,
+          "vc_pred_order_le5": 72.30038782196524,
+          "error_pct_le5": -0.3907861740468421,
+          "horizon": 1
+        },
+        {
+          "fecha": "2026-06-17",
+          "vc_sbs": 72.6023076,
+          "vc_pred_order_le4": 56.586334283435704,
+          "error_pct_le4": -22.059868130919156,
+          "vc_pred_order_le5": 78.33787948370986,
+          "error_pct_le5": 7.899985652397978,
+          "horizon": 2
+        },
+        {
+          "fecha": "2026-06-18",
+          "vc_sbs": 72.61369810000001,
+          "vc_pred_order_le4": 56.67417872177523,
+          "error_pct_le4": -21.95111913495118,
+          "vc_pred_order_le5": 80.99505666781084,
+          "error_pct_le5": 11.542393222100378,
+          "horizon": 3
+        }
+      ]
+    },
+    {
+      "train_start": "2026-05-05",
+      "train_end": "2026-06-16",
+      "selected_degree_1_4": 4,
+      "train_r2_1_4": 0.9959644676033945,
+      "rank_1_4": 25,
+      "cond_1_4": 458.22728815859017,
+      "selected_degree_1_5": 5,
+      "train_r2_1_5": 1.0,
+      "rank_1_5": 30,
+      "cond_1_5": 3808.9950238197553,
+      "predictions": [
+        {
+          "fecha": "2026-06-17",
+          "vc_sbs": 72.6023076,
+          "vc_pred_order_le4": 73.92125501282456,
+          "error_pct_le4": 1.8166742303719285,
+          "vc_pred_order_le5": 80.69788564029507,
+          "error_pct_le5": 11.150579517248115,
+          "horizon": 1
+        },
+        {
+          "fecha": "2026-06-18",
+          "vc_sbs": 72.61369810000001,
+          "vc_pred_order_le4": 73.6530917906037,
+          "error_pct_le4": 1.4314016746155511,
+          "vc_pred_order_le5": 80.88413515911097,
+          "error_pct_le5": 11.38963759664371,
+          "horizon": 2
+        },
+        {
+          "fecha": "2026-06-22",
+          "vc_sbs": 72.766161,
+          "vc_pred_order_le4": 71.87628197746693,
+          "error_pct_le4": -1.2229297386364357,
+          "vc_pred_order_le5": 78.40927637794594,
+          "error_pct_le5": 7.755136866360113,
+          "horizon": 3
+        }
+      ]
+    },
+    {
+      "train_start": "2026-05-06",
+      "train_end": "2026-06-17",
+      "selected_degree_1_4": 4,
+      "train_r2_1_4": 0.9963463471449727,
+      "rank_1_4": 25,
+      "cond_1_4": 386.03661717274787,
+      "selected_degree_1_5": 5,
+      "train_r2_1_5": 1.0,
+      "rank_1_5": 30,
+      "cond_1_5": 3091.9248082949866,
+      "predictions": [
+        {
+          "fecha": "2026-06-18",
+          "vc_sbs": 72.61369810000001,
+          "vc_pred_order_le4": 72.93121391461098,
+          "error_pct_le4": 0.43726710375457944,
+          "vc_pred_order_le5": 78.62322708514223,
+          "error_pct_le5": 8.27602662085354,
+          "horizon": 1
+        },
+        {
+          "fecha": "2026-06-22",
+          "vc_sbs": 72.766161,
+          "vc_pred_order_le4": 72.02237137512995,
+          "error_pct_le4": -1.0221641689604155,
+          "vc_pred_order_le5": 80.72693610149986,
+          "error_pct_le5": 10.94021588070293,
+          "horizon": 2
+        },
+        {
+          "fecha": "2026-06-23",
+          "vc_sbs": 70.9600594,
+          "vc_pred_order_le4": 66.43356553088913,
+          "error_pct_le4": -6.378931905334451,
+          "vc_pred_order_le5": 68.6203256239481,
+          "error_pct_le5": -3.297254534220273,
+          "horizon": 3
+        }
+      ]
+    },
+    {
+      "train_start": "2026-05-07",
+      "train_end": "2026-06-18",
+      "selected_degree_1_4": 4,
+      "train_r2_1_4": 0.9972808102103071,
+      "rank_1_4": 25,
+      "cond_1_4": 418.8102181941897,
+      "selected_degree_1_5": 5,
+      "train_r2_1_5": 1.0,
+      "rank_1_5": 30,
+      "cond_1_5": 3201.8530033676966,
+      "predictions": [
+        {
+          "fecha": "2026-06-22",
+          "vc_sbs": 72.766161,
+          "vc_pred_order_le4": 72.19420636669231,
+          "error_pct_le4": -0.7860173265258341,
+          "vc_pred_order_le5": 72.53569729983754,
+          "error_pct_le5": -0.31671823412872113,
+          "horizon": 1
+        },
+        {
+          "fecha": "2026-06-23",
+          "vc_sbs": 70.9600594,
+          "vc_pred_order_le4": 65.65400116099389,
+          "error_pct_le4": -7.477527899315883,
+          "vc_pred_order_le5": 70.84542413315894,
+          "error_pct_le5": -0.16154900067778533,
+          "horizon": 2
+        },
+        {
+          "fecha": "2026-06-24",
+          "vc_sbs": 70.7652183,
+          "vc_pred_order_le4": 62.73539060141411,
+          "error_pct_le4": -11.347139020393426,
+          "vc_pred_order_le5": 72.2904178036598,
+          "error_pct_le5": 2.155295412491931,
+          "horizon": 3
+        }
+      ]
+    },
+    {
+      "train_start": "2026-05-08",
+      "train_end": "2026-06-22",
+      "selected_degree_1_4": 4,
+      "train_r2_1_4": 0.9975507797436706,
+      "rank_1_4": 25,
+      "cond_1_4": 597.374184090426,
+      "selected_degree_1_5": 5,
+      "train_r2_1_5": 1.0,
+      "rank_1_5": 30,
+      "cond_1_5": 4490.409476640558,
+      "predictions": [
+        {
+          "fecha": "2026-06-23",
+          "vc_sbs": 70.9600594,
+          "vc_pred_order_le4": 64.59271564130101,
+          "error_pct_le4": -8.973137582659618,
+          "vc_pred_order_le5": 69.2922228361524,
+          "error_pct_le5": -2.3503877786319904,
+          "horizon": 1
+        },
+        {
+          "fecha": "2026-06-24",
+          "vc_sbs": 70.7652183,
+          "vc_pred_order_le4": 61.19338165538242,
+          "error_pct_le4": -13.526188252594684,
+          "vc_pred_order_le5": 69.5543943411327,
+          "error_pct_le5": -1.711043911055521,
+          "horizon": 2
+        },
+        {
+          "fecha": "2026-06-25",
+          "vc_sbs": 71.4791849,
+          "vc_pred_order_le4": 52.31870609911781,
+          "error_pct_le4": -26.805676124717802,
+          "vc_pred_order_le5": 73.11845659029258,
+          "error_pct_le5": 2.2933553209734114,
+          "horizon": 3
+        }
+      ]
+    },
+    {
+      "train_start": "2026-05-11",
+      "train_end": "2026-06-23",
+      "selected_degree_1_4": 4,
+      "train_r2_1_4": 0.9995659827273549,
+      "rank_1_4": 25,
+      "cond_1_4": 672.9235115694767,
+      "selected_degree_1_5": 5,
+      "train_r2_1_5": 1.0,
+      "rank_1_5": 30,
+      "cond_1_5": 8630.073918634322,
+      "predictions": [
+        {
+          "fecha": "2026-06-24",
+          "vc_sbs": 70.7652183,
+          "vc_pred_order_le4": 71.30756396669405,
+          "error_pct_le4": 0.7664014606650893,
+          "vc_pred_order_le5": 71.62914151756266,
+          "error_pct_le5": 1.220830286851049,
+          "horizon": 1
+        },
+        {
+          "fecha": "2026-06-25",
+          "vc_sbs": 71.4791849,
+          "vc_pred_order_le4": 69.90282564319118,
+          "error_pct_le4": -2.2053402805504385,
+          "vc_pred_order_le5": 75.23157197430918,
+          "error_pct_le5": 5.249622081671457,
+          "horizon": 2
+        },
+        {
+          "fecha": "2026-06-26",
+          "vc_sbs": 71.1445756,
+          "vc_pred_order_le4": 73.67380642896661,
+          "error_pct_le4": 3.5550578630011875,
+          "vc_pred_order_le5": 80.30319848879589,
+          "error_pct_le5": 12.87325535581083,
+          "horizon": 3
+        }
+      ]
+    },
+    {
+      "train_start": "2026-05-12",
+      "train_end": "2026-06-24",
+      "selected_degree_1_4": 4,
+      "train_r2_1_4": 0.9991964642267408,
+      "rank_1_4": 25,
+      "cond_1_4": 987.1582190839262,
+      "selected_degree_1_5": 5,
+      "train_r2_1_5": 1.0,
+      "rank_1_5": 30,
+      "cond_1_5": 9672.800291627638,
+      "predictions": [
+        {
+          "fecha": "2026-06-25",
+          "vc_sbs": 71.4791849,
+          "vc_pred_order_le4": 68.76181953134939,
+          "error_pct_le4": -3.801617733123619,
+          "vc_pred_order_le5": 68.39807969410496,
+          "error_pct_le5": -4.310492922108078,
+          "horizon": 1
+        },
+        {
+          "fecha": "2026-06-26",
+          "vc_sbs": 71.1445756,
+          "vc_pred_order_le4": 72.21315308579966,
+          "error_pct_le4": 1.5019802659412607,
+          "vc_pred_order_le5": 65.75475701583758,
+          "error_pct_le5": -7.575867223477273,
+          "horizon": 2
+        },
+        {
+          "fecha": "2026-06-30",
+          "vc_sbs": 71.9348302,
+          "vc_pred_order_le4": 66.92583913228975,
+          "error_pct_le4": -6.963234713675936,
+          "vc_pred_order_le5": 71.23712772365688,
+          "error_pct_le5": -0.9699091169094176,
+          "horizon": 3
+        }
+      ]
+    },
+    {
+      "train_start": "2026-05-13",
+      "train_end": "2026-06-25",
+      "selected_degree_1_4": 4,
+      "train_r2_1_4": 0.998559505904346,
+      "rank_1_4": 25,
+      "cond_1_4": 1103.0873197424744,
+      "selected_degree_1_5": 5,
+      "train_r2_1_5": 1.0,
+      "rank_1_5": 30,
+      "cond_1_5": 6645.708204723008,
+      "predictions": [
+        {
+          "fecha": "2026-06-26",
+          "vc_sbs": 71.1445756,
+          "vc_pred_order_le4": 75.21114575892892,
+          "error_pct_le4": 5.7159244041212975,
+          "vc_pred_order_le5": 73.17393810242356,
+          "error_pct_le5": 2.852448672732777,
+          "horizon": 1
+        },
+        {
+          "fecha": "2026-06-30",
+          "vc_sbs": 71.9348302,
+          "vc_pred_order_le4": 68.98946768341641,
+          "error_pct_le4": -4.094487341381936,
+          "vc_pred_order_le5": 71.29716194540998,
+          "error_pct_le5": -0.8864527139594292,
+          "horizon": 2
+        },
+        {
+          "fecha": "2026-07-01",
+          "vc_sbs": 70.9226332,
+          "vc_pred_order_le4": 68.28419283858751,
+          "error_pct_le4": -3.7201669514612568,
+          "vc_pred_order_le5": 69.35362812577567,
+          "error_pct_le5": -2.2122769607267445,
+          "horizon": 3
+        }
+      ]
+    },
+    {
+      "train_start": "2026-05-14",
+      "train_end": "2026-06-26",
+      "selected_degree_1_4": 4,
+      "train_r2_1_4": 0.9978946056601503,
+      "rank_1_4": 25,
+      "cond_1_4": 786.9255055641061,
+      "selected_degree_1_5": 5,
+      "train_r2_1_5": 1.0,
+      "rank_1_5": 30,
+      "cond_1_5": 8009.550634335664,
+      "predictions": [
+        {
+          "fecha": "2026-06-30",
+          "vc_sbs": 71.9348302,
+          "vc_pred_order_le4": 70.07476773653082,
+          "error_pct_le4": -2.5857605534032047,
+          "vc_pred_order_le5": 72.32768148536448,
+          "error_pct_le5": 0.5461210991563492,
+          "horizon": 1
+        },
+        {
+          "fecha": "2026-07-01",
+          "vc_sbs": 70.9226332,
+          "vc_pred_order_le4": 69.97500475074486,
+          "error_pct_le4": -1.336143916967747,
+          "vc_pred_order_le5": 71.04859783312638,
+          "error_pct_le5": 0.17760851147639034,
+          "horizon": 2
+        },
+        {
+          "fecha": "2026-07-02",
+          "vc_sbs": 70.3358541,
+          "vc_pred_order_le4": 69.65912459336668,
+          "error_pct_le4": -0.9621401706037203,
+          "vc_pred_order_le5": 72.3649276138625,
+          "error_pct_le5": 2.884835251986373,
+          "horizon": 3
+        }
+      ]
+    },
+    {
+      "train_start": "2026-05-15",
+      "train_end": "2026-06-30",
+      "selected_degree_1_4": 4,
+      "train_r2_1_4": 0.996849224288984,
+      "rank_1_4": 25,
+      "cond_1_4": 783.0248857044002,
+      "selected_degree_1_5": 5,
+      "train_r2_1_5": 1.0,
+      "rank_1_5": 30,
+      "cond_1_5": 12336.02024680401,
+      "predictions": [
+        {
+          "fecha": "2026-07-01",
+          "vc_sbs": 70.9226332,
+          "vc_pred_order_le4": 71.16048273626049,
+          "error_pct_le4": 0.33536478487727894,
+          "vc_pred_order_le5": 69.36435751182204,
+          "error_pct_le5": -2.197148664494275,
+          "horizon": 1
+        },
+        {
+          "fecha": "2026-07-02",
+          "vc_sbs": 70.3358541,
+          "vc_pred_order_le4": 70.76583336770238,
+          "error_pct_le4": 0.6113230203916409,
+          "vc_pred_order_le5": 69.73293853908908,
+          "error_pct_le5": -0.8571951938675992,
+          "horizon": 2
+        },
+        {
+          "fecha": "2026-07-06",
+          "vc_sbs": 71.3369613,
+          "vc_pred_order_le4": 71.53766168727378,
+          "error_pct_le4": 0.28134137425586125,
+          "vc_pred_order_le5": 68.19155523044354,
+          "error_pct_le5": -4.409223510837235,
+          "horizon": 3
+        }
+      ]
+    },
+    {
+      "train_start": "2026-05-18",
+      "train_end": "2026-07-01",
+      "selected_degree_1_4": 4,
+      "train_r2_1_4": 0.9983068862417108,
+      "rank_1_4": 25,
+      "cond_1_4": 897.5484256295673,
+      "selected_degree_1_5": 5,
+      "train_r2_1_5": 1.0,
+      "rank_1_5": 30,
+      "cond_1_5": 22977.53856970131,
+      "predictions": [
+        {
+          "fecha": "2026-07-02",
+          "vc_sbs": 70.3358541,
+          "vc_pred_order_le4": 72.1840110987535,
+          "error_pct_le4": 2.6276171980877283,
+          "vc_pred_order_le5": 73.03078879379638,
+          "error_pct_le5": 3.831523379192703,
+          "horizon": 1
+        },
+        {
+          "fecha": "2026-07-06",
+          "vc_sbs": 71.3369613,
+          "vc_pred_order_le4": 72.24213550710506,
+          "error_pct_le4": 1.2688712703901928,
+          "vc_pred_order_le5": 72.79838177919643,
+          "error_pct_le5": 2.0486161066639585,
+          "horizon": 2
+        },
+        {
+          "fecha": "2026-07-07",
+          "vc_sbs": 69.9352638,
+          "vc_pred_order_le4": 71.37663164044278,
+          "error_pct_le4": 2.0610029363223425,
+          "vc_pred_order_le5": 72.93487577073157,
+          "error_pct_le5": 4.289126554680367,
+          "horizon": 3
+        }
+      ]
+    },
+    {
+      "train_start": "2026-05-19",
+      "train_end": "2026-07-02",
+      "selected_degree_1_4": 4,
+      "train_r2_1_4": 0.9974561554686692,
+      "rank_1_4": 25,
+      "cond_1_4": 1007.6022021564934,
+      "selected_degree_1_5": 5,
+      "train_r2_1_5": 1.0,
+      "rank_1_5": 30,
+      "cond_1_5": 31261.772636780286,
+      "predictions": [
+        {
+          "fecha": "2026-07-06",
+          "vc_sbs": 71.3369613,
+          "vc_pred_order_le4": 70.85703814158005,
+          "error_pct_le4": -0.6727552585281682,
+          "vc_pred_order_le5": 71.08874288980817,
+          "error_pct_le5": -0.3479520373007916,
+          "horizon": 1
+        },
+        {
+          "fecha": "2026-07-07",
+          "vc_sbs": 69.9352638,
+          "vc_pred_order_le4": 68.72720111253773,
+          "error_pct_le4": -1.7274013449310455,
+          "vc_pred_order_le5": 71.98984108687979,
+          "error_pct_le5": 2.9378273209284655,
+          "horizon": 2
+        },
+        {
+          "fecha": "2026-07-08",
+          "vc_sbs": 69.8131004,
+          "vc_pred_order_le4": 67.40779806669188,
+          "error_pct_le4": -3.4453452425500797,
+          "vc_pred_order_le5": 72.84480679932082,
+          "error_pct_le5": 4.3426038694033275,
+          "horizon": 3
+        }
+      ]
+    },
+    {
+      "train_start": "2026-05-20",
+      "train_end": "2026-07-06",
+      "selected_degree_1_4": 4,
+      "train_r2_1_4": 0.9969040349580477,
+      "rank_1_4": 25,
+      "cond_1_4": 621.8978692372256,
+      "selected_degree_1_5": 5,
+      "train_r2_1_5": 1.0,
+      "rank_1_5": 30,
+      "cond_1_5": 13856.55477599929,
+      "predictions": [
+        {
+          "fecha": "2026-07-07",
+          "vc_sbs": 69.9352638,
+          "vc_pred_order_le4": 69.22169940229185,
+          "error_pct_le4": -1.0203213070716366,
+          "vc_pred_order_le5": 63.84597161473001,
+          "error_pct_le5": -8.707041132616688,
+          "horizon": 1
+        },
+        {
+          "fecha": "2026-07-08",
+          "vc_sbs": 69.8131004,
+          "vc_pred_order_le4": 68.1114712947115,
+          "error_pct_le4": -2.4374065834905867,
+          "vc_pred_order_le5": 61.52309066194598,
+          "error_pct_le5": -11.874576104707735,
+          "horizon": 2
+        },
+        {
+          "fecha": "2026-07-09",
+          "vc_sbs": 70.9792394,
+          "vc_pred_order_le4": 70.83411565184231,
+          "error_pct_le4": -0.20445942980573673,
+          "vc_pred_order_le5": 66.70259376956969,
+          "error_pct_le5": -6.025206337207257,
+          "horizon": 3
+        }
+      ]
+    },
+    {
+      "train_start": "2026-05-21",
+      "train_end": "2026-07-07",
+      "selected_degree_1_4": 4,
+      "train_r2_1_4": 0.9953777725970581,
+      "rank_1_4": 25,
+      "cond_1_4": 653.5930967047229,
+      "selected_degree_1_5": 5,
+      "train_r2_1_5": 1.0,
+      "rank_1_5": 30,
+      "cond_1_5": 13712.31579660844,
+      "predictions": [
+        {
+          "fecha": "2026-07-08",
+          "vc_sbs": 69.8131004,
+          "vc_pred_order_le4": 68.91206146335985,
+          "error_pct_le4": -1.290644494339277,
+          "vc_pred_order_le5": 70.23986474384073,
+          "error_pct_le5": 0.6112955038460433,
+          "horizon": 1
+        },
+        {
+          "fecha": "2026-07-09",
+          "vc_sbs": 70.9792394,
+          "vc_pred_order_le4": 70.9496805203786,
+          "error_pct_le4": -0.04164440175924433,
+          "vc_pred_order_le5": 70.74263750045621,
+          "error_pct_le5": -0.33333958146610776,
+          "horizon": 2
+        },
+        {
+          "fecha": "2026-07-10",
+          "vc_sbs": 71.0624925,
+          "vc_pred_order_le4": 72.02720763288167,
+          "error_pct_le4": 1.3575588175177788,
+          "vc_pred_order_le5": 70.81513922229784,
+          "error_pct_le5": -0.34807852778617754,
+          "horizon": 3
+        }
+      ]
+    },
+    {
+      "train_start": "2026-05-22",
+      "train_end": "2026-07-08",
+      "selected_degree_1_4": 4,
+      "train_r2_1_4": 0.9940576375662601,
+      "rank_1_4": 25,
+      "cond_1_4": 779.9283698935697,
+      "selected_degree_1_5": 5,
+      "train_r2_1_5": 1.0,
+      "rank_1_5": 30,
+      "cond_1_5": 14035.316088620952,
+      "predictions": [
+        {
+          "fecha": "2026-07-09",
+          "vc_sbs": 70.9792394,
+          "vc_pred_order_le4": 71.07193752854984,
+          "error_pct_le4": 0.13059893193196892,
+          "vc_pred_order_le5": 70.2533311084492,
+          "error_pct_le5": -1.0227050862858245,
+          "horizon": 1
+        },
+        {
+          "fecha": "2026-07-10",
+          "vc_sbs": 71.0624925,
+          "vc_pred_order_le4": 71.86680603011742,
+          "error_pct_le4": 1.1318397396733682,
+          "vc_pred_order_le5": 70.77018375422466,
+          "error_pct_le5": -0.4113404068613935,
+          "horizon": 2
+        },
+        {
+          "fecha": "2026-07-13",
+          "vc_sbs": 69.4242724,
+          "vc_pred_order_le4": 68.32505418164087,
+          "error_pct_le4": -1.5833341572898396,
+          "vc_pred_order_le5": 67.94782795137446,
+          "error_pct_le5": -2.1266977637428464,
+          "horizon": 3
+        }
+      ]
+    },
+    {
+      "train_start": "2026-05-26",
+      "train_end": "2026-07-09",
+      "selected_degree_1_4": 4,
+      "train_r2_1_4": 0.994818317634378,
+      "rank_1_4": 25,
+      "cond_1_4": 1251.7336442740188,
+      "selected_degree_1_5": 5,
+      "train_r2_1_5": 1.0,
+      "rank_1_5": 30,
+      "cond_1_5": 8403.405851817854,
+      "predictions": [
+        {
+          "fecha": "2026-07-10",
+          "vc_sbs": 71.0624925,
+          "vc_pred_order_le4": 71.42072581070012,
+          "error_pct_le4": 0.5041102529581565,
+          "vc_pred_order_le5": 71.48879607403222,
+          "error_pct_le5": 0.5998995518377237,
+          "horizon": 1
+        },
+        {
+          "fecha": "2026-07-13",
+          "vc_sbs": 69.4242724,
+          "vc_pred_order_le4": 76.13578248326617,
+          "error_pct_le4": 9.667382676474645,
+          "vc_pred_order_le5": 35.44852769825707,
+          "error_pct_le5": -48.93928812964114,
+          "horizon": 2
+        },
+        {
+          "fecha": "2026-07-14",
+          "vc_sbs": 70.5044231,
+          "vc_pred_order_le4": 72.21560376339312,
+          "error_pct_le4": 2.427054343762336,
+          "vc_pred_order_le5": 64.35167029591224,
+          "error_pct_le5": -8.726761433620966,
+          "horizon": 3
+        }
+      ]
+    },
+    {
+      "train_start": "2026-05-27",
+      "train_end": "2026-07-10",
+      "selected_degree_1_4": 4,
+      "train_r2_1_4": 0.9976059537013573,
+      "rank_1_4": 25,
+      "cond_1_4": 1163.3800949133467,
+      "selected_degree_1_5": 5,
+      "train_r2_1_5": 1.0,
+      "rank_1_5": 30,
+      "cond_1_5": 15858.081767109701,
+      "predictions": [
+        {
+          "fecha": "2026-07-13",
+          "vc_sbs": 69.4242724,
+          "vc_pred_order_le4": 87.16781787884717,
+          "error_pct_le4": 25.558129549582674,
+          "vc_pred_order_le5": 54.728917960231584,
+          "error_pct_le5": -21.167459062586335,
+          "horizon": 1
+        },
+        {
+          "fecha": "2026-07-14",
+          "vc_sbs": 70.5044231,
+          "vc_pred_order_le4": 73.75895919072755,
+          "error_pct_le4": 4.6160736413820125,
+          "vc_pred_order_le5": 66.12296736569589,
+          "error_pct_le5": -6.214440940945886,
+          "horizon": 2
+        },
+        {
+          "fecha": "2026-07-15",
+          "vc_sbs": 69.9080824,
+          "vc_pred_order_le4": 73.46777048244023,
+          "error_pct_le4": 5.091954978928492,
+          "vc_pred_order_le5": 66.78750946559185,
+          "error_pct_le5": -4.463822818873576,
+          "horizon": 3
+        }
+      ]
+    },
+    {
+      "train_start": "2026-05-28",
+      "train_end": "2026-07-13",
+      "selected_degree_1_4": 4,
+      "train_r2_1_4": 0.9919039789126782,
+      "rank_1_4": 25,
+      "cond_1_4": 477.79155816039145,
+      "selected_degree_1_5": 5,
+      "train_r2_1_5": 1.0,
+      "rank_1_5": 30,
+      "cond_1_5": 16033.229571379574,
+      "predictions": [
+        {
+          "fecha": "2026-07-14",
+          "vc_sbs": 70.5044231,
+          "vc_pred_order_le4": 70.78361522473759,
+          "error_pct_le4": 0.39599235404224054,
+          "vc_pred_order_le5": 71.97323324802007,
+          "error_pct_le5": 2.083287946256629,
+          "horizon": 1
+        },
+        {
+          "fecha": "2026-07-15",
+          "vc_sbs": 69.9080824,
+          "vc_pred_order_le4": 70.27012735546144,
+          "error_pct_le4": 0.5178871212485836,
+          "vc_pred_order_le5": 71.16103191637603,
+          "error_pct_le5": 1.792281340527846,
+          "horizon": 2
+        },
+        {
+          "fecha": "2026-07-16",
+          "vc_sbs": 68.4036329,
+          "vc_pred_order_le4": 68.44251027121774,
+          "error_pct_le4": 0.056835243348207776,
+          "vc_pred_order_le5": 65.34514569823313,
+          "error_pct_le5": -4.471235038405219,
+          "horizon": 3
+        }
+      ]
+    },
+    {
+      "train_start": "2026-05-29",
+      "train_end": "2026-07-14",
+      "selected_degree_1_4": 4,
+      "train_r2_1_4": 0.9915442398515661,
+      "rank_1_4": 25,
+      "cond_1_4": 479.0125736244585,
+      "selected_degree_1_5": 5,
+      "train_r2_1_5": 1.0,
+      "rank_1_5": 30,
+      "cond_1_5": 6779.401211341305,
+      "predictions": [
+        {
+          "fecha": "2026-07-15",
+          "vc_sbs": 69.9080824,
+          "vc_pred_order_le4": 70.12978381273841,
+          "error_pct_le4": 0.3171327336228158,
+          "vc_pred_order_le5": 69.76332494217174,
+          "error_pct_le5": -0.2070682714481964,
+          "horizon": 1
+        },
+        {
+          "fecha": "2026-07-16",
+          "vc_sbs": 68.4036329,
+          "vc_pred_order_le4": 68.59830990704238,
+          "error_pct_le4": 0.2846003915127904,
+          "vc_pred_order_le5": 72.26098239475742,
+          "error_pct_le5": 5.639100339007608,
+          "horizon": 2
+        },
+        {
+          "fecha": "2026-07-17",
+          "vc_sbs": 68.2147702,
+          "vc_pred_order_le4": 69.90041977064308,
+          "error_pct_le4": 2.4710917675173416,
+          "vc_pred_order_le5": 102.7830980008693,
+          "error_pct_le5": 50.67572272034027,
+          "horizon": 3
+        }
+      ]
+    },
+    {
+      "train_start": "2026-06-01",
+      "train_end": "2026-07-15",
+      "selected_degree_1_4": 4,
+      "train_r2_1_4": 0.991302141307945,
+      "rank_1_4": 25,
+      "cond_1_4": 780.1657263608993,
+      "selected_degree_1_5": 5,
+      "train_r2_1_5": 1.0,
+      "rank_1_5": 30,
+      "cond_1_5": 18731.98423252362,
+      "predictions": [
+        {
+          "fecha": "2026-07-16",
+          "vc_sbs": 68.4036329,
+          "vc_pred_order_le4": 68.56714792576395,
+          "error_pct_le4": 0.2390443589494584,
+          "vc_pred_order_le5": 72.78440704272631,
+          "error_pct_le5": 6.404300410667685,
+          "horizon": 1
+        },
+        {
+          "fecha": "2026-07-17",
+          "vc_sbs": 68.2147702,
+          "vc_pred_order_le4": 70.30893225893696,
+          "error_pct_le4": 3.0699539891390737,
+          "vc_pred_order_le5": 103.09482595221664,
+          "error_pct_le5": 51.132702858854806,
+          "horizon": 2
+        },
+        {
+          "fecha": "2026-07-20",
+          "vc_sbs": 68.06385,
+          "vc_pred_order_le4": 68.92168905103938,
+          "error_pct_le4": 1.2603445897335863,
+          "vc_pred_order_le5": 94.07616064825463,
+          "error_pct_le5": 38.217512891578465,
+          "horizon": 3
+        }
+      ]
+    },
+    {
+      "train_start": "2026-06-02",
+      "train_end": "2026-07-16",
+      "selected_degree_1_4": 4,
+      "train_r2_1_4": 0.9927728637844433,
+      "rank_1_4": 25,
+      "cond_1_4": 803.6763844924513,
+      "selected_degree_1_5": 5,
+      "train_r2_1_5": 1.0,
+      "rank_1_5": 30,
+      "cond_1_5": 13354.728652388463,
+      "predictions": [
+        {
+          "fecha": "2026-07-17",
+          "vc_sbs": 68.2147702,
+          "vc_pred_order_le4": 69.31865011075047,
+          "error_pct_le4": 1.6182417788903836,
+          "vc_pred_order_le5": 62.05855359037712,
+          "error_pct_le5": -9.024756063200634,
+          "horizon": 1
+        },
+        {
+          "fecha": "2026-07-20",
+          "vc_sbs": 68.06385,
+          "vc_pred_order_le4": 68.07649788907477,
+          "error_pct_le4": 0.01858238855834138,
+          "vc_pred_order_le5": 66.80861890465118,
+          "error_pct_le5": -1.8441964351837536,
+          "horizon": 2
+        },
+        {
+          "fecha": "2026-07-21",
+          "vc_sbs": 70.02189279999999,
+          "vc_pred_order_le4": 69.79321125487384,
+          "error_pct_le4": -0.3265857805062833,
+          "vc_pred_order_le5": 75.30958279628348,
+          "error_pct_le5": 7.551481093758006,
+          "horizon": 3
+        }
+      ]
+    },
+    {
+      "train_start": "2026-06-03",
+      "train_end": "2026-07-17",
+      "selected_degree_1_4": 4,
+      "train_r2_1_4": 0.995355509738768,
+      "rank_1_4": 25,
+      "cond_1_4": 827.6987622579102,
+      "selected_degree_1_5": 5,
+      "train_r2_1_5": 1.0,
+      "rank_1_5": 30,
+      "cond_1_5": 16984.567603099837,
+      "predictions": [
+        {
+          "fecha": "2026-07-20",
+          "vc_sbs": 68.06385,
+          "vc_pred_order_le4": 67.7102676684925,
+          "error_pct_le4": -0.5194862346274753,
+          "vc_pred_order_le5": 70.89276194712608,
+          "error_pct_le5": 4.15626202033248,
+          "horizon": 1
+        },
+        {
+          "fecha": "2026-07-21",
+          "vc_sbs": 70.02189279999999,
+          "vc_pred_order_le4": 70.29610880577651,
+          "error_pct_le4": 0.3916146719423308,
+          "vc_pred_order_le5": 74.31156339272738,
+          "error_pct_le5": 6.126184856184569,
+          "horizon": 2
+        },
+        {
+          "fecha": "2026-07-22",
+          "vc_sbs": 70.0996577,
+          "vc_pred_order_le4": 71.06130924010453,
+          "error_pct_le4": 1.3718348586237772,
+          "vc_pred_order_le5": 77.21507483881885,
+          "error_pct_le5": 10.15043064727954,
+          "horizon": 3
+        }
+      ]
+    },
+    {
+      "train_start": "2026-06-04",
+      "train_end": "2026-07-20",
+      "selected_degree_1_4": 4,
+      "train_r2_1_4": 0.9954559305941932,
+      "rank_1_4": 25,
+      "cond_1_4": 1026.0442399300482,
+      "selected_degree_1_5": 5,
+      "train_r2_1_5": 1.0,
+      "rank_1_5": 30,
+      "cond_1_5": 18584.35681564783,
+      "predictions": [
+        {
+          "fecha": "2026-07-21",
+          "vc_sbs": 70.02189279999999,
+          "vc_pred_order_le4": 70.75579074193182,
+          "error_pct_le4": 1.048097834241668,
+          "vc_pred_order_le5": 71.57197352595452,
+          "error_pct_le5": 2.2137086901977243,
+          "horizon": 1
+        },
+        {
+          "fecha": "2026-07-22",
+          "vc_sbs": 70.0996577,
+          "vc_pred_order_le4": 71.78715908619462,
+          "error_pct_le4": 2.4072890532739644,
+          "vc_pred_order_le5": 74.02714178231523,
+          "error_pct_le5": 5.602715064777319,
+          "horizon": 2
+        },
+        {
+          "fecha": "2026-07-24",
+          "vc_sbs": 68.3626543,
+          "vc_pred_order_le4": 66.64652211643,
+          "error_pct_le4": -2.5103357983132013,
+          "vc_pred_order_le5": -11.074154741814894,
+          "error_pct_le5": -116.19912926905602,
+          "horizon": 3
+        }
+      ]
+    },
+    {
+      "train_start": "2026-06-05",
+      "train_end": "2026-07-21",
+      "selected_degree_1_4": 4,
+      "train_r2_1_4": 0.9951355901311639,
+      "rank_1_4": 25,
+      "cond_1_4": 597.5971857374999,
+      "selected_degree_1_5": 5,
+      "train_r2_1_5": 1.0,
+      "rank_1_5": 30,
+      "cond_1_5": 27047.142396511863,
+      "predictions": [
+        {
+          "fecha": "2026-07-22",
+          "vc_sbs": 70.0996577,
+          "vc_pred_order_le4": 70.83750882451683,
+          "error_pct_le4": 1.0525745042501589,
+          "vc_pred_order_le5": 71.08380988330961,
+          "error_pct_le5": 1.4039329371926756,
+          "horizon": 1
+        },
+        {
+          "fecha": "2026-07-24",
+          "vc_sbs": 68.3626543,
+          "vc_pred_order_le4": 69.84728987072556,
+          "error_pct_le4": 2.171705569257809,
+          "vc_pred_order_le5": 9.680961202227607,
+          "error_pct_le5": -85.83881608846833,
+          "horizon": 2
+        },
+        {
+          "fecha": "2026-07-30",
+          "vc_sbs": 68.2721906,
+          "vc_pred_order_le4": 70.94444223301204,
+          "error_pct_le4": 3.9141143846818993,
+          "vc_pred_order_le5": 13.36795408583339,
+          "error_pct_le5": -80.41962039250372,
+          "horizon": 3
+        }
+      ]
+    },
+    {
+      "train_start": "2026-06-08",
+      "train_end": "2026-07-22",
+      "selected_degree_1_4": 4,
+      "train_r2_1_4": 0.9925535068804389,
+      "rank_1_4": 25,
+      "cond_1_4": 1999.749292487746,
+      "selected_degree_1_5": 5,
+      "train_r2_1_5": 1.0,
+      "rank_1_5": 30,
+      "cond_1_5": 22221.934704070853,
+      "predictions": [
+        {
+          "fecha": "2026-07-24",
+          "vc_sbs": 68.3626543,
+          "vc_pred_order_le4": 71.27020265573266,
+          "error_pct_le4": 4.253123851764573,
+          "vc_pred_order_le5": 10.289875119527125,
+          "error_pct_le5": -84.94810474389797,
+          "horizon": 1
+        },
+        {
+          "fecha": "2026-07-30",
+          "vc_sbs": 68.2721906,
+          "vc_pred_order_le4": 72.16924168373703,
+          "error_pct_le4": 5.708109040428289,
+          "vc_pred_order_le5": 20.7498511504256,
+          "error_pct_le5": -69.60716952529484,
+          "horizon": 2
+        },
+        {
+          "fecha": "2026-07-31",
+          "vc_sbs": 67.7685784,
+          "vc_pred_order_le4": 70.55623519923398,
+          "error_pct_le4": 4.113494579715105,
+          "vc_pred_order_le5": 80.50741096972042,
+          "error_pct_le5": 18.797550237117598,
+          "horizon": 3
+        }
+      ]
+    },
+    {
+      "train_start": "2026-06-09",
+      "train_end": "2026-07-24",
+      "selected_degree_1_4": 4,
+      "train_r2_1_4": 0.9957708057188449,
+      "rank_1_4": 25,
+      "cond_1_4": 394.29645285082916,
+      "selected_degree_1_5": 5,
+      "train_r2_1_5": 1.0,
+      "rank_1_5": 30,
+      "cond_1_5": 2876.3321957689936,
+      "predictions": [
+        {
+          "fecha": "2026-07-30",
+          "vc_sbs": 68.2721906,
+          "vc_pred_order_le4": 72.75150829577436,
+          "error_pct_le4": 6.560969636990599,
+          "vc_pred_order_le5": 57.44712129396145,
+          "error_pct_le5": -15.855752116497268,
+          "horizon": 1
+        },
+        {
+          "fecha": "2026-07-31",
+          "vc_sbs": 67.7685784,
+          "vc_pred_order_le4": 77.69262589845678,
+          "error_pct_le4": 14.64402490469947,
+          "vc_pred_order_le5": 30.670578763796016,
+          "error_pct_le5": -54.74218363743039,
+          "horizon": 2
+        },
+        {
+          "fecha": "2026-08-03",
+          "vc_sbs": 68.1332558,
+          "vc_pred_order_le4": 76.79599018357419,
+          "error_pct_le4": 12.714399571632073,
+          "vc_pred_order_le5": 17.99501938746399,
+          "error_pct_le5": -73.5884933485536,
+          "horizon": 3
+        }
+      ]
+    },
+    {
+      "train_start": "2026-06-10",
+      "train_end": "2026-07-30",
+      "selected_degree_1_4": 4,
+      "train_r2_1_4": 0.9988775944089242,
+      "rank_1_4": 25,
+      "cond_1_4": 223.16455293539624,
+      "selected_degree_1_5": 5,
+      "train_r2_1_5": 1.0,
+      "rank_1_5": 30,
+      "cond_1_5": 1520.914646939635,
+      "predictions": [
+        {
+          "fecha": "2026-07-31",
+          "vc_sbs": 67.7685784,
+          "vc_pred_order_le4": 67.37552846601315,
+          "error_pct_le4": -0.5799884596470184,
+          "vc_pred_order_le5": 57.01880546387329,
+          "error_pct_le5": -15.862473715586612,
+          "horizon": 1
+        },
+        {
+          "fecha": "2026-08-03",
+          "vc_sbs": 68.1332558,
+          "vc_pred_order_le4": 68.45831645139575,
+          "error_pct_le4": 0.47709543244187635,
+          "vc_pred_order_le5": 48.849805857296396,
+          "error_pct_le5": -28.302551692683974,
+          "horizon": 2
+        },
+        {
+          "fecha": "2026-08-04",
+          "vc_sbs": 69.7841504,
+          "vc_pred_order_le4": 64.52147860631379,
+          "error_pct_le4": -7.541356831774526,
+          "vc_pred_order_le5": -157.82905809913666,
+          "error_pct_le5": -326.16748530213056,
+          "horizon": 3
+        }
+      ]
+    },
+    {
+      "train_start": "2026-06-11",
+      "train_end": "2026-07-31",
+      "selected_degree_1_4": 4,
+      "train_r2_1_4": 0.9989237446514483,
+      "rank_1_4": 25,
+      "cond_1_4": 240.1573349618795,
+      "selected_degree_1_5": 5,
+      "train_r2_1_5": 1.0,
+      "rank_1_5": 30,
+      "cond_1_5": 1015.6641706066602,
+      "predictions": [
+        {
+          "fecha": "2026-08-03",
+          "vc_sbs": 68.1332558,
+          "vc_pred_order_le4": 68.51092103651773,
+          "error_pct_le4": 0.5543038154911306,
+          "vc_pred_order_le5": 73.55571985284855,
+          "error_pct_le5": 7.958615787811141,
+          "horizon": 1
+        },
+        {
+          "fecha": "2026-08-04",
+          "vc_sbs": 69.7841504,
+          "vc_pred_order_le4": 59.96310229064569,
+          "error_pct_le4": -14.07346518236655,
+          "vc_pred_order_le5": -331.8624254402569,
+          "error_pct_le5": -575.5555861009049,
+          "horizon": 2
+        },
+        {
+          "fecha": "2026-08-05",
+          "vc_sbs": 69.8102662,
+          "vc_pred_order_le4": 64.24299556337195,
+          "error_pct_le4": -7.974859486537889,
+          "vc_pred_order_le5": -222.55178636245006,
+          "error_pct_le5": -418.7952123328962,
+          "horizon": 3
+        }
+      ]
+    },
+    {
+      "train_start": "2026-06-12",
+      "train_end": "2026-08-03",
+      "selected_degree_1_4": 4,
+      "train_r2_1_4": 0.9991637655742337,
+      "rank_1_4": 25,
+      "cond_1_4": 183.51899037565428,
+      "selected_degree_1_5": 5,
+      "train_r2_1_5": 1.0,
+      "rank_1_5": 30,
+      "cond_1_5": 985.2484441063891,
+      "predictions": [
+        {
+          "fecha": "2026-08-04",
+          "vc_sbs": 69.7841504,
+          "vc_pred_order_le4": 55.29293982351868,
+          "error_pct_le4": -20.76576198666642,
+          "vc_pred_order_le5": -157.7090396858096,
+          "error_pct_le5": -325.99550009827107,
+          "horizon": 1
+        },
+        {
+          "fecha": "2026-08-05",
+          "vc_sbs": 69.8102662,
+          "vc_pred_order_le4": 60.92425150431602,
+          "error_pct_le4": -12.728807923789265,
+          "vc_pred_order_le5": -95.47276375428414,
+          "error_pct_le5": -236.7603490878597,
+          "horizon": 2
+        },
+        {
+          "fecha": "2026-08-07",
+          "vc_sbs": 69.6836293,
+          "vc_pred_order_le4": 54.40338993423133,
+          "error_pct_le4": -21.928018846413156,
+          "vc_pred_order_le5": -258.0124342801461,
+          "error_pct_le5": -470.2626239074865,
+          "horizon": 3
+        }
+      ]
+    },
+    {
+      "train_start": "2026-06-15",
+      "train_end": "2026-08-04",
+      "selected_degree_1_4": 4,
+      "train_r2_1_4": 0.9983282946994088,
+      "rank_1_4": 25,
+      "cond_1_4": 418.712996511616,
+      "selected_degree_1_5": 5,
+      "train_r2_1_5": 1.0,
+      "rank_1_5": 30,
+      "cond_1_5": 3007.611412319673,
+      "predictions": [
+        {
+          "fecha": "2026-08-05",
+          "vc_sbs": 69.8102662,
+          "vc_pred_order_le4": 70.60691776740684,
+          "error_pct_le4": 1.1411667807203374,
+          "vc_pred_order_le5": 108.28510781181505,
+          "error_pct_le5": 55.11344348922573,
+          "horizon": 1
+        },
+        {
+          "fecha": "2026-08-07",
+          "vc_sbs": 69.6836293,
+          "vc_pred_order_le4": 70.72633983321656,
+          "error_pct_le4": 1.4963493487509139,
+          "vc_pred_order_le5": 212.4831727548503,
+          "error_pct_le5": 204.92552539144265,
+          "horizon": 2
+        },
+        {
+          "fecha": "2026-08-10",
+          "vc_sbs": 69.2112776,
+          "vc_pred_order_le4": 70.73682658345552,
+          "error_pct_le4": 2.20419133464389,
+          "vc_pred_order_le5": 207.6763298373632,
+          "error_pct_le5": 200.06140189696944,
+          "horizon": 3
+        }
+      ]
+    },
+    {
+      "train_start": "2026-06-16",
+      "train_end": "2026-08-05",
+      "selected_degree_1_4": 4,
+      "train_r2_1_4": 0.9997574137180347,
+      "rank_1_4": 25,
+      "cond_1_4": 253.79187136761115,
+      "selected_degree_1_5": 5,
+      "train_r2_1_5": 1.0,
+      "rank_1_5": 30,
+      "cond_1_5": 1966.755717907751,
+      "predictions": [
+        {
+          "fecha": "2026-08-07",
+          "vc_sbs": 69.6836293,
+          "vc_pred_order_le4": 68.97337220450005,
+          "error_pct_le4": -1.019259620422719,
+          "vc_pred_order_le5": 69.8485909406091,
+          "error_pct_le5": 0.2367294044041568,
+          "horizon": 1
+        },
+        {
+          "fecha": "2026-08-10",
+          "vc_sbs": 69.2112776,
+          "vc_pred_order_le4": 68.95924296127153,
+          "error_pct_le4": -0.3641525593344519,
+          "vc_pred_order_le5": 64.56835443004903,
+          "error_pct_le5": -6.708333281729473,
+          "horizon": 2
+        },
+        {
+          "fecha": "2026-08-11",
+          "vc_sbs": 69.498597,
+          "vc_pred_order_le4": 77.79069640590949,
+          "error_pct_le4": 11.931319140024478,
+          "vc_pred_order_le5": 52.195418317857175,
+          "error_pct_le5": -24.897162574580932,
+          "horizon": 3
+        }
+      ]
+    },
+    {
+      "train_start": "2026-06-17",
+      "train_end": "2026-08-07",
+      "selected_degree_1_4": 4,
+      "train_r2_1_4": 0.9995288679885911,
+      "rank_1_4": 25,
+      "cond_1_4": 326.484353059753,
+      "selected_degree_1_5": 5,
+      "train_r2_1_5": 1.0,
+      "rank_1_5": 30,
+      "cond_1_5": 1959.9135798464715,
+      "predictions": [
+        {
+          "fecha": "2026-08-10",
+          "vc_sbs": 69.2112776,
+          "vc_pred_order_le4": 69.79754433047772,
+          "error_pct_le4": 0.8470682102792448,
+          "vc_pred_order_le5": 63.802788545378256,
+          "error_pct_le5": -7.814462096595864,
+          "horizon": 1
+        },
+        {
+          "fecha": "2026-08-11",
+          "vc_sbs": 69.498597,
+          "vc_pred_order_le4": 77.46752094990721,
+          "error_pct_le4": 11.466309096724947,
+          "vc_pred_order_le5": 49.26222433893466,
+          "error_pct_le5": -29.117670765447745,
+          "horizon": 2
+        },
+        {
+          "fecha": "2026-08-12",
+          "vc_sbs": 70.5338688,
+          "vc_pred_order_le4": 83.58831069027323,
+          "error_pct_le4": 18.508047427951713,
+          "vc_pred_order_le5": 31.861365567852275,
+          "error_pct_le5": -54.82827454397017,
+          "horizon": 3
+        }
+      ]
+    },
+    {
+      "train_start": "2026-06-18",
+      "train_end": "2026-08-10",
+      "selected_degree_1_4": 4,
+      "train_r2_1_4": 0.9993194280781088,
+      "rank_1_4": 25,
+      "cond_1_4": 360.7178745431861,
+      "selected_degree_1_5": 5,
+      "train_r2_1_5": 1.0,
+      "rank_1_5": 30,
+      "cond_1_5": 2065.1403865693596,
+      "predictions": [
+        {
+          "fecha": "2026-08-11",
+          "vc_sbs": 69.498597,
+          "vc_pred_order_le4": 76.61901501317806,
+          "error_pct_le4": 10.245412599017012,
+          "vc_pred_order_le5": 72.93466578816634,
+          "error_pct_le5": 4.944083674331345,
+          "horizon": 1
+        },
+        {
+          "fecha": "2026-08-12",
+          "vc_sbs": 70.5338688,
+          "vc_pred_order_le4": 82.25885919051146,
+          "error_pct_le4": 16.623206113587607,
+          "vc_pred_order_le5": 77.23593519036268,
+          "error_pct_le5": 9.501912349890397,
+          "horizon": 2
+        },
+        {
+          "fecha": "2026-08-13",
+          "vc_sbs": 70.6649381,
+          "vc_pred_order_le4": 79.18162605253083,
+          "error_pct_le4": 12.05221172129043,
+          "vc_pred_order_le5": 78.23319607689821,
+          "error_pct_le5": 10.710061001098104,
+          "horizon": 3
+        }
+      ]
+    },
+    {
+      "train_start": "2026-06-22",
+      "train_end": "2026-08-11",
+      "selected_degree_1_4": 4,
+      "train_r2_1_4": 0.9990233468346822,
+      "rank_1_4": 25,
+      "cond_1_4": 263.13877346384606,
+      "selected_degree_1_5": 5,
+      "train_r2_1_5": 1.0,
+      "rank_1_5": 30,
+      "cond_1_5": 7687.795715531097,
+      "predictions": [
+        {
+          "fecha": "2026-08-12",
+          "vc_sbs": 70.5338688,
+          "vc_pred_order_le4": 70.34658885363123,
+          "error_pct_le4": -0.26551775700804914,
+          "vc_pred_order_le5": 71.32380120919697,
+          "error_pct_le5": 1.1199334768334346,
+          "horizon": 1
+        },
+        {
+          "fecha": "2026-08-13",
+          "vc_sbs": 70.6649381,
+          "vc_pred_order_le4": 70.14896298204688,
+          "error_pct_le4": -0.7301713294122547,
+          "vc_pred_order_le5": 74.39535757325054,
+          "error_pct_le5": 5.279024610439076,
+          "horizon": 2
+        },
+        {
+          "fecha": "2026-08-14",
+          "vc_sbs": 70.8740985,
+          "vc_pred_order_le4": 70.25881900276248,
+          "error_pct_le4": -0.8681302623376852,
+          "vc_pred_order_le5": 72.92869471650586,
+          "error_pct_le5": 2.898938060574907,
+          "horizon": 3
+        }
+      ]
+    },
+    {
+      "train_start": "2026-06-23",
+      "train_end": "2026-08-12",
+      "selected_degree_1_4": 4,
+      "train_r2_1_4": 0.9987847419537023,
+      "rank_1_4": 25,
+      "cond_1_4": 197.5565756388393,
+      "selected_degree_1_5": 5,
+      "train_r2_1_5": 1.0,
+      "rank_1_5": 30,
+      "cond_1_5": 2897.374725503573,
+      "predictions": [
+        {
+          "fecha": "2026-08-13",
+          "vc_sbs": 70.6649381,
+          "vc_pred_order_le4": 70.23613556462865,
+          "error_pct_le4": -0.6068108837292585,
+          "vc_pred_order_le5": 76.60849889217509,
+          "error_pct_le5": 8.410904972086986,
+          "horizon": 1
+        },
+        {
+          "fecha": "2026-08-14",
+          "vc_sbs": 70.8740985,
+          "vc_pred_order_le4": 70.33929211639865,
+          "error_pct_le4": -0.7545865061004631,
+          "vc_pred_order_le5": 74.16999411671249,
+          "error_pct_le5": 4.650352789619583,
+          "horizon": 2
+        },
+        {
+          "fecha": "2026-08-17",
+          "vc_sbs": 71.5395979,
+          "vc_pred_order_le4": 70.84541895467349,
+          "error_pct_le4": -0.9703422519886873,
+          "vc_pred_order_le5": 70.99515437075893,
+          "error_pct_le5": -0.7610380058357569,
+          "horizon": 3
+        }
+      ]
+    },
+    {
+      "train_start": "2026-06-24",
+      "train_end": "2026-08-13",
+      "selected_degree_1_4": 4,
+      "train_r2_1_4": 0.9986762703518888,
+      "rank_1_4": 25,
+      "cond_1_4": 176.5577770120751,
+      "selected_degree_1_5": 5,
+      "train_r2_1_5": 1.0,
+      "rank_1_5": 30,
+      "cond_1_5": 1329.0874589451269,
+      "predictions": [
+        {
+          "fecha": "2026-08-14",
+          "vc_sbs": 70.8740985,
+          "vc_pred_order_le4": 70.63419704288833,
+          "error_pct_le4": -0.338489606483916,
+          "vc_pred_order_le5": 70.57467396395042,
+          "error_pct_le5": -0.4224738548873175,
+          "horizon": 1
+        },
+        {
+          "fecha": "2026-08-17",
+          "vc_sbs": 71.5395979,
+          "vc_pred_order_le4": 70.93531874074738,
+          "error_pct_le4": -0.8446778804897748,
+          "vc_pred_order_le5": 70.90729014342789,
+          "error_pct_le5": -0.8838570178378302,
+          "horizon": 2
+        },
+        {
+          "fecha": "2026-08-18",
+          "vc_sbs": 69.6328126,
+          "vc_pred_order_le4": 69.44285241086926,
+          "error_pct_le4": -0.27280269464619034,
+          "vc_pred_order_le5": 69.68992894437157,
+          "error_pct_le5": 0.08202504284822165,
+          "horizon": 3
+        }
+      ]
+    },
+    {
+      "train_start": "2026-06-25",
+      "train_end": "2026-08-14",
+      "selected_degree_1_4": 4,
+      "train_r2_1_4": 0.998380316985975,
+      "rank_1_4": 25,
+      "cond_1_4": 305.47121544409094,
+      "selected_degree_1_5": 5,
+      "train_r2_1_5": 1.0,
+      "rank_1_5": 30,
+      "cond_1_5": 3348.2458930568923,
+      "predictions": [
+        {
+          "fecha": "2026-08-17",
+          "vc_sbs": 71.5395979,
+          "vc_pred_order_le4": 71.15369497697617,
+          "error_pct_le4": -0.5394256249011353,
+          "vc_pred_order_le5": 74.23890684969675,
+          "error_pct_le5": 3.773167628744445,
+          "horizon": 1
+        },
+        {
+          "fecha": "2026-08-18",
+          "vc_sbs": 69.6328126,
+          "vc_pred_order_le4": 69.61217904006703,
+          "error_pct_le4": -0.029631949597508367,
+          "vc_pred_order_le5": 72.39741154300448,
+          "error_pct_le5": 3.9702531605114055,
+          "horizon": 2
+        },
+        {
+          "fecha": "2026-08-19",
+          "vc_sbs": 70.327616,
+          "vc_pred_order_le4": 70.90435031251748,
+          "error_pct_le4": 0.8200680547986616,
+          "vc_pred_order_le5": 78.71845662442553,
+          "error_pct_le5": 11.93107501955637,
+          "horizon": 3
+        }
+      ]
+    },
+    {
+      "train_start": "2026-06-26",
+      "train_end": "2026-08-17",
+      "selected_degree_1_4": 4,
+      "train_r2_1_4": 0.997650042863856,
+      "rank_1_4": 25,
+      "cond_1_4": 246.79824042906995,
+      "selected_degree_1_5": 5,
+      "train_r2_1_5": 1.0,
+      "rank_1_5": 30,
+      "cond_1_5": 1178.2553651893318,
+      "predictions": [
+        {
+          "fecha": "2026-08-18",
+          "vc_sbs": 69.6328126,
+          "vc_pred_order_le4": 69.74738975972184,
+          "error_pct_le4": 0.16454478204122047,
+          "vc_pred_order_le5": 69.34461390599415,
+          "error_pct_le5": -0.4138834598874763,
+          "horizon": 1
+        },
+        {
+          "fecha": "2026-08-19",
+          "vc_sbs": 70.327616,
+          "vc_pred_order_le4": 71.17083160160627,
+          "error_pct_le4": 1.1989822058041222,
+          "vc_pred_order_le5": 72.78906591308561,
+          "error_pct_le5": 3.4999763294771835,
+          "horizon": 2
+        },
+        {
+          "fecha": "2026-08-20",
+          "vc_sbs": 71.0427094,
+          "vc_pred_order_le4": 72.29866171606618,
+          "error_pct_le4": 1.7678834699203838,
+          "vc_pred_order_le5": 74.48236290170748,
+          "error_pct_le5": 4.84166993454711,
+          "horizon": 3
+        }
+      ]
+    },
+    {
+      "train_start": "2026-06-30",
+      "train_end": "2026-08-18",
+      "selected_degree_1_4": 4,
+      "train_r2_1_4": 0.9975072940674251,
+      "rank_1_4": 25,
+      "cond_1_4": 269.71979699978783,
+      "selected_degree_1_5": 5,
+      "train_r2_1_5": 1.0,
+      "rank_1_5": 30,
+      "cond_1_5": 2120.999409767013,
+      "predictions": [
+        {
+          "fecha": "2026-08-19",
+          "vc_sbs": 70.327616,
+          "vc_pred_order_le4": 71.01044886107908,
+          "error_pct_le4": 0.970931335251124,
+          "vc_pred_order_le5": 72.90783605040755,
+          "error_pct_le5": 3.6688575515023025,
+          "horizon": 1
+        },
+        {
+          "fecha": "2026-08-20",
+          "vc_sbs": 71.0427094,
+          "vc_pred_order_le4": 72.04661396524234,
+          "error_pct_le4": 1.4131000544896688,
+          "vc_pred_order_le5": 74.4711242791755,
+          "error_pct_le5": 4.825850404820686,
+          "horizon": 2
+        },
+        {
+          "fecha": "2026-08-21",
+          "vc_sbs": 71.8058461,
+          "vc_pred_order_le4": 74.09198830346229,
+          "error_pct_le4": 3.183782836119642,
+          "vc_pred_order_le5": -14.021507558158,
+          "error_pct_le5": -119.52697213348205,
+          "horizon": 3
+        }
+      ]
+    }
+  ]
+}
