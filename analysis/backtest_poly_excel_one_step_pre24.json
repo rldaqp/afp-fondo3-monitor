@@ -1,0 +1,55 @@
+{
+  "spec": "TRUE one-step Excel-style backtest: for each target day use only prior 30 SBS VC + factor levels, select degree 1..4 by max in-sample R2, predict only that next day, then roll/retrain for following target.",
+  "targets": [
+    "2026-08-19",
+    "2026-08-20",
+    "2026-08-21"
+  ],
+  "rows": [
+    {
+      "fecha": "2026-08-19",
+      "train_start": "2026-06-30",
+      "train_end": "2026-08-18",
+      "selected_degree": 4,
+      "train_r2": 0.9975072940674251,
+      "rank": 25,
+      "condition_number": 269.71979699978783,
+      "vc_sbs": 70.327616,
+      "vc_pred": 71.0104488610791,
+      "error_abs": 0.6828328610790919,
+      "error_pct": 0.9709313352511462
+    },
+    {
+      "fecha": "2026-08-20",
+      "train_start": "2026-07-01",
+      "train_end": "2026-08-19",
+      "selected_degree": 4,
+      "train_r2": 0.9971483191753436,
+      "rank": 25,
+      "condition_number": 360.45946518363047,
+      "vc_sbs": 71.0427094,
+      "vc_pred": 70.89114226449927,
+      "error_abs": -0.1515671355007413,
+      "error_pct": -0.2133465020982772
+    },
+    {
+      "fecha": "2026-08-21",
+      "train_start": "2026-07-02",
+      "train_end": "2026-08-20",
+      "selected_degree": 4,
+      "train_r2": 0.9972383163504868,
+      "rank": 25,
+      "condition_number": 397.9770058339071,
+      "vc_sbs": 71.8058461,
+      "vc_pred": 74.6072244609683,
+      "error_abs": 2.8013783609683003,
+      "error_pct": 3.9013235176798444
+    }
+  ],
+  "summary": {
+    "mae": 1.211926119182711,
+    "rmse": 1.667028697416934,
+    "mape_pct": 1.6952004516764203,
+    "bias": 1.110881362182217
+  }
+}
