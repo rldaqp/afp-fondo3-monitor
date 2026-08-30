@@ -1,170 +1,107 @@
-import json, math, re
+import json
 from pathlib import Path
-from io import StringIO
 import numpy as np
 import pandas as pd
 import requests
 
 OUT=Path('analysis/test_excel_poly_rolling30.json')
-BRANCH='migracion-github-actions'
-
 
 def metrics(y,p):
-    y=np.asarray(y,float); p=np.asarray(p,float)
-    e=p-y
+    y=np.asarray(y,float); p=np.asarray(p,float); e=p-y
     sse=float(np.sum(e*e)); sst=float(np.sum((y-y.mean())**2))
-    return {
-      'n':int(len(y)),
-      'pearson_r':float(np.corrcoef(y,p)[0,1]) if len(y)>1 else None,
-      'corr2':float(np.corrcoef(y,p)[0,1]**2) if len(y)>1 else None,
-      'predictive_r2':float(1-sse/sst) if sst>0 else None,
-      'mae':float(np.mean(np.abs(e))),
-      'rmse':float(np.sqrt(np.mean(e*e))),
-      'mape_pct':float(np.mean(np.abs(e/y))*100),
-      'bias':float(np.mean(e)),
-    }
+    r=float(np.corrcoef(y,p)[0,1]) if len(y)>1 else None
+    return {'n':int(len(y)),'pearson_r':r,'corr2':None if r is None else r*r,
+            'predictive_r2':float(1-sse/sst) if sst>0 else None,
+            'mae':float(np.mean(np.abs(e))),'rmse':float(np.sqrt(np.mean(e*e))),
+            'mape_pct':float(np.mean(np.abs(e/y))*100),'bias':float(np.mean(e))}
 
-
-def poly_design(df, cols):
-    # Polinomial simple grado 2, aditivo, sin interacciones: x y x^2.
-    z=[]
-    for c in cols:
-        x=df[c].astype(float).to_numpy()
-        mu=float(np.mean(x)); sd=float(np.std(x,ddof=0)) or 1.0
-        u=(x-mu)/sd
-        z += [u, u*u]
-    return np.column_stack([np.ones(len(df))]+z)
-
-
-def poly_fit_predict(train, row, cols):
-    # Estandariza con SOLO el train y aplica el mismo escalado al target.
+def design_fit_predict(train, target, cols):
     mats=[np.ones(len(train))]; rv=[1.0]
     for c in cols:
-        x=train[c].astype(float).to_numpy(); mu=float(np.mean(x)); sd=float(np.std(x,ddof=0)) or 1.0
-        u=(x-mu)/sd; t=(float(row[c])-mu)/sd
+        x=train[c].astype(float).to_numpy(); mu=float(x.mean()); sd=float(x.std(ddof=0)) or 1.0
+        u=(x-mu)/sd; t=(float(target[c])-mu)/sd
         mats += [u,u*u]; rv += [t,t*t]
     X=np.column_stack(mats); y=train['VC'].astype(float).to_numpy()
-    beta=np.linalg.lstsq(X,y,rcond=None)[0]
-    return float(np.dot(np.asarray(rv,float),beta))
+    b=np.linalg.lstsq(X,y,rcond=None)[0]
+    return float(np.asarray(rv)@b)
 
+def fit_in_sample(df,cols):
+    mats=[np.ones(len(df))]
+    for c in cols:
+        x=df[c].astype(float).to_numpy(); mu=float(x.mean()); sd=float(x.std(ddof=0)) or 1.0
+        u=(x-mu)/sd; mats += [u,u*u]
+    X=np.column_stack(mats); y=df.VC.astype(float).to_numpy(); b=np.linalg.lstsq(X,y,rcond=None)[0]
+    return X@b
 
-def fetch_bcrp_4060(start='2026-04-01',end='2026-08-28'):
-    urls=[
-      f'https://estadisticas.bcrp.gob.pe/estadisticas/series/api/PD04640PD/json/{start}/{end}/esp',
-      f'https://estadisticas.bcrp.gob.pe/estadisticas/series/api/PD04640PD/json/{start}/{end}',
-    ]
-    for url in urls:
-        try:
-            r=requests.get(url,timeout=30,headers={'User-Agent':'Mozilla/5.0'})
-            j=r.json()
-            periods=j.get('periods',[])
-            rows=[]
-            for p in periods:
-                name=p.get('name') or p.get('period') or ''
-                vals=p.get('values') or []
-                val=vals[0] if vals else None
-                if val in (None,'n.d.',''):
-                    continue
-                # BCRP suele devolver dd.mm.yyyy / dd/mm/yyyy / yyyy-mm-dd según endpoint
-                d=pd.to_datetime(name,dayfirst=True,errors='coerce')
-                if pd.notna(d): rows.append((d.normalize(),float(str(val).replace(',','.'))))
-            if rows:
-                return pd.DataFrame(rows,columns=['fecha','USD_PEN_4060']).drop_duplicates('fecha').sort_values('fecha')
-        except Exception as e:
-            print('BCRP JSON fallo',url,type(e).__name__,e)
-    # fallback HTML de resultados
-    url=f'https://estadisticas.bcrp.gob.pe/estadisticas/series/diarias/resultados/PD04640PD/html/{start}/{end}/esp'
-    r=requests.get(url,timeout=30,headers={'User-Agent':'Mozilla/5.0'})
-    tabs=pd.read_html(StringIO(r.text),decimal='.',thousands=',')
-    for t in tabs:
-        if t.shape[1]>=2:
-            a=t.iloc[:,0].astype(str); d=pd.to_datetime(a,dayfirst=True,errors='coerce')
-            if d.notna().sum()>10:
-                v=pd.to_numeric(t.iloc[:,1].astype(str).str.replace(',','.',regex=False),errors='coerce')
-                o=pd.DataFrame({'fecha':d.dt.normalize(),'USD_PEN_4060':v}).dropna()
-                if len(o)>10:return o.drop_duplicates('fecha').sort_values('fecha')
-    raise RuntimeError('No se pudo obtener PD04640PD')
+def fetch_bcrp_4060():
+    # Endpoint público que sí responde en 2026; segunda serie = venta PD04640PD.
+    url='https://estadisticas.bcrp.gob.pe/estadisticas/series/api/PD04639PD-PD04640PD/json/'
+    r=requests.get(url,timeout=30,headers={'User-Agent':'Mozilla/5.0'}); j=r.json()
+    out=[]
+    for p in j.get('periods',[]):
+        vals=p.get('values') or []
+        if len(vals)<2 or vals[1] in ('n.d.',None,''): continue
+        d=pd.to_datetime(p.get('name',''),dayfirst=True,errors='coerce')
+        if pd.notna(d): out.append((d.normalize(),float(vals[1])))
+    if len(out)<30: raise RuntimeError(f'PD04640PD insuficiente: {len(out)}')
+    return pd.DataFrame(out,columns=['fecha','USD_PEN_4060']).drop_duplicates('fecha').sort_values('fecha')
 
-# SBS oficial
+# VC SBS
 s=json.loads(Path('public/data/series.json').read_text(encoding='utf-8'))
 rows=s if isinstance(s,list) else (s.get('series') or s.get('data') or s.get('rows') or [])
 ss=[]
 for r in rows:
-    d=str(r.get('fecha',''))[:10]
-    v=r.get('vc')
-    official=(r.get('es_oficial') is True) or ('SBS' in str(r.get('fuente','')).upper())
-    try:v=float(v)
+    try:v=float(r.get('vc'))
     except:continue
-    if d and v>0 and official:ss.append((pd.Timestamp(d),v))
+    d=str(r.get('fecha',''))[:10]
+    if d and v>0:ss.append((pd.Timestamp(d),v))
 vc=pd.DataFrame(ss,columns=['fecha','VC']).drop_duplicates('fecha').sort_values('fecha')
-if len(vc)<60:
-    # algunos series.json no marcan es_oficial; aceptar VC válidos si la serie es SBS del visor
-    ss=[]
-    for r in rows:
-        d=str(r.get('fecha',''))[:10]
-        try:v=float(r.get('vc'))
-        except:continue
-        if d and v>0:ss.append((pd.Timestamp(d),v))
-    vc=pd.DataFrame(ss,columns=['fecha','VC']).drop_duplicates('fecha').sort_values('fecha')
 
-# Factores base Google Finance / repositorio
+# Índices; contiene .INX, EEM, NDX, SPBLSCUP hasta 20/08.
 m=pd.read_csv('data/analysis/googlefinance_alt_aligned_closes_20260402_20260820.csv')
-m['fecha']=pd.to_datetime(m['fecha'])
-m=m[['fecha','.INX','EEM','NDX','SPBLSCUP']].copy()
+m['fecha']=pd.to_datetime(m.fecha); m=m[['fecha','.INX','EEM','NDX','SPBLSCUP']]
 
-# Extender 21,24,25,26 con Yahoo para índices globales; BVL con cierres auditados/Excel.
-try:
-    import yfinance as yf
-    ext=yf.download(['^GSPC','EEM','^NDX'],start='2026-08-21',end='2026-08-27',auto_adjust=False,progress=False,group_by='ticker',threads=False)
-    add=[]
-    bvl={'2026-08-21':460.43,'2026-08-24':459.44,'2026-08-25':464.16,'2026-08-26':462.34}
-    for ds,b in bvl.items():
-        d=pd.Timestamp(ds)
-        def close(sym):
-            try:return float(ext.loc[d,(sym,'Close')])
-            except:return np.nan
-        add.append({'fecha':d,'.INX':close('^GSPC'),'EEM':close('EEM'),'NDX':close('^NDX'),'SPBLSCUP':b})
-    m=pd.concat([m,pd.DataFrame(add)],ignore_index=True).drop_duplicates('fecha',keep='last').sort_values('fecha')
-except Exception as e:
-    print('Yahoo extension fallo',e)
+# Completar 21,24,25,26 con cierres de mercado; BVL según Excel auditado.
+import yfinance as yf
+ext=yf.download(['^GSPC','EEM','^NDX'],start='2026-08-21',end='2026-08-27',auto_adjust=False,progress=False,group_by='ticker',threads=False)
+bvl={'2026-08-21':460.43,'2026-08-24':459.44,'2026-08-25':464.16,'2026-08-26':462.34}
+add=[]
+for ds,b in bvl.items():
+    d=pd.Timestamp(ds)
+    def cl(sym):
+        try:return float(ext.loc[d,(sym,'Close')])
+        except:return np.nan
+    add.append({'fecha':d,'.INX':cl('^GSPC'),'EEM':cl('EEM'),'NDX':cl('^NDX'),'SPBLSCUP':b})
+m=pd.concat([m,pd.DataFrame(add)],ignore_index=True).drop_duplicates('fecha',keep='last').sort_values('fecha')
 
 fx=fetch_bcrp_4060()
-# Excel arrastra último dato cuando BCRP no publica n.d.; forward-fill SOLO sobre calendario de mercado al combinar.
+# Construir calendario de factores y arrastrar TC cuando BCRP tiene n.d., como el Excel.
 df=vc.merge(m,on='fecha',how='inner').merge(fx,on='fecha',how='left').sort_values('fecha')
 df['USD_PEN_4060']=df['USD_PEN_4060'].ffill()
 cols=['.INX','EEM','SPBLSCUP','USD_PEN_4060','NDX']
 df=df.dropna(subset=['VC']+cols).reset_index(drop=True)
 
-pred=[]
-for i in range(30,len(df)):
-    tr=df.iloc[i-30:i].copy(); row=df.iloc[i]
-    p=poly_fit_predict(tr,row,cols)
-    pred.append({'fecha':row.fecha.strftime('%Y-%m-%d'),'VC':float(row.VC),'poly_vc':p,
-                 'train_start':tr.fecha.iloc[0].strftime('%Y-%m-%d'),'train_end':tr.fecha.iloc[-1].strftime('%Y-%m-%d')})
-pred_df=pd.DataFrame(pred)
-last30=pred_df.tail(30).copy()
+# PRUEBA QUE PIDIÓ EL USUARIO: últimos 30 valores, ajuste polinomial grado 2 sobre esos mismos 30.
+last30=df.tail(30).copy(); last30['poly_fit']=fit_in_sample(last30,cols)
 
-# Comparar contra A limpio/adaptativo en mismas fechas desde JSON actual
+# Control adicional: rolling one-step, cada target usa 30 observaciones previas.
+p=[]
+for i in range(30,len(df)):
+    tr=df.iloc[i-30:i]; row=df.iloc[i]
+    p.append({'fecha':row.fecha.strftime('%Y-%m-%d'),'VC':float(row.VC),'poly_one_step':design_fit_predict(tr,row,cols)})
+pos=pd.DataFrame(p); pos30=pos.tail(30) if len(pos)>=30 else pos
+
+# Modelo A actual en mismas fechas del ajuste de 30 para comparación descriptiva.
 mon=json.loads(Path('public/data/dual_rolling30_monitor.json').read_text(encoding='utf-8'))
-a=mon['models']['qqq']
-amap={str(r.get('fecha'))[:10]:float(r['vc_estimated']) for r in a.get('history_one_step',[]) if r.get('vc_estimated') is not None and r.get('actual_vc') is not None}
-common=last30[last30.fecha.isin(amap)].copy(); common['A_vc']=common.fecha.map(amap)
+a=mon['models']['qqq']; amap={str(r.get('fecha'))[:10]:float(r['vc_estimated']) for r in a.get('history_one_step',[]) if r.get('vc_estimated') is not None and r.get('actual_vc') is not None}
+cmp=last30[last30.fecha.dt.strftime('%Y-%m-%d').isin(amap)].copy(); cmp['A_vc']=cmp.fecha.dt.strftime('%Y-%m-%d').map(amap)
 res={
- 'spec':'Rolling 30; VC nivel; grado 2 aditivo sin interacciones; factores .INX, EEM, SPBLSCUP, BCRP PD04640PD, NDX; cada target usa exactamente 30 observaciones anteriores',
- 'data_dates':{'first':df.fecha.min().strftime('%Y-%m-%d'),'last':df.fecha.max().strftime('%Y-%m-%d'),'n':len(df)},
- 'poly_last30':metrics(last30.VC,last30.poly_vc),
- 'poly_last30_start':last30.fecha.iloc[0] if len(last30) else None,
- 'poly_last30_end':last30.fecha.iloc[-1] if len(last30) else None,
- 'common_with_A':{
-   'dates_n':len(common),
-   'start':common.fecha.iloc[0] if len(common) else None,
-   'end':common.fecha.iloc[-1] if len(common) else None,
-   'poly':metrics(common.VC,common.poly_vc) if len(common) else None,
-   'A':metrics(common.VC,common.A_vc) if len(common) else None,
- },
- 'recent_rows':pred_df.tail(12).to_dict('records'),
- 'last30_rows':last30.to_dict('records')
+ 'spec_excel':'Últimos 30 valores; VC en nivel; polinomial grado 2 aditivo sin interacciones; factores S&P500(.INX), EEM, BVL(SPBLSCUP), USD/PEN BCRP PD04640PD, NDX; ajuste sobre los mismos 30 como en Excel.',
+ 'window':{'start':last30.fecha.iloc[0].strftime('%Y-%m-%d'),'end':last30.fecha.iloc[-1].strftime('%Y-%m-%d'),'n':len(last30)},
+ 'excel_like_in_sample':metrics(last30.VC,last30.poly_fit),
+ 'common_with_A':{'n':len(cmp),'poly':metrics(cmp.VC,cmp.poly_fit) if len(cmp)>1 else None,'A':metrics(cmp.VC,cmp.A_vc) if len(cmp)>1 else None},
+ 'one_step_control':metrics(pos30.VC,pos30.poly_one_step) if len(pos30)>1 else None,
+ 'rows':[{**r,'fecha':r['fecha'].strftime('%Y-%m-%d')} for r in last30[['fecha','VC','.INX','EEM','SPBLSCUP','USD_PEN_4060','NDX','poly_fit']].to_dict('records')]
 }
-OUT.parent.mkdir(exist_ok=True)
-OUT.write_text(json.dumps(res,ensure_ascii=False,indent=2),encoding='utf-8')
+OUT.parent.mkdir(exist_ok=True); OUT.write_text(json.dumps(res,ensure_ascii=False,indent=2),encoding='utf-8')
 print(json.dumps(res,ensure_ascii=False,indent=2))
