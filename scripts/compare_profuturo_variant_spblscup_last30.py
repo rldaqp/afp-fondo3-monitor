@@ -1,12 +1,10 @@
 from __future__ import annotations
 
 import json
-import re
 from pathlib import Path
 
 import numpy as np
 import pandas as pd
-import requests
 import yfinance as yf
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -14,8 +12,6 @@ DATA = ROOT / 'data' / 'rolling90'
 ANALYSIS = ROOT / 'data' / 'analysis'
 MONITOR = ROOT / 'public' / 'data' / 'dual_rolling30_monitor.json'
 OUT = ROOT / 'analysis' / 'compare_profuturo_variant_spblscup_last30.json'
-BCRP_URL='https://estadisticas.bcrp.gob.pe/estadisticas/series/api/PD04638PD/json'
-MESES={'ene':1,'feb':2,'mar':3,'abr':4,'may':5,'jun':6,'jul':7,'ago':8,'set':9,'sep':9,'oct':10,'nov':11,'dic':12}
 
 FEATURE_SETS = {
     'A_ROLLING30_RECALC': (30, ['ret_SPY','ret_EEM','ret_EPU','ret_MCHI','ret_USD_PEN','ret_QQQ']),
@@ -31,24 +27,12 @@ def read_csv(path: Path) -> pd.DataFrame:
     return d.dropna(subset=['fecha']).sort_values('fecha').drop_duplicates('fecha',keep='last').reset_index(drop=True)
 
 
-def parse_bcrp_date(text: str) -> pd.Timestamp:
-    s=str(text).lower().strip();m=re.search(r'(\d{1,2})[.\-/ ]+([a-záéíóú]+)[.\-/ ]+(\d{2,4})',s)
-    if not m:return pd.NaT
-    mon=m.group(2)[:3]
-    for a,b in (('á','a'),('é','e'),('í','i'),('ó','o'),('ú','u')):mon=mon.replace(a,b)
-    y=int(m.group(3));y=y+2000 if y<100 else y
-    return pd.Timestamp(y,MESES[mon],int(m.group(1))) if mon in MESES else pd.NaT
-
-
 def load_bcrp() -> pd.DataFrame:
-    r=requests.get(BCRP_URL,timeout=30,headers={'User-Agent':'Mozilla/5.0'});r.raise_for_status()
-    rows=[]
-    for p in r.json().get('periods',[]):
-        d=parse_bcrp_date(p.get('name')); v=pd.to_numeric(pd.Series([(p.get('values') or [None])[0]]),errors='coerce').iloc[0]
-        if pd.notna(d) and pd.notna(v):rows.append({'fecha':d.normalize(),'USD_PEN':float(v)})
-    x=pd.DataFrame(rows).sort_values('fecha').drop_duplicates('fecha',keep='last')
+    x=read_csv(DATA/'bcrp_pd04638_cache.csv')
+    x['USD_PEN']=pd.to_numeric(x['USD_PEN_BCRP'],errors='coerce')
+    x=x.dropna(subset=['USD_PEN']).sort_values('fecha').drop_duplicates('fecha',keep='last')
     x['ret_USD_PEN']=x['USD_PEN'].pct_change(fill_method=None)
-    return x.reset_index(drop=True)
+    return x[['fecha','USD_PEN','ret_USD_PEN']].reset_index(drop=True)
 
 
 def close_series(ticker: str, start='2026-03-01', end='2026-08-29') -> pd.DataFrame:
