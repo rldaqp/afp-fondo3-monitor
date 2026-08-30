@@ -2,7 +2,7 @@
   "source": "BCRP PD04640PD · SBS VENTA · CACHE OFICIAL",
   "series": "BCRP PD04640PD",
   "series_name": "TC Sistema bancario SBS (S/ por US$) - Venta",
-  "latest_official_date": "2026-08-26",
+  "latest_official_date": "2026-08-27",
   "missing_policy": "Dentro del histórico oficial, n.d. se completa con el último SBS Venta oficial disponible (forward-fill). No se arrastra más allá de la última fecha publicada por BCRP.",
   "checked_reference_dates": [
     {
@@ -54,469 +54,376 @@
       "fecha": "2026-08-17",
       "USD_PEN": 3.37,
       "ret_USD_PEN": 0.000593824228028561
+    },
+    {
+      "fecha": "2026-08-27",
+      "USD_PEN": 3.35,
+      "ret_USD_PEN": 0.0
     }
   ],
   "changed_rows": [
     {
       "fecha": "2026-06-01",
-      "before_value": 3.4125,
+      "before_value": 3.424,
       "after_value": 3.424,
-      "before_return": -0.000732064421669,
+      "before_return": 0.0026354319180088,
       "after_return": 0.002635431918008857
     },
     {
       "fecha": "2026-06-02",
-      "before_value": 3.411,
+      "before_value": 3.414,
       "after_value": 3.414,
-      "before_return": -0.0004395604395605,
+      "before_return": -0.0029205607476634,
       "after_return": -0.0029205607476634476
     },
     {
       "fecha": "2026-06-03",
-      "before_value": 3.418,
+      "before_value": 3.422,
       "after_value": 3.422,
-      "before_return": 0.0020521841102316,
+      "before_return": 0.0023432923257176,
       "after_return": 0.0023432923257176164
     },
     {
       "fecha": "2026-06-04",
-      "before_value": 3.41,
+      "before_value": 3.418,
       "after_value": 3.418,
-      "before_return": -0.0023405500292569,
+      "before_return": -0.0011689070718877,
       "after_return": -0.0011689070718877703
     },
     {
       "fecha": "2026-06-05",
-      "before_value": 3.474,
+      "before_value": 3.443,
       "after_value": 3.443,
-      "before_return": 0.0187683284457478,
+      "before_return": 0.0073142188414276,
       "after_return": 0.007314218841427689
     },
     {
       "fecha": "2026-06-08",
-      "before_value": 3.434,
+      "before_value": 3.498,
       "after_value": 3.498,
-      "before_return": -0.0115141047783534,
+      "before_return": 0.0159744408945687,
       "after_return": 0.015974440894568787
     },
     {
       "fecha": "2026-06-09",
-      "before_value": 3.392,
+      "before_value": 3.375,
       "after_value": 3.375,
-      "before_return": -0.0122306348281887,
+      "before_return": -0.0351629502572899,
       "after_return": -0.03516295025728999
     },
     {
       "fecha": "2026-06-10",
-      "before_value": 3.41,
+      "before_value": 3.402,
       "after_value": 3.402,
-      "before_return": 0.0053066037735849,
+      "before_return": 0.008,
       "after_return": 0.008000000000000007
     },
     {
       "fecha": "2026-06-11",
-      "before_value": 3.391,
+      "before_value": 3.394,
       "after_value": 3.394,
-      "before_return": -0.0055718475073314,
+      "before_return": -0.0023515579071134,
       "after_return": -0.0023515579071134995
     },
     {
       "fecha": "2026-06-12",
-      "before_value": 3.39,
+      "before_value": 3.389,
       "after_value": 3.389,
-      "before_return": -0.0002948982601002,
+      "before_return": -0.0014731879787861,
       "after_return": -0.0014731879787861502
     },
     {
       "fecha": "2026-06-15",
-      "before_value": 3.388,
+      "before_value": 3.387,
       "after_value": 3.387,
-      "before_return": -0.000589970501475,
+      "before_return": -0.0005901445854233,
       "after_return": -0.0005901445854233911
     },
     {
       "fecha": "2026-06-16",
-      "before_value": 3.385,
+      "before_value": 3.382,
       "after_value": 3.382,
-      "before_return": -0.0008854781582054,
+      "before_return": -0.0014762326542663,
       "after_return": -0.0014762326542663295
     },
     {
       "fecha": "2026-06-17",
-      "before_value": 3.38,
+      "before_value": 3.384,
       "after_value": 3.384,
-      "before_return": -0.001477104874446,
+      "before_return": 0.0005913660555882,
       "after_return": 0.0005913660555882938
     },
     {
       "fecha": "2026-06-18",
-      "before_value": 3.384,
+      "before_value": 3.388,
       "after_value": 3.388,
-      "before_return": 0.0011834319526626,
+      "before_return": 0.0011820330969267,
       "after_return": 0.0011820330969267712
     },
     {
       "fecha": "2026-06-19",
-      "before_value": 3.383,
+      "before_value": 3.386,
       "after_value": 3.386,
-      "before_return": -0.0002955082742316,
+      "before_return": -0.0005903187721368,
       "after_return": -0.0005903187721368885
     },
     {
       "fecha": "2026-06-22",
-      "before_value": 3.39,
+      "before_value": 3.387,
       "after_value": 3.387,
-      "before_return": 0.0020691693762933,
+      "before_return": 0.0002953337271116,
       "after_return": 0.0002953337271116574
     },
     {
       "fecha": "2026-06-23",
-      "before_value": 3.406,
+      "before_value": 3.41,
       "after_value": 3.41,
-      "before_return": 0.0047197640117995,
+      "before_return": 0.0067906702096249,
       "after_return": 0.006790670209624983
     },
     {
       "fecha": "2026-06-24",
-      "before_value": 3.423,
+      "before_value": 3.425,
       "after_value": 3.425,
-      "before_return": 0.0049911920140928,
+      "before_return": 0.0043988269794721,
       "after_return": 0.004398826979472137
     },
     {
       "fecha": "2026-06-25",
-      "before_value": 3.41,
+      "before_value": 3.415,
       "after_value": 3.415,
-      "before_return": -0.0037978381536662,
+      "before_return": -0.002919708029197,
       "after_return": -0.0029197080291970545
     },
     {
-      "fecha": "2026-06-26",
-      "before_value": 3.414,
-      "after_value": 3.415,
-      "before_return": 0.0011730205278592,
-      "after_return": 0.0
-    },
-    {
-      "fecha": "2026-06-29",
-      "before_value": null,
-      "after_value": 3.415,
-      "before_return": null,
-      "after_return": 0.0
-    },
-    {
-      "fecha": "2026-06-30",
-      "before_value": 3.409,
-      "after_value": 3.415,
-      "before_return": -0.0014645577035735,
-      "after_return": 0.0
-    },
-    {
       "fecha": "2026-07-01",
-      "before_value": 3.418,
+      "before_value": 3.416,
       "after_value": 3.416,
-      "before_return": 0.0026400704018774,
+      "before_return": 0.0002928257686676,
       "after_return": 0.0002928257686676261
     },
     {
       "fecha": "2026-07-02",
-      "before_value": 3.403,
+      "before_value": 3.409,
       "after_value": 3.409,
-      "before_return": -0.0043885313048567,
+      "before_return": -0.0020491803278689,
       "after_return": -0.002049180327868938
     },
     {
       "fecha": "2026-07-03",
-      "before_value": 3.402,
+      "before_value": 3.403,
       "after_value": 3.403,
-      "before_return": -0.0002938583602702,
+      "before_return": -0.0017600469345848,
       "after_return": -0.001760046934584869
     },
     {
       "fecha": "2026-07-06",
-      "before_value": 3.41,
+      "before_value": 3.411,
       "after_value": 3.411,
-      "before_return": 0.0023515579071133,
+      "before_return": 0.0023508668821627,
       "after_return": 0.0023508668821627943
     },
     {
       "fecha": "2026-07-07",
-      "before_value": 3.398,
+      "before_value": 3.409,
       "after_value": 3.409,
-      "before_return": -0.0035190615835777,
+      "before_return": -0.0005863383172091,
       "after_return": -0.0005863383172091119
     },
     {
       "fecha": "2026-07-08",
-      "before_value": 3.41,
+      "before_value": 3.412,
       "after_value": 3.412,
-      "before_return": 0.0035314891112419,
+      "before_return": 0.0008800234672925,
       "after_return": 0.0008800234672925455
     },
     {
       "fecha": "2026-07-09",
-      "before_value": 3.399,
+      "before_value": 3.406,
       "after_value": 3.406,
-      "before_return": -0.0032258064516129,
+      "before_return": -0.0017584994138334,
       "after_return": -0.0017584994138334364
     },
     {
       "fecha": "2026-07-10",
-      "before_value": 3.394,
+      "before_value": 3.397,
       "after_value": 3.397,
-      "before_return": -0.0014710208884965,
+      "before_return": -0.0026423957721668,
       "after_return": -0.00264239577216685
     },
     {
       "fecha": "2026-07-13",
       "before_value": 3.406,
       "after_value": 3.406,
-      "before_return": 0.0035356511490867,
+      "before_return": 0.0026493965263467,
       "after_return": 0.00264939652634677
     },
     {
       "fecha": "2026-07-14",
-      "before_value": 3.392,
+      "before_value": 3.397,
       "after_value": 3.397,
-      "before_return": -0.0041103934233706,
+      "before_return": -0.0026423957721668,
       "after_return": -0.00264239577216685
     },
     {
       "fecha": "2026-07-15",
-      "before_value": 3.386,
+      "before_value": 3.391,
       "after_value": 3.391,
-      "before_return": -0.0017688679245282,
+      "before_return": -0.0017662643508977,
       "after_return": -0.0017662643508977727
     },
     {
       "fecha": "2026-07-16",
-      "before_value": 3.398,
+      "before_value": 3.396,
       "after_value": 3.396,
-      "before_return": 0.0035440047253396,
+      "before_return": 0.0014744913005013,
       "after_return": 0.0014744913005013682
     },
     {
       "fecha": "2026-07-17",
-      "before_value": 3.411,
+      "before_value": 3.408,
       "after_value": 3.408,
-      "before_return": 0.0038257798705121,
+      "before_return": 0.0035335689045936,
       "after_return": 0.0035335689045936647
     },
     {
-      "fecha": "2026-07-20",
-      "before_value": 3.403,
-      "after_value": 3.408,
-      "before_return": -0.0023453532688361,
-      "after_return": 0.0
-    },
-    {
       "fecha": "2026-07-21",
-      "before_value": 3.402,
+      "before_value": 3.403,
       "after_value": 3.403,
-      "before_return": -0.0002938583602702,
+      "before_return": -0.0014671361502347,
       "after_return": -0.001467136150234749
     },
     {
       "fecha": "2026-07-22",
-      "before_value": 3.402,
+      "before_value": 3.404,
       "after_value": 3.404,
-      "before_return": 0.0,
+      "before_return": 0.0002938583602702,
       "after_return": 0.00029385836027029377
     },
     {
-      "fecha": "2026-07-23",
-      "before_value": null,
-      "after_value": 3.404,
-      "before_return": null,
-      "after_return": 0.0
-    },
-    {
       "fecha": "2026-07-24",
-      "before_value": 3.404,
+      "before_value": 3.411,
       "after_value": 3.411,
-      "before_return": 0.0005878894767783,
+      "before_return": 0.0020564042303172,
       "after_return": 0.002056404230317277
     },
     {
-      "fecha": "2026-07-25",
-      "before_value": null,
-      "after_value": 3.411,
-      "before_return": null,
-      "after_return": 0.0
-    },
-    {
-      "fecha": "2026-07-27",
-      "before_value": null,
-      "after_value": 3.411,
-      "before_return": null,
-      "after_return": 0.0
-    },
-    {
-      "fecha": "2026-07-28",
-      "before_value": null,
-      "after_value": 3.411,
-      "before_return": null,
-      "after_return": 0.0
-    },
-    {
-      "fecha": "2026-07-29",
-      "before_value": null,
-      "after_value": 3.411,
-      "before_return": null,
-      "after_return": 0.0
-    },
-    {
       "fecha": "2026-07-30",
-      "before_value": 3.396,
+      "before_value": 3.399,
       "after_value": 3.399,
-      "before_return": -0.0023501762632197,
+      "before_return": -0.0035180299032542,
       "after_return": -0.0035180299032542273
     },
     {
       "fecha": "2026-07-31",
-      "before_value": 3.399,
+      "before_value": 3.4,
       "after_value": 3.4,
-      "before_return": 0.0008833922261484,
+      "before_return": 0.0002942041776992,
       "after_return": 0.0002942041776992088
     },
     {
-      "fecha": "2026-08-01",
-      "before_value": null,
-      "after_value": 3.4,
-      "before_return": null,
-      "after_return": 0.0
-    },
-    {
       "fecha": "2026-08-03",
-      "before_value": 3.399,
+      "before_value": 3.402,
       "after_value": 3.402,
-      "before_return": 0.0,
+      "before_return": 0.0005882352941177,
       "after_return": 0.0005882352941177782
     },
     {
       "fecha": "2026-08-04",
-      "before_value": 3.391,
+      "before_value": 3.394,
       "after_value": 3.394,
-      "before_return": -0.0023536334215945,
+      "before_return": -0.0023515579071134,
       "after_return": -0.0023515579071134995
     },
     {
-      "fecha": "2026-08-05",
-      "before_value": 3.388,
-      "after_value": 3.394,
-      "before_return": -0.0008846947803008,
-      "after_return": 0.0
-    },
-    {
-      "fecha": "2026-08-06",
-      "before_value": null,
-      "after_value": 3.394,
-      "before_return": null,
-      "after_return": 0.0
-    },
-    {
       "fecha": "2026-08-07",
-      "before_value": 3.3775,
+      "before_value": 3.391,
       "after_value": 3.391,
-      "before_return": -0.003099173553719,
+      "before_return": -0.0008839127872717,
       "after_return": -0.0008839127872717345
     },
     {
       "fecha": "2026-08-10",
-      "before_value": 3.375,
+      "before_value": 3.387,
       "after_value": 3.387,
-      "before_return": -0.0007401924500369,
+      "before_return": -0.001179593040401,
       "after_return": -0.0011795930404010502
     },
     {
       "fecha": "2026-08-11",
-      "before_value": 3.366,
+      "before_value": 3.372,
       "after_value": 3.372,
-      "before_return": -0.0026666666666665,
+      "before_return": -0.0044286979627989,
       "after_return": -0.004428697962798989
     },
     {
       "fecha": "2026-08-12",
-      "before_value": 3.363,
+      "before_value": 3.365,
       "after_value": 3.365,
-      "before_return": -0.000891265597148,
+      "before_return": -0.0020759193357057,
       "after_return": -0.0020759193357057226
     },
     {
       "fecha": "2026-08-13",
-      "before_value": 3.366,
+      "before_value": 3.371,
       "after_value": 3.371,
-      "before_return": 0.0008920606601248,
+      "before_return": 0.0017830609212481,
       "after_return": 0.0017830609212481363
     },
     {
       "fecha": "2026-08-14",
-      "before_value": 3.367,
+      "before_value": 3.368,
       "after_value": 3.368,
-      "before_return": 0.0002970885323825,
+      "before_return": -0.0008899436369029,
       "after_return": -0.000889943636902979
     },
     {
-      "fecha": "2026-08-15",
-      "before_value": null,
-      "after_value": 3.368,
-      "before_return": null,
-      "after_return": 0.0
-    },
-    {
       "fecha": "2026-08-17",
-      "before_value": 3.359,
+      "before_value": 3.37,
       "after_value": 3.37,
-      "before_return": -0.0023760023760023,
+      "before_return": 0.0005938242280285,
       "after_return": 0.000593824228028561
     },
     {
       "fecha": "2026-08-18",
-      "before_value": 3.365,
+      "before_value": 3.362,
       "after_value": 3.362,
-      "before_return": 0.0017862459065198,
+      "before_return": -0.002373887240356,
       "after_return": -0.002373887240356032
     },
     {
       "fecha": "2026-08-19",
-      "before_value": 3.355,
+      "before_value": 3.361,
       "after_value": 3.361,
-      "before_return": -0.0029717682020803,
+      "before_return": -0.0002974419988102,
       "after_return": -0.0002974419988102106
     },
     {
-      "fecha": "2026-08-20",
-      "before_value": 3.352,
-      "after_value": 3.361,
-      "before_return": -0.0008941877794337,
-      "after_return": 0.0
-    },
-    {
       "fecha": "2026-08-21",
-      "before_value": 3.345,
+      "before_value": 3.352,
       "after_value": 3.352,
-      "before_return": -0.00208830548926,
+      "before_return": -0.0026777744718834,
       "after_return": -0.002677774471883443
     },
     {
       "fecha": "2026-08-24",
-      "before_value": 3.347,
+      "before_value": 3.356,
       "after_value": 3.356,
-      "before_return": 0.0005979073243647,
+      "before_return": 0.0011933174224343,
       "after_return": 0.0011933174224343368
     },
     {
       "fecha": "2026-08-25",
-      "before_value": 3.344,
+      "before_value": 3.35,
       "after_value": 3.35,
-      "before_return": -0.0008963250672243,
+      "before_return": -0.0017878426698449,
       "after_return": -0.0017878426698449967
     },
     {
-      "fecha": "2026-08-26",
-      "before_value": 3.344,
+      "fecha": "2026-08-27",
+      "before_value": 3.346,
       "after_value": 3.35,
-      "before_return": 0.0,
+      "before_return": 0.0005980861244019,
       "after_return": 0.0
     }
   ]
