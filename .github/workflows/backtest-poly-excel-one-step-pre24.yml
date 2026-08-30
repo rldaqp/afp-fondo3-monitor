@@ -1,0 +1,30 @@
+name: Backtest polinomial Excel one-step pre24
+on:
+  push:
+    branches: [migracion-github-actions]
+    paths:
+      - 'scripts/backtest_poly_excel_one_step_pre24.py'
+      - '.github/workflows/backtest-poly-excel-one-step-pre24.yml'
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: migracion-github-actions
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install pandas numpy
+      - name: Ejecutar
+        run: python scripts/backtest_poly_excel_one_step_pre24.py
+      - name: Guardar
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add analysis/backtest_poly_excel_one_step_pre24.json
+          git commit -m 'Guardar backtest polinomial one-step pre24' || true
+          git push
