@@ -1,0 +1,154 @@
+name: Aplicar Peru adaptativo Profuturo
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - migracion-github-actions
+    paths:
+      - "scripts/apply_adaptive_peru_signal.py"
+      - "scripts/patch_profuturo_adaptive_ui.py"
+      - ".github/workflows/apply-adaptive-peru-profuturo.yml"
+  workflow_run:
+    workflows:
+      - "Actualizar dual Profuturo sesion actual"
+    types:
+      - completed
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: fondo3-adaptive-peru
+  cancel-in-progress: true
+
+jobs:
+  adaptive:
+    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Descargar repositorio
+        uses: actions/checkout@v4
+        with:
+          ref: migracion-github-actions
+          fetch-depth: 0
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: requirements-live.txt
+
+      - name: Instalar dependencias
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements-live.txt
+
+      - name: Reconstruir Modelo A con selector EPU BVL
+        env:
+          PYTHONUTF8: "1"
+          PYTHONIOENCODING: "utf-8"
+        run: |
+          git fetch origin migracion-github-actions
+          git reset --hard origin/migracion-github-actions
+
+          # Se usa el mismo USD/PEN BCRP que el constructor Rolling 30 y se
+          # restaura markets.csv al terminar para no alterar la fuente compartida.
+          cp data/rolling90/markets.csv /tmp/markets_before_adaptive.csv
+          python scripts/normalize_markets_bcrp_for_rolling30.py
+          python scripts/apply_adaptive_peru_signal.py
+          cp /tmp/markets_before_adaptive.csv data/rolling90/markets.csv
+
+          python scripts/patch_profuturo_adaptive_ui.py
+
+          python - <<'PY'
+          import json
+          import math
+          from pathlib import Path
+
+          p=Path('public/data/dual_rolling30_monitor.json')
+          d=json.loads(p.read_text(encoding='utf-8'))
+          a=d['models']['qqq']
+          assert d.get('adaptive_peru',{}).get('enabled') is True
+          assert a.get('adaptive_validation',{}).get('selector_version')=='EPU_SPBLSCUP_SIGN_DIVERGENCE_V1'
+          assert a.get('name')=='Rolling 30 · QQQ · Perú adaptativo EPU/BVL'
+
+          h={str(r.get('fecha'))[:10]:r for r in a.get('history_one_step',[])}
+          r24=h['2026-08-24']
+          assert r24.get('peru_divergence') is True,r24
+          assert r24.get('peru_signal_used')=='SPBLSCUP',r24
+          assert float(r24['ret_EPU'])>0 and float(r24['ret_SPBLSCUP'])<0,r24
+          # Resultado R30 controlado ya auditado para 24/08.
+          expected_ret=-0.008300507530174464
+          assert abs(float(r24['return_estimated'])-expected_ret)<1e-10,(r24['return_estimated'],expected_ret)
+
+          last30=a['adaptive_validation']['last30']
+          assert int(last30['n'])==30,last30
+          assert math.isfinite(float(last30['predictive_r2']))
+          assert math.isfinite(float(last30['mape_pct']))
+
+          # Las filas operacionales que pisan el gráfico también deben quedar
+          # reconstruidas con el selector, no con el QQQ legado.
+          op={str(r.get('fecha'))[:10]:r for r in a.get('history_operational',[])}
+          if '2026-08-24' in op:
+              assert op['2026-08-24'].get('quality_status')=='RECONSTRUIDO_ADAPTATIVO_EPU_BVL',op['2026-08-24']
+              assert abs(float(op['2026-08-24']['return_estimated'])-expected_ret)<1e-10
+
+          print('VALIDADO selector=',d['adaptive_peru'])
+          print('24/08=',r24)
+          print('last30=',last30)
+          print('current=',a['current'])
+          PY
+
+      - name: Guardar reconstruccion
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/data/dual_rolling30_monitor.json public/index.html data/rolling90/bcrp_pd04638_cache.csv data/analysis/rolling30_bcrp_normalization.json
+          if git diff --cached --quiet; then
+            echo "Sin cambios adaptativos."
+          else
+            git commit -m "Reconstruir Profuturo con Peru adaptativo EPU BVL"
+            git fetch origin migracion-github-actions
+            git rebase origin/migracion-github-actions
+            git push origin HEAD:migracion-github-actions
+          fi
+
+          tmp="$(mktemp -d)"
+          git clone --depth 1 --branch gh-pages "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" "$tmp/gh-pages"
+          mkdir -p "$tmp/gh-pages/data"
+          cp public/index.html "$tmp/gh-pages/index.html"
+          cp public/data/dual_rolling30_monitor.json "$tmp/gh-pages/data/dual_rolling30_monitor.json"
+          cd "$tmp/gh-pages"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html data/dual_rolling30_monitor.json
+          if git diff --cached --quiet; then
+            echo "gh-pages adaptativo ya vigente."
+          else
+            git commit -m "Publicar Profuturo adaptativo EPU BVL"
+            git push origin HEAD:gh-pages
+          fi
+
+      - name: Configurar Pages
+        uses: actions/configure-pages@v5
+        with:
+          enablement: true
+
+      - name: Subir sitio adaptativo
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./public
+
+      - name: Desplegar sitio adaptativo
+        id: deployment
+        uses: actions/deploy-pages@v4
