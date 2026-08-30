@@ -6,6 +6,7 @@ on:
       - migracion-github-actions
     paths:
       - "scripts/analyze_profuturo_factor_tournament.py"
+      - "scripts/compare_profuturo_variant_spblscup_last30.py"
       - ".github/workflows/analyze-profuturo-factor-tournament.yml"
   workflow_dispatch:
 
@@ -40,11 +41,14 @@ jobs:
       - name: Ejecutar torneo diagnóstico
         run: python scripts/analyze_profuturo_factor_tournament.py
 
-      - name: Guardar resultado diagnóstico
+      - name: Comparar variante SPBLSCUP últimos 30
+        run: python scripts/compare_profuturo_variant_spblscup_last30.py
+
+      - name: Guardar resultados diagnósticos
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add analysis/factor_tournament_profuturo.json
+          git add analysis/factor_tournament_profuturo.json analysis/compare_profuturo_variant_spblscup_last30.json
           if git diff --cached --quiet; then
             echo "Sin cambios en diagnóstico"
           else
