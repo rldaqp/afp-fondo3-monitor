@@ -19,7 +19,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      - run: pip install pandas numpy
+      - run: pip install pandas numpy yfinance
       - name: Ejecutar
         run: python scripts/test_poly_model_a_rolling30_oos.py
       - name: Guardar
