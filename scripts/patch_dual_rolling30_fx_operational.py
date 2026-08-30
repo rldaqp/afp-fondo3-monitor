@@ -16,7 +16,7 @@ CACHE = ROOT / "data" / "rolling90" / "bcrp_pd04640_cache.csv"
 # TC Sistema bancario SBS (S/ por US$) - Venta
 BCRP_SERIES = "PD04640PD"
 BCRP_URL = f"https://estadisticas.bcrp.gob.pe/estadisticas/series/api/{BCRP_SERIES}/json"
-BCRP_HTML_URL = f"https://estadisticas.bcrp.gob.pe/estadisticas/series/diarias/resultados/{BCRP_SERIES.lower()}"
+BCRP_HTML_URL = f"https://estadisticas.bcrp.gob.pe/estadisticas/series/diarias/resultados/{BCRP_SERIES}/html"
 TUCAMBISTA_URL = "https://tucambista.pe/"
 TUCAMBISTA_VERIFIED = {
     "2026-08-28": {"buy": 3.339, "sell": 3.368},
@@ -143,7 +143,9 @@ def bcrp_from_html() -> list[tuple[str, float]]:
 
 def load_bcrp() -> tuple[list[tuple[str, float]], str]:
     errors = []
-    for name, fn in (("API", bcrp_from_api), ("HTML", bcrp_from_html)):
+    # La página HTML oficial ha sido más estable en GitHub Actions que el
+    # endpoint JSON sin rango de fechas; por eso se prueba primero.
+    for name, fn in (("HTML", bcrp_from_html), ("API", bcrp_from_api)):
         try:
             rows = fn()
             if rows:
