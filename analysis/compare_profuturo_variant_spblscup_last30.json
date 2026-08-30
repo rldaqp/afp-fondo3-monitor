@@ -1,5 +1,5 @@
 {
-  "purpose": "Diagnóstico; no modifica modelos del visor. Compara Rolling 30 y Rolling 15 sobre las mismas 30 fechas recientes con VC SBS real.",
+  "purpose": "Diagnóstico; no modifica modelos del visor. Compara Rolling 15, 20, 25 y 30 del Modelo A sobre las mismas 30 fechas recientes con VC SBS real.",
   "dates": [
     "2026-07-02",
     "2026-07-06",
@@ -33,6 +33,39 @@
     "2026-08-20"
   ],
   "feature_sets": {
+    "A_ROLLING15": {
+      "train_n": 15,
+      "features": [
+        "ret_SPY",
+        "ret_EEM",
+        "ret_EPU",
+        "ret_MCHI",
+        "ret_USD_PEN",
+        "ret_QQQ"
+      ]
+    },
+    "A_ROLLING20": {
+      "train_n": 20,
+      "features": [
+        "ret_SPY",
+        "ret_EEM",
+        "ret_EPU",
+        "ret_MCHI",
+        "ret_USD_PEN",
+        "ret_QQQ"
+      ]
+    },
+    "A_ROLLING25": {
+      "train_n": 25,
+      "features": [
+        "ret_SPY",
+        "ret_EEM",
+        "ret_EPU",
+        "ret_MCHI",
+        "ret_USD_PEN",
+        "ret_QQQ"
+      ]
+    },
     "A_ROLLING30_RECALC": {
       "train_n": 30,
       "features": [
@@ -46,29 +79,6 @@
     },
     "A_PLUS_SPBLSCUP_R30": {
       "train_n": 30,
-      "features": [
-        "ret_SPY",
-        "ret_EEM",
-        "ret_EPU",
-        "ret_MCHI",
-        "ret_USD_PEN",
-        "ret_QQQ",
-        "ret_SPBLSCUP"
-      ]
-    },
-    "A_ROLLING15": {
-      "train_n": 15,
-      "features": [
-        "ret_SPY",
-        "ret_EEM",
-        "ret_EPU",
-        "ret_MCHI",
-        "ret_USD_PEN",
-        "ret_QQQ"
-      ]
-    },
-    "A_PLUS_SPBLSCUP_R15": {
-      "train_n": 15,
       "features": [
         "ret_SPY",
         "ret_EEM",
@@ -105,6 +115,42 @@
       "mape_pct": 0.4535997962337822,
       "bias": -0.02749398808379766
     },
+    "A_ROLLING15": {
+      "n": 30,
+      "start": "2026-07-02",
+      "end": "2026-08-20",
+      "pearson_r": 0.9279848262017398,
+      "corr2": 0.8611558376606733,
+      "predictive_r2": 0.8471587509703482,
+      "mae": 0.3011837183637558,
+      "rmse": 0.40985590150146356,
+      "mape_pct": 0.4333799376553608,
+      "bias": 0.1111883067132491
+    },
+    "A_ROLLING20": {
+      "n": 30,
+      "start": "2026-07-02",
+      "end": "2026-08-20",
+      "pearson_r": 0.9478658482523833,
+      "corr2": 0.8984496662832101,
+      "predictive_r2": 0.883134362064689,
+      "mae": 0.27280660302676457,
+      "rmse": 0.35838871069007344,
+      "mape_pct": 0.39223382042914606,
+      "bias": 0.10398702360056689
+    },
+    "A_ROLLING25": {
+      "n": 30,
+      "start": "2026-07-02",
+      "end": "2026-08-20",
+      "pearson_r": 0.9502551730498388,
+      "corr2": 0.902984893907979,
+      "predictive_r2": 0.8831459879424249,
+      "mae": 0.2661419191905125,
+      "rmse": 0.3583708838633222,
+      "mape_pct": 0.3829201697068741,
+      "bias": 0.06936497904102007
+    },
     "A_ROLLING30_RECALC": {
       "n": 30,
       "start": "2026-07-02",
@@ -128,30 +174,6 @@
       "rmse": 0.40141186833555087,
       "mape_pct": 0.43927255656175623,
       "bias": 0.04058472814461141
-    },
-    "A_ROLLING15": {
-      "n": 30,
-      "start": "2026-07-02",
-      "end": "2026-08-20",
-      "pearson_r": 0.9279848262017398,
-      "corr2": 0.8611558376606733,
-      "predictive_r2": 0.8471587509703482,
-      "mae": 0.3011837183637558,
-      "rmse": 0.40985590150146356,
-      "mape_pct": 0.4333799376553608,
-      "bias": 0.1111883067132491
-    },
-    "A_PLUS_SPBLSCUP_R15": {
-      "n": 30,
-      "start": "2026-07-02",
-      "end": "2026-08-20",
-      "pearson_r": 0.898193505990552,
-      "corr2": 0.8067515742035998,
-      "predictive_r2": 0.7743167688443366,
-      "mae": 0.3351937021496383,
-      "rmse": 0.49803578547862937,
-      "mape_pct": 0.48236082020476,
-      "bias": 0.07824239755215956
     }
   },
   "rows": {
@@ -457,6 +479,642 @@
         "fecha": "2026-08-20",
         "vc_estimated": 70.80525866139182,
         "actual_vc": 71.0427094
+      }
+    ],
+    "A_ROLLING15": [
+      {
+        "fecha": "2026-07-02",
+        "base_vc": 70.9226332,
+        "vc_estimated": 71.12433800271346,
+        "actual_vc": 70.3358541,
+        "return_estimated": 0.0028440117577791134
+      },
+      {
+        "fecha": "2026-07-06",
+        "base_vc": 70.3944744,
+        "vc_estimated": 71.14028827968906,
+        "actual_vc": 71.3369613,
+        "return_estimated": 0.010594778724408845
+      },
+      {
+        "fecha": "2026-07-07",
+        "base_vc": 71.3369613,
+        "vc_estimated": 70.18823168312431,
+        "actual_vc": 69.9352638,
+        "return_estimated": -0.01610286723659036
+      },
+      {
+        "fecha": "2026-07-08",
+        "base_vc": 69.9352638,
+        "vc_estimated": 69.58349648897781,
+        "actual_vc": 69.8131004,
+        "return_estimated": -0.005029898965251074
+      },
+      {
+        "fecha": "2026-07-09",
+        "base_vc": 69.8131004,
+        "vc_estimated": 71.37268534723636,
+        "actual_vc": 70.9792394,
+        "return_estimated": 0.022339431113939753
+      },
+      {
+        "fecha": "2026-07-10",
+        "base_vc": 70.9792394,
+        "vc_estimated": 71.034115006074,
+        "actual_vc": 71.0624925,
+        "return_estimated": 0.0007731219232254172
+      },
+      {
+        "fecha": "2026-07-13",
+        "base_vc": 71.0624925,
+        "vc_estimated": 70.07306994561594,
+        "actual_vc": 69.4242724,
+        "return_estimated": -0.013923274002583872
+      },
+      {
+        "fecha": "2026-07-14",
+        "base_vc": 69.4242724,
+        "vc_estimated": 70.16759811403638,
+        "actual_vc": 70.5044231,
+        "return_estimated": 0.010707000424197255
+      },
+      {
+        "fecha": "2026-07-15",
+        "base_vc": 70.5044231,
+        "vc_estimated": 70.10693987740322,
+        "actual_vc": 69.9080824,
+        "return_estimated": -0.005637706190900991
+      },
+      {
+        "fecha": "2026-07-16",
+        "base_vc": 69.9080824,
+        "vc_estimated": 68.74281874759657,
+        "actual_vc": 68.4036329,
+        "return_estimated": -0.016668511170654224
+      },
+      {
+        "fecha": "2026-07-17",
+        "base_vc": 68.4036329,
+        "vc_estimated": 68.00710922691857,
+        "actual_vc": 68.2147702,
+        "return_estimated": -0.005796821839288962
+      },
+      {
+        "fecha": "2026-07-20",
+        "base_vc": 68.2147702,
+        "vc_estimated": 68.2690649308569,
+        "actual_vc": 68.06385,
+        "return_estimated": 0.0007959380453487027
+      },
+      {
+        "fecha": "2026-07-21",
+        "base_vc": 68.06385,
+        "vc_estimated": 69.48759663170406,
+        "actual_vc": 70.02189279999999,
+        "return_estimated": 0.020917809258571955
+      },
+      {
+        "fecha": "2026-07-22",
+        "base_vc": 70.02189279999999,
+        "vc_estimated": 70.10670927274178,
+        "actual_vc": 70.0996577,
+        "return_estimated": 0.001211285061717012
+      },
+      {
+        "fecha": "2026-07-24",
+        "base_vc": 69.6767473,
+        "vc_estimated": 68.8382387493137,
+        "actual_vc": 68.3626543,
+        "return_estimated": -0.01203426656924755
+      },
+      {
+        "fecha": "2026-07-30",
+        "base_vc": 65.3231046,
+        "vc_estimated": 67.82135436871432,
+        "actual_vc": 68.2721906,
+        "return_estimated": 0.03824450451355817
+      },
+      {
+        "fecha": "2026-07-31",
+        "base_vc": 68.2721906,
+        "vc_estimated": 68.52253048643367,
+        "actual_vc": 67.7685784,
+        "return_estimated": 0.0036667914744434767
+      },
+      {
+        "fecha": "2026-08-03",
+        "base_vc": 67.7685784,
+        "vc_estimated": 68.00478646722891,
+        "actual_vc": 68.1332558,
+        "return_estimated": 0.003485510140624622
+      },
+      {
+        "fecha": "2026-08-04",
+        "base_vc": 68.1332558,
+        "vc_estimated": 69.99028387584609,
+        "actual_vc": 69.7841504,
+        "return_estimated": 0.02725582469297024
+      },
+      {
+        "fecha": "2026-08-05",
+        "base_vc": 69.7841504,
+        "vc_estimated": 69.80476146992022,
+        "actual_vc": 69.8102662,
+        "return_estimated": 0.0002953546013253665
+      },
+      {
+        "fecha": "2026-08-07",
+        "base_vc": 69.2016742,
+        "vc_estimated": 69.90773119968095,
+        "actual_vc": 69.6836293,
+        "return_estimated": 0.010202888988500237
+      },
+      {
+        "fecha": "2026-08-10",
+        "base_vc": 69.6836293,
+        "vc_estimated": 69.4161508100716,
+        "actual_vc": 69.2112776,
+        "return_estimated": -0.0038384695604309444
+      },
+      {
+        "fecha": "2026-08-11",
+        "base_vc": 69.2112776,
+        "vc_estimated": 70.8092353345661,
+        "actual_vc": 69.498597,
+        "return_estimated": 0.0230881120819838
+      },
+      {
+        "fecha": "2026-08-12",
+        "base_vc": 69.498597,
+        "vc_estimated": 70.20349623875464,
+        "actual_vc": 70.5338688,
+        "return_estimated": 0.010142639839975895
+      },
+      {
+        "fecha": "2026-08-13",
+        "base_vc": 70.5338688,
+        "vc_estimated": 70.56533543662968,
+        "actual_vc": 70.6649381,
+        "return_estimated": 0.00044612095104128776
+      },
+      {
+        "fecha": "2026-08-14",
+        "base_vc": 70.6649381,
+        "vc_estimated": 70.7400189992725,
+        "actual_vc": 70.8740985,
+        "return_estimated": 0.001062491545188195
+      },
+      {
+        "fecha": "2026-08-17",
+        "base_vc": 70.8740985,
+        "vc_estimated": 71.38139269925676,
+        "actual_vc": 71.5395979,
+        "return_estimated": 0.007157681155644965
+      },
+      {
+        "fecha": "2026-08-18",
+        "base_vc": 71.5395979,
+        "vc_estimated": 69.68601609185954,
+        "actual_vc": 69.6328126,
+        "return_estimated": -0.02590987177103589
+      },
+      {
+        "fecha": "2026-08-19",
+        "base_vc": 69.6328126,
+        "vc_estimated": 70.4507043210949,
+        "actual_vc": 70.327616,
+        "return_estimated": 0.011745780337686864
+      },
+      {
+        "fecha": "2026-08-20",
+        "base_vc": 70.327616,
+        "vc_estimated": 71.03328499806547,
+        "actual_vc": 71.0427094,
+        "return_estimated": 0.010034024160089024
+      }
+    ],
+    "A_ROLLING20": [
+      {
+        "fecha": "2026-07-02",
+        "base_vc": 70.9226332,
+        "vc_estimated": 70.79121537335676,
+        "actual_vc": 70.3358541,
+        "return_estimated": -0.0018529744414966286
+      },
+      {
+        "fecha": "2026-07-06",
+        "base_vc": 70.3944744,
+        "vc_estimated": 71.31694736291713,
+        "actual_vc": 71.3369613,
+        "return_estimated": 0.013104337673940062
+      },
+      {
+        "fecha": "2026-07-07",
+        "base_vc": 71.3369613,
+        "vc_estimated": 70.13771032327834,
+        "actual_vc": 69.9352638,
+        "return_estimated": -0.016811074579954993
+      },
+      {
+        "fecha": "2026-07-08",
+        "base_vc": 69.9352638,
+        "vc_estimated": 69.74251312826857,
+        "actual_vc": 69.8131004,
+        "return_estimated": -0.002756129901542441
+      },
+      {
+        "fecha": "2026-07-09",
+        "base_vc": 69.8131004,
+        "vc_estimated": 71.5996322493631,
+        "actual_vc": 70.9792394,
+        "return_estimated": 0.02559020927486419
+      },
+      {
+        "fecha": "2026-07-10",
+        "base_vc": 70.9792394,
+        "vc_estimated": 71.40032291168598,
+        "actual_vc": 71.0624925,
+        "return_estimated": 0.005932488362026193
+      },
+      {
+        "fecha": "2026-07-13",
+        "base_vc": 71.0624925,
+        "vc_estimated": 70.07066438122264,
+        "actual_vc": 69.4242724,
+        "return_estimated": -0.013957125396035863
+      },
+      {
+        "fecha": "2026-07-14",
+        "base_vc": 69.4242724,
+        "vc_estimated": 70.24509023527196,
+        "actual_vc": 70.5044231,
+        "return_estimated": 0.011823211204039251
+      },
+      {
+        "fecha": "2026-07-15",
+        "base_vc": 70.5044231,
+        "vc_estimated": 70.42079906197614,
+        "actual_vc": 69.9080824,
+        "return_estimated": -0.00118608215409752
+      },
+      {
+        "fecha": "2026-07-16",
+        "base_vc": 69.9080824,
+        "vc_estimated": 68.72474191689669,
+        "actual_vc": 68.4036329,
+        "return_estimated": -0.016927091152815057
+      },
+      {
+        "fecha": "2026-07-17",
+        "base_vc": 68.4036329,
+        "vc_estimated": 68.08160379596879,
+        "actual_vc": 68.2147702,
+        "return_estimated": -0.004707777794521473
+      },
+      {
+        "fecha": "2026-07-20",
+        "base_vc": 68.2147702,
+        "vc_estimated": 68.2477282734166,
+        "actual_vc": 68.06385,
+        "return_estimated": 0.00048315157142611646
+      },
+      {
+        "fecha": "2026-07-21",
+        "base_vc": 68.06385,
+        "vc_estimated": 69.38394597180266,
+        "actual_vc": 70.02189279999999,
+        "return_estimated": 0.019394964754457046
+      },
+      {
+        "fecha": "2026-07-22",
+        "base_vc": 70.02189279999999,
+        "vc_estimated": 70.15595518059571,
+        "actual_vc": 70.0996577,
+        "return_estimated": 0.0019145780731554944
+      },
+      {
+        "fecha": "2026-07-24",
+        "base_vc": 69.6767473,
+        "vc_estimated": 68.88254538051748,
+        "actual_vc": 68.3626543,
+        "return_estimated": -0.011398378228865977
+      },
+      {
+        "fecha": "2026-07-30",
+        "base_vc": 65.3231046,
+        "vc_estimated": 67.5257687165131,
+        "actual_vc": 68.2721906,
+        "return_estimated": 0.03371952588599253
+      },
+      {
+        "fecha": "2026-07-31",
+        "base_vc": 68.2721906,
+        "vc_estimated": 68.27044294405465,
+        "actual_vc": 67.7685784,
+        "return_estimated": -2.5598357544771074e-05
+      },
+      {
+        "fecha": "2026-08-03",
+        "base_vc": 67.7685784,
+        "vc_estimated": 68.09488272451844,
+        "actual_vc": 68.1332558,
+        "return_estimated": 0.00481497962953354
+      },
+      {
+        "fecha": "2026-08-04",
+        "base_vc": 68.1332558,
+        "vc_estimated": 69.82854362062973,
+        "actual_vc": 69.7841504,
+        "return_estimated": 0.024881943490358542
+      },
+      {
+        "fecha": "2026-08-05",
+        "base_vc": 69.7841504,
+        "vc_estimated": 69.80923156225316,
+        "actual_vc": 69.8102662,
+        "return_estimated": 0.00035941058405643007
+      },
+      {
+        "fecha": "2026-08-07",
+        "base_vc": 69.2016742,
+        "vc_estimated": 69.87502363746106,
+        "actual_vc": 69.6836293,
+        "return_estimated": 0.009730247790176349
+      },
+      {
+        "fecha": "2026-08-10",
+        "base_vc": 69.6836293,
+        "vc_estimated": 69.28927596262598,
+        "actual_vc": 69.2112776,
+        "return_estimated": -0.005659196303858796
+      },
+      {
+        "fecha": "2026-08-11",
+        "base_vc": 69.2112776,
+        "vc_estimated": 70.21945911292536,
+        "actual_vc": 69.498597,
+        "return_estimated": 0.014566723052737932
+      },
+      {
+        "fecha": "2026-08-12",
+        "base_vc": 69.498597,
+        "vc_estimated": 70.25960853954048,
+        "actual_vc": 70.5338688,
+        "return_estimated": 0.010950027373077278
+      },
+      {
+        "fecha": "2026-08-13",
+        "base_vc": 70.5338688,
+        "vc_estimated": 70.61072923781339,
+        "actual_vc": 70.6649381,
+        "return_estimated": 0.0010896954770953822
+      },
+      {
+        "fecha": "2026-08-14",
+        "base_vc": 70.6649381,
+        "vc_estimated": 70.78364161361256,
+        "actual_vc": 70.8740985,
+        "return_estimated": 0.0016798077915893598
+      },
+      {
+        "fecha": "2026-08-17",
+        "base_vc": 70.8740985,
+        "vc_estimated": 71.41130628352333,
+        "actual_vc": 71.5395979,
+        "return_estimated": 0.0075797476778251705
+      },
+      {
+        "fecha": "2026-08-18",
+        "base_vc": 71.5395979,
+        "vc_estimated": 69.75225346797626,
+        "actual_vc": 69.6328126,
+        "return_estimated": -0.024983987672423637
+      },
+      {
+        "fecha": "2026-08-19",
+        "base_vc": 69.6328126,
+        "vc_estimated": 70.46725140142752,
+        "actual_vc": 70.327616,
+        "return_estimated": 0.011983413713602124
+      },
+      {
+        "fecha": "2026-08-20",
+        "base_vc": 70.327616,
+        "vc_estimated": 70.96451023660346,
+        "actual_vc": 71.0427094,
+        "return_estimated": 0.009056104455516398
+      }
+    ],
+    "A_ROLLING25": [
+      {
+        "fecha": "2026-07-02",
+        "base_vc": 70.9226332,
+        "vc_estimated": 70.72782247011001,
+        "actual_vc": 70.3358541,
+        "return_estimated": -0.0027468062182721964
+      },
+      {
+        "fecha": "2026-07-06",
+        "base_vc": 70.3944744,
+        "vc_estimated": 71.38985423517983,
+        "actual_vc": 71.3369613,
+        "return_estimated": 0.014140027944861425
+      },
+      {
+        "fecha": "2026-07-07",
+        "base_vc": 71.3369613,
+        "vc_estimated": 70.14271350887383,
+        "actual_vc": 69.9352638,
+        "return_estimated": -0.01674094003112754
+      },
+      {
+        "fecha": "2026-07-08",
+        "base_vc": 69.9352638,
+        "vc_estimated": 69.98538917649607,
+        "actual_vc": 69.8131004,
+        "return_estimated": 0.0007167396499627994
+      },
+      {
+        "fecha": "2026-07-09",
+        "base_vc": 69.8131004,
+        "vc_estimated": 71.67087331455792,
+        "actual_vc": 70.9792394,
+        "return_estimated": 0.02661066338428839
+      },
+      {
+        "fecha": "2026-07-10",
+        "base_vc": 70.9792394,
+        "vc_estimated": 71.3420683783821,
+        "actual_vc": 71.0624925,
+        "return_estimated": 0.005111761994762846
+      },
+      {
+        "fecha": "2026-07-13",
+        "base_vc": 71.0624925,
+        "vc_estimated": 69.93760601441275,
+        "actual_vc": 69.4242724,
+        "return_estimated": -0.0158295388469136
+      },
+      {
+        "fecha": "2026-07-14",
+        "base_vc": 69.4242724,
+        "vc_estimated": 70.32029250984246,
+        "actual_vc": 70.5044231,
+        "return_estimated": 0.012906438610978422
+      },
+      {
+        "fecha": "2026-07-15",
+        "base_vc": 70.5044231,
+        "vc_estimated": 70.45726880469881,
+        "actual_vc": 69.9080824,
+        "return_estimated": -0.0006688132918172115
+      },
+      {
+        "fecha": "2026-07-16",
+        "base_vc": 69.9080824,
+        "vc_estimated": 68.6730181712461,
+        "actual_vc": 68.4036329,
+        "return_estimated": -0.0176669733506222
+      },
+      {
+        "fecha": "2026-07-17",
+        "base_vc": 68.4036329,
+        "vc_estimated": 67.94280220000594,
+        "actual_vc": 68.2147702,
+        "return_estimated": -0.006736933119733002
+      },
+      {
+        "fecha": "2026-07-20",
+        "base_vc": 68.2147702,
+        "vc_estimated": 68.0749900234206,
+        "actual_vc": 68.06385,
+        "return_estimated": -0.002049118924971504
+      },
+      {
+        "fecha": "2026-07-21",
+        "base_vc": 68.06385,
+        "vc_estimated": 69.64624794050107,
+        "actual_vc": 70.02189279999999,
+        "return_estimated": 0.023248728076667308
+      },
+      {
+        "fecha": "2026-07-22",
+        "base_vc": 70.02189279999999,
+        "vc_estimated": 70.1813700400847,
+        "actual_vc": 70.0996577,
+        "return_estimated": 0.0022775339784118337
+      },
+      {
+        "fecha": "2026-07-24",
+        "base_vc": 69.6767473,
+        "vc_estimated": 69.09026269576337,
+        "actual_vc": 68.3626543,
+        "return_estimated": -0.008417221339444284
+      },
+      {
+        "fecha": "2026-07-30",
+        "base_vc": 65.3231046,
+        "vc_estimated": 67.1935841622024,
+        "actual_vc": 68.2721906,
+        "return_estimated": 0.028634272263330478
+      },
+      {
+        "fecha": "2026-07-31",
+        "base_vc": 68.2721906,
+        "vc_estimated": 68.10149157738125,
+        "actual_vc": 67.7685784,
+        "return_estimated": -0.0025002716496803396
+      },
+      {
+        "fecha": "2026-08-03",
+        "base_vc": 67.7685784,
+        "vc_estimated": 67.9963505093655,
+        "actual_vc": 68.1332558,
+        "return_estimated": 0.003361028292804158
+      },
+      {
+        "fecha": "2026-08-04",
+        "base_vc": 68.1332558,
+        "vc_estimated": 69.89113097355018,
+        "actual_vc": 69.7841504,
+        "return_estimated": 0.025800545605956186
+      },
+      {
+        "fecha": "2026-08-05",
+        "base_vc": 69.7841504,
+        "vc_estimated": 69.78732397867492,
+        "actual_vc": 69.8102662,
+        "return_estimated": 4.54770697461155e-05
+      },
+      {
+        "fecha": "2026-08-07",
+        "base_vc": 69.2016742,
+        "vc_estimated": 69.85721714970262,
+        "actual_vc": 69.6836293,
+        "return_estimated": 0.009472934828253293
+      },
+      {
+        "fecha": "2026-08-10",
+        "base_vc": 69.6836293,
+        "vc_estimated": 69.32069403958317,
+        "actual_vc": 69.2112776,
+        "return_estimated": -0.00520832890110152
+      },
+      {
+        "fecha": "2026-08-11",
+        "base_vc": 69.2112776,
+        "vc_estimated": 69.32027887964824,
+        "actual_vc": 69.498597,
+        "return_estimated": 0.0015749063364817863
+      },
+      {
+        "fecha": "2026-08-12",
+        "base_vc": 69.498597,
+        "vc_estimated": 70.12679291141627,
+        "actual_vc": 70.5338688,
+        "return_estimated": 0.00903897256251479
+      },
+      {
+        "fecha": "2026-08-13",
+        "base_vc": 70.5338688,
+        "vc_estimated": 70.68939421751587,
+        "actual_vc": 70.6649381,
+        "return_estimated": 0.002204975002248597
+      },
+      {
+        "fecha": "2026-08-14",
+        "base_vc": 70.6649381,
+        "vc_estimated": 70.77907784507428,
+        "actual_vc": 70.8740985,
+        "return_estimated": 0.0016152245815706798
+      },
+      {
+        "fecha": "2026-08-17",
+        "base_vc": 70.8740985,
+        "vc_estimated": 71.42719868768103,
+        "actual_vc": 71.5395979,
+        "return_estimated": 0.007803981981951169
+      },
+      {
+        "fecha": "2026-08-18",
+        "base_vc": 71.5395979,
+        "vc_estimated": 69.88152753362272,
+        "actual_vc": 69.6328126,
+        "return_estimated": -0.023176959544768335
+      },
+      {
+        "fecha": "2026-08-19",
+        "base_vc": 69.6328126,
+        "vc_estimated": 70.41597474889112,
+        "actual_vc": 70.327616,
+        "return_estimated": 0.0112470273661059
+      },
+      {
+        "fecha": "2026-08-20",
+        "base_vc": 70.327616,
+        "vc_estimated": 70.9540665733455,
+        "actual_vc": 71.0427094,
+        "return_estimated": 0.008907604280877267
       }
     ],
     "A_ROLLING30_RECALC": [
@@ -881,430 +1539,6 @@
         "vc_estimated": 70.85917448824435,
         "actual_vc": 71.0427094,
         "return_estimated": 0.007558318033193932
-      }
-    ],
-    "A_ROLLING15": [
-      {
-        "fecha": "2026-07-02",
-        "base_vc": 70.9226332,
-        "vc_estimated": 71.12433800271346,
-        "actual_vc": 70.3358541,
-        "return_estimated": 0.0028440117577791134
-      },
-      {
-        "fecha": "2026-07-06",
-        "base_vc": 70.3944744,
-        "vc_estimated": 71.14028827968906,
-        "actual_vc": 71.3369613,
-        "return_estimated": 0.010594778724408845
-      },
-      {
-        "fecha": "2026-07-07",
-        "base_vc": 71.3369613,
-        "vc_estimated": 70.18823168312431,
-        "actual_vc": 69.9352638,
-        "return_estimated": -0.01610286723659036
-      },
-      {
-        "fecha": "2026-07-08",
-        "base_vc": 69.9352638,
-        "vc_estimated": 69.58349648897781,
-        "actual_vc": 69.8131004,
-        "return_estimated": -0.005029898965251074
-      },
-      {
-        "fecha": "2026-07-09",
-        "base_vc": 69.8131004,
-        "vc_estimated": 71.37268534723636,
-        "actual_vc": 70.9792394,
-        "return_estimated": 0.022339431113939753
-      },
-      {
-        "fecha": "2026-07-10",
-        "base_vc": 70.9792394,
-        "vc_estimated": 71.034115006074,
-        "actual_vc": 71.0624925,
-        "return_estimated": 0.0007731219232254172
-      },
-      {
-        "fecha": "2026-07-13",
-        "base_vc": 71.0624925,
-        "vc_estimated": 70.07306994561594,
-        "actual_vc": 69.4242724,
-        "return_estimated": -0.013923274002583872
-      },
-      {
-        "fecha": "2026-07-14",
-        "base_vc": 69.4242724,
-        "vc_estimated": 70.16759811403638,
-        "actual_vc": 70.5044231,
-        "return_estimated": 0.010707000424197255
-      },
-      {
-        "fecha": "2026-07-15",
-        "base_vc": 70.5044231,
-        "vc_estimated": 70.10693987740322,
-        "actual_vc": 69.9080824,
-        "return_estimated": -0.005637706190900991
-      },
-      {
-        "fecha": "2026-07-16",
-        "base_vc": 69.9080824,
-        "vc_estimated": 68.74281874759657,
-        "actual_vc": 68.4036329,
-        "return_estimated": -0.016668511170654224
-      },
-      {
-        "fecha": "2026-07-17",
-        "base_vc": 68.4036329,
-        "vc_estimated": 68.00710922691857,
-        "actual_vc": 68.2147702,
-        "return_estimated": -0.005796821839288962
-      },
-      {
-        "fecha": "2026-07-20",
-        "base_vc": 68.2147702,
-        "vc_estimated": 68.2690649308569,
-        "actual_vc": 68.06385,
-        "return_estimated": 0.0007959380453487027
-      },
-      {
-        "fecha": "2026-07-21",
-        "base_vc": 68.06385,
-        "vc_estimated": 69.48759663170406,
-        "actual_vc": 70.02189279999999,
-        "return_estimated": 0.020917809258571955
-      },
-      {
-        "fecha": "2026-07-22",
-        "base_vc": 70.02189279999999,
-        "vc_estimated": 70.10670927274178,
-        "actual_vc": 70.0996577,
-        "return_estimated": 0.001211285061717012
-      },
-      {
-        "fecha": "2026-07-24",
-        "base_vc": 69.6767473,
-        "vc_estimated": 68.8382387493137,
-        "actual_vc": 68.3626543,
-        "return_estimated": -0.01203426656924755
-      },
-      {
-        "fecha": "2026-07-30",
-        "base_vc": 65.3231046,
-        "vc_estimated": 67.82135436871432,
-        "actual_vc": 68.2721906,
-        "return_estimated": 0.03824450451355817
-      },
-      {
-        "fecha": "2026-07-31",
-        "base_vc": 68.2721906,
-        "vc_estimated": 68.52253048643367,
-        "actual_vc": 67.7685784,
-        "return_estimated": 0.0036667914744434767
-      },
-      {
-        "fecha": "2026-08-03",
-        "base_vc": 67.7685784,
-        "vc_estimated": 68.00478646722891,
-        "actual_vc": 68.1332558,
-        "return_estimated": 0.003485510140624622
-      },
-      {
-        "fecha": "2026-08-04",
-        "base_vc": 68.1332558,
-        "vc_estimated": 69.99028387584609,
-        "actual_vc": 69.7841504,
-        "return_estimated": 0.02725582469297024
-      },
-      {
-        "fecha": "2026-08-05",
-        "base_vc": 69.7841504,
-        "vc_estimated": 69.80476146992022,
-        "actual_vc": 69.8102662,
-        "return_estimated": 0.0002953546013253665
-      },
-      {
-        "fecha": "2026-08-07",
-        "base_vc": 69.2016742,
-        "vc_estimated": 69.90773119968095,
-        "actual_vc": 69.6836293,
-        "return_estimated": 0.010202888988500237
-      },
-      {
-        "fecha": "2026-08-10",
-        "base_vc": 69.6836293,
-        "vc_estimated": 69.4161508100716,
-        "actual_vc": 69.2112776,
-        "return_estimated": -0.0038384695604309444
-      },
-      {
-        "fecha": "2026-08-11",
-        "base_vc": 69.2112776,
-        "vc_estimated": 70.8092353345661,
-        "actual_vc": 69.498597,
-        "return_estimated": 0.0230881120819838
-      },
-      {
-        "fecha": "2026-08-12",
-        "base_vc": 69.498597,
-        "vc_estimated": 70.20349623875464,
-        "actual_vc": 70.5338688,
-        "return_estimated": 0.010142639839975895
-      },
-      {
-        "fecha": "2026-08-13",
-        "base_vc": 70.5338688,
-        "vc_estimated": 70.56533543662968,
-        "actual_vc": 70.6649381,
-        "return_estimated": 0.00044612095104128776
-      },
-      {
-        "fecha": "2026-08-14",
-        "base_vc": 70.6649381,
-        "vc_estimated": 70.7400189992725,
-        "actual_vc": 70.8740985,
-        "return_estimated": 0.001062491545188195
-      },
-      {
-        "fecha": "2026-08-17",
-        "base_vc": 70.8740985,
-        "vc_estimated": 71.38139269925676,
-        "actual_vc": 71.5395979,
-        "return_estimated": 0.007157681155644965
-      },
-      {
-        "fecha": "2026-08-18",
-        "base_vc": 71.5395979,
-        "vc_estimated": 69.68601609185954,
-        "actual_vc": 69.6328126,
-        "return_estimated": -0.02590987177103589
-      },
-      {
-        "fecha": "2026-08-19",
-        "base_vc": 69.6328126,
-        "vc_estimated": 70.4507043210949,
-        "actual_vc": 70.327616,
-        "return_estimated": 0.011745780337686864
-      },
-      {
-        "fecha": "2026-08-20",
-        "base_vc": 70.327616,
-        "vc_estimated": 71.03328499806547,
-        "actual_vc": 71.0427094,
-        "return_estimated": 0.010034024160089024
-      }
-    ],
-    "A_PLUS_SPBLSCUP_R15": [
-      {
-        "fecha": "2026-07-02",
-        "base_vc": 70.9226332,
-        "vc_estimated": 70.80349947569916,
-        "actual_vc": 70.3358541,
-        "return_estimated": -0.0016797701794981287
-      },
-      {
-        "fecha": "2026-07-06",
-        "base_vc": 70.3944744,
-        "vc_estimated": 71.02965875491708,
-        "actual_vc": 71.3369613,
-        "return_estimated": 0.009023213261140407
-      },
-      {
-        "fecha": "2026-07-07",
-        "base_vc": 71.3369613,
-        "vc_estimated": 70.09765129160115,
-        "actual_vc": 69.9352638,
-        "return_estimated": -0.017372621230487387
-      },
-      {
-        "fecha": "2026-07-08",
-        "base_vc": 69.9352638,
-        "vc_estimated": 68.99489699529671,
-        "actual_vc": 69.8131004,
-        "return_estimated": -0.013446246623056173
-      },
-      {
-        "fecha": "2026-07-09",
-        "base_vc": 69.8131004,
-        "vc_estimated": 71.4016363250698,
-        "actual_vc": 70.9792394,
-        "return_estimated": 0.02275412373849836
-      },
-      {
-        "fecha": "2026-07-10",
-        "base_vc": 70.9792394,
-        "vc_estimated": 71.24386927943273,
-        "actual_vc": 71.0624925,
-        "return_estimated": 0.003728271557566519
-      },
-      {
-        "fecha": "2026-07-13",
-        "base_vc": 71.0624925,
-        "vc_estimated": 69.99694536850696,
-        "actual_vc": 69.4242724,
-        "return_estimated": -0.014994508270210838
-      },
-      {
-        "fecha": "2026-07-14",
-        "base_vc": 69.4242724,
-        "vc_estimated": 70.33339608097415,
-        "actual_vc": 70.5044231,
-        "return_estimated": 0.013095184861802656
-      },
-      {
-        "fecha": "2026-07-15",
-        "base_vc": 70.5044231,
-        "vc_estimated": 69.9066581493144,
-        "actual_vc": 69.9080824,
-        "return_estimated": -0.00847840354409752
-      },
-      {
-        "fecha": "2026-07-16",
-        "base_vc": 69.9080824,
-        "vc_estimated": 68.68140398079402,
-        "actual_vc": 68.4036329,
-        "return_estimated": -0.017547018557699412
-      },
-      {
-        "fecha": "2026-07-17",
-        "base_vc": 68.4036329,
-        "vc_estimated": 68.32725647541147,
-        "actual_vc": 68.2147702,
-        "return_estimated": -0.0011165550914552175
-      },
-      {
-        "fecha": "2026-07-20",
-        "base_vc": 68.2147702,
-        "vc_estimated": 68.25732194700399,
-        "actual_vc": 68.06385,
-        "return_estimated": 0.0006237908136204137
-      },
-      {
-        "fecha": "2026-07-21",
-        "base_vc": 68.06385,
-        "vc_estimated": 69.59014547799772,
-        "actual_vc": 70.02189279999999,
-        "return_estimated": 0.02242446582139744
-      },
-      {
-        "fecha": "2026-07-22",
-        "base_vc": 70.02189279999999,
-        "vc_estimated": 70.33758802947965,
-        "actual_vc": 70.0996577,
-        "return_estimated": 0.004508521790197293
-      },
-      {
-        "fecha": "2026-07-24",
-        "base_vc": 69.6767473,
-        "vc_estimated": 67.99422081751321,
-        "actual_vc": 68.3626543,
-        "return_estimated": -0.024147603722695567
-      },
-      {
-        "fecha": "2026-07-30",
-        "base_vc": 65.3231046,
-        "vc_estimated": 67.64145609932837,
-        "actual_vc": 68.2721906,
-        "return_estimated": 0.03549052840529535
-      },
-      {
-        "fecha": "2026-07-31",
-        "base_vc": 68.2721906,
-        "vc_estimated": 68.48933926036807,
-        "actual_vc": 67.7685784,
-        "return_estimated": 0.003180631212499398
-      },
-      {
-        "fecha": "2026-08-03",
-        "base_vc": 67.7685784,
-        "vc_estimated": 67.76983122374426,
-        "actual_vc": 68.1332558,
-        "return_estimated": 1.848679393671982e-05
-      },
-      {
-        "fecha": "2026-08-04",
-        "base_vc": 68.1332558,
-        "vc_estimated": 69.96550479795752,
-        "actual_vc": 69.7841504,
-        "return_estimated": 0.026892139182896842
-      },
-      {
-        "fecha": "2026-08-05",
-        "base_vc": 69.7841504,
-        "vc_estimated": 69.7393611380385,
-        "actual_vc": 69.8102662,
-        "return_estimated": -0.0006418257112075824
-      },
-      {
-        "fecha": "2026-08-07",
-        "base_vc": 69.2016742,
-        "vc_estimated": 69.94869629349897,
-        "actual_vc": 69.6836293,
-        "return_estimated": 0.010794855791205179
-      },
-      {
-        "fecha": "2026-08-10",
-        "base_vc": 69.6836293,
-        "vc_estimated": 69.48017921774824,
-        "actual_vc": 69.2112776,
-        "return_estimated": -0.0029196252304236987
-      },
-      {
-        "fecha": "2026-08-11",
-        "base_vc": 69.2112776,
-        "vc_estimated": 71.48973966087495,
-        "actual_vc": 69.498597,
-        "return_estimated": 0.032920387253116544
-      },
-      {
-        "fecha": "2026-08-12",
-        "base_vc": 69.498597,
-        "vc_estimated": 70.20599084671262,
-        "actual_vc": 70.5338688,
-        "return_estimated": 0.010178534204260669
-      },
-      {
-        "fecha": "2026-08-13",
-        "base_vc": 70.5338688,
-        "vc_estimated": 70.5704657563348,
-        "actual_vc": 70.6649381,
-        "return_estimated": 0.0005188565005355866
-      },
-      {
-        "fecha": "2026-08-14",
-        "base_vc": 70.6649381,
-        "vc_estimated": 70.73991852653563,
-        "actual_vc": 70.8740985,
-        "return_estimated": 0.0010610697263970807
-      },
-      {
-        "fecha": "2026-08-17",
-        "base_vc": 70.8740985,
-        "vc_estimated": 71.40522802367622,
-        "actual_vc": 71.5395979,
-        "return_estimated": 0.007493986306947083
-      },
-      {
-        "fecha": "2026-08-18",
-        "base_vc": 71.5395979,
-        "vc_estimated": 69.70435111167056,
-        "actual_vc": 69.6328126,
-        "return_estimated": -0.02565357986628337
-      },
-      {
-        "fecha": "2026-08-19",
-        "base_vc": 69.6328126,
-        "vc_estimated": 70.40225328040977,
-        "actual_vc": 70.327616,
-        "return_estimated": 0.011049972730956117
-      },
-      {
-        "fecha": "2026-08-20",
-        "base_vc": 70.327616,
-        "vc_estimated": 71.04254214065413,
-        "actual_vc": 71.0427094,
-        "return_estimated": 0.010165653001150072
       }
     ]
   }
