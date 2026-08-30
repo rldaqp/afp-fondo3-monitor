@@ -13,11 +13,14 @@ ANALYSIS = ROOT / 'data' / 'analysis'
 MONITOR = ROOT / 'public' / 'data' / 'dual_rolling30_monitor.json'
 OUT = ROOT / 'analysis' / 'compare_profuturo_variant_spblscup_last30.json'
 
+BASE_FEATURES = ['ret_SPY','ret_EEM','ret_EPU','ret_MCHI','ret_USD_PEN','ret_QQQ']
+PLUS_SPBLSCUP = BASE_FEATURES + ['ret_SPBLSCUP']
 FEATURE_SETS = {
-    'A_ROLLING30_RECALC': (30, ['ret_SPY','ret_EEM','ret_EPU','ret_MCHI','ret_USD_PEN','ret_QQQ']),
-    'A_PLUS_SPBLSCUP_R30': (30, ['ret_SPY','ret_EEM','ret_EPU','ret_MCHI','ret_USD_PEN','ret_QQQ','ret_SPBLSCUP']),
-    'A_ROLLING15': (15, ['ret_SPY','ret_EEM','ret_EPU','ret_MCHI','ret_USD_PEN','ret_QQQ']),
-    'A_PLUS_SPBLSCUP_R15': (15, ['ret_SPY','ret_EEM','ret_EPU','ret_MCHI','ret_USD_PEN','ret_QQQ','ret_SPBLSCUP']),
+    'A_ROLLING15': (15, BASE_FEATURES),
+    'A_ROLLING20': (20, BASE_FEATURES),
+    'A_ROLLING25': (25, BASE_FEATURES),
+    'A_ROLLING30_RECALC': (30, BASE_FEATURES),
+    'A_PLUS_SPBLSCUP_R30': (30, PLUS_SPBLSCUP),
 }
 
 
@@ -101,7 +104,7 @@ def main():
              'B_NEW_TICKERS_VISOR_R30':bb[bb.fecha.isin(common)].sort_values('fecha').reset_index(drop=True)}
     for name,v in variants.items(): aligned[name]=v[v.fecha.isin(common)].sort_values('fecha').reset_index(drop=True)
 
-    payload={'purpose':'Diagnóstico; no modifica modelos del visor. Compara Rolling 30 y Rolling 15 sobre las mismas 30 fechas recientes con VC SBS real.',
+    payload={'purpose':'Diagnóstico; no modifica modelos del visor. Compara Rolling 15, 20, 25 y 30 del Modelo A sobre las mismas 30 fechas recientes con VC SBS real.',
              'dates':[d.date().isoformat() for d in common],
              'feature_sets':{k:{'train_n':n,'features':fs} for k,(n,fs) in FEATURE_SETS.items()},
              'metrics':{k:metrics(v) for k,v in aligned.items()},
