@@ -103,15 +103,15 @@ jobs:
             # que intente escribirse como T-1.
             python scripts/patch_google_rolling30_assets.py
 
-            # Modelo A: para entrenar/reconstruir Rolling30 se normaliza USD/PEN
-            # con BCRP PD04638PD. markets.csv se restaura luego para no alterar la
-            # fuente cruda compartida con otros modelos.
-            cp data/rolling90/markets.csv /tmp/markets_before_bcrp.csv
+            # Modelo A/B: para entrenar y reconstruir Rolling30 se normaliza
+            # USD/PEN con BCRP PD04640PD, TC Sistema bancario SBS Venta.
+            # Los n.d. históricos se completan con el último SBS Venta oficial.
+            # Esta base normalizada se conserva y se versiona: no se restaura
+            # luego la serie antigua PD04646PD/PD04638PD.
             python scripts/normalize_markets_bcrp_for_rolling30.py
             python scripts/build_dual_rolling30_monitor.py
             python scripts/patch_dual_rolling30_fx_operational.py
             python scripts/persist_dual_rolling30_shadow.py
-            cp /tmp/markets_before_bcrp.csv data/rolling90/markets.csv
           else
             echo "No se reconstruye desde una fuente T-1."
           fi
@@ -153,6 +153,23 @@ jobs:
                   if ts and row.get('serie') not in {'USD_PEN','USD/PEN'}:
                       assert ts==expected,(key,row,expected)
 
+          # Verificación dura del USD/PEN SBS Venta usado por el entrenamiento.
+          mk=pd.read_csv('data/rolling90/markets.csv')
+          mk['fecha']=pd.to_datetime(mk['fecha'],errors='coerce').dt.strftime('%Y-%m-%d')
+          expected_fx={
+              '2026-07-23':3.404,
+              '2026-07-27':3.411,
+              '2026-07-28':3.411,
+              '2026-07-29':3.411,
+              '2026-08-06':3.394,
+              '2026-08-17':3.370,
+              '2026-08-27':3.350,
+          }
+          for d,v in expected_fx.items():
+              row=mk.loc[mk['fecha'].eq(d),'USD_PEN']
+              assert not row.empty,(d,'fecha ausente')
+              assert abs(float(row.iloc[-1])-v)<1e-12,(d,row.iloc[-1],v)
+
           # Auditoría de los cierres Google Finance recuperados desde las capturas
           # originales de cada sesión. Esto detecta el antiguo desplazamiento T/T-1.
           gf=pd.read_csv('data/analysis/googlefinance_alt_rolling30_live_returns.csv')
@@ -168,8 +185,16 @@ jobs:
               assert d in spb,(d,spb)
               assert abs(spb[d]-v)<1e-12,(d,spb[d],v)
 
+          fx=dual.get('shared_fx_operational',{})
+          assert 'PD04640PD' in str(fx.get('source','')),fx
+          assert 'SBS VENTA' in str(fx.get('source','')).upper(),fx
+          assert str(fx.get('previous_date'))=='2026-08-27',fx
+          assert abs(float(fx.get('previous_value'))-3.350)<1e-12,fx
+
           print('VALIDADO dual=',expected)
+          print('USD/PEN SBS Venta=',expected_fx)
           print('SPBLSCUP 24-27=',{d:spb[d] for d in exp})
+          print('FX operacional=',fx)
           print('Modelo A=',dual['models']['qqq']['current'])
           print('Modelo B=',dual['models']['new_tickers']['current'])
           PY
@@ -179,12 +204,13 @@ jobs:
             public/data/dual_rolling30_monitor.json \
             data/analysis/googlefinance_alt_rolling30_live_returns.csv \
             data/analysis/rolling30_bcrp_normalization.json \
-            data/rolling90/bcrp_pd04638_cache.csv \
+            data/rolling90/bcrp_pd04640_cache.csv \
+            data/rolling90/markets.csv \
             data/rolling90/dual_rolling30_shadow.csv
           if git diff --cached --quiet; then
             echo "No hubo cambios adicionales en Profuturo."
           else
-            git commit -m "Validar cierres 24-28 y reconstruir Profuturo"
+            git commit -m "Validar SBS Venta y reconstruir Profuturo"
             git fetch origin migracion-github-actions
             git rebase origin/migracion-github-actions
             git push origin HEAD:migracion-github-actions
