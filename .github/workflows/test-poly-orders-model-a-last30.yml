@@ -1,0 +1,33 @@
+name: Probar orden polinomial Modelo A ultimos 30
+on:
+  workflow_dispatch:
+  push:
+    branches: [migracion-github-actions]
+    paths:
+      - scripts/test_poly_orders_model_a_last30.py
+      - .github/workflows/test-poly-orders-model-a-last30.yml
+permissions:
+  contents: write
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: migracion-github-actions
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install pandas numpy
+      - name: Ejecutar
+        run: python scripts/test_poly_orders_model_a_last30.py
+      - name: Guardar
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add analysis/test_poly_orders_model_a_last30.json
+          if ! git diff --cached --quiet; then
+            git commit -m "Guardar prueba de orden polinomial Modelo A"
+            git push origin HEAD:migracion-github-actions
+          fi
