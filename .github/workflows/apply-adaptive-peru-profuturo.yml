@@ -85,9 +85,11 @@ jobs:
           assert r24.get('peru_divergence') is True,r24
           assert r24.get('peru_signal_used')=='SPBLSCUP',r24
           assert float(r24['ret_EPU'])>0 and float(r24['ret_SPBLSCUP'])<0,r24
-          # Resultado R30 controlado ya auditado para 24/08.
-          expected_ret=-0.008300507530174464
-          assert abs(float(r24['return_estimated'])-expected_ret)<1e-10,(r24['return_estimated'],expected_ret)
+          # Validamos la regla, no un pronóstico hardcodeado de otra ventana de
+          # entrenamiento: la reconstrucción histórica debe usar exactamente la
+          # predicción BVL cuando existe divergencia de signo.
+          assert abs(float(r24['return_estimated'])-float(r24['return_estimated_bvl']))<1e-12,r24
+          assert abs(float(r24['vc_estimated'])-float(r24['vc_estimated_bvl']))<1e-10,r24
 
           last30=a['adaptive_validation']['last30']
           assert int(last30['n'])==30,last30
@@ -98,8 +100,10 @@ jobs:
           # reconstruidas con el selector, no con el QQQ legado.
           op={str(r.get('fecha'))[:10]:r for r in a.get('history_operational',[])}
           if '2026-08-24' in op:
-              assert op['2026-08-24'].get('quality_status')=='RECONSTRUIDO_ADAPTATIVO_EPU_BVL',op['2026-08-24']
-              assert abs(float(op['2026-08-24']['return_estimated'])-expected_ret)<1e-10
+              op24=op['2026-08-24']
+              assert op24.get('quality_status')=='RECONSTRUIDO_ADAPTATIVO_EPU_BVL',op24
+              assert abs(float(op24['return_estimated'])-float(r24['return_estimated']))<1e-12,(op24,r24)
+              assert abs(float(op24['vc_estimated'])-float(r24['vc_estimated']))<1e-10,(op24,r24)
 
           print('VALIDADO selector=',d['adaptive_peru'])
           print('24/08=',r24)
