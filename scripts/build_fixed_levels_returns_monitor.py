@@ -23,24 +23,37 @@ TRAIN_END = pd.Timestamp("2026-08-17")
 VALIDATION_START = pd.Timestamp("2026-08-18")
 HISTORY_START = pd.Timestamp("2026-01-05")
 
+# Modelo recalibrado sobre la misma muestra original de 30 ruedas, corrigiendo
+# únicamente los VC SBS que estaban mal transcritos en el Excel de calibración:
+# 2026-08-14 = 70.8740985 y 2026-08-17 = 71.5395979.
+# Los factores de la calibración conservan la precisión/redondeo del Excel
+# original para mantener reproducibilidad con la hoja RLD del usuario.
 LEVEL_COEFF = {
-    "intercept": 18.0871903,
-    "SPY": -0.02985343,
-    "EEM": 0.75573,
-    "MCHI": -0.29947176,
-    "QQQ": 0.02232007,
-    "SPBLSCUP": 0.05718412,
+    "intercept": 16.079002570838444,
+    "SPY": -0.022645639344358,
+    "EEM": 0.782531468403534,
+    "MCHI": -0.331228398975249,
+    "QQQ": 0.017346437590436,
+    "SPBLSCUP": 0.057402010773155,
 }
 RETURN_COEFF = {
-    "intercept": 0.0006083157824273424,
-    "SPY": -0.48217552414589,
-    "EEM": 0.6591015805248718,
-    "MCHI": -0.29668142189510577,
-    "QQQ": 0.4418293964583962,
-    "SPBLSCUP": 0.25643082661568684,
+    "intercept": 0.000712278486375,
+    "SPY": -0.512994712486852,
+    "EEM": 0.631737612710381,
+    "MCHI": -0.296644846397524,
+    "QQQ": 0.481312806588779,
+    "SPBLSCUP": 0.264337624798652,
 }
-TRAIN_R2_LEVEL = 0.98453264
-TRAIN_R2_RETURN = 0.9493025520542792
+TRAIN_R2_LEVEL = 0.9839967207688474
+TRAIN_R2_RETURN = 0.9518032304214648
+TRAIN_ADJ_R2_LEVEL = 0.9806627042623572
+TRAIN_ADJ_R2_RETURN = 0.94176223675927
+TRAIN_STDERR_LEVEL = 0.190351025609838
+TRAIN_STDERR_RETURN = 0.003847219671018321
+TRAIN_SBS_CORRECTIONS = {
+    "2026-08-14": 70.8740985,
+    "2026-08-17": 71.5395979,
+}
 YAHOO = {"SPY": "SPY", "EEM": "EEM", "MCHI": "MCHI", "QQQ": "QQQ"}
 
 
@@ -278,27 +291,34 @@ def main() -> None:
     rows = [{k: clean(v) for k, v in r.items()} for r in out.to_dict(orient="records")]
     payload = {
         "generated_at_lima": datetime.now(LIMA).isoformat(),
+        "model_version": "v2-sbs-corrected-20260831",
         "history_start": HISTORY_START.date().isoformat(),
         "training": {
             "start": TRAIN_START.date().isoformat(),
             "end": TRAIN_END.date().isoformat(),
             "n": 30,
             "levels_r2": TRAIN_R2_LEVEL,
+            "levels_adjusted_r2": TRAIN_ADJ_R2_LEVEL,
+            "levels_standard_error": TRAIN_STDERR_LEVEL,
             "returns_r2": TRAIN_R2_RETURN,
+            "returns_adjusted_r2": TRAIN_ADJ_R2_RETURN,
+            "returns_standard_error": TRAIN_STDERR_RETURN,
+            "sbs_corrections": TRAIN_SBS_CORRECTIONS,
         },
         "methodology": {
+            "calibration_note": "Misma muestra y mismos factores del Excel RLD original; se corrigieron los VC SBS de 14/08/2026 y 17/08/2026 antes de recalibrar ambos modelos.",
             "before_training": "RETROSPECTIVO: aplica coeficientes calibrados en julio-agosto a fechas anteriores; no es validación fuera de muestra.",
-            "after_training": "VALIDACIÓN/PROYECCIÓN: coeficientes congelados desde 18/08/2026.",
+            "after_training": "VALIDACIÓN/PROYECCIÓN: coeficientes v2 congelados desde 18/08/2026 para evaluación comparable.",
             "returns_base": "Usa VC SBS real del día anterior cuando existe; si no, encadena desde el VC estimado anterior.",
         },
         "models": {
             "niveles": {
                 "coefficients": LEVEL_COEFF,
-                "equation": "VC = 18.0871903 - 0.02985343·SPY + 0.75573·EEM - 0.29947176·MCHI + 0.02232007·QQQ + 0.05718412·SPBLSCUP",
+                "equation": "VC = 16.07900257 - 0.02264564·SPY + 0.78253147·EEM - 0.33122840·MCHI + 0.01734644·QQQ + 0.05740201·SPBLSCUP",
             },
             "retornos": {
                 "coefficients": RETURN_COEFF,
-                "equation": "RVC = 0.0006083158 - 0.48217552·RSPY + 0.65910158·REEM - 0.29668142·RMCHI + 0.44182940·RQQQ + 0.25643083·RSPBLSCUP",
+                "equation": "RVC = 0.0007122785 - 0.51299471·RSPY + 0.63173761·REEM - 0.29664485·RMCHI + 0.48131281·RQQQ + 0.26433762·RSPBLSCUP",
             },
         },
         "metrics": {
