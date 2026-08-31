@@ -46,7 +46,6 @@ def overlay_candidate(d,c):
  pre=d[(d.fecha<TRAIN_START)&d.target_ret.notna()&d.base_ret.notna()&d[c].notna()].copy()
  if len(tr)<8:return {'train_n':int(len(tr))}
  resid=(tr.target_ret-tr.base_ret).to_numpy(); x=tr[c].to_numpy(); g=gamma_no_intercept(x,resid)
- # LOO overlay to reduce in-sample optimism
  loo=[]
  for i in range(len(tr)):
   mask=np.ones(len(tr),dtype=bool);mask[i]=False; gi=gamma_no_intercept(x[mask],resid[mask]);loo.append(tr.base_ret.iloc[i]+(0 if not np.isfinite(gi) else gi*x[i]))
@@ -84,8 +83,8 @@ def consensus_test(d,pair,k):
  z=pd.DataFrame(rows); out={}
  for per in ['PRE','TRAIN','OOS']:
   p=z[(z.period==per)&z.active]
-  bm=metrics(p.target.to_numpy(),p.base.to_numpy());cm=metrics(p.target.to_numpy(),p.corr.to_numpy())
-  out[per]={'active_n':int(len(p)),'improves':int(np.sum(np.abs(p['corr']-p.target)<np.abs(p.base-p.target))) if len(p) else 0,'worsens':int(np.sum(np.abs(p['corr']-p.target)>np.abs(p.base-p.target))) if len(p) else 0,'base':bm,'corrected':cm,'improvement':improvement(bm,cm),'dates':[x.date().isoformat() for x in p.fecha]}
+  bm=metrics(p['target'].to_numpy(),p['base'].to_numpy());cm=metrics(p['target'].to_numpy(),p['corr'].to_numpy())
+  out[per]={'active_n':int(len(p)),'improves':int(np.sum(np.abs(p['corr']-p['target'])<np.abs(p['base']-p['target']))) if len(p) else 0,'worsens':int(np.sum(np.abs(p['corr']-p['target'])>np.abs(p['base']-p['target']))) if len(p) else 0,'base':bm,'corrected':cm,'improvement':improvement(bm,cm),'dates':[x.date().isoformat() for x in p.fecha]}
  return out,z
 
 def main():
@@ -113,7 +112,6 @@ def main():
   for k in [3,4,5,6]:
    r,z=consensus_test(d,pair,k);result['consensus'][pair][str(k)]=r
    if len(z):z.insert(0,'pair',pair);z.insert(1,'k',k);cons_rows.append(z)
- # ranking by OOS overlay MAE reduction
  ranking=[]
  for c,r in result['candidate_overlay'].items():
   imp=r.get('oos',{}).get('improvement',{}).get('mae_reduction_pct')
