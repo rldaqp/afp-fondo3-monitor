@@ -2,6 +2,7 @@
   "purpose": "Prueba retrospectiva de robustez antes del 07/07/2026 aplicando sin cambios los gamma y umbrales seleccionados posteriormente. No es OOS puro porque la ecuacion base fue calibrada con 07/07-17/08.",
   "base_model_version": "v2-sbs-corrected-20260831",
   "cutoff": "2026-07-07",
+  "anchoring_rule": "Base y corregido se reconstruyen desde el mismo VC SBS inmediatamente anterior; si shock=0, ambos son identicos.",
   "zscore_definition": "z_PE=(R_EPU-R_SPBLSCUP - media previa 30)/desv.est previa 30; solo informacion anterior al dia evaluado",
   "models": {
     "niveles": {
@@ -247,9 +248,9 @@
           "n": 86,
           "start": "2026-02-19",
           "end": "2026-07-06",
-          "mae_pct": 0.5913849981863236,
-          "rmse_pct": 0.7945164264182626,
-          "bias_pct": 0.21318699609864425,
+          "mae_pct": 0.603535088807495,
+          "rmse_pct": 0.8948732456613001,
+          "bias_pct": 0.2467422149226579,
           "direction_accuracy": 0.8837209302325582
         },
         "corrected": {
@@ -262,8 +263,8 @@
           "direction_accuracy": 0.8953488372093024
         },
         "improvement": {
-          "mae_pct_reduction_pct": -1.807860720030639,
-          "rmse_pct_reduction_pct": -6.49731176629138
+          "mae_pct_reduction_pct": 0.24168827328482786,
+          "rmse_pct_reduction_pct": 5.445979106038831
         }
       },
       "shock_days_only": {
@@ -271,9 +272,9 @@
           "n": 13,
           "start": "2026-03-11",
           "end": "2026-06-09",
-          "mae_pct": 0.7177370907516193,
-          "rmse_pct": 0.9972171295226797,
-          "bias_pct": 0.5398587542184303,
+          "mae_pct": 0.8941314726717237,
+          "rmse_pct": 1.5082383823115075,
+          "bias_pct": 0.7162531361385346,
           "direction_accuracy": 0.8461538461538461
         },
         "corrected": {
@@ -286,8 +287,8 @@
           "direction_accuracy": 0.9230769230769231
         },
         "improvement": {
-          "mae_pct_reduction_pct": -23.232002025206445,
-          "rmse_pct_reduction_pct": -31.265406928349393
+          "mae_pct_reduction_pct": 1.0792245610364741,
+          "rmse_pct_reduction_pct": 13.209931640846351
         },
         "win_days": 5,
         "loss_days": 8,
@@ -351,9 +352,9 @@
             "n": 19,
             "start": "2026-04-01",
             "end": "2026-04-30",
-            "mae_pct": 0.4166176198863491,
-            "rmse_pct": 0.5327388355918987,
-            "bias_pct": 0.24083760462653261,
+            "mae_pct": 0.374528719724312,
+            "rmse_pct": 0.4806747812633512,
+            "bias_pct": 0.19874870446449555,
             "direction_accuracy": 0.8947368421052632
           },
           "corrected": {
@@ -366,8 +367,8 @@
             "direction_accuracy": 0.8947368421052632
           },
           "improvement": {
-            "mae_pct_reduction_pct": 4.706630435989661,
-            "rmse_pct_reduction_pct": 7.506761960770149
+            "mae_pct_reduction_pct": -6.002276268511003,
+            "rmse_pct_reduction_pct": -2.511597974071931
           }
         },
         "2026-05": {
@@ -376,9 +377,9 @@
             "n": 17,
             "start": "2026-05-05",
             "end": "2026-05-29",
-            "mae_pct": 0.7478101611886132,
-            "rmse_pct": 0.9639908957937434,
-            "bias_pct": 0.4186809363817329,
+            "mae_pct": 0.8826999826569283,
+            "rmse_pct": 1.381435033706513,
+            "bias_pct": 0.5535707578500481,
             "direction_accuracy": 0.8823529411764706
           },
           "corrected": {
@@ -391,8 +392,8 @@
             "direction_accuracy": 0.8823529411764706
           },
           "improvement": {
-            "mae_pct_reduction_pct": -12.773540415524723,
-            "rmse_pct_reduction_pct": -25.13053820407474
+            "mae_pct_reduction_pct": 4.459951180579985,
+            "rmse_pct_reduction_pct": 12.681597996792915
           }
         },
         "2026-06": {
@@ -401,9 +402,9 @@
             "n": 18,
             "start": "2026-06-01",
             "end": "2026-06-26",
-            "mae_pct": 0.8236932631022017,
-            "rmse_pct": 1.1015014827403091,
-            "bias_pct": 0.17529635490477175,
+            "mae_pct": 0.8122526855346682,
+            "rmse_pct": 1.0824512019809331,
+            "bias_pct": 0.18673693247230527,
             "direction_accuracy": 0.9444444444444444
           },
           "corrected": {
@@ -416,8 +417,8 @@
             "direction_accuracy": 0.9444444444444444
           },
           "improvement": {
-            "mae_pct_reduction_pct": -0.4435942460193597,
-            "rmse_pct_reduction_pct": 1.4810745894598796
+            "mae_pct_reduction_pct": -1.8583420844669758,
+            "rmse_pct_reduction_pct": -0.25278018916492995
           }
         },
         "2026-07": {
@@ -426,9 +427,9 @@
             "n": 3,
             "start": "2026-07-01",
             "end": "2026-07-06",
-            "mae_pct": 0.32331291390161887,
-            "rmse_pct": 0.4353934416222048,
-            "bias_pct": -0.1627692663287957,
+            "mae_pct": 0.24244635648618118,
+            "rmse_pct": 0.2922533957142954,
+            "bias_pct": 0.2326909205935109,
             "direction_accuracy": 1.0
           },
           "corrected": {
@@ -441,8 +442,8 @@
             "direction_accuracy": 1.0
           },
           "improvement": {
-            "mae_pct_reduction_pct": 25.011855060031607,
-            "rmse_pct_reduction_pct": 32.876022517609115
+            "mae_pct_reduction_pct": 0.0,
+            "rmse_pct_reduction_pct": 0.0
           }
         }
       },
