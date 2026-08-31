@@ -1,0 +1,456 @@
+{
+  "purpose": "Prueba retrospectiva de robustez antes del 07/07/2026 aplicando sin cambios los gamma y umbrales seleccionados posteriormente. No es OOS puro porque la ecuacion base fue calibrada con 07/07-17/08.",
+  "base_model_version": "v2-sbs-corrected-20260831",
+  "cutoff": "2026-07-07",
+  "zscore_definition": "z_PE=(R_EPU-R_SPBLSCUP - media previa 30)/desv.est previa 30; solo informacion anterior al dia evaluado",
+  "models": {
+    "niveles": {
+      "frozen_parameters": {
+        "threshold_abs_z": 1.0,
+        "gamma": 0.0013583926885644075,
+        "gamma_pp_per_z": 0.13583926885644074,
+        "source": "seleccionados con 07/07-17/08; no reestimados con datos pre-07/07"
+      },
+      "pre_july_period": {
+        "start": "2026-02-19",
+        "end": "2026-07-06",
+        "n": 86,
+        "active_days": 26,
+        "inactive_days": 60
+      },
+      "all_days": {
+        "base": {
+          "n": 86,
+          "start": "2026-02-19",
+          "end": "2026-07-06",
+          "mae_pct": 5.106268892616475,
+          "rmse_pct": 6.10216962427679,
+          "bias_pct": -4.8420528427490055,
+          "direction_accuracy": 0.5697674418604651
+        },
+        "corrected": {
+          "n": 86,
+          "start": "2026-02-19",
+          "end": "2026-07-06",
+          "mae_pct": 5.104857915117544,
+          "rmse_pct": 6.095278852781345,
+          "bias_pct": -4.847229364844694,
+          "direction_accuracy": 0.5697674418604651
+        },
+        "improvement": {
+          "mae_pct_reduction_pct": 0.02763226004354831,
+          "rmse_pct_reduction_pct": 0.1129233030171996
+        }
+      },
+      "shock_days_only": {
+        "base": {
+          "n": 26,
+          "start": "2026-02-19",
+          "end": "2026-07-02",
+          "mae_pct": 5.510680897889936,
+          "rmse_pct": 6.267246348231759,
+          "bias_pct": -5.267466209299217,
+          "direction_accuracy": 0.5384615384615384
+        },
+        "corrected": {
+          "n": 26,
+          "start": "2026-02-19",
+          "end": "2026-07-02",
+          "mae_pct": 5.5060138184703975,
+          "rmse_pct": 6.245027286756626,
+          "bias_pct": -5.284588551615731,
+          "direction_accuracy": 0.5384615384615384
+        },
+        "improvement": {
+          "mae_pct_reduction_pct": 0.08469152008649179,
+          "rmse_pct_reduction_pct": 0.3545266970621329
+        },
+        "win_days": 13,
+        "loss_days": 13,
+        "tie_days": 0,
+        "win_rate_pct": 50.0
+      },
+      "monthly": {
+        "2026-02": {
+          "active_days": 2,
+          "base": {
+            "n": 7,
+            "start": "2026-02-19",
+            "end": "2026-02-27",
+            "mae_pct": 7.949397569562628,
+            "rmse_pct": 7.962820973568762,
+            "bias_pct": -7.949397569562628,
+            "direction_accuracy": 0.14285714285714285
+          },
+          "corrected": {
+            "n": 7,
+            "start": "2026-02-19",
+            "end": "2026-02-27",
+            "mae_pct": 7.950089847802884,
+            "rmse_pct": 7.9607032377155855,
+            "bias_pct": -7.950089847802884,
+            "direction_accuracy": 0.14285714285714285
+          },
+          "improvement": {
+            "mae_pct_reduction_pct": -0.00870856230547956,
+            "rmse_pct_reduction_pct": 0.026595296568970053
+          }
+        },
+        "2026-03": {
+          "active_days": 6,
+          "base": {
+            "n": 22,
+            "start": "2026-03-02",
+            "end": "2026-03-31",
+            "mae_pct": 8.371909071998068,
+            "rmse_pct": 8.411348001286767,
+            "bias_pct": -8.371909071998068,
+            "direction_accuracy": 0.5454545454545454
+          },
+          "corrected": {
+            "n": 22,
+            "start": "2026-03-02",
+            "end": "2026-03-31",
+            "mae_pct": 8.364769632310319,
+            "rmse_pct": 8.404635253935762,
+            "bias_pct": -8.364769632310319,
+            "direction_accuracy": 0.5454545454545454
+          },
+          "improvement": {
+            "mae_pct_reduction_pct": 0.08527851445053795,
+            "rmse_pct_reduction_pct": 0.07980584503194436
+          }
+        },
+        "2026-04": {
+          "active_days": 7,
+          "base": {
+            "n": 19,
+            "start": "2026-04-01",
+            "end": "2026-04-30",
+            "mae_pct": 7.2661511917468085,
+            "rmse_pct": 7.301068666843919,
+            "bias_pct": -7.2661511917468085,
+            "direction_accuracy": 0.47368421052631576
+          },
+          "corrected": {
+            "n": 19,
+            "start": "2026-04-01",
+            "end": "2026-04-30",
+            "mae_pct": 7.240473903720825,
+            "rmse_pct": 7.276055016092945,
+            "bias_pct": -7.240473903720825,
+            "direction_accuracy": 0.47368421052631576
+          },
+          "improvement": {
+            "mae_pct_reduction_pct": 0.3533822425158008,
+            "rmse_pct_reduction_pct": 0.3426025954880701
+          }
+        },
+        "2026-05": {
+          "active_days": 7,
+          "base": {
+            "n": 17,
+            "start": "2026-05-05",
+            "end": "2026-05-29",
+            "mae_pct": 2.7926912416952123,
+            "rmse_pct": 3.1608671678698044,
+            "bias_pct": -2.762570961992961,
+            "direction_accuracy": 0.5882352941176471
+          },
+          "corrected": {
+            "n": 17,
+            "start": "2026-05-05",
+            "end": "2026-05-29",
+            "mae_pct": 2.8271348589672654,
+            "rmse_pct": 3.1838111271412126,
+            "bias_pct": -2.8224812994977464,
+            "direction_accuracy": 0.5882352941176471
+          },
+          "improvement": {
+            "mae_pct_reduction_pct": -1.2333485620538973,
+            "rmse_pct_reduction_pct": -0.7258754655884767
+          }
+        },
+        "2026-06": {
+          "active_days": 3,
+          "base": {
+            "n": 18,
+            "start": "2026-06-01",
+            "end": "2026-06-26",
+            "mae_pct": 0.7048398723064033,
+            "rmse_pct": 1.01809643394785,
+            "bias_pct": 0.40778979727519743,
+            "direction_accuracy": 0.7777777777777778
+          },
+          "corrected": {
+            "n": 18,
+            "start": "2026-06-01",
+            "end": "2026-06-26",
+            "mae_pct": 0.6934763907085627,
+            "rmse_pct": 1.0136722507764535,
+            "bias_pct": 0.3964263156773568,
+            "direction_accuracy": 0.7777777777777778
+          },
+          "improvement": {
+            "mae_pct_reduction_pct": 1.6122075444819275,
+            "rmse_pct_reduction_pct": 0.4345544315719604
+          }
+        },
+        "2026-07": {
+          "active_days": 1,
+          "base": {
+            "n": 3,
+            "start": "2026-07-01",
+            "end": "2026-07-06",
+            "mae_pct": 0.3638669135325401,
+            "rmse_pct": 0.46970834368585224,
+            "bias_pct": 0.3638669135325401,
+            "direction_accuracy": 1.0
+          },
+          "corrected": {
+            "n": 3,
+            "start": "2026-07-01",
+            "end": "2026-07-06",
+            "mae_pct": 0.40978268292276204,
+            "rmse_pct": 0.5059734158643053,
+            "bias_pct": 0.40978268292276204,
+            "direction_accuracy": 1.0
+          },
+          "improvement": {
+            "mae_pct_reduction_pct": -12.618836086099867,
+            "rmse_pct_reduction_pct": -7.720763888049581
+          }
+        }
+      },
+      "refit_on_pre_july_for_sign_check_only": {
+        "n_active": 26,
+        "gamma": 0.003435269408168604,
+        "gamma_pp_per_z": 0.34352694081686036
+      }
+    },
+    "retornos": {
+      "frozen_parameters": {
+        "threshold_abs_z": 1.5,
+        "gamma": 0.0017154416565956182,
+        "gamma_pp_per_z": 0.17154416565956182,
+        "source": "seleccionados con 07/07-17/08; no reestimados con datos pre-07/07"
+      },
+      "pre_july_period": {
+        "start": "2026-02-19",
+        "end": "2026-07-06",
+        "n": 86,
+        "active_days": 13,
+        "inactive_days": 73
+      },
+      "all_days": {
+        "base": {
+          "n": 86,
+          "start": "2026-02-19",
+          "end": "2026-07-06",
+          "mae_pct": 0.5913849981863236,
+          "rmse_pct": 0.7945164264182626,
+          "bias_pct": 0.21318699609864425,
+          "direction_accuracy": 0.8837209302325582
+        },
+        "corrected": {
+          "n": 86,
+          "start": "2026-02-19",
+          "end": "2026-07-06",
+          "mae_pct": 0.6020764152726881,
+          "rmse_pct": 0.8461386356770542,
+          "bias_pct": 0.24344230200391015,
+          "direction_accuracy": 0.8953488372093024
+        },
+        "improvement": {
+          "mae_pct_reduction_pct": -1.807860720030639,
+          "rmse_pct_reduction_pct": -6.49731176629138
+        }
+      },
+      "shock_days_only": {
+        "base": {
+          "n": 13,
+          "start": "2026-03-11",
+          "end": "2026-06-09",
+          "mae_pct": 0.7177370907516193,
+          "rmse_pct": 0.9972171295226797,
+          "bias_pct": 0.5398587542184303,
+          "direction_accuracy": 0.8461538461538461
+        },
+        "corrected": {
+          "n": 13,
+          "start": "2026-03-11",
+          "end": "2026-06-09",
+          "mae_pct": 0.8844817862106933,
+          "rmse_pct": 1.3090011230271505,
+          "bias_pct": 0.6944229429837413,
+          "direction_accuracy": 0.9230769230769231
+        },
+        "improvement": {
+          "mae_pct_reduction_pct": -23.232002025206445,
+          "rmse_pct_reduction_pct": -31.265406928349393
+        },
+        "win_days": 5,
+        "loss_days": 8,
+        "tie_days": 0,
+        "win_rate_pct": 38.46153846153847
+      },
+      "monthly": {
+        "2026-02": {
+          "active_days": 0,
+          "base": {
+            "n": 7,
+            "start": "2026-02-19",
+            "end": "2026-02-27",
+            "mae_pct": 0.4362140922391305,
+            "rmse_pct": 0.5460534784690948,
+            "bias_pct": 0.04431475616788313,
+            "direction_accuracy": 0.7142857142857143
+          },
+          "corrected": {
+            "n": 7,
+            "start": "2026-02-19",
+            "end": "2026-02-27",
+            "mae_pct": 0.4362140922391305,
+            "rmse_pct": 0.5460534784690948,
+            "bias_pct": 0.04431475616788313,
+            "direction_accuracy": 0.7142857142857143
+          },
+          "improvement": {
+            "mae_pct_reduction_pct": 0.0,
+            "rmse_pct_reduction_pct": 0.0
+          }
+        },
+        "2026-03": {
+          "active_days": 4,
+          "base": {
+            "n": 22,
+            "start": "2026-03-02",
+            "end": "2026-03-31",
+            "mae_pct": 0.5173039183071988,
+            "rmse_pct": 0.6253176477137294,
+            "bias_pct": 0.16651642616432494,
+            "direction_accuracy": 0.8636363636363636
+          },
+          "corrected": {
+            "n": 22,
+            "start": "2026-03-02",
+            "end": "2026-03-31",
+            "mae_pct": 0.5102577980115703,
+            "rmse_pct": 0.6282074634544987,
+            "bias_pct": 0.19866792049497858,
+            "direction_accuracy": 0.9090909090909091
+          },
+          "improvement": {
+            "mae_pct_reduction_pct": 1.3620852358292297,
+            "rmse_pct_reduction_pct": -0.4621356443936883
+          }
+        },
+        "2026-04": {
+          "active_days": 4,
+          "base": {
+            "n": 19,
+            "start": "2026-04-01",
+            "end": "2026-04-30",
+            "mae_pct": 0.4166176198863491,
+            "rmse_pct": 0.5327388355918987,
+            "bias_pct": 0.24083760462653261,
+            "direction_accuracy": 0.8947368421052632
+          },
+          "corrected": {
+            "n": 19,
+            "start": "2026-04-01",
+            "end": "2026-04-30",
+            "mae_pct": 0.3970089681870825,
+            "rmse_pct": 0.49274739933143624,
+            "bias_pct": 0.19610818959847737,
+            "direction_accuracy": 0.8947368421052632
+          },
+          "improvement": {
+            "mae_pct_reduction_pct": 4.706630435989661,
+            "rmse_pct_reduction_pct": 7.506761960770149
+          }
+        },
+        "2026-05": {
+          "active_days": 4,
+          "base": {
+            "n": 17,
+            "start": "2026-05-05",
+            "end": "2026-05-29",
+            "mae_pct": 0.7478101611886132,
+            "rmse_pct": 0.9639908957937434,
+            "bias_pct": 0.4186809363817329,
+            "direction_accuracy": 0.8823529411764706
+          },
+          "corrected": {
+            "n": 17,
+            "start": "2026-05-05",
+            "end": "2026-05-29",
+            "mae_pct": 0.8433319943594413,
+            "rmse_pct": 1.2062469961449924,
+            "bias_pct": 0.5142027695525611,
+            "direction_accuracy": 0.8823529411764706
+          },
+          "improvement": {
+            "mae_pct_reduction_pct": -12.773540415524723,
+            "rmse_pct_reduction_pct": -25.13053820407474
+          }
+        },
+        "2026-06": {
+          "active_days": 1,
+          "base": {
+            "n": 18,
+            "start": "2026-06-01",
+            "end": "2026-06-26",
+            "mae_pct": 0.8236932631022017,
+            "rmse_pct": 1.1015014827403091,
+            "bias_pct": 0.17529635490477175,
+            "direction_accuracy": 0.9444444444444444
+          },
+          "corrected": {
+            "n": 18,
+            "start": "2026-06-01",
+            "end": "2026-06-26",
+            "mae_pct": 0.8273471190221722,
+            "rmse_pct": 1.0851874241769186,
+            "bias_pct": 0.17164249898480127,
+            "direction_accuracy": 0.9444444444444444
+          },
+          "improvement": {
+            "mae_pct_reduction_pct": -0.4435942460193597,
+            "rmse_pct_reduction_pct": 1.4810745894598796
+          }
+        },
+        "2026-07": {
+          "active_days": 0,
+          "base": {
+            "n": 3,
+            "start": "2026-07-01",
+            "end": "2026-07-06",
+            "mae_pct": 0.32331291390161887,
+            "rmse_pct": 0.4353934416222048,
+            "bias_pct": -0.1627692663287957,
+            "direction_accuracy": 1.0
+          },
+          "corrected": {
+            "n": 3,
+            "start": "2026-07-01",
+            "end": "2026-07-06",
+            "mae_pct": 0.24244635648618118,
+            "rmse_pct": 0.2922533957142954,
+            "bias_pct": 0.2326909205935109,
+            "direction_accuracy": 1.0
+          },
+          "improvement": {
+            "mae_pct_reduction_pct": 25.011855060031607,
+            "rmse_pct_reduction_pct": 32.876022517609115
+          }
+        }
+      },
+      "refit_on_pre_july_for_sign_check_only": {
+        "n_active": 13,
+        "gamma": 0.0034138018425454754,
+        "gamma_pp_per_z": 0.3413801842545475
+      }
+    }
+  }
+}
