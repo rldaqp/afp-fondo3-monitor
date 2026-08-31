@@ -10,6 +10,7 @@ on:
       - "scripts/build_fixed_models_intraday.py"
       - "public/index.html"
       - "public/data/fixed_trade_runtime_v1.js"
+      - "public/data/model_signal_v1.js"
   schedule:
     - cron: "*/5 13-22 * * 1-5"
   workflow_run:
@@ -91,15 +92,22 @@ jobs:
           git clone --depth 1 --branch gh-pages "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" "$tmp/gh-pages"
           mkdir -p "$tmp/gh-pages/data"
           cp public/data/fixed_models_intraday.json "$tmp/gh-pages/data/fixed_models_intraday.json"
+          cp public/data/model_signal_v1.js "$tmp/gh-pages/data/model_signal_v1.js"
           cd "$tmp/gh-pages"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/fixed_models_intraday.json
+          git add data/fixed_models_intraday.json data/model_signal_v1.js
           if git diff --cached --quiet; then
-            echo "gh-pages ya tiene el snapshot."
+            echo "gh-pages ya tiene snapshot y señal."
           else
-            git commit -m "Publicar intradia modelos fijos"
+            git commit -m "Publicar intradia y señal modelos fijos"
             git push origin HEAD:gh-pages
+          fi
+
+      - name: Inyectar señal operativa y atribución
+        run: |
+          if ! grep -q 'model_signal_v1.js' public/index.html; then
+            sed -i 's#</body>#<script src="data/model_signal_v1.js?rev=SIGNAL1-20260831"></script></body>#' public/index.html
           fi
 
       - name: Configurar Pages
