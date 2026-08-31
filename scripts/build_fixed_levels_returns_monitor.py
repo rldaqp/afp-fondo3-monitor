@@ -1,0 +1,328 @@
+from __future__ import annotations
+
+import json
+from datetime import datetime
+from pathlib import Path
+from zoneinfo import ZoneInfo
+
+import numpy as np
+import pandas as pd
+import yfinance as yf
+
+ROOT = Path(__file__).resolve().parents[1]
+SEED = ROOT / "data" / "fixed_models" / "spblscup_levels_2026.csv"
+SBS = ROOT / "data" / "rolling90" / "sbs_profuturo_f3.csv"
+LIVE = ROOT / "public" / "data" / "live_market.json"
+LIVE_RET = ROOT / "data" / "analysis" / "googlefinance_alt_rolling30_live_returns.csv"
+OUT_JSON = ROOT / "public" / "data" / "fixed_models_2026.json"
+OUT_CSV = ROOT / "public" / "data" / "fixed_models_2026.csv"
+
+LIMA = ZoneInfo("America/Lima")
+TRAIN_START = pd.Timestamp("2026-07-07")
+TRAIN_END = pd.Timestamp("2026-08-17")
+VALIDATION_START = pd.Timestamp("2026-08-18")
+HISTORY_START = pd.Timestamp("2026-01-05")
+
+LEVEL_COEFF = {
+    "intercept": 18.0871903,
+    "SPY": -0.02985343,
+    "EEM": 0.75573,
+    "MCHI": -0.29947176,
+    "QQQ": 0.02232007,
+    "SPBLSCUP": 0.05718412,
+}
+RETURN_COEFF = {
+    "intercept": 0.0006083157824273424,
+    "SPY": -0.48217552414589,
+    "EEM": 0.6591015805248718,
+    "MCHI": -0.29668142189510577,
+    "QQQ": 0.4418293964583962,
+    "SPBLSCUP": 0.25643082661568684,
+}
+TRAIN_R2_LEVEL = 0.98453264
+TRAIN_R2_RETURN = 0.9493025520542792
+YAHOO = {"SPY": "SPY", "EEM": "EEM", "MCHI": "MCHI", "QQQ": "QQQ"}
+
+
+def finite(v) -> bool:
+    try:
+        return v is not None and np.isfinite(float(v))
+    except Exception:
+        return False
+
+
+def extract_close(raw: pd.DataFrame, ticker: str) -> pd.Series:
+    if raw.empty:
+        return pd.Series(dtype=float)
+    if isinstance(raw.columns, pd.MultiIndex):
+        for key in [("Close", ticker), (ticker, "Close")]:
+            if key in raw.columns:
+                return pd.to_numeric(raw[key], errors="coerce").dropna()
+        if "Close" in raw.columns.get_level_values(0):
+            b = raw.xs("Close", axis=1, level=0)
+            if ticker in b.columns:
+                return pd.to_numeric(b[ticker], errors="coerce").dropna()
+    if "Close" in raw.columns:
+        return pd.to_numeric(raw["Close"], errors="coerce").dropna()
+    return pd.Series(dtype=float)
+
+
+def yahoo_history() -> pd.DataFrame:
+    start = (HISTORY_START - pd.Timedelta(days=10)).strftime("%Y-%m-%d")
+    end = (pd.Timestamp.now().normalize() + pd.Timedelta(days=3)).strftime("%Y-%m-%d")
+    frames = []
+    for name, ticker in YAHOO.items():
+        raw = yf.download(
+            ticker, start=start, end=end, auto_adjust=False,
+            actions=False, progress=False, threads=False
+        )
+        close = extract_close(raw, ticker)
+        if close.empty:
+            raise RuntimeError(f"Yahoo sin historia para {ticker}")
+        idx = pd.to_datetime(close.index)
+        if getattr(idx, "tz", None) is not None:
+            idx = idx.tz_localize(None)
+        frames.append(pd.DataFrame({"fecha": idx.normalize(), name: close.to_numpy(float)}))
+    out = frames[0]
+    for d in frames[1:]:
+        out = out.merge(d, on="fecha", how="inner")
+    return out.sort_values("fecha").drop_duplicates("fecha", keep="last")
+
+
+def load_spblscup_levels() -> pd.DataFrame:
+    if not SEED.exists():
+        raise RuntimeError(f"Falta {SEED}")
+    spb = pd.read_csv(SEED)
+    spb["fecha"] = pd.to_datetime(spb["fecha"], errors="coerce").dt.normalize()
+    spb["SPBLSCUP"] = pd.to_numeric(spb["SPBLSCUP"], errors="coerce")
+    spb = spb.dropna(subset=["fecha", "SPBLSCUP"]).sort_values("fecha")
+    if "source" not in spb.columns:
+        spb["source"] = "SEMILLA"
+
+    # Completa cierres nuevos persistidos por el flujo Google Finance existente.
+    if LIVE_RET.exists():
+        lr = pd.read_csv(LIVE_RET)
+        if "fecha" in lr.columns and "ret_SPBLSCUP" in lr.columns:
+            lr["fecha"] = pd.to_datetime(lr["fecha"], errors="coerce").dt.normalize()
+            lr["ret_SPBLSCUP"] = pd.to_numeric(lr["ret_SPBLSCUP"], errors="coerce")
+            lr = lr.dropna(subset=["fecha", "ret_SPBLSCUP"]).sort_values("fecha")
+            known = {pd.Timestamp(r.fecha): float(r.SPBLSCUP) for r in spb.itertuples()}
+            source = {pd.Timestamp(r.fecha): str(r.source) for r in spb.itertuples()}
+            for r in lr.itertuples():
+                d = pd.Timestamp(r.fecha)
+                if d in known:
+                    continue
+                prev_dates = [x for x in known if x < d]
+                if not prev_dates:
+                    continue
+                prev = max(prev_dates)
+                known[d] = known[prev] * (1.0 + float(r.ret_SPBLSCUP))
+                source[d] = "RECONSTRUIDO · CIERRE VALIDADO GOOGLE/YAHOO"
+            spb = pd.DataFrame({
+                "fecha": sorted(known),
+                "SPBLSCUP": [known[d] for d in sorted(known)],
+                "source": [source[d] for d in sorted(known)],
+            })
+
+    # Si el visor de mercado tiene un cierre exacto de la sesión, este prevalece.
+    if LIVE.exists():
+        try:
+            live = json.loads(LIVE.read_text(encoding="utf-8"))
+            raw_date = str(live.get("signal_date") or "")[:10]
+            d = pd.to_datetime(raw_date, errors="coerce")
+            if pd.notna(d) and not bool(live.get("market_open")):
+                d = pd.Timestamp(d).normalize()
+                for row in live.get("experimental_assets", []):
+                    if str(row.get("serie")) != "SPBLSCUP":
+                        continue
+                    if finite(row.get("precio_actual")) and bool(row.get("validado_modelo", True)):
+                        cur = float(row["precio_actual"])
+                        mask = spb["fecha"].eq(d)
+                        if mask.any():
+                            spb.loc[mask, "SPBLSCUP"] = cur
+                            spb.loc[mask, "source"] = "GOOGLE FINANCE · CIERRE SESIÓN VALIDADO"
+                        else:
+                            spb = pd.concat([spb, pd.DataFrame([{
+                                "fecha": d, "SPBLSCUP": cur,
+                                "source": "GOOGLE FINANCE · CIERRE SESIÓN VALIDADO"
+                            }])], ignore_index=True)
+                        break
+        except Exception as exc:
+            print("Aviso: live_market no aportó SPBLSCUP:", type(exc).__name__, exc)
+
+    spb = spb.sort_values("fecha").drop_duplicates("fecha", keep="last")
+    SEED.parent.mkdir(parents=True, exist_ok=True)
+    persist = spb.copy()
+    persist["fecha"] = persist["fecha"].dt.strftime("%Y-%m-%d")
+    persist.to_csv(SEED, index=False)
+    return spb
+
+
+def phase(d: pd.Timestamp, has_actual: bool) -> str:
+    if d < TRAIN_START:
+        return "RETROSPECTIVO"
+    if d <= TRAIN_END:
+        return "ENTRENAMIENTO"
+    return "VALIDACIÓN" if has_actual else "PROYECCIÓN"
+
+
+def metric_block(df: pd.DataFrame, mask: pd.Series) -> dict:
+    d = df.loc[mask].copy()
+    out = {}
+    for key, col in [("niveles", "error_niveles_pct"), ("retornos", "error_retornos_pct")]:
+        e = pd.to_numeric(d[col], errors="coerce").dropna().to_numpy(float)
+        out[key] = {
+            "n": int(e.size),
+            "mae_pct": float(np.mean(np.abs(e))) if e.size else None,
+            "rmse_pct": float(np.sqrt(np.mean(e ** 2))) if e.size else None,
+        }
+    return out
+
+
+def main() -> None:
+    yahoo = yahoo_history()
+    spb = load_spblscup_levels()
+    df = spb.merge(yahoo, on="fecha", how="left")
+    df = df.loc[df["fecha"] >= HISTORY_START].sort_values("fecha").reset_index(drop=True)
+
+    sbs = pd.read_csv(SBS)
+    sbs["fecha"] = pd.to_datetime(sbs["fecha"], errors="coerce").dt.normalize()
+    sbs["valor_cuota"] = pd.to_numeric(sbs["valor_cuota"], errors="coerce")
+    sbs = sbs.dropna(subset=["fecha", "valor_cuota"]).sort_values("fecha")
+    df = df.merge(
+        sbs[["fecha", "valor_cuota"]].rename(columns={"valor_cuota": "vc_sbs"}),
+        on="fecha", how="left"
+    )
+
+    factors = ["SPY", "EEM", "MCHI", "QQQ", "SPBLSCUP"]
+    for c in factors:
+        df[c] = pd.to_numeric(df[c], errors="coerce")
+        df[f"ret_{c}"] = df[c].pct_change(fill_method=None)
+
+    df["vc_niveles"] = LEVEL_COEFF["intercept"]
+    valid_levels = pd.Series(True, index=df.index)
+    for c in factors:
+        valid_levels &= df[c].notna()
+        df["vc_niveles"] += LEVEL_COEFF[c] * df[c]
+    df.loc[~valid_levels, "vc_niveles"] = np.nan
+
+    df["ret_vc_estimado"] = RETURN_COEFF["intercept"]
+    valid_returns = pd.Series(True, index=df.index)
+    for c in factors:
+        valid_returns &= df[f"ret_{c}"].notna()
+        df["ret_vc_estimado"] += RETURN_COEFF[c] * df[f"ret_{c}"]
+    df.loc[~valid_returns, "ret_vc_estimado"] = np.nan
+
+    s_est = []
+    prev_est = np.nan
+    for i, row in df.iterrows():
+        if i == 0 or not finite(row["ret_vc_estimado"]):
+            s_est.append(np.nan)
+            continue
+        prev_actual = df.iloc[i - 1]["vc_sbs"]
+        if finite(prev_actual):
+            base = float(prev_actual)
+        elif finite(prev_est):
+            base = float(prev_est)
+        else:
+            base = np.nan
+        value = base * (1.0 + float(row["ret_vc_estimado"])) if finite(base) else np.nan
+        s_est.append(value)
+        prev_est = value
+    df["vc_retornos"] = s_est
+
+    df["error_niveles_pct"] = np.where(
+        df["vc_sbs"].notna() & df["vc_niveles"].notna(),
+        (df["vc_niveles"] / df["vc_sbs"] - 1.0) * 100.0,
+        np.nan,
+    )
+    df["error_retornos_pct"] = np.where(
+        df["vc_sbs"].notna() & df["vc_retornos"].notna(),
+        (df["vc_retornos"] / df["vc_sbs"] - 1.0) * 100.0,
+        np.nan,
+    )
+    df["fase"] = [phase(d, finite(v)) for d, v in zip(df["fecha"], df["vc_sbs"])]
+
+    validation = metric_block(
+        df, (df["fecha"] >= VALIDATION_START) & df["vc_sbs"].notna()
+    )
+    retrospective = metric_block(
+        df, (df["fecha"] < TRAIN_START) & df["vc_sbs"].notna()
+    )
+
+    latest_actual = df.loc[df["vc_sbs"].notna()].tail(1)
+    latest_row = df.loc[df[factors].notna().all(axis=1)].tail(1)
+    if latest_row.empty:
+        raise RuntimeError("No existe una última fila completa de mercado")
+    last = latest_row.iloc[0]
+
+    columns = [
+        "fecha", "fase", "SPY", "EEM", "MCHI", "QQQ", "SPBLSCUP", "source",
+        "vc_sbs", "vc_niveles", "ret_vc_estimado", "vc_retornos",
+        "error_niveles_pct", "error_retornos_pct",
+    ]
+    out = df[columns].copy()
+    out["fecha"] = out["fecha"].dt.strftime("%Y-%m-%d")
+    OUT_CSV.parent.mkdir(parents=True, exist_ok=True)
+    out.to_csv(OUT_CSV, index=False)
+
+    def clean(v):
+        if isinstance(v, (np.floating, float)):
+            return None if not np.isfinite(v) else float(v)
+        if isinstance(v, np.integer):
+            return int(v)
+        if pd.isna(v):
+            return None
+        return v
+
+    rows = [{k: clean(v) for k, v in r.items()} for r in out.to_dict(orient="records")]
+    payload = {
+        "generated_at_lima": datetime.now(LIMA).isoformat(),
+        "history_start": HISTORY_START.date().isoformat(),
+        "training": {
+            "start": TRAIN_START.date().isoformat(),
+            "end": TRAIN_END.date().isoformat(),
+            "n": 30,
+            "levels_r2": TRAIN_R2_LEVEL,
+            "returns_r2": TRAIN_R2_RETURN,
+        },
+        "methodology": {
+            "before_training": "RETROSPECTIVO: aplica coeficientes calibrados en julio-agosto a fechas anteriores; no es validación fuera de muestra.",
+            "after_training": "VALIDACIÓN/PROYECCIÓN: coeficientes congelados desde 18/08/2026.",
+            "returns_base": "Usa VC SBS real del día anterior cuando existe; si no, encadena desde el VC estimado anterior.",
+        },
+        "models": {
+            "niveles": {
+                "coefficients": LEVEL_COEFF,
+                "equation": "VC = 18.0871903 - 0.02985343·SPY + 0.75573·EEM - 0.29947176·MCHI + 0.02232007·QQQ + 0.05718412·SPBLSCUP",
+            },
+            "retornos": {
+                "coefficients": RETURN_COEFF,
+                "equation": "RVC = 0.0006083158 - 0.48217552·RSPY + 0.65910158·REEM - 0.29668142·RMCHI + 0.44182940·RQQQ + 0.25643083·RSPBLSCUP",
+            },
+        },
+        "metrics": {
+            "validation_from_2026_08_18": validation,
+            "retrospective_before_2026_07_07": retrospective,
+        },
+        "latest": {
+            "market_date": pd.Timestamp(last["fecha"]).date().isoformat(),
+            "vc_niveles": clean(last["vc_niveles"]),
+            "ret_vc_estimado": clean(last["ret_vc_estimado"]),
+            "vc_retornos": clean(last["vc_retornos"]),
+            "latest_sbs_date": None if latest_actual.empty else pd.Timestamp(latest_actual.iloc[0]["fecha"]).date().isoformat(),
+            "latest_sbs_vc": None if latest_actual.empty else clean(latest_actual.iloc[0]["vc_sbs"]),
+        },
+        "sources": {
+            "SPY_EEM_MCHI_QQQ": "Yahoo Finance · cierre diario no ajustado",
+            "SPBLSCUP": "Semilla auditada + Google Finance (SPBLSCUP:INDEXSP) para cierres nuevos",
+            "VC_SBS": "data/rolling90/sbs_profuturo_f3.csv · serie oficial usada por el monitor",
+        },
+        "rows": rows,
+    }
+    OUT_JSON.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
+    print(json.dumps({"rows": len(rows), "last": payload["latest"], "validation": validation}, ensure_ascii=False, indent=2))
+
+
+if __name__ == "__main__":
+    main()
