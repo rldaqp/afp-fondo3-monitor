@@ -9,6 +9,7 @@ on:
       - ".github/workflows/update-fixed-levels-returns.yml"
       - "scripts/build_fixed_levels_returns_monitor.py"
       - "public/index.html"
+      - "public/data/model_signal_v1.js"
   workflow_run:
     workflows:
       - "Actualizar dual Profuturo sesion actual"
@@ -82,6 +83,12 @@ jobs:
             git fetch origin migracion-github-actions
             git rebase origin/migracion-github-actions
             git push origin HEAD:migracion-github-actions
+          fi
+
+      - name: Inyectar señal operativa y atribución
+        run: |
+          if ! grep -q 'model_signal_v1.js' public/index.html; then
+            sed -i 's#</body>#<script src="data/model_signal_v1.js?rev=SIGNAL1-20260831"></script></body>#' public/index.html
           fi
 
       - name: Configurar Pages
