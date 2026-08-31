@@ -62,7 +62,6 @@ def improvement(base: dict, corr: dict) -> dict:
 
 
 def prior_sbs_map(sbs: pd.DataFrame) -> dict[pd.Timestamp, tuple[pd.Timestamp, float]]:
-    rows = []
     last_date = None
     last_vc = None
     out = {}
@@ -72,7 +71,6 @@ def prior_sbs_map(sbs: pd.DataFrame) -> dict[pd.Timestamp, tuple[pd.Timestamp, f
             out[d] = (last_date, last_vc)
         last_date = d
         last_vc = float(r["valor_cuota"])
-        rows.append(d)
     return out
 
 
@@ -137,9 +135,15 @@ def main():
         if model == "niveles":
             d["base_vc"] = d["vc_niveles"]
             d["base_ret"] = d["base_vc"] / d["prev_vc"] - 1.0
+            d["published_historical_vc"] = d["vc_niveles"]
         else:
-            d["base_vc"] = d["vc_retornos"]
+            # La prueba debe aislar SOLO el shock. Para ello reconstruimos el VC base
+            # desde el mismo VC SBS t-1 que usa el VC corregido. El campo histórico
+            # vc_retornos fue generado con reglas de anclaje antiguas y no es adecuado
+            # para esta comparación retrospectiva.
             d["base_ret"] = d["ret_vc_estimado"]
+            d["base_vc"] = d["prev_vc"] * (1.0 + d["base_ret"])
+            d["published_historical_vc"] = d["vc_retornos"]
 
         threshold = PARAMS[model]["threshold"]
         gamma = PARAMS[model]["gamma"]
@@ -169,7 +173,6 @@ def main():
                 "improvement": improvement(b, c),
             }
 
-        # Por día activo: cuántas veces realmente redujo el error absoluto.
         if not active.empty:
             eb = np.abs(active["base_vc"].to_numpy(float) / active["vc_sbs"].to_numpy(float) - 1.0)
             ec = np.abs(active["corrected_vc"].to_numpy(float) / active["vc_sbs"].to_numpy(float) - 1.0)
@@ -213,7 +216,7 @@ def main():
 
         cols = [
             "model", "fecha", "prev_sbs_date", "prev_vc", "vc_sbs", "target_ret",
-            "base_ret", "base_vc", "ret_EPU", "ret_SPBLSCUP", "D_PE", "z_PE",
+            "base_ret", "base_vc", "published_historical_vc", "ret_EPU", "ret_SPBLSCUP", "D_PE", "z_PE",
             "shock_active", "correction_ret", "corrected_ret", "corrected_vc",
         ]
         all_daily.append(pre[cols])
@@ -222,6 +225,7 @@ def main():
         "purpose": "Prueba retrospectiva de robustez antes del 07/07/2026 aplicando sin cambios los gamma y umbrales seleccionados posteriormente. No es OOS puro porque la ecuacion base fue calibrada con 07/07-17/08.",
         "base_model_version": payload.get("model_version"),
         "cutoff": "2026-07-07",
+        "anchoring_rule": "Base y corregido se reconstruyen desde el mismo VC SBS inmediatamente anterior; si shock=0, ambos son identicos.",
         "zscore_definition": "z_PE=(R_EPU-R_SPBLSCUP - media previa 30)/desv.est previa 30; solo informacion anterior al dia evaluado",
         "models": result_models,
     }
