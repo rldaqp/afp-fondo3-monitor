@@ -1,0 +1,28 @@
+name: Evaluar correccion signo filtrada por Z
+on:
+  workflow_dispatch:
+  push:
+    branches: [migracion-github-actions]
+    paths:
+      - 'scripts/evaluate_filtered_sign_alpha.py'
+      - '.github/workflows/evaluate-filtered-sign-alpha.yml'
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: migracion-github-actions
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install pandas numpy
+      - run: python scripts/evaluate_filtered_sign_alpha.py
+      - run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add analysis/filtered_sign_alpha_summary.csv analysis/filtered_sign_alpha_days.csv
+          git diff --cached --quiet || git commit -m 'Guardar corrección filtrada por Z'
+          git push origin HEAD:migracion-github-actions
