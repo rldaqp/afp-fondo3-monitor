@@ -1,0 +1,93 @@
+{
+  "generated_at_lima": "2026-08-31T12:25:38.993899-05:00",
+  "signal_date": "2026-08-28",
+  "mode": "CIERRE DIARIO",
+  "market_open": false,
+  "models": {
+    "niveles": {
+      "vc_intraday": 71.27043659541633,
+      "equation": "VC = 18.0871903 - 0.02985343·SPY + 0.75573·EEM - 0.29947176·MCHI + 0.02232007·QQQ + 0.05718412·SPBLSCUP"
+    },
+    "retornos": {
+      "return_intraday": -0.009382746214076011,
+      "vc_intraday": 71.86054767576742,
+      "base_vc": 72.54118318768627,
+      "base_rule": "VC estimado por retornos de la sesión anterior",
+      "equation": "RVC = 0.0006083158 - 0.48217552·RSPY + 0.65910158·REEM - 0.29668142·RMCHI + 0.44182940·RQQQ + 0.25643083·RSPBLSCUP"
+    }
+  },
+  "tickers": [
+    {
+      "ticker": "SPY",
+      "timestamp": "2026-08-28",
+      "price_previous": 771.0999755859375,
+      "price_current": 769.3499755859375,
+      "return": -0.002269485222937795,
+      "level_coefficient": -0.02985343,
+      "return_coefficient": -0.48217552414589,
+      "level_contribution": -22.967735641656493,
+      "return_contribution": 0.0010942902269113833,
+      "level_weight_abs_pct": 17.37369076793065,
+      "return_weight_abs_pct": 8.984584164718916,
+      "source": "CIERRE DIARIO YAHOO · USADO POR MODELO"
+    },
+    {
+      "ticker": "EEM",
+      "timestamp": "2026-08-28",
+      "price_previous": 67.61000061035156,
+      "price_current": 67.13999938964844,
+      "return": -0.006951652365924765,
+      "level_coefficient": 0.75573,
+      "return_coefficient": 0.6591015805248718,
+      "level_contribution": 50.73971173873901,
+      "return_contribution": -0.004581845061640477,
+      "level_weight_abs_pct": 38.3814963371467,
+      "return_weight_abs_pct": 37.61887986718194,
+      "source": "YAHOO EEM · FALLBACK POR ERROR GOOGLE"
+    },
+    {
+      "ticker": "MCHI",
+      "timestamp": "2026-08-28",
+      "price_previous": 54.900001525878906,
+      "price_current": 55.22999954223633,
+      "return": 0.0060108926627600034,
+      "level_coefficient": -0.29947176,
+      "return_coefficient": -0.29668142189510577,
+      "level_contribution": -16.539825167712706,
+      "return_contribution": -0.0017833201820464963,
+      "level_weight_abs_pct": 12.51136865657307,
+      "return_weight_abs_pct": 14.641810622271157,
+      "source": "CIERRE DIARIO YAHOO · USADO POR MODELO"
+    },
+    {
+      "ticker": "QQQ",
+      "timestamp": "2026-08-28",
+      "price_previous": 716.2488,
+      "price_current": 714.5800170898438,
+      "return": -0.0023298927832845484,
+      "level_coefficient": 0.02232007,
+      "return_coefficient": 0.4418293964583962,
+      "level_contribution": 15.94947600204651,
+      "return_contribution": -0.001029415122251385,
+      "level_weight_abs_pct": 12.064805529523312,
+      "return_weight_abs_pct": 8.451932201210239,
+      "source": "YAHOO QQQ · FAST_INFO"
+    },
+    {
+      "ticker": "SPBLSCUP",
+      "timestamp": "2026-08-28",
+      "price_previous": 461.34,
+      "price_current": 454.7,
+      "return": -0.014392855594572262,
+      "level_coefficient": 0.05718412,
+      "return_coefficient": 0.25643082661568684,
+      "level_contribution": 26.001619364,
+      "return_contribution": -0.003690771857476378,
+      "level_weight_abs_pct": 19.66863870882627,
+      "return_weight_abs_pct": 30.302793144617763,
+      "source": "GOOGLE EXACTO"
+    }
+  ],
+  "weight_note": "Peso relativo = participación del valor absoluto del aporte actual de cada factor; no representa tenencia de cartera.",
+  "source_live": "public/data/live_market.json + Yahoo Finance QQQ"
+}
