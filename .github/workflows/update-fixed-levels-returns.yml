@@ -8,9 +8,11 @@ on:
     paths:
       - ".github/workflows/update-fixed-levels-returns.yml"
       - "scripts/build_fixed_levels_returns_monitor.py"
+      - "scripts/build_model_health.py"
       - "public/index.html"
       - "public/data/model_signal_v1.js"
       - "public/data/model_threshold_overlay_v1.js"
+      - "public/data/model_health_v1.js"
   workflow_run:
     workflows:
       - "Actualizar dual Profuturo sesion actual"
@@ -51,6 +53,9 @@ jobs:
       - name: Construir serie fija 2026
         run: python scripts/build_fixed_levels_returns_monitor.py
 
+      - name: Construir control de salud
+        run: python scripts/build_model_health.py
+
       - name: Validar salida
         run: |
           python - <<'PY'
@@ -63,8 +68,11 @@ jobs:
           assert abs(d["training"]["levels_r2"]-0.98453264) < 1e-12
           assert abs(d["training"]["returns_r2"]-0.9493025520542792) < 1e-12
           assert d["latest"]["market_date"] >= "2026-08-28"
+          h=json.loads(Path("public/data/model_health.json").read_text(encoding="utf-8"))
+          assert h["policy"]["minimum_change_n"] == 30
+          assert set(h["models"].keys()) == {"niveles","retornos"}
           print("OK", d["latest"])
-          print("VALIDACION", d["metrics"]["validation_from_2026_08_18"])
+          print("SALUD", h["models"]["niveles"]["status"], h["models"]["retornos"]["status"])
           PY
 
       - name: Persistir datos
@@ -76,23 +84,27 @@ jobs:
           git add \
             data/fixed_models/spblscup_levels_2026.csv \
             public/data/fixed_models_2026.json \
-            public/data/fixed_models_2026.csv
+            public/data/fixed_models_2026.csv \
+            public/data/model_health.json
           if git diff --cached --quiet; then
             echo "Sin cambios de datos."
           else
-            git commit -m "Actualizar niveles y retornos fijos"
+            git commit -m "Actualizar niveles retornos y salud del modelo"
             git fetch origin migracion-github-actions
             git rebase origin/migracion-github-actions
             git push origin HEAD:migracion-github-actions
           fi
 
-      - name: Inyectar señal operativa y atribución
+      - name: Inyectar módulos del visor
         run: |
           if ! grep -q 'model_signal_v1.js' public/index.html; then
             sed -i 's#</body>#<script src="data/model_signal_v1.js?rev=SIGNAL1-20260831"></script></body>#' public/index.html
           fi
           if ! grep -q 'model_threshold_overlay_v1.js' public/index.html; then
             sed -i 's#</body>#<script src="data/model_threshold_overlay_v1.js?rev=THRESHOLD1-20260831"></script></body>#' public/index.html
+          fi
+          if ! grep -q 'model_health_v1.js' public/index.html; then
+            sed -i 's#</body>#<script src="data/model_health_v1.js?rev=HEALTH1-20260831"></script></body>#' public/index.html
           fi
 
       - name: Configurar Pages
