@@ -12,6 +12,7 @@ on:
       - "public/data/fixed_trade_runtime_v1.js"
       - "public/data/model_signal_v1.js"
       - "public/data/model_threshold_overlay_v1.js"
+      - "public/data/model_health_v1.js"
   schedule:
     - cron: "*/5 13-22 * * 1-5"
   workflow_run:
@@ -95,24 +96,30 @@ jobs:
           cp public/data/fixed_models_intraday.json "$tmp/gh-pages/data/fixed_models_intraday.json"
           cp public/data/model_signal_v1.js "$tmp/gh-pages/data/model_signal_v1.js"
           cp public/data/model_threshold_overlay_v1.js "$tmp/gh-pages/data/model_threshold_overlay_v1.js"
+          cp public/data/model_health_v1.js "$tmp/gh-pages/data/model_health_v1.js"
+          if [ -f public/data/model_health.json ]; then cp public/data/model_health.json "$tmp/gh-pages/data/model_health.json"; fi
           cd "$tmp/gh-pages"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/fixed_models_intraday.json data/model_signal_v1.js data/model_threshold_overlay_v1.js
+          git add data/fixed_models_intraday.json data/model_signal_v1.js data/model_threshold_overlay_v1.js data/model_health_v1.js
+          if [ -f data/model_health.json ]; then git add data/model_health.json; fi
           if git diff --cached --quiet; then
-            echo "gh-pages ya tiene snapshot y señal."
+            echo "gh-pages ya tiene snapshot y módulos."
           else
-            git commit -m "Publicar intradia y señal modelos fijos"
+            git commit -m "Publicar intradia señal y salud modelos fijos"
             git push origin HEAD:gh-pages
           fi
 
-      - name: Inyectar señal operativa y atribución
+      - name: Inyectar módulos operativos
         run: |
           if ! grep -q 'model_signal_v1.js' public/index.html; then
             sed -i 's#</body>#<script src="data/model_signal_v1.js?rev=SIGNAL1-20260831"></script></body>#' public/index.html
           fi
           if ! grep -q 'model_threshold_overlay_v1.js' public/index.html; then
             sed -i 's#</body>#<script src="data/model_threshold_overlay_v1.js?rev=THRESHOLD1-20260831"></script></body>#' public/index.html
+          fi
+          if ! grep -q 'model_health_v1.js' public/index.html; then
+            sed -i 's#</body>#<script src="data/model_health_v1.js?rev=HEALTH1-20260831"></script></body>#' public/index.html
           fi
 
       - name: Configurar Pages
