@@ -1,0 +1,28 @@
+name: Comparar divergencias mejora vs empeora
+on:
+  workflow_dispatch:
+  push:
+    branches: [migracion-github-actions]
+    paths:
+      - 'scripts/analyze_sign_only_outcomes.py'
+      - '.github/workflows/analyze-sign-only-outcomes.yml'
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: migracion-github-actions
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install pandas numpy
+      - run: python scripts/analyze_sign_only_outcomes.py
+      - run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add analysis/sign_only_improve_vs_worsen.json analysis/sign_only_improve_vs_worsen.csv
+          git diff --cached --quiet || git commit -m 'Guardar comparación divergencias'
+          git push origin HEAD:migracion-github-actions
