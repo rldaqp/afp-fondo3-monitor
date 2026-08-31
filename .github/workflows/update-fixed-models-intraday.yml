@@ -62,6 +62,8 @@ jobs:
           assert {x["ticker"] for x in d["tickers"]} == {"SPY","EEM","MCHI","QQQ","SPBLSCUP"}
           assert float(d["models"]["niveles"]["vc_intraday"]) > 0
           assert float(d["models"]["retornos"]["vc_intraday"]) > 0
+          assert "16.07900257" in d["models"]["niveles"]["equation"]
+          assert "0.0007122785" in d["models"]["retornos"]["equation"]
           assert abs(sum(x["level_weight_abs_pct"] for x in d["tickers"])-100) < 1e-6
           assert abs(sum(x["return_weight_abs_pct"] for x in d["tickers"])-100) < 1e-6
           assert d["mode"] in {"INTRADÍA","INTRADÍA PARCIAL","CIERRE / ÚLTIMO SNAPSHOT"}
