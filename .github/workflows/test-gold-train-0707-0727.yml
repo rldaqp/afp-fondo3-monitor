@@ -1,0 +1,29 @@
+name: Probar GLD GDX entrenado al 27 julio
+on:
+  push:
+    branches: [migracion-github-actions]
+    paths:
+      - 'scripts/test_gold_train_0707_0727.py'
+      - '.github/workflows/test-gold-train-0707-0727.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: migracion-github-actions
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install pandas numpy yfinance
+      - run: python scripts/test_gold_train_0707_0727.py
+      - run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add analysis/gold_train_0707_0727.json analysis/gold_train_0707_0727_daily.csv
+          git diff --cached --quiet || git commit -m 'Guardar prueba GLD GDX al 27 julio'
+          git pull --rebase origin migracion-github-actions
+          git push origin HEAD:migracion-github-actions
