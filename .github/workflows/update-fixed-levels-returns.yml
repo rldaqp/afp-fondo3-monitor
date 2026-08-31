@@ -1,0 +1,98 @@
+name: Actualizar modelos fijos niveles y retornos
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - migracion-github-actions
+    paths:
+      - ".github/workflows/update-fixed-levels-returns.yml"
+      - "scripts/build_fixed_levels_returns_monitor.py"
+      - "public/index.html"
+  workflow_run:
+    workflows:
+      - "Actualizar dual Profuturo sesion actual"
+    types:
+      - completed
+  schedule:
+    - cron: "30 22 * * 1-5"
+    - cron: "30 13 * * 1-5"
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: fixed-levels-returns
+  cancel-in-progress: false
+
+jobs:
+  build:
+    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: migracion-github-actions
+          fetch-depth: 0
+
+      - name: Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Dependencias
+        run: pip install --disable-pip-version-check pandas numpy yfinance
+
+      - name: Construir serie fija 2026
+        run: python scripts/build_fixed_levels_returns_monitor.py
+
+      - name: Validar salida
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path("public/data/fixed_models_2026.json")
+          d=json.loads(p.read_text(encoding="utf-8"))
+          assert len(d["rows"]) >= 100, len(d["rows"])
+          assert d["training"]["n"] == 30
+          assert abs(d["training"]["levels_r2"]-0.98453264) < 1e-12
+          assert abs(d["training"]["returns_r2"]-0.9493025520542792) < 1e-12
+          assert d["latest"]["market_date"] >= "2026-08-28"
+          print("OK", d["latest"])
+          print("VALIDACION", d["metrics"]["validation_from_2026_08_18"])
+          PY
+
+      - name: Persistir datos
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add \
+            data/fixed_models/spblscup_levels_2026.csv \
+            public/data/fixed_models_2026.json \
+            public/data/fixed_models_2026.csv
+          if git diff --cached --quiet; then
+            echo "Sin cambios de datos."
+          else
+            git commit -m "Actualizar niveles y retornos fijos"
+            git fetch origin migracion-github-actions
+            git rebase origin/migracion-github-actions
+            git push origin HEAD:migracion-github-actions
+          fi
+
+      - name: Configurar Pages
+        uses: actions/configure-pages@v5
+        with:
+          enablement: true
+
+      - name: Subir sitio
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./public
+
+      - name: Desplegar Pages
+        uses: actions/deploy-pages@v4
