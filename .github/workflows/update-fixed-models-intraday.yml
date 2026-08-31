@@ -11,6 +11,7 @@ on:
       - "public/index.html"
       - "public/data/fixed_trade_runtime_v1.js"
       - "public/data/model_signal_v1.js"
+      - "public/data/model_threshold_overlay_v1.js"
   schedule:
     - cron: "*/5 13-22 * * 1-5"
   workflow_run:
@@ -93,10 +94,11 @@ jobs:
           mkdir -p "$tmp/gh-pages/data"
           cp public/data/fixed_models_intraday.json "$tmp/gh-pages/data/fixed_models_intraday.json"
           cp public/data/model_signal_v1.js "$tmp/gh-pages/data/model_signal_v1.js"
+          cp public/data/model_threshold_overlay_v1.js "$tmp/gh-pages/data/model_threshold_overlay_v1.js"
           cd "$tmp/gh-pages"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/fixed_models_intraday.json data/model_signal_v1.js
+          git add data/fixed_models_intraday.json data/model_signal_v1.js data/model_threshold_overlay_v1.js
           if git diff --cached --quiet; then
             echo "gh-pages ya tiene snapshot y señal."
           else
@@ -108,6 +110,9 @@ jobs:
         run: |
           if ! grep -q 'model_signal_v1.js' public/index.html; then
             sed -i 's#</body>#<script src="data/model_signal_v1.js?rev=SIGNAL1-20260831"></script></body>#' public/index.html
+          fi
+          if ! grep -q 'model_threshold_overlay_v1.js' public/index.html; then
+            sed -i 's#</body>#<script src="data/model_threshold_overlay_v1.js?rev=THRESHOLD1-20260831"></script></body>#' public/index.html
           fi
 
       - name: Configurar Pages
