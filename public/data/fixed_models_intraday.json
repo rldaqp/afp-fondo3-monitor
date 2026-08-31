@@ -1,6 +1,6 @@
 {
-  "generated_at_lima": "2026-08-31T15:31:19.678963-05:00",
-  "generated_at_ny": "2026-08-31T16:31:19.678955-04:00",
+  "generated_at_lima": "2026-08-31T17:01:27.080481-05:00",
+  "generated_at_ny": "2026-08-31T18:01:27.080467-04:00",
   "signal_date": "2026-08-31",
   "mode": "CIERRE / ÚLTIMO SNAPSHOT",
   "market_open": false,
@@ -9,12 +9,12 @@
   "problems": [],
   "models": {
     "niveles": {
-      "vc_intraday": 71.3196457270213,
+      "vc_intraday": 71.33170014928366,
       "equation": "VC = 16.07900257 - 0.02264564·SPY + 0.78253147·EEM - 0.33122840·MCHI + 0.01734644·QQQ + 0.05740201·SPBLSCUP"
     },
     "retornos": {
-      "return_intraday": -0.0023176301221415636,
-      "vc_intraday": 71.57813945057066,
+      "return_intraday": -0.002195547647525932,
+      "vc_intraday": 71.58689818647333,
       "base_vc": 71.74441647127998,
       "base_rule": "VC estimado por retornos de la sesión anterior",
       "equation": "RVC = 0.0007122785 - 0.51299471·RSPY + 0.63173761·REEM - 0.29664485·RMCHI + 0.48131281·RQQQ + 0.26433762·RSPBLSCUP"
@@ -32,8 +32,8 @@
       "return_coefficient": -0.512994712486852,
       "level_contribution": -17.370337382653776,
       "return_contribution": 0.0015336246193049575,
-      "level_weight_abs_pct": 13.760758937464187,
-      "return_weight_abs_pct": 9.126639298003687,
+      "level_weight_abs_pct": 13.759444979566496,
+      "return_weight_abs_pct": 9.1934310386449,
       "source": "YAHOO SPY · FAST_INFO"
     },
     {
@@ -47,8 +47,8 @@
       "return_coefficient": 0.631737612710381,
       "level_contribution": 52.44525638549868,
       "return_contribution": -0.00745196418268233,
-      "level_weight_abs_pct": 41.54706466755426,
-      "return_weight_abs_pct": 44.34682927026003,
+      "level_weight_abs_pct": 41.54309751036519,
+      "return_weight_abs_pct": 44.67137391612186,
       "source": "YAHOO EEM · FAST_INFO"
     },
     {
@@ -62,8 +62,8 @@
       "return_coefficient": -0.296644846397524,
       "level_contribution": -18.12481839625717,
       "return_contribution": 0.005009805847976642,
-      "level_weight_abs_pct": 14.358457826229454,
-      "return_weight_abs_pct": 29.813482616257126,
+      "level_weight_abs_pct": 14.357086796539509,
+      "return_weight_abs_pct": 30.031667463219563,
       "source": "YAHOO MCHI · FAST_INFO"
     },
     {
@@ -77,8 +77,8 @@
       "return_coefficient": 0.481312806588779,
       "level_contribution": 12.433232776719713,
       "return_contribution": 0.0003435284038850225,
-      "level_weight_abs_pct": 9.849591017424434,
-      "return_weight_abs_pct": 2.044346309658511,
+      "level_weight_abs_pct": 9.848650520758138,
+      "return_weight_abs_pct": 2.0593075066596236,
       "source": "YAHOO QQQ · FAST_INFO"
     },
     {
@@ -86,14 +86,14 @@
       "timestamp": "2026-08-31",
       "fresh": true,
       "price_previous": 454.7,
-      "price_current": 450.46,
-      "return": -0.009324829557950332,
+      "price_current": 450.67,
+      "return": -0.008862986584561194,
       "level_coefficient": 0.057402010773155,
       "return_coefficient": 0.264337624798652,
-      "level_contribution": 25.8573097728754,
-      "return_contribution": -0.002464903297000855,
-      "level_weight_abs_pct": 20.484127551327674,
-      "return_weight_abs_pct": 14.66870250582064,
+      "level_contribution": 25.869364195137766,
+      "return_contribution": -0.0023428208223852235,
+      "level_weight_abs_pct": 20.49172019277067,
+      "return_weight_abs_pct": 14.044220075354039,
       "source": "GOOGLE FINANCE SPBLSCUP · QUOTE ACTUAL"
     }
   ],
