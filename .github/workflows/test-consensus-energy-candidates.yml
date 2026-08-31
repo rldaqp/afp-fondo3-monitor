@@ -1,0 +1,28 @@
+name: Probar consenso y candidatos de energia
+on:
+  push:
+    branches: [migracion-github-actions]
+    paths:
+      - 'scripts/test_consensus_energy_candidates.py'
+      - '.github/workflows/test-consensus-energy-candidates.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: migracion-github-actions
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install pandas numpy yfinance
+      - run: python scripts/test_consensus_energy_candidates.py
+      - run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add analysis/consensus_energy_candidates.json analysis/consensus_energy_candidates.csv analysis/consensus_rule_days.csv
+          git diff --cached --quiet || git commit -m 'Guardar prueba consenso y energia'
+          git push origin HEAD:migracion-github-actions
