@@ -10,6 +10,8 @@ on:
       - "scripts/build_fixed_models_intraday.py"
       - "public/index.html"
       - "public/data/fixed_trade_runtime_v1.js"
+  schedule:
+    - cron: "*/5 13-22 * * 1-5"
   workflow_run:
     workflows:
       - "Actualizar mercado intradia Fondo 3"
@@ -27,7 +29,7 @@ jobs:
   update:
     if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
-    timeout-minutes: 8
+    timeout-minutes: 10
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -41,7 +43,7 @@ jobs:
           python-version: "3.11"
 
       - name: Dependencias
-        run: pip install --disable-pip-version-check pandas numpy yfinance
+        run: pip install --disable-pip-version-check pandas numpy yfinance selenium
 
       - name: Calcular snapshot intradia fijo
         run: python scripts/build_fixed_models_intraday.py
@@ -56,7 +58,11 @@ jobs:
           assert float(d["models"]["niveles"]["vc_intraday"]) > 0
           assert float(d["models"]["retornos"]["vc_intraday"]) > 0
           assert abs(sum(x["level_weight_abs_pct"] for x in d["tickers"])-100) < 1e-6
-          print("OK intradia", d["signal_date"], d["mode"])
+          assert abs(sum(x["return_weight_abs_pct"] for x in d["tickers"])-100) < 1e-6
+          assert d["mode"] in {"INTRADÍA","INTRADÍA PARCIAL","CIERRE / ÚLTIMO SNAPSHOT"}
+          print("OK intradia", d["signal_date"], d["mode"], f"fresh={d.get('fresh_factors')}/{d.get('total_factors')}")
+          if d.get("problems"):
+              print("ADVERTENCIAS", d["problems"])
           PY
 
       - name: Guardar snapshot en rama
@@ -75,7 +81,7 @@ jobs:
             git push origin HEAD:migracion-github-actions
           fi
 
-      - name: Publicar solo snapshot en gh-pages
+      - name: Publicar snapshot en gh-pages
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
