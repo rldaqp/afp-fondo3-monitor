@@ -22,7 +22,8 @@ def read_fixed():
         d[c]=pd.to_numeric(d[c],errors='coerce')
     for c in ['SPY','EEM','MCHI','QQQ','SPBLSCUP']:
         d['ret_'+c]=d[c].pct_change(fill_method=None)
-    d['target_ret']=d['vc_sbs']/d['vc_sbs'].shift(1)-1
+    d['vc_prev_real']=d['vc_sbs'].shift(1)
+    d['target_ret']=d['vc_sbs']/d['vc_prev_real']-1
     d['base_ret_fixed']=d['ret_vc_estimado']
     return d
 
@@ -72,21 +73,53 @@ def overlay(d,c):
         out[name]={'base':b,'corrected':m,'improvement':improve(b,m)}
     return out
 
-def fit(train,test,features):
-    X=np.column_stack([np.ones(len(train))]+[train[c].to_numpy() for c in features])
-    y=train.target_ret.to_numpy()
-    b=np.linalg.lstsq(X,y,rcond=None)[0]
-    Z=np.column_stack([np.ones(len(test))]+[test[c].to_numpy() for c in features])
-    return b,Z@b
+def design(df,features):
+    return np.column_stack([np.ones(len(df))]+[df[c].to_numpy() for c in features])
+
+def fit_coeff(train,features):
+    X=design(train,features); y=train.target_ret.to_numpy()
+    return np.linalg.lstsq(X,y,rcond=None)[0]
+
+def predict(df,features,b):
+    return design(df,features)@b
+
+def fit_stats(train,features,b):
+    y=train.target_ret.to_numpy(); p=predict(train,features,b)
+    resid=y-p; sse=float(np.dot(resid,resid)); sst=float(np.dot(y-y.mean(),y-y.mean()))
+    r2=1-sse/sst if sst>0 else np.nan
+    n=len(y); k=len(features)
+    adj=1-(1-r2)*(n-1)/(n-k-1) if n>k+1 else np.nan
+    se=float(np.sqrt(sse/(n-k-1))) if n>k+1 else np.nan
+    return {'n':int(n),'r2':float(r2),'adj_r2':float(adj),'standard_error':se}
+
+def vc_metrics(q,p):
+    vc_est=q.vc_prev_real.to_numpy()*(1+np.asarray(p,float)); vc=q.vc_sbs.to_numpy()
+    ok=np.isfinite(vc_est)&np.isfinite(vc)&(vc!=0); e=(vc_est[ok]/vc[ok]-1)*100
+    return {'n':int(ok.sum()),'mae_pct':float(np.mean(np.abs(e))),'rmse_pct':float(np.sqrt(np.mean(e*e))),'bias_pct':float(np.mean(e))}
 
 def ols_compare(d,extra):
     cols=BASE+extra
     tr=d[(d.fecha>=TRAIN_START)&(d.fecha<=TRAIN_END)].dropna(subset=['target_ret']+cols).copy()
-    oo=d[d.fecha>TRAIN_END].dropna(subset=['target_ret']+cols).copy()
-    b0,p0=fit(tr,oo,BASE)
-    bx,px=fit(tr,oo,cols)
+    oo=d[d.fecha>TRAIN_END].dropna(subset=['target_ret','vc_prev_real','vc_sbs']+cols).copy()
+    b0=fit_coeff(tr,BASE); bx=fit_coeff(tr,cols)
+    p0=predict(oo,BASE,b0); px=predict(oo,cols,bx)
     m0=metrics(oo.target_ret,p0); mx=metrics(oo.target_ret,px)
-    return {'features':extra,'train_n':int(len(tr)),'oos_n':int(len(oo)),'base5_oos':m0,'candidate_oos':mx,'improvement':improve(m0,mx),'coefficients':{'intercept':float(bx[0]),**{c:float(v) for c,v in zip(cols,bx[1:])}}}
+    v0=vc_metrics(oo,p0); vx=vc_metrics(oo,px)
+    rows=[]
+    for i,(_,r) in enumerate(oo.iterrows()):
+        vc0=float(r.vc_prev_real*(1+p0[i])); vcx=float(r.vc_prev_real*(1+px[i])); real=float(r.vc_sbs)
+        rows.append({'fecha':r.fecha.strftime('%Y-%m-%d'),'vc_prev_real':float(r.vc_prev_real),'vc_real':real,
+                     'ret_real_pct':float(r.target_ret*100),'ret_base_pct':float(p0[i]*100),'ret_candidate_pct':float(px[i]*100),
+                     'vc_base':vc0,'vc_candidate':vcx,'error_base_pct':float((vc0/real-1)*100),'error_candidate_pct':float((vcx/real-1)*100)})
+    return {
+        'features':extra,'train_n':int(len(tr)),'oos_n':int(len(oo)),
+        'base5_training':fit_stats(tr,BASE,b0),'candidate_training':fit_stats(tr,cols,bx),
+        'base5_oos':m0,'candidate_oos':mx,'improvement':improve(m0,mx),
+        'base5_vc_oos':v0,'candidate_vc_oos':vx,
+        'base5_coefficients':{'intercept':float(b0[0]),**{c:float(v) for c,v in zip(BASE,b0[1:])}},
+        'coefficients':{'intercept':float(bx[0]),**{c:float(v) for c,v in zip(cols,bx[1:])}},
+        'oos_rows':rows
+    }
 
 def main():
     d=read_fixed()
@@ -101,7 +134,11 @@ def main():
     result['train_corr_GLD_GDX']=float(tr['ret_GLD'].corr(tr['ret_GDX']))
     rows=[]
     for name,r in result['ols'].items():
-        rows.append({'model':name,'oos_n':r['oos_n'],'mae_base_pp':r['base5_oos']['mae_pp'],'mae_candidate_pp':r['candidate_oos']['mae_pp'],'mae_reduction_pct':r['improvement']['mae_reduction_pct'],'rmse_base_pp':r['base5_oos']['rmse_pp'],'rmse_candidate_pp':r['candidate_oos']['rmse_pp'],'rmse_reduction_pct':r['improvement']['rmse_reduction_pct']})
+        rows.append({'model':name,'train_n':r['train_n'],'r2':r['candidate_training']['r2'],'adj_r2':r['candidate_training']['adj_r2'],
+                     'oos_n':r['oos_n'],'mae_base_pp':r['base5_oos']['mae_pp'],'mae_candidate_pp':r['candidate_oos']['mae_pp'],
+                     'mae_reduction_pct':r['improvement']['mae_reduction_pct'],'rmse_base_pp':r['base5_oos']['rmse_pp'],
+                     'rmse_candidate_pp':r['candidate_oos']['rmse_pp'],'rmse_reduction_pct':r['improvement']['rmse_reduction_pct'],
+                     'vc_mae_base_pct':r['base5_vc_oos']['mae_pct'],'vc_mae_candidate_pct':r['candidate_vc_oos']['mae_pct']})
     OUT.parent.mkdir(exist_ok=True)
     OUT.write_text(json.dumps(result,ensure_ascii=False,indent=2),encoding='utf-8')
     pd.DataFrame(rows).to_csv(OUTCSV,index=False)
