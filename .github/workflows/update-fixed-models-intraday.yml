@@ -20,6 +20,8 @@ on:
 
 permissions:
   contents: write
+  pages: write
+  id-token: write
 
 concurrency:
   group: fixed-models-intraday
@@ -99,3 +101,16 @@ jobs:
             git commit -m "Publicar intradia modelos fijos"
             git push origin HEAD:gh-pages
           fi
+
+      - name: Configurar Pages
+        uses: actions/configure-pages@v5
+        with:
+          enablement: true
+
+      - name: Subir sitio actualizado
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./public
+
+      - name: Desplegar visor intradia
+        uses: actions/deploy-pages@v4
