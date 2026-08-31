@@ -10,6 +10,7 @@ on:
       - "scripts/build_fixed_levels_returns_monitor.py"
       - "public/index.html"
       - "public/data/model_signal_v1.js"
+      - "public/data/model_threshold_overlay_v1.js"
   workflow_run:
     workflows:
       - "Actualizar dual Profuturo sesion actual"
@@ -89,6 +90,9 @@ jobs:
         run: |
           if ! grep -q 'model_signal_v1.js' public/index.html; then
             sed -i 's#</body>#<script src="data/model_signal_v1.js?rev=SIGNAL1-20260831"></script></body>#' public/index.html
+          fi
+          if ! grep -q 'model_threshold_overlay_v1.js' public/index.html; then
+            sed -i 's#</body>#<script src="data/model_threshold_overlay_v1.js?rev=THRESHOLD1-20260831"></script></body>#' public/index.html
           fi
 
       - name: Configurar Pages
