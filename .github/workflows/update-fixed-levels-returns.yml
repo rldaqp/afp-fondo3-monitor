@@ -65,8 +65,10 @@ jobs:
           d=json.loads(p.read_text(encoding="utf-8"))
           assert len(d["rows"]) >= 100, len(d["rows"])
           assert d["training"]["n"] == 30
-          assert abs(d["training"]["levels_r2"]-0.98453264) < 1e-12
-          assert abs(d["training"]["returns_r2"]-0.9493025520542792) < 1e-12
+          assert abs(d["training"]["levels_r2"]-0.9839967207688474) < 1e-12
+          assert abs(d["training"]["returns_r2"]-0.9518032304214648) < 1e-12
+          assert d["training"]["sbs_corrections"] == {"2026-08-14":70.8740985,"2026-08-17":71.5395979}
+          assert d["model_version"] == "v2-sbs-corrected-20260831"
           assert d["latest"]["market_date"] >= "2026-08-28"
           h=json.loads(Path("public/data/model_health.json").read_text(encoding="utf-8"))
           assert h["policy"]["minimum_change_n"] == 30
