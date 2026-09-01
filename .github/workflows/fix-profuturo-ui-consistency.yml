@@ -10,6 +10,7 @@ on:
       - "scripts/postprocess_live_consistency.py"
       - "scripts/fix_trade_history_boot.py"
       - "public/index.html"
+      - "public/data/fixed_trade_runtime_v1.js"
       - "public/habitat/index.html"
 
 permissions:
@@ -46,6 +47,15 @@ jobs:
           def patch(path, fund, label, key, snap):
               p = Path(path)
               html = p.read_text(encoding='utf-8')
+
+              # Profuturo actual usa un runtime externo para operaciones/Drive.
+              # Si no existen los bloques inline antiguos, no se debe fallar ni
+              # intentar reinsertarlos: el runtime externo es la fuente vigente.
+              if '<script id="tradeHistoryScript">' not in html or '<script id="tradeCloudScript">' not in html:
+                  if 'fixed_trade_runtime_v1.js' in html:
+                      print(f'{path}: runtime externo detectado; parche inline omitido.')
+                      return
+                  raise RuntimeError(f'No se encontraron bloques de bitácora/sincronización en {path}')
 
               hs = html.index('<script id="tradeHistoryScript">')
               he = html.index('<!-- TRADE_HISTORY_V1_END -->', hs)
@@ -134,14 +144,16 @@ jobs:
 
       - name: Validar corrección
         run: |
-          grep -q "function liveSnapshotActive" public/index.html
-          grep -q "profuturo_fondo3_trade_history_v3" public/index.html
+          # Profuturo: arquitectura actual con runtime externo.
+          grep -q "fixed_trade_runtime_v1.js" public/index.html
+          grep -q "profuturo_fondo3_trade_history_v3" public/data/fixed_trade_runtime_v1.js
+          grep -q "fondo3-local-trade-change" public/data/fixed_trade_runtime_v1.js
+          grep -q "const FUND='PROFUTURO'" public/data/fixed_trade_runtime_v1.js
+
+          # Habitat: conserva actualmente los bloques inline.
           grep -q "habitat_fondo3_trade_history_v3" public/habitat/index.html
-          grep -q "fondo3-local-trade-change" public/index.html
           grep -q "fondo3-local-trade-change" public/habitat/index.html
-          grep -q "const FUND='PROFUTURO'" public/index.html
           grep -q "const FUND='HABITAT'" public/habitat/index.html
-          grep -q "TRADE_HISTORY_FETCH_HELPER_V1" public/index.html
           grep -q "TRADE_HISTORY_FETCH_HELPER_V1" public/habitat/index.html
 
       - name: Guardar ambos visores corregidos
