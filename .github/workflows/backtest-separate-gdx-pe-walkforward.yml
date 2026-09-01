@@ -1,0 +1,29 @@
+name: Backtest separado GDX y EPU-SPBL
+on:
+  push:
+    branches: [migracion-github-actions]
+    paths:
+      - 'scripts/backtest_separate_gdx_pe_walkforward.py'
+      - '.github/workflows/backtest-separate-gdx-pe-walkforward.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: migracion-github-actions
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install pandas numpy yfinance
+      - run: python scripts/backtest_separate_gdx_pe_walkforward.py
+      - run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add analysis/separate_gdx_pe_walkforward.json analysis/separate_gdx_pe_walkforward_daily.csv
+          git diff --cached --quiet || git commit -m 'Guardar backtest separado GDX y EPU-SPBL'
+          git pull --rebase origin migracion-github-actions
+          git push origin HEAD:migracion-github-actions
