@@ -1,0 +1,29 @@
+name: Backtest GDX walk-forward 30
+on:
+  push:
+    branches: [migracion-github-actions]
+    paths:
+      - 'scripts/backtest_gdx_walkforward30.py'
+      - '.github/workflows/backtest-gdx-walkforward30.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: migracion-github-actions
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install pandas numpy yfinance
+      - run: python scripts/backtest_gdx_walkforward30.py
+      - run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add analysis/gdx_walkforward30.json analysis/gdx_walkforward30_daily.csv
+          git diff --cached --quiet || git commit -m 'Guardar backtest GDX walk-forward 30'
+          git pull --rebase origin migracion-github-actions
+          git push origin HEAD:migracion-github-actions
