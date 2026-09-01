@@ -1,7 +1,7 @@
 {
   "generated_at_lima": "2026-09-01T14:46:49.641566-05:00",
-  "mode": "INTRADÍA PROVISIONAL",
-  "market_open": true,
+  "mode": "INTRADIA PROVISIONAL - ULTIMO CORTE",
+  "market_open": false,
   "signal_date": "2026-09-01",
   "vc_base": 71.41435514610457,
   "vc_estimated": 70.52582300891922,
@@ -86,21 +86,21 @@
       "usado_modelo": true
     }
   ],
-  "action": "ESPERAR",
+  "action": "ULTIMO_CORTE",
   "engine": "LIVE INDEPENDIENTE",
   "fx_fresh": false,
   "fx_rule": "Histórico/entrenamiento: BCRP. Predicción: BCRP si existe; si está rezagado, Yahoo PEN=X provisional; 0 % solo si ambas fuentes faltan.",
-  "note": "Snapshot intradía independiente del modelo pesado; puede cambiar hasta el cierre.",
+  "note": "Se conserva el ultimo snapshot intradia de hoy porque el cierre diario de hoy aun no esta disponible.",
   "fx_source": "YAHOO PEN=X PROVISIONAL",
   "fx_provisional": true,
   "experimental_assets": [
     {
       "serie": ".INX",
       "ticker": ".INX:INDEXSP",
-      "timestamp": "2026-09-01T15:45:00-04:00",
+      "timestamp": "2026-09-01T15:55:00-04:00",
       "precio_anterior": null,
-      "precio_actual": 7628.06982421875,
-      "retorno": -0.0075551982486739,
+      "precio_actual": 7632.60009765625,
+      "retorno": -0.006965790124841109,
       "retorno_modelo": null,
       "estado": "YAHOO ^GSPC · RESPALDO EQUIVALENTE · NUEVO 60/30 EXPERIMENTAL",
       "usado_modelo": false
@@ -108,10 +108,10 @@
     {
       "serie": "CPER",
       "ticker": "CPER:NYSEARCA",
-      "timestamp": "2026-09-01T15:45:00-04:00",
+      "timestamp": "2026-09-01T15:55:00-04:00",
       "precio_anterior": null,
-      "precio_actual": 39.0629997253418,
-      "retorno": -0.0234250068664551,
+      "precio_actual": 39.09000015258789,
+      "retorno": -0.022749996185302712,
       "retorno_modelo": null,
       "estado": "YAHOO CPER · RESPALDO EQUIVALENTE · NUEVO 60/30 EXPERIMENTAL",
       "usado_modelo": false
@@ -119,10 +119,10 @@
     {
       "serie": "EEM",
       "ticker": "EEM:NYSEARCA",
-      "timestamp": "2026-09-01T15:45:00-04:00",
+      "timestamp": "2026-09-01T15:55:00-04:00",
       "precio_anterior": null,
-      "precio_actual": 66.7750015258789,
-      "retorno": -0.00365555251356231,
+      "precio_actual": 66.77999877929688,
+      "retorno": -0.003580988895712789,
       "retorno_modelo": null,
       "estado": "YAHOO EEM · RESPALDO EQUIVALENTE · NUEVO 60/30 EXPERIMENTAL",
       "usado_modelo": false
@@ -130,10 +130,10 @@
     {
       "serie": "NDX",
       "ticker": "NDX:INDEXNASDAQ",
-      "timestamp": "2026-09-01T15:45:00-04:00",
+      "timestamp": "2026-09-01T15:55:00-04:00",
       "precio_anterior": null,
-      "precio_actual": 29071.287109375,
-      "retorno": -0.013093118013967509,
+      "precio_actual": 29080.056640625,
+      "retorno": -0.012795411527500189,
       "retorno_modelo": null,
       "estado": "YAHOO ^NDX · RESPALDO EQUIVALENTE · NUEVO 60/30 EXPERIMENTAL",
       "usado_modelo": false
@@ -169,5 +169,6 @@
     "SPBLSCUP",
     "USD/PEN"
   ],
-  "experimental_note": "Seguimiento del nuevo 60/30. No modifica el OLS principal ni el challenger 60/30 vigente."
+  "experimental_note": "Seguimiento del nuevo 60/30. No modifica el OLS principal ni el challenger 60/30 vigente.",
+  "checked_at_lima": "2026-09-01T17:05:56.350956-05:00"
 }
