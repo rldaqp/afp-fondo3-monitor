@@ -1,4 +1,4 @@
-name: Corregir visores y sincronización Drive
+name: Publicar Profuturo alineado
 
 on:
   workflow_dispatch:
@@ -7,23 +7,22 @@ on:
       - migracion-github-actions
     paths:
       - ".github/workflows/fix-profuturo-ui-consistency.yml"
-      - "scripts/postprocess_live_consistency.py"
-      - "scripts/fix_trade_history_boot.py"
       - "public/index.html"
       - "public/data/fixed_trade_runtime_v1.js"
-      - "public/habitat/index.html"
+      - "public/data/fixed_models_2026.json"
+      - "public/data/fixed_models_intraday.json"
 
 permissions:
-  contents: write
+  contents: read
   pages: write
   id-token: write
 
 concurrency:
-  group: fix-profuturo-ui-consistency
+  group: publish-profuturo-aligned
   cancel-in-progress: true
 
 jobs:
-  fix-and-deploy:
+  validate-and-deploy:
     runs-on: ubuntu-latest
     environment:
       name: github-pages
@@ -35,144 +34,18 @@ jobs:
         with:
           ref: migracion-github-actions
 
-      - name: Aplicar consistencia de datos en la interfaz
-        run: python scripts/postprocess_live_consistency.py
-
-      - name: Separar bitácoras AFP y guardar en Drive inmediatamente
+      - name: Validar visor Profuturo
         run: |
-          python - <<'PY'
-          from pathlib import Path
-          import re
-
-          def patch(path, fund, label, key, snap):
-              p = Path(path)
-              html = p.read_text(encoding='utf-8')
-
-              # Profuturo actual usa un runtime externo para operaciones/Drive.
-              # Si no existen los bloques inline antiguos, no se debe fallar ni
-              # intentar reinsertarlos: el runtime externo es la fuente vigente.
-              if '<script id="tradeHistoryScript">' not in html or '<script id="tradeCloudScript">' not in html:
-                  if 'fixed_trade_runtime_v1.js' in html:
-                      print(f'{path}: runtime externo detectado; parche inline omitido.')
-                      return
-                  raise RuntimeError(f'No se encontraron bloques de bitácora/sincronización en {path}')
-
-              hs = html.index('<script id="tradeHistoryScript">')
-              he = html.index('<!-- TRADE_HISTORY_V1_END -->', hs)
-              hist = html[hs:he]
-
-              if f"const FUND='{fund}';" not in hist:
-                  hist = re.sub(
-                      r"  const KEY='[^']+';",
-                      f"  const FUND='{fund}';\n  const ORIGIN='VISOR GITHUB · {fund}';\n  const KEY='{key}';",
-                      hist,
-                      count=1,
-                  )
-              else:
-                  hist = re.sub(r"  const KEY='[^']+';", f"  const KEY='{key}';", hist, count=1)
-
-              hist = re.sub(r"  const LEGACY_KEYS=\[[^\n]*\];", "  const LEGACY_KEYS=[];", hist)
-              hist = re.sub(
-                  r"  function loadRows\(\)\{[^\n]*\}",
-                  "  function loadRows(){return normalizeRows(readRowsFrom(KEY),KEY).filter(r=>String(r.fund||FUND).toUpperCase()===FUND)}",
-                  hist,
-                  count=1,
-              )
-              hist = hist.replace(
-                  "  function saveRows(rows){localStorage.setItem(KEY,JSON.stringify(rows))}",
-                  "  function saveRows(rows){localStorage.setItem(KEY,JSON.stringify(rows));window.dispatchEvent(new Event('fondo3-local-trade-change'))}",
-                  1,
-              )
-              if "row={id:uid(),fund:FUND,origin:ORIGIN," not in hist:
-                  hist = hist.replace("row={id:uid(),created_at:", "row={id:uid(),fund:FUND,origin:ORIGIN,created_at:", 1)
-              if "row.fund=FUND;row.origin=ORIGIN;" not in hist:
-                  hist = hist.replace(
-                      "    saveRows(rows);render();\n    $('tradeMsg').textContent=mode",
-                      "    row.fund=FUND;row.origin=ORIGIN;\n    saveRows(rows);render();\n    $('tradeMsg').textContent=mode",
-                      1,
-                  )
-              hist = hist.replace(
-                  "  window.addEventListener('fondo3-cloud-synced',()=>render());",
-                  "  window.addEventListener('fondo3-cloud-synced',()=>{render();$('tradeMsg').textContent='Operación guardada y sincronizada con Drive.'});",
-                  1,
-              )
-              html = html[:hs] + hist + html[he:]
-
-              cs = html.index('<script id="tradeCloudScript">')
-              ce = html.index('<!-- TRADE_CLOUD_V1_END -->', cs)
-              cloud = html[cs:ce]
-              cloud = re.sub(r"  const TRADE_KEY='[^']+';", f"  const TRADE_KEY='{key}';", cloud, count=1)
-              cloud = re.sub(r"  const SNAP_KEY='[^']+';", f"  const SNAP_KEY='{snap}';", cloud, count=1)
-              cloud = re.sub(r"  const LEGACY_KEYS=\[[^\n]*\];", "  const LEGACY_KEYS=[];", cloud)
-              cloud = re.sub(
-                  r"  function migrateRows\(\)\{[^\n]*\}",
-                  "  function migrateRows(){return normalizeRows(read(TRADE_KEY,[]),TRADE_KEY).filter(r=>String(r.fund||FUND).toUpperCase()===FUND)}",
-                  cloud,
-                  count=1,
-              )
-              cloud = cloud.replace("  let syncing=false,timer=null;", "  let syncing=false,timer=null,pending=false;", 1)
-              cloud = cloud.replace(
-                  "    const c=cfg();if(!c.url||!c.key||syncing)return;\n    syncing=true;",
-                  "    const c=cfg();if(!c.url||!c.key)return;\n    if(syncing){pending=true;return}\n    syncing=true;",
-                  1,
-              )
-              cloud = cloud.replace(
-                  "      const remote=Array.isArray(out.rows)?out.rows:[];\n      localStorage.setItem(TRADE_KEY,JSON.stringify(remote));\n      localStorage.setItem(SNAP_KEY,JSON.stringify(remote));",
-                  "      const remote=(Array.isArray(out.rows)?out.rows:[]).filter(r=>String(r.fund||FUND).toUpperCase()===FUND);\n      if(!pending)localStorage.setItem(TRADE_KEY,JSON.stringify(remote));\n      localStorage.setItem(SNAP_KEY,JSON.stringify(remote));",
-                  1,
-              )
-              cloud = cloud.replace(
-                  "    finally{syncing=false}",
-                  "    finally{syncing=false;if(pending){pending=false;setTimeout(()=>syncNow(true),0)}}",
-                  1,
-              )
-              cloud = re.sub(
-                  r"    document\.addEventListener\('click',ev=>\{if\(ev\.target\.closest\('#tradeHistoryPanel button'\).*?\n",
-                  "    window.addEventListener('fondo3-local-trade-change',()=>{pending=true;syncNow(true)});\n",
-                  cloud,
-                  count=1,
-              )
-              html = html[:cs] + cloud + html[ce:]
-              p.write_text(html, encoding='utf-8')
-
-          patch('public/index.html', 'PROFUTURO', 'Profuturo', 'profuturo_fondo3_trade_history_v3', 'profuturo_fondo3_drive_sync_snapshot_v3')
-          patch('public/habitat/index.html', 'HABITAT', 'Habitat', 'habitat_fondo3_trade_history_v3', 'habitat_fondo3_drive_sync_snapshot_v3')
-          PY
-
-      - name: Activar botón Guardar en ambos visores
-        run: python scripts/fix_trade_history_boot.py
-
-      - name: Validar corrección
-        run: |
-          # Profuturo: arquitectura actual con runtime externo.
+          grep -q "Modelo de niveles" public/index.html
+          grep -q "Modelo de retornos" public/index.html
+          grep -q "Variación vs. cierre anterior" public/index.html
+          grep -q "Retorno diario · niveles vs retornos vs SBS" public/index.html
+          grep -q "levelsR2" public/index.html
+          grep -q "returnsR2" public/index.html
           grep -q "fixed_trade_runtime_v1.js" public/index.html
           grep -q "profuturo_fondo3_trade_history_v3" public/data/fixed_trade_runtime_v1.js
           grep -q "fondo3-local-trade-change" public/data/fixed_trade_runtime_v1.js
           grep -q "const FUND='PROFUTURO'" public/data/fixed_trade_runtime_v1.js
-
-          # Habitat: conserva actualmente los bloques inline.
-          grep -q "habitat_fondo3_trade_history_v3" public/habitat/index.html
-          grep -q "fondo3-local-trade-change" public/habitat/index.html
-          grep -q "const FUND='HABITAT'" public/habitat/index.html
-          grep -q "TRADE_HISTORY_FETCH_HELPER_V1" public/habitat/index.html
-
-      - name: Guardar ambos visores corregidos
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add public/index.html public/habitat/index.html
-          if git diff --cached --quiet; then
-            echo "Los dos visores ya contienen la corrección."
-          else
-            git commit -m "Corregir botón Guardar y mantener operaciones AFP separadas"
-            git pull --rebase origin migracion-github-actions
-            git push origin HEAD:migracion-github-actions
-          fi
-
-      - name: Actualizar nuevamente la rama antes de publicar
-        run: |
-          git fetch origin migracion-github-actions
-          git reset --hard origin/migracion-github-actions
 
       - name: Configurar GitHub Pages
         uses: actions/configure-pages@v5
