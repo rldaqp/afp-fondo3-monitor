@@ -1,0 +1,29 @@
+name: Probar señal híbrida GDX 94
+on:
+  push:
+    branches: [migracion-github-actions]
+    paths:
+      - 'scripts/test_gdx_signal_hybrid.py'
+      - '.github/workflows/test-gdx-signal-hybrid.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: migracion-github-actions
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install pandas numpy
+      - run: python scripts/test_gdx_signal_hybrid.py
+      - run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add analysis/gdx_signal_hybrid94.json analysis/gdx_signal_hybrid94_daily.csv
+          git diff --cached --quiet || git commit -m 'Guardar prueba señal híbrida GDX 94'
+          git pull --rebase origin migracion-github-actions
+          git push origin HEAD:migracion-github-actions
