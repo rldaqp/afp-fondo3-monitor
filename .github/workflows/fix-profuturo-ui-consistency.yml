@@ -8,9 +8,11 @@ on:
     paths:
       - ".github/workflows/fix-profuturo-ui-consistency.yml"
       - "scripts/patch_profuturo_retbase.py"
+      - "scripts/complete_profuturo_20260828.py"
       - "public/index.html"
       - "public/data/fixed_trade_runtime_v1.js"
       - "public/data/fixed_models_2026.json"
+      - "public/data/fixed_models_2026.csv"
       - "public/data/fixed_models_intraday.json"
 
 permissions:
@@ -35,24 +37,41 @@ jobs:
         with:
           ref: migracion-github-actions
 
+      - name: Completar serie 28 y 31 de agosto
+        run: python scripts/complete_profuturo_20260828.py
+
       - name: Alinear bases diarias de ambos modelos
         run: python scripts/patch_profuturo_retbase.py
 
-      - name: Persistir corrección del visor
+      - name: Persistir correcciones de Profuturo
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add public/index.html
+          git add public/index.html public/data/fixed_models_2026.json public/data/fixed_models_2026.csv
           if git diff --cached --quiet; then
-            echo "La alineación ya estaba persistida."
+            echo "Las correcciones ya estaban persistidas."
           else
-            git commit -m "Alinear bases diarias Profuturo [skip ci]"
+            git commit -m "Completar serie Profuturo 28-31 agosto [skip ci]"
             git pull --rebase origin migracion-github-actions
             git push origin HEAD:migracion-github-actions
           fi
 
-      - name: Validar visor Profuturo
+      - name: Validar serie y visor Profuturo
         run: |
+          python - <<'PY'
+          import json
+          d=json.load(open('public/data/fixed_models_2026.json',encoding='utf-8'))
+          r={x['fecha']:x for x in d['rows']}
+          a=r['2026-08-28']; b=r['2026-08-31']
+          for k in ('SPY','EEM','MCHI','QQQ','SPBLSCUP','vc_niveles','ret_vc_estimado','vc_retornos'):
+              assert a[k] is not None, (k,a)
+          assert b['ret_vc_estimado'] is not None
+          assert b['vc_retornos'] is not None
+          assert abs(a['vc_niveles']-71.43020083593653) < 1e-8
+          assert abs(a['vc_retornos']-71.74441588181759) < 1e-8
+          assert abs(b['vc_retornos']-71.70330290547179) < 1e-8
+          print('Serie 28/08 y 31/08 validada.')
+          PY
           grep -q "Modelo de niveles" public/index.html
           grep -q "Modelo de retornos" public/index.html
           grep -q "Variación vs. cierre anterior" public/index.html
