@@ -11,6 +11,7 @@ OUTCSV=ROOT/'analysis/gdx_signal_hybrid94_daily.csv'
 
 CORE=['ret_EEM_pct','ret_MCHI_pct','ret_SPBLSCUP_pct']
 ALL5=['ret_SPY_pct','ret_EEM_pct','ret_MCHI_pct','ret_QQQ_pct','ret_SPBLSCUP_pct']
+DEV_END=pd.Timestamp('2026-06-30')
 
 def sgn(x):
     return 1 if x>0 else (-1 if x<0 else 0)
@@ -43,10 +44,21 @@ def rule_flags(df):
         rules[f'all5_3of5_mag{mag:.1f}']=df.apply(lambda r:same_sign_count(r,ALL5,mag)>=3,axis=1)
     for mag in [0.0,0.2,0.4]:
         rules[f'combo3of5_core2_mag{mag:.1f}']=df.apply(lambda r:(same_sign_count(r,ALL5,mag)>=3 and same_sign_count(r,CORE,mag)>=2),axis=1)
-    # variants requiring GDX itself to move materially
     for gmag in [0.5,1.0,1.5,2.0]:
         rules[f'core2of3_gdx{gmag:.1f}']=df.apply(lambda r:(abs(r.ret_GDX_pct)>=gmag and same_sign_count(r,CORE,0.0)>=2),axis=1)
     return rules
+
+def eval_subset(d,f):
+    f=np.asarray(f,bool)
+    base=metrics(d.error_base_pct)
+    err=np.where(f,d.error_gdx_pct.to_numpy(float),d.error_base_pct.to_numpy(float))
+    hyb=metrics(err)
+    sig=d.loc[f]
+    wins=int((sig.error_gdx_pct.abs()<sig.error_base_pct.abs()).sum()) if len(sig) else 0
+    losses=int((sig.error_gdx_pct.abs()>sig.error_base_pct.abs()).sum()) if len(sig) else 0
+    return {'n':int(len(d)),'signals':int(f.sum()),'signal_rate':float(f.mean()) if len(f) else 0,
+            'base':base,'hybrid':hyb,'improvement':improve(base,hyb),
+            'signal_wins':wins,'signal_losses':losses,'signal_win_rate':wins/max(1,wins+losses)}
 
 def main():
     d=pd.read_csv(SRC)
@@ -63,7 +75,6 @@ def main():
         err=np.where(f,d.error_gdx_pct.to_numpy(float),d.error_base_pct.to_numpy(float))
         mh=metrics(err)
         sig=d.loc[f]
-        nsig=d.loc[~f]
         sb=metrics(sig.error_base_pct) if len(sig) else {'n':0}
         sg=metrics(sig.error_gdx_pct) if len(sig) else {'n':0}
         wins=int((sig.error_gdx_pct.abs()<sig.error_base_pct.abs()).sum()) if len(sig) else 0
@@ -82,13 +93,35 @@ def main():
         }
         daily[name]=f
         daily[name+'_hybrid_error_pct']=err
-    # rank by MAE reduction, but retain all outputs for audit
     ranking=sorted([{'rule':k,'signals':v['signals'],'mae_reduction_pct':v['hybrid_improvement_vs_base']['mae_reduction_pct'],
                      'rmse_reduction_pct':v['hybrid_improvement_vs_base']['rmse_reduction_pct'],'signal_win_rate':v['signal_win_rate']}
                     for k,v in res['rules'].items()],key=lambda x:x['mae_reduction_pct'],reverse=True)
     res['ranking']=ranking
+
+    # Temporal holdout: choose rule using Apr-Jun only, then test unchanged on Jul-Aug.
+    dev_mask=d.fecha<=DEV_END
+    test_mask=d.fecha>DEV_END
+    dev=d.loc[dev_mask].reset_index(drop=True)
+    test=d.loc[test_mask].reset_index(drop=True)
+    temporal=[]
+    for name,f in flags.items():
+        f=np.asarray(f,bool)
+        ev_dev=eval_subset(dev,f[dev_mask.to_numpy()])
+        ev_test=eval_subset(test,f[test_mask.to_numpy()])
+        temporal.append({'rule':name,'development':ev_dev,'holdout':ev_test})
+    temporal=sorted(temporal,key=lambda x:x['development']['improvement']['mae_reduction_pct'],reverse=True)
+    selected=temporal[0]
+    res['temporal_validation']={
+        'development_period':[str(dev.fecha.min().date()),str(dev.fecha.max().date())],
+        'development_n':int(len(dev)),
+        'holdout_period':[str(test.fecha.min().date()),str(test.fecha.max().date())],
+        'holdout_n':int(len(test)),
+        'selected_on_development':selected,
+        'ranking_by_development':temporal
+    }
+
     OUT.write_text(json.dumps(res,ensure_ascii=False,indent=2),encoding='utf-8')
     daily.to_csv(OUTCSV,index=False)
-    print(json.dumps({'benchmarks':res['benchmarks'],'ranking':ranking},ensure_ascii=False,indent=2))
+    print(json.dumps({'benchmarks':res['benchmarks'],'ranking':ranking[:6],'temporal_selected':selected},ensure_ascii=False,indent=2))
 
 if __name__=='__main__': main()
