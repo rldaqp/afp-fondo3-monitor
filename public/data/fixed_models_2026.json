@@ -76,8 +76,8 @@
   "latest": {
     "market_date": "2026-08-31",
     "vc_niveles": 71.10381416651423,
-    "ret_vc_estimado": null,
-    "vc_retornos": null,
+    "ret_vc_estimado": -0.0005730477534797171,
+    "vc_retornos": 71.70330290547179,
     "latest_sbs_date": "2026-08-26",
     "latest_sbs_vc": 71.9377875
   },
@@ -2570,16 +2570,16 @@
     {
       "fecha": "2026-08-28",
       "fase": "PROYECCIÓN",
-      "SPY": null,
-      "EEM": null,
-      "MCHI": null,
-      "QQQ": null,
+      "SPY": 769.35,
+      "EEM": 67.14,
+      "MCHI": 55.23,
+      "QQQ": 716.43,
       "SPBLSCUP": 454.7,
-      "source": "GOOGLE FINANCE · CIERRE SESIÓN VALIDADO",
+      "source": "CIERRES VERIFICADOS 28/08 · Yahoo Finance/iShares + Google Finance SPBLSCUP",
       "vc_sbs": null,
-      "vc_niveles": null,
-      "ret_vc_estimado": null,
-      "vc_retornos": null,
+      "vc_niveles": 71.43020083593653,
+      "ret_vc_estimado": -0.0112265022672201,
+      "vc_retornos": 71.74441588181759,
       "error_niveles_pct": null,
       "error_retornos_pct": null
     },
@@ -2594,8 +2594,8 @@
       "source": "GOOGLE FINANCE · CIERRE SESIÓN VALIDADO",
       "vc_sbs": null,
       "vc_niveles": 71.10381416651423,
-      "ret_vc_estimado": null,
-      "vc_retornos": null,
+      "ret_vc_estimado": -0.0005730477534797171,
+      "vc_retornos": 71.70330290547179,
       "error_niveles_pct": null,
       "error_retornos_pct": null
     }
