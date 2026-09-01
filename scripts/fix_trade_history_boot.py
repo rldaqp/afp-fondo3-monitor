@@ -5,6 +5,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 MARKER = "// TRADE_HISTORY_FETCH_HELPER_V1"
+EXTERNAL_RUNTIME = "fixed_trade_runtime_v1.js"
 
 
 def patch(path: Path) -> bool:
@@ -12,6 +13,11 @@ def patch(path: Path) -> bool:
     start = html.find('<script id="tradeHistoryScript">')
     end = html.find('<!-- TRADE_HISTORY_V1_END -->', start)
     if start < 0 or end < 0:
+        # Profuturo actual ya no lleva la bitácora embebida: usa el runtime
+        # externo, que contiene la lógica de registro y sincronización Drive.
+        if EXTERNAL_RUNTIME in html:
+            print(f"{path.name}: runtime externo detectado; no requiere parche inline.")
+            return False
         raise RuntimeError(f"No se encontró el bloque tradeHistoryScript en {path}")
 
     block = html[start:end]
