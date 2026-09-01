@@ -7,13 +7,14 @@ on:
       - migracion-github-actions
     paths:
       - ".github/workflows/fix-profuturo-ui-consistency.yml"
+      - "scripts/patch_profuturo_retbase.py"
       - "public/index.html"
       - "public/data/fixed_trade_runtime_v1.js"
       - "public/data/fixed_models_2026.json"
       - "public/data/fixed_models_intraday.json"
 
 permissions:
-  contents: read
+  contents: write
   pages: write
   id-token: write
 
@@ -34,6 +35,22 @@ jobs:
         with:
           ref: migracion-github-actions
 
+      - name: Alinear base diaria del modelo de retornos
+        run: python scripts/patch_profuturo_retbase.py
+
+      - name: Persistir corrección del visor
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/index.html
+          if git diff --cached --quiet; then
+            echo "La alineación ya estaba persistida."
+          else
+            git commit -m "Alinear base diaria Profuturo [skip ci]"
+            git pull --rebase origin migracion-github-actions
+            git push origin HEAD:migracion-github-actions
+          fi
+
       - name: Validar visor Profuturo
         run: |
           grep -q "Modelo de niveles" public/index.html
@@ -42,6 +59,7 @@ jobs:
           grep -q "Retorno diario · niveles vs retornos vs SBS" public/index.html
           grep -q "levelsR2" public/index.html
           grep -q "returnsR2" public/index.html
+          grep -q "retBase=finite(LIVE?.models?.retornos?.base_vc)" public/index.html
           grep -q "fixed_trade_runtime_v1.js" public/index.html
           grep -q "profuturo_fondo3_trade_history_v3" public/data/fixed_trade_runtime_v1.js
           grep -q "fondo3-local-trade-change" public/data/fixed_trade_runtime_v1.js
