@@ -1,0 +1,119 @@
+{
+  "design": "Strict rolling-30 walk-forward. Each target uses only prior observations. GDX and PE rules evaluated separately.",
+  "period": [
+    "2026-04-07",
+    "2026-08-27"
+  ],
+  "n": 94,
+  "gdx_rule": "Base+GDX only when |GDX|>=1% and >=2 of EEM/MCHI/SPBLSCUP share GDX sign.",
+  "pe_rule": "Base plus gamma*x_PE where x_PE=z(EPU-SPBLSCUP) only for |z|>=1.5; z and gamma prior-only.",
+  "gdx": {
+    "base": {
+      "n": 94,
+      "mae_pct": 0.46900967310017516,
+      "rmse_pct": 0.6194806699266133,
+      "bias_pct": 0.009409523319217215
+    },
+    "always": {
+      "n": 94,
+      "mae_pct": 0.41538171348332104,
+      "rmse_pct": 0.5443500678250293,
+      "bias_pct": 0.061265502112167754
+    },
+    "always_vs_base": {
+      "mae_reduction_pct": 11.434297135573107,
+      "rmse_reduction_pct": 12.127997813149586
+    },
+    "signal": {
+      "n": 94,
+      "mae_pct": 0.3944281192720044,
+      "rmse_pct": 0.5464188057452027,
+      "bias_pct": 0.04494274351583147
+    },
+    "signal_vs_base": {
+      "mae_reduction_pct": 15.901922306886194,
+      "rmse_reduction_pct": 11.79405068281886
+    },
+    "signals": 55,
+    "signal_wins": 41,
+    "signal_losses": 14
+  },
+  "pe": {
+    "base": {
+      "n": 94,
+      "mae_pct": 0.4690096731001747,
+      "rmse_pct": 0.6194806699266122,
+      "bias_pct": 0.009409523319217687
+    },
+    "rule": {
+      "n": 94,
+      "mae_pct": 0.46271821321792533,
+      "rmse_pct": 0.6167311499687559,
+      "bias_pct": 0.008023978982949818
+    },
+    "rule_vs_base": {
+      "mae_reduction_pct": 1.3414349944346682,
+      "rmse_reduction_pct": 0.4438427365590042
+    },
+    "signals": 15,
+    "signal_wins": 9,
+    "signal_losses": 6,
+    "signal_base": {
+      "n": 15,
+      "mae_pct": 0.580022812486709,
+      "rmse_pct": 0.7899861228008779,
+      "bias_pct": -0.17182972548811812
+    },
+    "signal_rule": {
+      "n": 15,
+      "mae_pct": 0.5405963305579462,
+      "rmse_pct": 0.7763876240041042,
+      "bias_pct": -0.18051246999539675
+    }
+  },
+  "rolling_training_fit": {
+    "avg_r2_base": 0.9225282996018209,
+    "avg_adj_r2_base": 0.906388362018867,
+    "avg_r2_pe": 0.9264330344390882,
+    "avg_adj_r2_pe": 0.9072416521188503,
+    "pe_adj_r2_better_windows": 38,
+    "total_windows": 94
+  },
+  "monthly": {
+    "2026-04": {
+      "n": 18,
+      "gdx_signal_mae_reduction_pct": 30.851239851865977,
+      "pe_mae_reduction_pct": 8.330047388458185,
+      "gdx_signals": 13,
+      "pe_signals": 4
+    },
+    "2026-05": {
+      "n": 17,
+      "gdx_signal_mae_reduction_pct": 14.295945524130302,
+      "pe_mae_reduction_pct": -0.6912401210251544,
+      "gdx_signals": 10,
+      "pe_signals": 1
+    },
+    "2026-06": {
+      "n": 18,
+      "gdx_signal_mae_reduction_pct": 19.00390232032873,
+      "pe_mae_reduction_pct": -2.523472046480995,
+      "gdx_signals": 12,
+      "pe_signals": 4
+    },
+    "2026-07": {
+      "n": 22,
+      "gdx_signal_mae_reduction_pct": 11.849406498285235,
+      "pe_mae_reduction_pct": -0.3816476149973533,
+      "gdx_signals": 8,
+      "pe_signals": 5
+    },
+    "2026-08": {
+      "n": 19,
+      "gdx_signal_mae_reduction_pct": -5.06654108774401,
+      "pe_mae_reduction_pct": 5.725629624756511,
+      "gdx_signals": 12,
+      "pe_signals": 1
+    }
+  }
+}
