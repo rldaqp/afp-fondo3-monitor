@@ -8,7 +8,9 @@ on:
     paths:
       - ".github/workflows/update-fixed-levels-returns.yml"
       - "scripts/build_fixed_levels_returns_monitor.py"
+      - "scripts/ensure_profuturo_series_continuity.py"
       - "scripts/build_model_health.py"
+      - "data/fixed_models/yahoo_levels_2026.csv"
       - "public/index.html"
       - "public/data/model_signal_v1.js"
       - "public/data/model_threshold_overlay_v1.js"
@@ -53,6 +55,9 @@ jobs:
       - name: Construir serie fija 2026
         run: python scripts/build_fixed_levels_returns_monitor.py
 
+      - name: Blindar continuidad historica
+        run: python scripts/ensure_profuturo_series_continuity.py
+
       - name: Construir control de salud
         run: python scripts/build_model_health.py
 
@@ -60,6 +65,7 @@ jobs:
         run: |
           python - <<'PY'
           import json
+          import math
           from pathlib import Path
           p=Path("public/data/fixed_models_2026.json")
           d=json.loads(p.read_text(encoding="utf-8"))
@@ -69,11 +75,22 @@ jobs:
           assert abs(d["training"]["returns_r2"]-0.9518032304214648) < 1e-12
           assert d["training"]["sbs_corrections"] == {"2026-08-14":70.8740985,"2026-08-17":71.5395979}
           assert d["model_version"] == "v2-sbs-corrected-20260831"
-          assert d["latest"]["market_date"] >= "2026-08-28"
+          assert d["latest"]["market_date"] >= "2026-08-31"
+          by={r["fecha"]:r for r in d["rows"]}
+          for ds in ("2026-08-27","2026-08-28","2026-08-31"):
+              assert ds in by, ds
+              r=by[ds]
+              for k in ("SPY","EEM","MCHI","QQQ","SPBLSCUP","vc_niveles","ret_vc_estimado","vc_retornos"):
+                  v=r.get(k)
+                  assert v is not None and math.isfinite(float(v)), (ds,k,v)
+          assert abs(float(by["2026-08-28"]["SPY"])-769.35) < 1e-9
+          assert abs(float(by["2026-08-28"]["EEM"])-67.14) < 1e-9
+          assert abs(float(by["2026-08-28"]["MCHI"])-55.23) < 1e-9
+          assert abs(float(by["2026-08-28"]["QQQ"])-716.43) < 1e-9
           h=json.loads(Path("public/data/model_health.json").read_text(encoding="utf-8"))
           assert h["policy"]["minimum_change_n"] == 30
           assert set(h["models"].keys()) == {"niveles","retornos"}
-          print("OK", d["latest"])
+          print("CONTINUIDAD OK", {ds:{k:by[ds][k] for k in ("vc_niveles","ret_vc_estimado","vc_retornos")} for ds in ("2026-08-27","2026-08-28","2026-08-31")})
           print("SALUD", h["models"]["niveles"]["status"], h["models"]["retornos"]["status"])
           PY
 
@@ -85,6 +102,7 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add \
             data/fixed_models/spblscup_levels_2026.csv \
+            data/fixed_models/yahoo_levels_2026.csv \
             public/data/fixed_models_2026.json \
             public/data/fixed_models_2026.csv \
             public/data/model_health.json
