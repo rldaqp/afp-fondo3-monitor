@@ -1,5 +1,5 @@
 {
-  "generated_at_lima": "2026-09-01T17:06:05.741365-05:00",
+  "generated_at_lima": "2026-09-01T19:00:39.205100-05:00",
   "signal_date": "2026-09-01",
   "mode": "INTRADIA PROVISIONAL - ULTIMO CORTE",
   "market_open": false,
@@ -52,16 +52,16 @@
     "n_blocks": 10,
     "n_predictions": 300,
     "official_current_7f": {
-      "vc_mae": 0.8921414428125479,
-      "vc_rmse": 1.463111071199156,
-      "mean_endpoint_abs_error": 1.6398894437361897
+      "vc_mae": 0.8921414428125455,
+      "vc_rmse": 1.4631110711991535,
+      "mean_endpoint_abs_error": 1.6398894437361846
     },
     "challenger_6030": {
-      "vc_mae": 0.6875532905176811,
-      "vc_rmse": 1.059795507435472,
-      "mean_endpoint_abs_error": 1.2058813653545464
+      "vc_mae": 0.6875532905176813,
+      "vc_rmse": 1.0597955074354721,
+      "mean_endpoint_abs_error": 1.2058813653545477
     },
-    "mae_improvement_pct": 22.93225518701229,
+    "mae_improvement_pct": 22.932255187012057,
     "challenger_better_blocks": 7,
     "official_better_blocks": 3
   },
