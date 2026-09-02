@@ -1,27 +1,27 @@
 {
-  "generated_at_lima": "2026-09-01T19:00:39.205100-05:00",
-  "signal_date": "2026-09-01",
-  "mode": "INTRADIA PROVISIONAL - ULTIMO CORTE",
-  "market_open": false,
+  "generated_at_lima": "2026-09-02T11:54:09.990211-05:00",
+  "signal_date": "2026-09-02",
+  "mode": "INTRADÍA PROVISIONAL",
+  "market_open": true,
   "role": "UNICO CHALLENGER EN SOMBRA; no reemplaza el OLS rolling 90 oficial.",
   "official": {
     "model": "OLS rolling 90 oficial · SPY EEM EPU MCHI NEM FCX USD/PEN",
-    "return_estimated": -0.012441926211719245,
+    "return_estimated": -0.006428749177028426,
     "signal": "BAJA",
-    "vc_estimated": 70.52582300891922
+    "vc_estimated": 70.95525016923104
   },
   "challenger": {
     "model": "OLS 60/30 · sin NEM ni FCX + QQQ",
-    "return_estimated": -0.011542929930379309,
-    "signal": "BAJA",
-    "vc_estimated": 70.3339163846788,
+    "return_estimated": -0.00017007244386823997,
+    "signal": "NEUTRO",
+    "vc_estimated": 71.1431549765529,
     "blind_chain": true,
     "reanchored_with_latest_sbs": false
   },
   "comparison": {
-    "same_signal": true,
-    "vc_difference": -0.19190662424041705,
-    "return_difference_pp": 0.08989962813399366
+    "same_signal": false,
+    "vc_difference": 0.1879048073218712,
+    "return_difference_pp": 0.6258676733160186
   },
   "cycle": {
     "train_window": 60,
@@ -44,8 +44,8 @@
     "rule": "Coeficientes congelados 30 sesiones. El VC se encadena desde el ancla del ciclo y no se corrige con SBS dentro del bloque."
   },
   "qqq": {
-    "return": -0.012723917340435431,
-    "source": "CIERRE DIARIO YAHOO"
+    "return": 0.0014484248455275406,
+    "source": "INTRADIA YAHOO"
   },
   "blind_backtest": {
     "design": "Bloques no superpuestos: entrenar 60 observaciones, congelar 30, un solo VC SBS como ancla al inicio; dentro del bloque SBS solo evalua y nunca corrige.",
