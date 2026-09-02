@@ -32,21 +32,50 @@ def market_is_open(now_ny: datetime) -> bool:
     return now_ny.weekday() < 5 and clock_time(9, 30) <= now_ny.time() < clock_time(16, 5)
 
 
-def liquid_snapshot(ticker: str, now_ny: datetime):
-    """Current/last Yahoo quote against official previous close."""
+def validated_previous_close_map(rows, target_date: str):
+    """Latest validated regular-session close in the fixed history before target_date.
+
+    This is the single return baseline used by the visor. It prevents tiny differences
+    between vendor-specific `previous_close` fields from flipping the sign of a ticker.
+    """
+    eligible = [r for r in rows if str(r.get("fecha") or "")[:10] < target_date]
+    out = {}
+    for ticker in FACTORS:
+        for row in reversed(eligible):
+            if finite(row.get(ticker)) and float(row[ticker]) > 0:
+                out[ticker] = {
+                    "price": float(row[ticker]),
+                    "date": str(row.get("fecha") or "")[:10],
+                }
+                break
+    return out
+
+
+def liquid_snapshot(ticker: str, now_ny: datetime, baseline=None):
+    """Current/last Yahoo quote against the monitor's validated previous close."""
+    baseline_price = float(baseline["price"]) if baseline and finite(baseline.get("price")) else None
+    baseline_date = str(baseline.get("date") or "")[:10] if baseline else None
+
     t = yf.Ticker(ticker)
+    provider_prev = None
     try:
         info = t.fast_info
         cur = float(info["last_price"])
-        prev = float(info["previous_close"])
+        if finite(info.get("previous_close")):
+            provider_prev = float(info["previous_close"])
+        prev = baseline_price if finite(baseline_price) and baseline_price > 0 else provider_prev
         if finite(cur) and finite(prev) and prev > 0:
+            basis = "CIERRE BASE FIJA" if baseline_price is not None else "PREV. YAHOO"
             return {
-                "precio_anterior": prev,
+                "precio_anterior": float(prev),
                 "precio_actual": cur,
-                "retorno": cur / prev - 1.0,
-                "source": f"YAHOO {ticker} · FAST_INFO",
+                "retorno": cur / float(prev) - 1.0,
+                "source": f"YAHOO {ticker} · FAST_INFO + {basis}",
                 "timestamp": now_ny.date().isoformat(),
                 "fresh": True,
+                "previous_close_date": baseline_date,
+                "previous_close_basis": basis,
+                "provider_previous_close": provider_prev,
             }
     except Exception as exc:
         print(f"{ticker} fast_info fallback:", type(exc).__name__, exc)
@@ -76,46 +105,59 @@ def liquid_snapshot(ticker: str, now_ny: datetime):
         raise RuntimeError(f"{ticker} intradía vacío")
     cur = float(s.iloc[-1])
 
-    daily = yf.download(
-        ticker,
-        period="10d",
-        interval="1d",
-        auto_adjust=False,
-        actions=False,
-        progress=False,
-        threads=False,
-    )
-    if daily.empty:
-        raise RuntimeError(f"{ticker} diario vacío")
-    if isinstance(daily.columns, pd.MultiIndex):
-        if ("Close", ticker) in daily.columns:
-            d = pd.to_numeric(daily[("Close", ticker)], errors="coerce").dropna()
+    if finite(baseline_price) and baseline_price > 0:
+        prev = baseline_price
+        basis = "CIERRE BASE FIJA"
+    else:
+        daily = yf.download(
+            ticker,
+            period="10d",
+            interval="1d",
+            auto_adjust=False,
+            actions=False,
+            progress=False,
+            threads=False,
+        )
+        if daily.empty:
+            raise RuntimeError(f"{ticker} diario vacío")
+        if isinstance(daily.columns, pd.MultiIndex):
+            if ("Close", ticker) in daily.columns:
+                d = pd.to_numeric(daily[("Close", ticker)], errors="coerce").dropna()
+            else:
+                d = pd.to_numeric(daily.xs("Close", axis=1, level=0).iloc[:, 0], errors="coerce").dropna()
         else:
-            d = pd.to_numeric(daily.xs("Close", axis=1, level=0).iloc[:, 0], errors="coerce").dropna()
-    else:
-        d = pd.to_numeric(daily["Close"], errors="coerce").dropna()
-    dates = pd.to_datetime(d.index)
-    if getattr(dates, "tz", None) is not None:
-        dates = dates.tz_localize(None)
-    if len(d) >= 2 and dates[-1].date() == now_ny.date():
-        prev = float(d.iloc[-2])
-    else:
-        prev = float(d.iloc[-1])
+            d = pd.to_numeric(daily["Close"], errors="coerce").dropna()
+        dates = pd.to_datetime(d.index)
+        if getattr(dates, "tz", None) is not None:
+            dates = dates.tz_localize(None)
+        if len(d) >= 2 and dates[-1].date() == now_ny.date():
+            prev = float(d.iloc[-2])
+        else:
+            prev = float(d.iloc[-1])
+        provider_prev = prev
+        basis = "PREV. YAHOO 1D"
+
     return {
-        "precio_anterior": prev,
+        "precio_anterior": float(prev),
         "precio_actual": cur,
-        "retorno": cur / prev - 1.0,
-        "source": f"YAHOO {ticker} · 5M",
+        "retorno": cur / float(prev) - 1.0,
+        "source": f"YAHOO {ticker} · 5M + {basis}",
         "timestamp": now_ny.date().isoformat(),
         "fresh": True,
+        "previous_close_date": baseline_date,
+        "previous_close_basis": basis,
+        "provider_previous_close": provider_prev,
     }
 
 
-def spblscup_google(now_ny: datetime):
-    """Read the current Google Finance quote and previous close for SPBLSCUP."""
+def spblscup_google(now_ny: datetime, baseline=None):
+    """Read Google Finance current quote; use fixed-history close as return baseline."""
     from selenium import webdriver
     from selenium.webdriver.common.by import By
     from selenium.webdriver.support.ui import WebDriverWait
+
+    baseline_price = float(baseline["price"]) if baseline and finite(baseline.get("price")) else None
+    baseline_date = str(baseline.get("date") or "")[:10] if baseline else None
 
     opts = webdriver.ChromeOptions()
     for arg in (
@@ -164,10 +206,15 @@ def spblscup_google(now_ny: datetime):
         if price is None:
             raise RuntimeError("SPBLSCUP sin precio principal")
 
+        provider_previous = None
         pm = re.search(r"Prev(?:ious)?\.?\s*close\s+\$?([\d,]+(?:\.\d+)?)", body, re.I)
-        if not pm:
-            raise RuntimeError("SPBLSCUP sin previous close")
-        previous = float(pm.group(1).replace(",", ""))
+        if pm:
+            provider_previous = float(pm.group(1).replace(",", ""))
+
+        previous = baseline_price if finite(baseline_price) and baseline_price > 0 else provider_previous
+        if not finite(previous) or previous <= 0:
+            raise RuntimeError("SPBLSCUP sin cierre previo válido")
+        basis = "CIERRE BASE FIJA" if baseline_price is not None else "PREV. GOOGLE"
 
         if stamp is None:
             for el in driver.find_elements(By.CSS_SELECTOR, "[data-last-normal-market-timestamp]"):
@@ -186,12 +233,15 @@ def spblscup_google(now_ny: datetime):
         stamp_date = stamp.date().isoformat() if stamp else now_ny.date().isoformat()
         fresh = stamp is None or stamp.date() == now_ny.date()
         return {
-            "precio_anterior": previous,
+            "precio_anterior": float(previous),
             "precio_actual": float(price),
-            "retorno": float(price / previous - 1.0),
-            "source": "GOOGLE FINANCE SPBLSCUP · QUOTE ACTUAL" if fresh else "GOOGLE FINANCE SPBLSCUP · ÚLTIMO QUOTE",
+            "retorno": float(price / float(previous) - 1.0),
+            "source": ("GOOGLE FINANCE SPBLSCUP · QUOTE ACTUAL" if fresh else "GOOGLE FINANCE SPBLSCUP · ÚLTIMO QUOTE") + f" + {basis}",
             "timestamp": stamp_date,
             "fresh": fresh,
+            "previous_close_date": baseline_date,
+            "previous_close_basis": basis,
+            "provider_previous_close": provider_previous,
         }
     finally:
         driver.quit()
@@ -216,6 +266,9 @@ def old_live_factor_map(live):
             "source": str(row.get("estado") or row.get("ticker") or "LIVE") + " · FALLBACK",
             "timestamp": str(row.get("timestamp") or live.get("signal_date") or "")[:10],
             "fresh": False,
+            "previous_close_date": None,
+            "previous_close_basis": "FALLBACK LIVE",
+            "provider_previous_close": prev,
         }
     return out
 
@@ -230,33 +283,37 @@ def main():
     now_lima = datetime.now(LIMA)
     open_now = market_is_open(now_ny)
 
+    rows = base.get("rows") or []
+    if not rows:
+        raise RuntimeError("fixed_models_2026.json sin filas")
+    target_date = now_ny.date().isoformat()
+    baseline_map = validated_previous_close_map(rows, target_date)
+
     fmap = {}
     problems = []
     for ticker in LIQUID:
         try:
-            fmap[ticker] = liquid_snapshot(ticker, now_ny)
+            fmap[ticker] = liquid_snapshot(ticker, now_ny, baseline_map.get(ticker))
         except Exception as exc:
             problems.append(f"{ticker}: {type(exc).__name__}: {exc}")
             if ticker in old_map:
                 fmap[ticker] = old_map[ticker]
 
     try:
-        fmap["SPBLSCUP"] = spblscup_google(now_ny)
+        fmap["SPBLSCUP"] = spblscup_google(now_ny, baseline_map.get("SPBLSCUP"))
     except Exception as exc:
         problems.append(f"SPBLSCUP: {type(exc).__name__}: {exc}")
         if "SPBLSCUP" in old_map:
             fmap["SPBLSCUP"] = old_map["SPBLSCUP"]
 
-    rows = base.get("rows") or []
-    if not rows:
-        raise RuntimeError("fixed_models_2026.json sin filas")
     last = rows[-1]
-    prev = rows[-2] if len(rows) >= 2 else {}
+    prev_row = rows[-2] if len(rows) >= 2 else {}
     for f in FACTORS:
         if f in fmap:
             continue
         if finite(last.get(f)):
-            p = float(prev.get(f)) if finite(prev.get(f)) else float(last[f])
+            base_item = baseline_map.get(f)
+            p = float(base_item["price"]) if base_item and finite(base_item.get("price")) else (float(prev_row.get(f)) if finite(prev_row.get(f)) else float(last[f]))
             c = float(last[f])
             fmap[f] = {
                 "precio_anterior": p,
@@ -265,6 +322,9 @@ def main():
                 "source": "ÚLTIMO CIERRE FIJO · FALLBACK",
                 "timestamp": str(last.get("fecha") or "")[:10],
                 "fresh": False,
+                "previous_close_date": str(base_item.get("date") or "")[:10] if base_item else None,
+                "previous_close_basis": "CIERRE BASE FIJA",
+                "provider_previous_close": None,
             }
 
     missing = [f for f in FACTORS if f not in fmap]
@@ -285,11 +345,9 @@ def main():
         vc_levels += level_contrib[f]
         ret_est += return_contrib[f]
 
-    # During NY trading hours the target is today's session. Otherwise retain the
-    # most recent factor session, which is safer than labelling after-hours as a new day.
     fresh_dates = [str(fmap[f].get("timestamp") or "")[:10] for f in FACTORS if fmap[f].get("fresh")]
     if open_now:
-        signal_date = now_ny.date().isoformat()
+        signal_date = target_date
     elif fresh_dates:
         signal_date = max(fresh_dates)
     else:
@@ -321,6 +379,9 @@ def main():
                 "price_previous": x["precio_anterior"],
                 "price_current": x["precio_actual"],
                 "return": x["retorno"],
+                "previous_close_date": x.get("previous_close_date"),
+                "previous_close_basis": x.get("previous_close_basis"),
+                "provider_previous_close": x.get("provider_previous_close"),
                 "level_coefficient": float(lc[f]),
                 "return_coefficient": float(rc[f]),
                 "level_contribution": level_contrib[f],
@@ -348,6 +409,7 @@ def main():
         "fresh_factors": fresh_count,
         "total_factors": len(FACTORS),
         "problems": problems,
+        "previous_close_rule": "Cierre regular validado más reciente de la base fija, anterior a la sesión objetivo; proveedor solo como fallback.",
         "models": {
             "niveles": {
                 "vc_intraday": vc_levels,
@@ -363,7 +425,7 @@ def main():
         },
         "tickers": tickers,
         "weight_note": "Peso relativo = participación del valor absoluto del aporte actual de cada factor; no representa tenencia de cartera.",
-        "source_live": "Yahoo Finance fast_info/5m + Google Finance SPBLSCUP; fallbacks auditables cuando una fuente falla.",
+        "source_live": "Precio actual: Yahoo Finance fast_info/5m + Google Finance SPBLSCUP. Retorno: contra cierre regular validado de la base fija; proveedor solo como fallback.",
     }
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
@@ -372,15 +434,13 @@ def main():
             {
                 "signal_date": signal_date,
                 "mode": mode,
-                "fresh": f"{fresh_count}/{len(FACTORS)}",
-                "levels": vc_levels,
-                "returns_vc": vc_returns,
-                "returns": ret_est,
-                "tickers": {x["ticker"]: [x["price_current"], x["timestamp"], x["fresh"]] for x in tickers},
+                "market_open": open_now,
+                "fresh_factors": fresh_count,
+                "total_factors": len(FACTORS),
+                "previous_close_rule": payload["previous_close_rule"],
                 "problems": problems,
             },
             ensure_ascii=False,
-            indent=2,
         )
     )
 
