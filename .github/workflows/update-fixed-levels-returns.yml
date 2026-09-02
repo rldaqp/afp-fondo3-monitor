@@ -83,10 +83,12 @@ jobs:
               for k in ("SPY","EEM","MCHI","QQQ","SPBLSCUP","vc_niveles","ret_vc_estimado","vc_retornos"):
                   v=r.get(k)
                   assert v is not None and math.isfinite(float(v)), (ds,k,v)
-          assert abs(float(by["2026-08-28"]["SPY"])-769.35) < 1e-9
-          assert abs(float(by["2026-08-28"]["EEM"])-67.14) < 1e-9
-          assert abs(float(by["2026-08-28"]["MCHI"])-55.23) < 1e-9
-          assert abs(float(by["2026-08-28"]["QQQ"])-716.43) < 1e-9
+          # Yahoo puede representar un mismo cierre con pequeñas diferencias de coma flotante.
+          # Se valida cercanía económica del precio, no igualdad binaria exacta.
+          assert abs(float(by["2026-08-28"]["SPY"])-769.35) < 0.01
+          assert abs(float(by["2026-08-28"]["EEM"])-67.14) < 0.01
+          assert abs(float(by["2026-08-28"]["MCHI"])-55.23) < 0.01
+          assert abs(float(by["2026-08-28"]["QQQ"])-716.43) < 0.01
           h=json.loads(Path("public/data/model_health.json").read_text(encoding="utf-8"))
           assert h["policy"]["minimum_change_n"] == 30
           assert set(h["models"].keys()) == {"niveles","retornos"}
