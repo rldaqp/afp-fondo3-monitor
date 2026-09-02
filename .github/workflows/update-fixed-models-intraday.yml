@@ -16,6 +16,10 @@ on:
       - "public/data/fixed_ticker_freshness_v1.js"
   schedule:
     - cron: "*/5 13-22 * * 1-5"
+    # Salvaguardas de cierre. 20:07 UTC cubre el cierre cuando NY está en EDT
+    # y 21:07 UTC cuando NY está en EST. Son ejecuciones adicionales al ciclo normal.
+    - cron: "7 20 * * 1-5"
+    - cron: "7 21 * * 1-5"
   workflow_run:
     workflows:
       - "Actualizar mercado intradia Fondo 3"
@@ -105,8 +109,9 @@ jobs:
             sed -i 's#</body>#<script src="data/model_health_v1.js?rev=HEALTH1-20260831"></script></body>#' public/index.html
           fi
           if ! grep -q 'fixed_ticker_freshness_v1.js' public/index.html; then
-            sed -i 's#</body>#<script src="data/fixed_ticker_freshness_v1.js?rev=PREVCLOSE2-20260902"></script></body>#' public/index.html
+            sed -i 's#</body>#<script src="data/fixed_ticker_freshness_v1.js?rev=LIVESTATUS3-20260902"></script></body>#' public/index.html
           fi
+          sed -i 's#fixed_ticker_freshness_v1.js?rev=[^"]*#fixed_ticker_freshness_v1.js?rev=LIVESTATUS3-20260902#g' public/index.html
 
       - name: Publicar snapshot en gh-pages
         env:
@@ -130,7 +135,7 @@ jobs:
           if git diff --cached --quiet; then
             echo "gh-pages ya tiene snapshot y módulos."
           else
-            git commit -m "Publicar intradia señal salud y vigencia"
+            git commit -m "Publicar intradia señal salud y estado horario"
             git push origin HEAD:gh-pages
           fi
 
