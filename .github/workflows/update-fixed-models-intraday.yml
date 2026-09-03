@@ -23,6 +23,7 @@ on:
   workflow_run:
     workflows:
       - "Actualizar mercado intradia Fondo 3"
+      - "Actualizar modelos fijos niveles y retornos"
     types:
       - completed
 
