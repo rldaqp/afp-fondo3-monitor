@@ -81,7 +81,7 @@ jobs:
           assert abs(d["training"]["returns_r2"]-0.9518032304214648) < 1e-12
           assert d["training"]["sbs_corrections"] == {"2026-08-14":70.8740985,"2026-08-17":71.5395979}
           assert d["model_version"] == "v2-sbs-corrected-20260831"
-          assert d["latest"]["market_date"] >= "2026-08-31"
+          assert d["latest"]["market_date"] >= "2026-09-02"
           by={r["fecha"]:r for r in d["rows"]}
           for ds in ("2026-08-27","2026-08-28","2026-08-31","2026-09-01","2026-09-02"):
               assert ds in by, ds
@@ -89,14 +89,10 @@ jobs:
               for k in ("SPY","EEM","MCHI","QQQ","SPBLSCUP","vc_niveles","ret_vc_estimado","vc_retornos"):
                   v=r.get(k)
                   assert v is not None and math.isfinite(float(v)), (ds,k,v)
-          # Yahoo puede representar un mismo cierre con pequeñas diferencias de coma flotante.
-          # Se valida cercanía económica del precio, no igualdad binaria exacta.
           assert abs(float(by["2026-08-28"]["SPY"])-769.35) < 0.01
           assert abs(float(by["2026-08-28"]["EEM"])-67.14) < 0.01
           assert abs(float(by["2026-08-28"]["MCHI"])-55.23) < 0.01
           assert abs(float(by["2026-08-28"]["QQQ"])-716.43) < 0.01
-          # Cierres SPBLSCUP auditados: si una fecha vuelve a desplazarse o arrastrarse,
-          # el flujo falla antes de publicar el visor.
           expected_spb={
               "2026-08-28":454.70,
               "2026-08-31":450.67,
@@ -105,7 +101,6 @@ jobs:
           }
           for ds,expected in expected_spb.items():
               assert abs(float(by[ds]["SPBLSCUP"])-expected) < 0.005, (ds,by[ds]["SPBLSCUP"],expected)
-          # Resultados esperados con los coeficientes fijos y la secuencia auditada.
           assert abs(float(by["2026-08-31"]["vc_niveles"])-71.33170014928366) < 1e-6
           assert abs(float(by["2026-08-31"]["vc_retornos"])-71.72036244265796) < 1e-6
           assert abs(float(by["2026-09-01"]["vc_retornos"])-71.50071943639291) < 1e-6
