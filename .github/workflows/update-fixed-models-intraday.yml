@@ -8,6 +8,7 @@ on:
     paths:
       - ".github/workflows/update-fixed-models-intraday.yml"
       - "scripts/build_fixed_models_intraday.py"
+      - "scripts/normalize_fixed_intraday_session.py"
       - "public/index.html"
       - "public/data/fixed_trade_runtime_v1.js"
       - "public/data/model_signal_v1.js"
@@ -58,6 +59,9 @@ jobs:
 
       - name: Calcular snapshot intradia fijo
         run: python scripts/build_fixed_models_intraday.py
+
+      - name: Normalizar sesion antes de apertura
+        run: python scripts/normalize_fixed_intraday_session.py
 
       - name: Validar snapshot
         run: |
