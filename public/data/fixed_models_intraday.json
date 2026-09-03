@@ -1,6 +1,6 @@
 {
-  "generated_at_lima": "2026-09-03T15:07:20.899545-05:00",
-  "generated_at_ny": "2026-09-03T16:07:20.899534-04:00",
+  "generated_at_lima": "2026-09-03T16:20:20.432811-05:00",
+  "generated_at_ny": "2026-09-03T17:20:20.432797-04:00",
   "signal_date": "2026-09-03",
   "mode": "CIERRE / ÚLTIMO SNAPSHOT",
   "market_open": false,
@@ -12,12 +12,12 @@
   "previous_close_rule": "Cierre regular validado más reciente de la base fija, anterior a la sesión objetivo; proveedor solo como fallback.",
   "models": {
     "niveles": {
-      "vc_intraday": 71.97181166108683,
+      "vc_intraday": 71.97927392248735,
       "equation": "VC = 16.07900257 - 0.02264564·SPY + 0.78253147·EEM - 0.33122840·MCHI + 0.01734644·QQQ + 0.05740201·SPBLSCUP"
     },
     "retornos": {
-      "return_intraday": 0.005337135749791192,
-      "vc_intraday": 72.41592582720415,
+      "return_intraday": 0.0054126325778418955,
+      "vc_intraday": 72.42136397576736,
       "base_vc": 72.03148401873725,
       "base_rule": "VC estimado por retornos de la sesión anterior",
       "equation": "RVC = 0.0007122785 - 0.51299471·RSPY + 0.63173761·REEM - 0.29664485·RMCHI + 0.48131281·RQQQ + 0.26433762·RSPBLSCUP"
@@ -38,8 +38,8 @@
       "return_coefficient": -0.512994712486852,
       "level_contribution": -17.50756990179338,
       "return_contribution": -0.00533001512043624,
-      "level_weight_abs_pct": 13.792115523974369,
-      "return_weight_abs_pct": 34.871143925270836,
+      "level_weight_abs_pct": 13.791304785409695,
+      "return_weight_abs_pct": 34.699751029110374,
       "source": "YAHOO SPY · 5M ACTUAL + CIERRE BASE FIJA"
     },
     {
@@ -56,8 +56,8 @@
       "return_coefficient": 0.631737612710381,
       "level_contribution": 52.80522611477665,
       "return_contribution": 0.0031046100402573767,
-      "level_weight_abs_pct": 41.59890738291355,
-      "return_weight_abs_pct": 20.311631599423137,
+      "level_weight_abs_pct": 41.59646208448164,
+      "return_weight_abs_pct": 20.21179921729567,
       "source": "YAHOO EEM · 5M ACTUAL + CIERRE BASE FIJA"
     },
     {
@@ -74,8 +74,8 @@
       "return_coefficient": -0.296644846397524,
       "level_contribution": -18.015512418098023,
       "return_contribution": 0.0008158631986944973,
-      "level_weight_abs_pct": 14.19226254059112,
-      "return_weight_abs_pct": 5.337711504030241,
+      "level_weight_abs_pct": 14.191428280281915,
+      "return_weight_abs_pct": 5.31147646466631,
       "source": "YAHOO MCHI · 5M ACTUAL + CIERRE BASE FIJA"
     },
     {
@@ -92,8 +92,8 @@
       "return_coefficient": 0.481312806588779,
       "level_contribution": 12.447976825174573,
       "return_contribution": 0.0056801447978935896,
-      "level_weight_abs_pct": 9.806268681239251,
-      "return_weight_abs_pct": 37.16183580873487,
+      "level_weight_abs_pct": 9.805692241737885,
+      "return_weight_abs_pct": 36.97918408157765,
       "source": "YAHOO QQQ · 5M ACTUAL + CIERRE BASE FIJA"
     },
     {
@@ -101,17 +101,17 @@
       "timestamp": "2026-09-02",
       "fresh": false,
       "price_previous": 455.17,
-      "price_current": 455.78,
-      "return": 0.001340158622053167,
+      "price_current": 455.91,
+      "return": 0.001625766197244971,
       "previous_close_date": "2026-09-02",
       "previous_close_basis": "CIERRE BASE FIJA",
       "provider_previous_close": 455.17,
       "level_coefficient": 0.057402010773155,
       "return_coefficient": 0.264337624798652,
-      "level_contribution": 26.162688470188584,
-      "return_contribution": 0.00035425434700696854,
-      "level_weight_abs_pct": 20.6104458712817,
-      "return_weight_abs_pct": 2.3176771625409147,
+      "level_contribution": 26.1701507315891,
+      "return_contribution": 0.0004297511750576725,
+      "level_weight_abs_pct": 20.61511260808886,
+      "return_weight_abs_pct": 2.797789207350007,
       "source": "GOOGLE FINANCE SPBLSCUP · ÚLTIMO QUOTE + CIERRE BASE FIJA"
     }
   ],
