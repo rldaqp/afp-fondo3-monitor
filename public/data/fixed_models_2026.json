@@ -1,5 +1,5 @@
 {
-  "generated_at_lima": "2026-09-02T12:15:09.038123-05:00",
+  "generated_at_lima": "2026-09-02T19:31:59.553255-05:00",
   "model_version": "v2-sbs-corrected-20260831",
   "history_start": "2026-01-05",
   "training": {
@@ -2613,6 +2613,22 @@
       "vc_niveles": 70.97200471130556,
       "ret_vc_estimado": -0.002563380191356894,
       "vc_retornos": 71.51950007914904,
+      "error_niveles_pct": null,
+      "error_retornos_pct": null
+    },
+    {
+      "fecha": "2026-09-02",
+      "fase": "PROYECCIÓN",
+      "SPY": null,
+      "EEM": null,
+      "MCHI": null,
+      "QQQ": null,
+      "SPBLSCUP": 446.7,
+      "source": "GOOGLE FINANCE · CIERRE SESIÓN VALIDADO",
+      "vc_sbs": null,
+      "vc_niveles": null,
+      "ret_vc_estimado": null,
+      "vc_retornos": null,
       "error_niveles_pct": null,
       "error_retornos_pct": null
     }
