@@ -1,6 +1,6 @@
 {
-  "generated_at_lima": "2026-09-02T18:42:55.198221-05:00",
-  "generated_at_ny": "2026-09-02T19:42:55.198212-04:00",
+  "generated_at_lima": "2026-09-02T23:39:06.863497-05:00",
+  "generated_at_ny": "2026-09-03T00:39:06.863444-04:00",
   "signal_date": "2026-09-02",
   "mode": "CIERRE / ÚLTIMO SNAPSHOT",
   "market_open": false,
@@ -15,9 +15,9 @@
     },
     "retornos": {
       "return_intraday": 0.007423206179295875,
-      "vc_intraday": 72.05040407407672,
-      "base_vc": 71.51950007914904,
-      "base_rule": "VC estimado por retornos de la sesión anterior",
+      "vc_intraday": 72.03148401873725,
+      "base_vc": 71.50071943639291,
+      "base_rule": "VC estimado por retornos de la sesión anterior · cierre fijo normalizado",
       "equation": "RVC = 0.0007122785 - 0.51299471·RSPY + 0.63173761·REEM - 0.29664485·RMCHI + 0.48131281·RQQQ + 0.26433762·RSPBLSCUP"
     }
   },
@@ -38,7 +38,7 @@
       "return_contribution": -0.0022761076106845995,
       "level_weight_abs_pct": 13.711728731560202,
       "return_weight_abs_pct": 17.949410260379498,
-      "source": "YAHOO SPY · FAST_INFO + CIERRE BASE FIJA"
+      "source": "CIERRE FIJO VALIDADO · SIN NUEVA SESIÓN PREAPERTURA"
     },
     {
       "ticker": "EEM",
@@ -56,7 +56,7 @@
       "return_contribution": 0.003595378007423996,
       "level_weight_abs_pct": 41.581793853951865,
       "return_weight_abs_pct": 28.353191471904303,
-      "source": "YAHOO EEM · FAST_INFO + CIERRE BASE FIJA"
+      "source": "CIERRE FIJO VALIDADO · SIN NUEVA SESIÓN PREAPERTURA"
     },
     {
       "ticker": "MCHI",
@@ -74,7 +74,7 @@
       "return_contribution": -0.0007087694723526563,
       "level_weight_abs_pct": 14.295458507788592,
       "return_weight_abs_pct": 5.589364043936418,
-      "source": "YAHOO MCHI · FAST_INFO + CIERRE BASE FIJA"
+      "source": "CIERRE FIJO VALIDADO · SIN NUEVA SESIÓN PREAPERTURA"
     },
     {
       "ticker": "QQQ",
@@ -92,7 +92,7 @@
       "return_contribution": 0.0010882492846644221,
       "level_weight_abs_pct": 9.735514235028726,
       "return_weight_abs_pct": 8.58194611902863,
-      "source": "YAHOO QQQ · FAST_INFO + CIERRE BASE FIJA"
+      "source": "CIERRE FIJO VALIDADO · SIN NUEVA SESIÓN PREAPERTURA"
     },
     {
       "ticker": "SPBLSCUP",
@@ -103,16 +103,16 @@
       "return": 0.01896127154689964,
       "previous_close_date": "2026-09-01",
       "previous_close_basis": "CIERRE BASE FIJA",
-      "provider_previous_close": 449.35,
+      "provider_previous_close": null,
       "level_coefficient": 0.057402010773155,
       "return_coefficient": 0.264337624798652,
       "level_contribution": 26.127673243616965,
       "return_contribution": 0.005012177483869713,
       "level_weight_abs_pct": 20.67550467167062,
       "return_weight_abs_pct": 39.52608810475115,
-      "source": "GOOGLE FINANCE SPBLSCUP · QUOTE ACTUAL + CIERRE BASE FIJA"
+      "source": "CIERRE FIJO VALIDADO · SIN NUEVA SESIÓN PREAPERTURA"
     }
   ],
   "weight_note": "Peso relativo = participación del valor absoluto del aporte actual de cada factor; no representa tenencia de cartera.",
-  "source_live": "Precio actual: Yahoo Finance fast_info/5m + Google Finance SPBLSCUP. Retorno: contra cierre regular validado de la base fija; proveedor solo como fallback."
+  "source_live": "Preapertura/fin de semana: se conserva el último cierre regular validado; no se crea una sesión nueva con cotizaciones rezagadas."
 }
