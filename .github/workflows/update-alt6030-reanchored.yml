@@ -2,29 +2,10 @@ name: Actualizar SBS y visor dual Rolling 30
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - migracion-github-actions
-    paths:
-      - ".github/workflows/update-alt6030-reanchored.yml"
-      - "public/index.html"
-      - "scripts/sync_sbs_official_latest.py"
-      - "scripts/apply_sbs_reference_corrections.py"
-      - "scripts/update_live_market_hybrid.py"
-      - "scripts/normalize_markets_bcrp_for_rolling30.py"
-      - "scripts/patch_google_rolling30_assets.py"
-      - "scripts/validate_new_ticker_session.py"
-      - "scripts/finalize_profuturo_close.py"
-      - "scripts/build_dual_rolling30_monitor.py"
-      - "scripts/build_dual_rolling30_resilient.py"
-      - "scripts/patch_dual_rolling30_fx_operational.py"
-      - "scripts/persist_dual_rolling30_shadow.py"
-      - "data/rolling90/sbs_profuturo_f3.csv"
-      - "analysis/backtest_blind3_rolling30_resid_newtickers.json"
-      - "requirements-live.txt"
-  schedule:
-    - cron: "2-57/5 13-23 * * 1-5"
-    - cron: "2-57/5 0-4 * * 2-6"
+
+# Flujo histórico del antiguo visor dual. Se conserva solo para ejecución
+# manual y auditoría: sus validaciones V6 no corresponden al visor vigente de
+# niveles + retornos y estaban compitiendo por escrituras/despliegues cada 5 min.
 
 permissions:
   contents: write

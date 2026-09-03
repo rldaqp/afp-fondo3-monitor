@@ -2,17 +2,9 @@ name: Finalizar cierre Profuturo
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - migracion-github-actions
-    paths:
-      - ".github/workflows/finalize-profuturo-close.yml"
-      - "scripts/finalize_profuturo_close.py"
-  workflow_run:
-    workflows:
-      - "Actualizar mercado intradia Fondo 3"
-    types:
-      - completed
+
+# Cierre histórico del visor dual/reduced 60-30. El cierre vigente se genera y
+# publica en update-fixed-models-intraday.yml; este flujo queda solo para auditoría.
 
 permissions:
   contents: write

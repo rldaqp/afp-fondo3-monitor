@@ -2,17 +2,9 @@ name: Publicar visor dual Rolling 30
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - migracion-github-actions
-    paths:
-      - ".github/workflows/deploy-pages-ui.yml"
-      - "public/index.html"
-      - "public/data/dual_trade_runtime_v1.js"
-      - "scripts/ensure_dual_trade_runtime.py"
 
-# Los datos de mercado cambian cada 5 minutos y se publican por la vía rápida
-# del updater dual. No disparan un despliegue completo + Playwright en cada corte.
+# Despliegue histórico del visor dual. El visor vigente se publica desde los
+# workflows de modelos fijos; queda disponible solo para auditoría manual.
 permissions:
   contents: write
   pages: write

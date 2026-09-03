@@ -2,18 +2,9 @@ name: Aplicar Peru adaptativo Profuturo
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - migracion-github-actions
-    paths:
-      - "scripts/apply_adaptive_peru_signal.py"
-      - "scripts/patch_profuturo_adaptive_ui.py"
-      - ".github/workflows/apply-adaptive-peru-profuturo.yml"
-  workflow_run:
-    workflows:
-      - "Actualizar dual Profuturo sesion actual"
-    types:
-      - completed
+
+# Variante histórica del visor dual. Se conserva como análisis manual y no se
+# encadena al visor operativo vigente.
 
 permissions:
   contents: write

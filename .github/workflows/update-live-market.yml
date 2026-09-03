@@ -17,7 +17,8 @@ on:
   schedule:
     # Ejecucion corta cada cinco minutos durante la franja que cubre
     # el mercado de Nueva York tanto en horario de verano como de invierno.
-    - cron: "*/5 13-22 * * 1-5"
+    # Se desplaza de los minutos :00/:05, donde GitHub concentra más cron.
+    - cron: "1-56/5 13-22 * * 1-5"
 
 permissions:
   contents: write

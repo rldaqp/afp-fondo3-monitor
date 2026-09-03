@@ -2,21 +2,9 @@ name: Actualizar dual Profuturo sesion actual
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - migracion-github-actions
-    paths:
-      - ".github/workflows/update-dual-current-session.yml"
-      - "scripts/refresh_profuturo_current_session_v3.py"
-      - "scripts/patch_google_rolling30_assets.py"
-      - "scripts/normalize_markets_bcrp_for_rolling30.py"
-      - "scripts/patch_dual_20260824_exact.py"
-      - "data/analysis/googlefinance_alt_rolling30_live_returns.csv"
-  workflow_run:
-    workflows:
-      - "Actualizar mercado intradia Fondo 3"
-    types:
-      - completed
+
+# Pipeline histórico Rolling 30. No debe encadenarse al mercado vigente ni
+# competir con el despliegue de niveles + retornos.
 
 permissions:
   contents: write

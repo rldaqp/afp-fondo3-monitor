@@ -1,15 +1,10 @@
 name: Publicar visor GitHub Pages actual
 
 on:
-  push:
-    branches:
-      - migracion-github-actions
-    paths:
-      - "public/**"
-      - "scripts/ensure_dual_trade_runtime.py"
-      - "scripts/ensure_comparator_runtime.py"
-      - ".github/workflows/deploy-pages-current.yml"
   workflow_dispatch:
+
+# Despliegue histórico del visor dual. El visor vigente se publica desde
+# update-fixed-models-intraday.yml y update-fixed-levels-returns.yml.
 
 permissions:
   contents: read

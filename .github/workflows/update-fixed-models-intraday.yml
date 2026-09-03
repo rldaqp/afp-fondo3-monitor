@@ -16,7 +16,10 @@ on:
       - "public/data/model_health_v1.js"
       - "public/data/fixed_ticker_freshness_v1.js"
   schedule:
-    - cron: "*/5 13-22 * * 1-5"
+    # Minutos desplazados del :00 y de los múltiplos de cinco más saturados.
+    # GitHub puede retrasar o descartar cron bajo carga; el push y workflow_run
+    # se mantienen como disparadores independientes.
+    - cron: "3-58/5 13-22 * * 1-5"
     # Salvaguardas de cierre. 20:07 UTC cubre el cierre cuando NY está en EDT
     # y 21:07 UTC cuando NY está en EST. Son ejecuciones adicionales al ciclo normal.
     - cron: "7 20 * * 1-5"
@@ -55,7 +58,7 @@ jobs:
           python-version: "3.11"
 
       - name: Dependencias
-        run: pip install --disable-pip-version-check pandas numpy yfinance selenium
+        run: pip install --disable-pip-version-check pandas numpy requests yfinance selenium
 
       - name: Calcular snapshot intradia fijo
         run: python scripts/build_fixed_models_intraday.py
@@ -67,21 +70,58 @@ jobs:
         run: |
           python - <<'PY'
           import json
+          import math
+          from datetime import datetime
           from pathlib import Path
+          from zoneinfo import ZoneInfo
+
           d=json.loads(Path("public/data/fixed_models_intraday.json").read_text(encoding="utf-8"))
-          assert {x["ticker"] for x in d["tickers"]} == {"SPY","EEM","MCHI","QQQ","SPBLSCUP"}
+          tickers=d["tickers"]
+          expected={"SPY","EEM","MCHI","QQQ","SPBLSCUP"}
+          names=[x["ticker"] for x in tickers]
+          assert len(names)==len(expected) and set(names)==expected, names
           assert float(d["models"]["niveles"]["vc_intraday"]) > 0
           assert float(d["models"]["retornos"]["vc_intraday"]) > 0
           assert "16.07900257" in d["models"]["niveles"]["equation"]
           assert "0.0007122785" in d["models"]["retornos"]["equation"]
-          assert abs(sum(x["level_weight_abs_pct"] for x in d["tickers"])-100) < 1e-6
-          assert abs(sum(x["return_weight_abs_pct"] for x in d["tickers"])-100) < 1e-6
+
+          def finite(value):
+              try:
+                  return value is not None and math.isfinite(float(value))
+              except Exception:
+                  return False
+
+          def validate_weights(weight_key, contribution_key):
+              weights=[x.get(weight_key) for x in tickers]
+              contributions=[float(x[contribution_key]) for x in tickers]
+              if all(not finite(x) for x in weights):
+                  # Retornos exactamente planos: el denominador es cero y el
+                  # peso relativo no está definido. Es válido y se muestra “—”.
+                  assert all(abs(x) < 1e-15 for x in contributions), contributions
+                  return
+              assert all(finite(x) for x in weights), weights
+              assert abs(sum(float(x) for x in weights)-100) < 1e-6, weights
+
+          validate_weights("level_weight_abs_pct", "level_contribution")
+          validate_weights("return_weight_abs_pct", "return_contribution")
           assert d["mode"] in {"INTRADÍA","INTRADÍA PARCIAL","CIERRE / ÚLTIMO SNAPSHOT"}
           assert d.get("previous_close_rule")
-          assert all(x.get("previous_close_basis") for x in d["tickers"])
-          assert all(float(x["price_previous"]) > 0 and float(x["price_current"]) > 0 for x in d["tickers"])
+          assert all(x.get("previous_close_basis") for x in tickers)
+          assert all(float(x["price_previous"]) > 0 and float(x["price_current"]) > 0 for x in tickers)
+
+          signal_date=str(d.get("signal_date") or "")[:10]
+          fresh=[x for x in tickers if bool(x.get("fresh")) and str(x.get("timestamp") or "")[:10]==signal_date]
+          assert int(d.get("fresh_factors",-1))==len(fresh), (d.get("fresh_factors"), fresh)
+          assert int(d.get("total_factors",-1))==len(expected)
+          if bool(d.get("market_open")):
+              today=datetime.now(ZoneInfo("America/New_York")).date().isoformat()
+              assert signal_date==today, (signal_date,today)
+              expected_mode="INTRADÍA" if len(fresh)==len(expected) else "INTRADÍA PARCIAL"
+              assert d["mode"]==expected_mode, (d["mode"],expected_mode)
+          else:
+              assert d["mode"]=="CIERRE / ÚLTIMO SNAPSHOT", d["mode"]
           print("OK intradia", d["signal_date"], d["mode"], f"fresh={d.get('fresh_factors')}/{d.get('total_factors')}")
-          print("BASES", {x["ticker"]:(x.get("previous_close_date"),x.get("previous_close_basis")) for x in d["tickers"]})
+          print("BASES", {x["ticker"]:(x.get("previous_close_date"),x.get("previous_close_basis")) for x in tickers})
           if d.get("problems"):
               print("ADVERTENCIAS", d["problems"])
           PY
@@ -97,9 +137,20 @@ jobs:
             echo "Sin cambios intradia."
           else
             git commit -m "Actualizar intradia niveles y retornos"
-            git fetch origin migracion-github-actions
-            git rebase origin/migracion-github-actions
-            git push origin HEAD:migracion-github-actions
+            PUSHED=0
+            for attempt in 1 2 3; do
+              if git push origin HEAD:migracion-github-actions; then PUSHED=1; break; fi
+              echo "Rama ocupada; reintento ${attempt}/3..."
+              git fetch origin migracion-github-actions
+              if ! git rebase origin/migracion-github-actions; then
+                git rebase --abort || true
+                break
+              fi
+              sleep 2
+            done
+            if [ "$PUSHED" -ne 1 ]; then
+              echo "No se persistió este corte en la rama; se publicará el snapshot calculado y el próximo ciclo reintentará."
+            fi
           fi
 
       - name: Inyectar módulos operativos
@@ -117,32 +168,6 @@ jobs:
             sed -i 's#</body>#<script src="data/fixed_ticker_freshness_v1.js?rev=LIVESTATUS3-20260902"></script></body>#' public/index.html
           fi
           sed -i 's#fixed_ticker_freshness_v1.js?rev=[^"]*#fixed_ticker_freshness_v1.js?rev=LIVESTATUS3-20260902#g' public/index.html
-
-      - name: Publicar snapshot en gh-pages
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          tmp="$(mktemp -d)"
-          git clone --depth 1 --branch gh-pages "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" "$tmp/gh-pages"
-          mkdir -p "$tmp/gh-pages/data"
-          cp public/index.html "$tmp/gh-pages/index.html"
-          cp public/data/fixed_models_intraday.json "$tmp/gh-pages/data/fixed_models_intraday.json"
-          cp public/data/model_signal_v1.js "$tmp/gh-pages/data/model_signal_v1.js"
-          cp public/data/model_threshold_overlay_v1.js "$tmp/gh-pages/data/model_threshold_overlay_v1.js"
-          cp public/data/model_health_v1.js "$tmp/gh-pages/data/model_health_v1.js"
-          cp public/data/fixed_ticker_freshness_v1.js "$tmp/gh-pages/data/fixed_ticker_freshness_v1.js"
-          if [ -f public/data/model_health.json ]; then cp public/data/model_health.json "$tmp/gh-pages/data/model_health.json"; fi
-          cd "$tmp/gh-pages"
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add index.html data/fixed_models_intraday.json data/model_signal_v1.js data/model_threshold_overlay_v1.js data/model_health_v1.js data/fixed_ticker_freshness_v1.js
-          if [ -f data/model_health.json ]; then git add data/model_health.json; fi
-          if git diff --cached --quiet; then
-            echo "gh-pages ya tiene snapshot y módulos."
-          else
-            git commit -m "Publicar intradia señal salud y estado horario"
-            git push origin HEAD:gh-pages
-          fi
 
       - name: Configurar Pages
         uses: actions/configure-pages@v5

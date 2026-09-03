@@ -2,18 +2,9 @@ name: Publicar Profuturo alineado
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - migracion-github-actions
-    paths:
-      - ".github/workflows/fix-profuturo-ui-consistency.yml"
-      - "scripts/patch_profuturo_retbase.py"
-      - "scripts/complete_profuturo_20260828.py"
-      - "public/index.html"
-      - "public/data/fixed_trade_runtime_v1.js"
-      - "public/data/fixed_models_2026.json"
-      - "public/data/fixed_models_2026.csv"
-      - "public/data/fixed_models_intraday.json"
+
+# Corrección puntual de agosto conservada para auditoría. No debe ejecutarse
+# con cada snapshot vigente porque contiene valores esperados fijos del 28/08.
 
 permissions:
   contents: write

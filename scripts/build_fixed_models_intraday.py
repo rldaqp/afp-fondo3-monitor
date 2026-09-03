@@ -8,6 +8,7 @@ from zoneinfo import ZoneInfo
 
 import numpy as np
 import pandas as pd
+import requests
 import yfinance as yf
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -19,6 +20,13 @@ NY = ZoneInfo("America/New_York")
 
 FACTORS = ["SPY", "EEM", "MCHI", "QQQ", "SPBLSCUP"]
 LIQUID = ["SPY", "EEM", "MCHI", "QQQ"]
+GOOGLE_EXCHANGES = {
+    "SPY": "NYSEARCA",
+    "EEM": "NYSEARCA",
+    "MCHI": "NASDAQ",
+    "QQQ": "NASDAQ",
+    "SPBLSCUP": "INDEXSP",
+}
 
 
 def finite(v):
@@ -30,6 +38,12 @@ def finite(v):
 
 def market_is_open(now_ny: datetime) -> bool:
     return now_ny.weekday() < 5 and clock_time(9, 30) <= now_ny.time() < clock_time(16, 5)
+
+
+def short_error(exc: Exception) -> str:
+    """Keep provider diagnostics useful without publishing driver stack traces."""
+    message = re.sub(r"\s+", " ", str(exc)).strip()
+    return f"{type(exc).__name__}: {message[:240]}"
 
 
 def validated_previous_close_map(rows, target_date: str):
@@ -56,29 +70,10 @@ def liquid_snapshot(ticker: str, now_ny: datetime, baseline=None):
     baseline_price = float(baseline["price"]) if baseline and finite(baseline.get("price")) else None
     baseline_date = str(baseline.get("date") or "")[:10] if baseline else None
 
-    t = yf.Ticker(ticker)
     provider_prev = None
-    try:
-        info = t.fast_info
-        cur = float(info["last_price"])
-        if finite(info.get("previous_close")):
-            provider_prev = float(info["previous_close"])
-        prev = baseline_price if finite(baseline_price) and baseline_price > 0 else provider_prev
-        if finite(cur) and finite(prev) and prev > 0:
-            basis = "CIERRE BASE FIJA" if baseline_price is not None else "PREV. YAHOO"
-            return {
-                "precio_anterior": float(prev),
-                "precio_actual": cur,
-                "retorno": cur / float(prev) - 1.0,
-                "source": f"YAHOO {ticker} · FAST_INFO + {basis}",
-                "timestamp": now_ny.date().isoformat(),
-                "fresh": True,
-                "previous_close_date": baseline_date,
-                "previous_close_basis": basis,
-                "provider_previous_close": provider_prev,
-            }
-    except Exception as exc:
-        print(f"{ticker} fast_info fallback:", type(exc).__name__, exc)
+    # fast_info no expone la hora del último negocio y puede devolver T-1. Se
+    # exige una serie 5m porque su índice permite probar a qué sesión pertenece
+    # la cotización tanto durante la rueda como al cierre.
 
     raw = yf.download(
         ticker,
@@ -104,6 +99,13 @@ def liquid_snapshot(ticker: str, now_ny: datetime, baseline=None):
     if s.empty:
         raise RuntimeError(f"{ticker} intradía vacío")
     cur = float(s.iloc[-1])
+    quote_stamp = pd.Timestamp(s.index[-1])
+    if quote_stamp.tzinfo is None:
+        quote_stamp = quote_stamp.tz_localize(NY)
+    else:
+        quote_stamp = quote_stamp.tz_convert(NY)
+    quote_date = quote_stamp.date().isoformat()
+    fresh = quote_date == now_ny.date().isoformat()
 
     if finite(baseline_price) and baseline_price > 0:
         prev = baseline_price
@@ -141,12 +143,64 @@ def liquid_snapshot(ticker: str, now_ny: datetime, baseline=None):
         "precio_anterior": float(prev),
         "precio_actual": cur,
         "retorno": cur / float(prev) - 1.0,
-        "source": f"YAHOO {ticker} · 5M + {basis}",
-        "timestamp": now_ny.date().isoformat(),
-        "fresh": True,
+        "source": f"YAHOO {ticker} · 5M {'ACTUAL' if fresh else 'ÚLTIMO DISPONIBLE'} + {basis}",
+        "timestamp": quote_date,
+        "fresh": fresh,
         "previous_close_date": baseline_date,
         "previous_close_basis": basis,
         "provider_previous_close": provider_prev,
+    }
+
+
+def google_finance_snapshot(ticker: str, now_ny: datetime, baseline=None):
+    """Timestamped HTTP fallback for all fixed-model factors."""
+    exchange = GOOGLE_EXCHANGES[ticker]
+    url = f"https://www.google.com/finance/quote/{ticker}:{exchange}?hl=en&gl=us"
+    response = requests.get(
+        url,
+        timeout=12,
+        headers={
+            "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/131 Safari/537.36",
+            "Accept-Language": "en-US,en;q=0.9",
+        },
+    )
+    response.raise_for_status()
+    text = response.text
+    price_match = re.search(r'data-last-price="([+-]?[0-9.,]+)"', text)
+    stamp_match = re.search(r'data-last-normal-market-timestamp="([0-9]+)"', text)
+    if not price_match:
+        raise RuntimeError(f"Google Finance no devolvió precio para {ticker}")
+
+    price = float(price_match.group(1).replace(",", ""))
+    baseline_price = float(baseline["price"]) if baseline and finite(baseline.get("price")) else None
+    baseline_date = str(baseline.get("date") or "")[:10] if baseline else None
+    if not finite(baseline_price) or baseline_price <= 0:
+        raise RuntimeError(f"{ticker} sin cierre fijo previo")
+    # Evita aceptar por error el precio de otro instrumento embebido en la página.
+    if not (0.5 * baseline_price < price < 1.5 * baseline_price):
+        raise RuntimeError(f"{ticker} fuera de rango frente al cierre fijo")
+
+    stamp = None
+    if stamp_match:
+        sec = int(stamp_match.group(1))
+        if sec > 10_000_000_000:
+            sec //= 1000
+        stamp = datetime.fromtimestamp(sec, tz=NY)
+    quote_date = stamp.date().isoformat() if stamp else (baseline_date or "")
+    fresh = stamp is not None and stamp.date() == now_ny.date()
+    return {
+        "precio_anterior": baseline_price,
+        "precio_actual": price,
+        "retorno": price / baseline_price - 1.0,
+        "source": (
+            f"GOOGLE FINANCE {ticker} · {'QUOTE ACTUAL' if fresh else 'ÚLTIMO QUOTE'}"
+            " + CIERRE BASE FIJA"
+        ),
+        "timestamp": quote_date,
+        "fresh": fresh,
+        "previous_close_date": baseline_date,
+        "previous_close_basis": "CIERRE BASE FIJA",
+        "provider_previous_close": None,
     }
 
 
@@ -230,8 +284,10 @@ def spblscup_google(now_ny: datetime, baseline=None):
                 except Exception:
                     pass
 
-        stamp_date = stamp.date().isoformat() if stamp else now_ny.date().isoformat()
-        fresh = stamp is None or stamp.date() == now_ny.date()
+        # Sin timestamp verificable no se presenta SPBLSCUP como cotización de
+        # la rueda actual. Se conserva como respaldo visible, marcado no fresco.
+        stamp_date = stamp.date().isoformat() if stamp else (baseline_date or now_ny.date().isoformat())
+        fresh = stamp is not None and stamp.date() == now_ny.date()
         return {
             "precio_anterior": float(previous),
             "precio_actual": float(price),
@@ -295,16 +351,26 @@ def main():
         try:
             fmap[ticker] = liquid_snapshot(ticker, now_ny, baseline_map.get(ticker))
         except Exception as exc:
-            problems.append(f"{ticker}: {type(exc).__name__}: {exc}")
-            if ticker in old_map:
-                fmap[ticker] = old_map[ticker]
+            problems.append(f"{ticker} Yahoo: {short_error(exc)}")
+            try:
+                fmap[ticker] = google_finance_snapshot(ticker, now_ny, baseline_map.get(ticker))
+            except Exception as google_exc:
+                problems.append(f"{ticker} Google: {short_error(google_exc)}")
+                if ticker in old_map:
+                    fmap[ticker] = old_map[ticker]
 
     try:
-        fmap["SPBLSCUP"] = spblscup_google(now_ny, baseline_map.get("SPBLSCUP"))
+        fmap["SPBLSCUP"] = google_finance_snapshot(
+            "SPBLSCUP", now_ny, baseline_map.get("SPBLSCUP")
+        )
     except Exception as exc:
-        problems.append(f"SPBLSCUP: {type(exc).__name__}: {exc}")
-        if "SPBLSCUP" in old_map:
-            fmap["SPBLSCUP"] = old_map["SPBLSCUP"]
+        problems.append(f"SPBLSCUP Google HTTP: {short_error(exc)}")
+        try:
+            fmap["SPBLSCUP"] = spblscup_google(now_ny, baseline_map.get("SPBLSCUP"))
+        except Exception as browser_exc:
+            problems.append(f"SPBLSCUP Google navegador: {short_error(browser_exc)}")
+            if "SPBLSCUP" in old_map:
+                fmap["SPBLSCUP"] = old_map["SPBLSCUP"]
 
     last = rows[-1]
     prev_row = rows[-2] if len(rows) >= 2 else {}
@@ -330,6 +396,18 @@ def main():
     missing = [f for f in FACTORS if f not in fmap]
     if missing:
         raise RuntimeError("Faltan factores: " + ", ".join(missing))
+
+    # Una fuente puede responder correctamente pero seguir entregando la rueda
+    # anterior. No se descarta el snapshot completo: se publica como parcial y
+    # se deja la incidencia explícita para que el visor nunca confunda T-1 con T.
+    if open_now:
+        for f in FACTORS:
+            quote_date = str(fmap[f].get("timestamp") or "")[:10]
+            if not (bool(fmap[f].get("fresh")) and quote_date == target_date):
+                problems.append(
+                    f"{f}: sin cotización verificable de {target_date}; "
+                    f"último dato {quote_date or 'sin fecha'}"
+                )
 
     lc = base["models"]["niveles"]["coefficients"]
     rc = base["models"]["retornos"]["coefficients"]
@@ -425,7 +503,7 @@ def main():
         },
         "tickers": tickers,
         "weight_note": "Peso relativo = participación del valor absoluto del aporte actual de cada factor; no representa tenencia de cartera.",
-        "source_live": "Precio actual: Yahoo Finance fast_info/5m + Google Finance SPBLSCUP. Retorno: contra cierre regular validado de la base fija; proveedor solo como fallback.",
+        "source_live": "Precio actual: Yahoo Finance 5m con Google Finance como respaldo; toda cotización exige fecha verificable. Retorno: contra cierre regular validado de la base fija.",
     }
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
