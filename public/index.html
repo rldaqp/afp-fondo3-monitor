@@ -39,4 +39,4 @@ function render(){const L=BASE.latest,m=BASE.metrics.validation_from_2026_08_18;
 async function loadLive(){try{const r=await fetch(LIVE_URL+'?v='+Date.now(),{cache:'no-store'});if(!r.ok)throw Error('HTTP '+r.status);LIVE=await r.json();renderLive();renderTickers();draw()}catch(e){LIVE=null;renderLive();renderTickers();draw()}}
 async function boot(){try{const r=await fetch(BASE_URL+'?v='+Date.now(),{cache:'no-store'});if(!r.ok)throw Error('HTTP '+r.status);BASE=await r.json();render();await loadLive();setInterval(loadLive,60000)}catch(e){$('loadError').style.display='block';$('loadError').textContent='No se pudieron cargar los datos: '+e.message}}
 boot();})();
-</script><script src="data/fixed_trade_runtime_v1.js?rev=FIXEDTRADE1-20260831"></script></body></html>
+</script><script src="data/fixed_trade_runtime_v1.js?rev=FIXEDTRADE2-20260903"></script></body></html>

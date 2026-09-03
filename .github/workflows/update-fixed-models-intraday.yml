@@ -9,6 +9,7 @@ on:
       - ".github/workflows/update-fixed-models-intraday.yml"
       - "scripts/build_fixed_models_intraday.py"
       - "scripts/normalize_fixed_intraday_session.py"
+      - "scripts/test_fixed_trade_live_date.js"
       - "public/index.html"
       - "public/data/fixed_trade_runtime_v1.js"
       - "public/data/model_signal_v1.js"
@@ -125,6 +126,14 @@ jobs:
           if d.get("problems"):
               print("ADVERTENCIAS", d["problems"])
           PY
+
+      - name: Validar fecha viva en operaciones
+        run: |
+          node --check public/data/fixed_trade_runtime_v1.js
+          node scripts/test_fixed_trade_live_date.js
+          grep -q "const LIVE_URL='data/fixed_models_intraday.json'" public/data/fixed_trade_runtime_v1.js
+          grep -q 'function refreshDateInputs' public/data/fixed_trade_runtime_v1.js
+          grep -q 'FIXEDTRADE2-20260903' public/index.html
 
       - name: Guardar snapshot en rama
         env:
