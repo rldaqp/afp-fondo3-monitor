@@ -1,0 +1,61 @@
+name: Mantener intradia Fondo 3
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - migracion-github-actions
+    paths:
+      - ".github/workflows/intraday-heartbeat.yml"
+  schedule:
+    # Un disparo horario inicia/reinicia un heartbeat que mantiene el cálculo
+    # cada 5 minutos. La validación de horario se hace en America/New_York.
+    - cron: "11 13-22 * * 1-5"
+
+permissions:
+  actions: write
+  contents: read
+
+concurrency:
+  group: intraday-heartbeat
+  cancel-in-progress: true
+
+jobs:
+  heartbeat:
+    runs-on: ubuntu-latest
+    timeout-minutes: 75
+    steps:
+      - name: Disparar snapshot cada 5 minutos durante mercado abierto
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+
+          dispatch_snapshot() {
+            curl --fail-with-body --silent --show-error \
+              -X POST \
+              -H "Accept: application/vnd.github+json" \
+              -H "Authorization: Bearer ${GH_TOKEN}" \
+              -H "X-GitHub-Api-Version: 2022-11-28" \
+              "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/workflows/update-fixed-models-intraday.yml/dispatches" \
+              -d '{"ref":"migracion-github-actions"}'
+          }
+
+          for cycle in $(seq 1 14); do
+            weekday=$(TZ=America/New_York date +%u)
+            hm=$(TZ=America/New_York date +%H%M)
+            stamp=$(TZ=America/New_York date '+%Y-%m-%d %H:%M:%S %Z')
+
+            # Ventana ampliada para cubrir preapertura inmediata y cierre final.
+            # El builder del snapshot decide si corresponde INTRADÍA o CIERRE.
+            if [ "$weekday" -le 5 ] && [ "$hm" -ge 0925 ] && [ "$hm" -le 1610 ]; then
+              echo "[$stamp] ciclo ${cycle}/14: disparando actualización intradía"
+              dispatch_snapshot
+            else
+              echo "[$stamp] ciclo ${cycle}/14: fuera de ventana operativa"
+            fi
+
+            if [ "$cycle" -lt 14 ]; then
+              sleep 300
+            fi
+          done
