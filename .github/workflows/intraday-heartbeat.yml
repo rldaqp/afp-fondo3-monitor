@@ -23,7 +23,9 @@ concurrency:
 jobs:
   heartbeat:
     runs-on: ubuntu-latest
-    timeout-minutes: 75
+    # El ciclo dura algo más de dos horas para tolerar que GitHub retrase o
+    # salte un cron horario. Si llega un nuevo disparo, concurrency lo reinicia.
+    timeout-minutes: 135
     steps:
       - name: Disparar snapshot cada 5 minutos durante mercado abierto
         env:
@@ -41,7 +43,7 @@ jobs:
               -d '{"ref":"migracion-github-actions"}'
           }
 
-          for cycle in $(seq 1 14); do
+          for cycle in $(seq 1 26); do
             weekday=$(TZ=America/New_York date +%u)
             hm=$(TZ=America/New_York date +%H%M)
             stamp=$(TZ=America/New_York date '+%Y-%m-%d %H:%M:%S %Z')
@@ -49,13 +51,13 @@ jobs:
             # Ventana ampliada para cubrir preapertura inmediata y cierre final.
             # El builder del snapshot decide si corresponde INTRADÍA o CIERRE.
             if [ "$weekday" -le 5 ] && [ "$hm" -ge 0925 ] && [ "$hm" -le 1610 ]; then
-              echo "[$stamp] ciclo ${cycle}/14: disparando actualización intradía"
+              echo "[$stamp] ciclo ${cycle}/26: disparando actualización intradía"
               dispatch_snapshot
             else
-              echo "[$stamp] ciclo ${cycle}/14: fuera de ventana operativa"
+              echo "[$stamp] ciclo ${cycle}/26: fuera de ventana operativa"
             fi
 
-            if [ "$cycle" -lt 14 ]; then
+            if [ "$cycle" -lt 26 ]; then
               sleep 300
             fi
           done
