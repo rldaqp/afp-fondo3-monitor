@@ -83,7 +83,7 @@ jobs:
           assert d["model_version"] == "v2-sbs-corrected-20260831"
           assert d["latest"]["market_date"] >= "2026-08-31"
           by={r["fecha"]:r for r in d["rows"]}
-          for ds in ("2026-08-27","2026-08-28","2026-08-31"):
+          for ds in ("2026-08-27","2026-08-28","2026-08-31","2026-09-01","2026-09-02"):
               assert ds in by, ds
               r=by[ds]
               for k in ("SPY","EEM","MCHI","QQQ","SPBLSCUP","vc_niveles","ret_vc_estimado","vc_retornos"):
@@ -95,10 +95,25 @@ jobs:
           assert abs(float(by["2026-08-28"]["EEM"])-67.14) < 0.01
           assert abs(float(by["2026-08-28"]["MCHI"])-55.23) < 0.01
           assert abs(float(by["2026-08-28"]["QQQ"])-716.43) < 0.01
+          # Cierres SPBLSCUP auditados: si una fecha vuelve a desplazarse o arrastrarse,
+          # el flujo falla antes de publicar el visor.
+          expected_spb={
+              "2026-08-28":454.70,
+              "2026-08-31":450.67,
+              "2026-09-01":446.70,
+              "2026-09-02":455.17,
+          }
+          for ds,expected in expected_spb.items():
+              assert abs(float(by[ds]["SPBLSCUP"])-expected) < 0.005, (ds,by[ds]["SPBLSCUP"],expected)
+          # Resultados esperados con los coeficientes fijos y la secuencia auditada.
+          assert abs(float(by["2026-08-31"]["vc_niveles"])-71.33170014928366) < 1e-6
+          assert abs(float(by["2026-08-31"]["vc_retornos"])-71.72036244265796) < 1e-6
+          assert abs(float(by["2026-09-01"]["vc_retornos"])-71.50071943639291) < 1e-6
+          assert abs(float(by["2026-09-02"]["vc_retornos"])-72.03148401873725) < 1e-6
           h=json.loads(Path("public/data/model_health.json").read_text(encoding="utf-8"))
           assert h["policy"]["minimum_change_n"] == 30
           assert set(h["models"].keys()) == {"niveles","retornos"}
-          print("CONTINUIDAD OK", {ds:{k:by[ds][k] for k in ("vc_niveles","ret_vc_estimado","vc_retornos")} for ds in ("2026-08-27","2026-08-28","2026-08-31")})
+          print("CONTINUIDAD OK", {ds:{k:by[ds][k] for k in ("SPBLSCUP","vc_niveles","ret_vc_estimado","vc_retornos")} for ds in ("2026-08-28","2026-08-31","2026-09-01","2026-09-02")})
           print("SALUD", h["models"]["niveles"]["status"], h["models"]["retornos"]["status"])
           PY
 
