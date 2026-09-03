@@ -7,6 +7,7 @@ on:
       - migracion-github-actions
     paths:
       - ".github/workflows/update-fixed-levels-returns.yml"
+      - "scripts/sync_sbs_official_latest.py"
       - "scripts/build_fixed_levels_returns_monitor.py"
       - "scripts/ensure_profuturo_series_continuity.py"
       - "scripts/build_model_health.py"
@@ -50,7 +51,10 @@ jobs:
           python-version: "3.11"
 
       - name: Dependencias
-        run: pip install --disable-pip-version-check pandas numpy yfinance
+        run: pip install --disable-pip-version-check pandas numpy yfinance requests beautifulsoup4 lxml selenium
+
+      - name: Sincronizar último VC oficial SBS
+        run: python scripts/sync_sbs_official_latest.py
 
       - name: Construir serie fija 2026
         run: python scripts/build_fixed_levels_returns_monitor.py
@@ -103,15 +107,18 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add \
+            data/rolling90/sbs_profuturo_f3.csv \
             data/fixed_models/spblscup_levels_2026.csv \
             data/fixed_models/yahoo_levels_2026.csv \
+            public/data/sbs_sync_status.json \
+            public/data/series.json \
             public/data/fixed_models_2026.json \
             public/data/fixed_models_2026.csv \
             public/data/model_health.json
           if git diff --cached --quiet; then
             echo "Sin cambios de datos."
           else
-            git commit -m "Actualizar niveles retornos y salud del modelo"
+            git commit -m "Actualizar SBS niveles retornos y salud del modelo"
             git fetch origin migracion-github-actions
             git rebase origin/migracion-github-actions
             git push origin HEAD:migracion-github-actions
