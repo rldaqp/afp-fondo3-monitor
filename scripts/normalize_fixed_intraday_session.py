@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import subprocess
 from datetime import datetime, time as clock_time
 from pathlib import Path
 from zoneinfo import ZoneInfo
@@ -13,6 +14,7 @@ SNAP = ROOT / "public" / "data" / "fixed_models_intraday.json"
 NY = ZoneInfo("America/New_York")
 LIMA = ZoneInfo("America/Lima")
 FACTORS = ["SPY", "EEM", "MCHI", "QQQ", "SPBLSCUP"]
+SPBL_EVIDENCE_MAX_MINUTES = 12
 
 
 def finite(v) -> bool:
@@ -20,6 +22,114 @@ def finite(v) -> bool:
         return v is not None and np.isfinite(float(v))
     except Exception:
         return False
+
+
+def parse_dt(value):
+    try:
+        dt = datetime.fromisoformat(str(value or "").replace("Z", "+00:00"))
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=NY)
+        return dt.astimezone(NY)
+    except Exception:
+        return None
+
+
+def committed_previous_snapshot():
+    """Snapshot publicado antes del cálculo actual, sin depender de cachés externas."""
+    try:
+        proc = subprocess.run(
+            ["git", "show", "HEAD:public/data/fixed_models_intraday.json"],
+            cwd=ROOT,
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+        return json.loads(proc.stdout)
+    except Exception:
+        return {}
+
+
+def reconcile_spblscup_freshness(snap, now_ny: datetime) -> bool:
+    """Corrige el falso T-1 de Google cuando el precio actual sí se mueve.
+
+    Google Finance puede devolver el nivel corriente de SPBLSCUP pero omitir o
+    asociar mal `data-last-normal-market-timestamp`. No se fuerza frescura por
+    el simple hecho de recibir un precio. Se exige evidencia observable:
+
+    1) el precio Google del snapshot actual cambió frente al snapshot publicado
+       inmediatamente anterior del mismo día; o
+    2) existe una evidencia de movimiento así obtenida en los últimos 12 min.
+
+    La marca `fresh_evidence_at` conserva la hora de la última variación real;
+    por eso un proveedor congelado vuelve automáticamente a estado parcial.
+    """
+    if not bool(snap.get("market_open")):
+        return False
+
+    today = now_ny.date().isoformat()
+    signal_date = str(snap.get("signal_date") or "")[:10]
+    if signal_date != today:
+        return False
+
+    current = next((x for x in snap.get("tickers", []) if x.get("ticker") == "SPBLSCUP"), None)
+    if not current:
+        return False
+    if bool(current.get("fresh")) and str(current.get("timestamp") or "")[:10] == today:
+        return False
+    if "GOOGLE FINANCE SPBLSCUP" not in str(current.get("source") or ""):
+        return False
+    if not finite(current.get("price_current")):
+        return False
+
+    prior = committed_previous_snapshot()
+    prior_generated = parse_dt(prior.get("generated_at_ny") or prior.get("generated_at_lima"))
+    prior_ticker = next((x for x in prior.get("tickers", []) if x.get("ticker") == "SPBLSCUP"), None)
+    if not prior_generated or prior_generated.date() != now_ny.date() or not prior_ticker:
+        return False
+    if not finite(prior_ticker.get("price_current")):
+        return False
+
+    cur_price = float(current["price_current"])
+    prev_price = float(prior_ticker["price_current"])
+    moved = abs(cur_price - prev_price) > max(1e-6, abs(prev_price) * 1e-7)
+
+    evidence_at = None
+    evidence_kind = None
+    if moved:
+        evidence_at = now_ny.isoformat()
+        evidence_kind = "MOVIMIENTO VERIFICADO"
+    else:
+        prior_evidence = parse_dt(prior_ticker.get("fresh_evidence_at"))
+        if prior_evidence:
+            age_minutes = (now_ny - prior_evidence).total_seconds() / 60.0
+            if 0 <= age_minutes <= SPBL_EVIDENCE_MAX_MINUTES:
+                evidence_at = prior_evidence.isoformat()
+                evidence_kind = "EVIDENCIA RECIENTE"
+
+    if evidence_at is None:
+        return False
+
+    current["fresh"] = True
+    current["timestamp"] = today
+    current["fresh_evidence_at"] = evidence_at
+    current["source"] = (
+        f"GOOGLE FINANCE SPBLSCUP · QUOTE ACTUAL · {evidence_kind} + CIERRE BASE FIJA"
+    )
+
+    # El fallback de navegador quedó validado por movimiento observable, por lo
+    # que ya no corresponde mantener la advertencia SPBLSCUP de T-1/HTTP.
+    snap["problems"] = [
+        p for p in (snap.get("problems") or [])
+        if not str(p).startswith("SPBLSCUP")
+    ]
+    fresh_count = sum(
+        bool(x.get("fresh")) and str(x.get("timestamp") or "")[:10] == signal_date
+        for x in snap.get("tickers", [])
+    )
+    snap["fresh_factors"] = fresh_count
+    if fresh_count == len(FACTORS):
+        snap["mode"] = "INTRADÍA"
+    return True
 
 
 def main() -> None:
@@ -38,6 +148,10 @@ def main() -> None:
     snap_date = str(snap.get("signal_date") or "")[:10]
     now_ny = datetime.now(NY)
 
+    # Durante mercado abierto, reconcilia únicamente la frescura documental de
+    # SPBLSCUP. Los precios y cálculos del builder no se alteran.
+    spbl_reconciled = reconcile_spblscup_freshness(snap, now_ny)
+
     # Después de medianoche NY, fast_info puede seguir devolviendo el cierre de
     # la rueda anterior pero el builder antiguo lo etiquetaba con la fecha nueva.
     # Antes de 09:30 NY (o durante fin de semana) no existe una nueva rueda regular.
@@ -45,6 +159,9 @@ def main() -> None:
     # se normaliza al último cierre real en vez de publicar una sesión fantasma.
     pre_open_or_weekend = now_ny.weekday() >= 5 or now_ny.time() < clock_time(9, 30)
     if not (pre_open_or_weekend and snap_date > last_date):
+        if spbl_reconciled:
+            SNAP.write_text(json.dumps(snap, ensure_ascii=False, indent=2), encoding="utf-8")
+            print("SPBLSCUP fresco por evidencia reciente de movimiento verificable")
         return
 
     previous = None
