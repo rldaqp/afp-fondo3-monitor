@@ -1,5 +1,5 @@
 {
-  "generated_at_lima": "2026-09-02T20:41:13.354008-05:00",
+  "generated_at_lima": "2026-09-02T23:31:50.500981-05:00",
   "model_version": "v2-sbs-corrected-20260831",
   "history_start": "2026-01-05",
   "training": {
@@ -50,14 +50,14 @@
   "metrics": {
     "validation_from_2026_08_18": {
       "niveles": {
-        "n": 9,
-        "mae_pct": 0.3269246719576636,
-        "rmse_pct": 0.44770536982989056
+        "n": 8,
+        "mae_pct": 0.2991719884381003,
+        "rmse_pct": 0.38570192324499747
       },
       "retornos": {
-        "n": 9,
-        "mae_pct": 0.2776784858750301,
-        "rmse_pct": 0.2998324681619754
+        "n": 7,
+        "mae_pct": 0.28281761068229866,
+        "rmse_pct": 0.2992644042716414
       }
     },
     "retrospective_before_2026_07_07": {
@@ -74,16 +74,16 @@
     }
   },
   "latest": {
-    "market_date": "2026-09-01",
-    "vc_niveles": 70.97200471130556,
-    "ret_vc_estimado": -0.002563380191356894,
-    "vc_retornos": 71.66803294895543,
+    "market_date": "2026-09-02",
+    "vc_niveles": 71.66371836311457,
+    "ret_vc_estimado": 0.007423206179295875,
+    "vc_retornos": 72.03148401873725,
     "latest_sbs_date": "2026-08-31",
     "latest_sbs_vc": 71.8522175
   },
   "sources": {
     "SPY_EEM_MCHI_QQQ": "Yahoo Finance · cierre diario no ajustado",
-    "SPBLSCUP": "Semilla auditada + Google Finance (SPBLSCUP:INDEXSP) para cierres nuevos",
+    "SPBLSCUP": "Semilla auditada + Google Finance (SPBLSCUP:INDEXSP) con control estricto de fecha",
     "VC_SBS": "data/rolling90/sbs_profuturo_f3.csv · serie oficial usada por el monitor",
     "YAHOO_CACHE": "data/fixed_models/yahoo_levels_2026.csv · respaldo persistente contra huecos de descarga"
   },
@@ -2571,18 +2571,18 @@
     {
       "fecha": "2026-08-28",
       "fase": "VALIDACIÓN",
-      "SPY": 769.3499755859375,
-      "EEM": 67.13999938964844,
-      "MCHI": 55.22999954223633,
-      "QQQ": 716.4299926757812,
+      "SPY": 769.35,
+      "EEM": 67.14,
+      "MCHI": 55.23,
+      "QQQ": 716.43,
       "SPBLSCUP": 454.7,
-      "source": "GOOGLE FINANCE · CIERRE SESIÓN VALIDADO",
+      "source": "CIERRE SPBLSCUP AUDITADO · FECHA BLOQUEADA · CACHE HISTORICA YAHOO",
       "vc_sbs": 71.5961514,
-      "vc_niveles": 71.4302009357645,
-      "ret_vc_estimado": -0.011226494143315443,
-      "vc_retornos": 71.5203289953985,
-      "error_niveles_pct": -0.2317868502572762,
-      "error_retornos_pct": -0.10590290555966275
+      "vc_niveles": 71.43020083593653,
+      "ret_vc_estimado": -0.0112265022672201,
+      "vc_retornos": 71.52032840777724,
+      "error_niveles_pct": -0.23178698968931988,
+      "error_retornos_pct": -0.10590372630385758
     },
     {
       "fecha": "2026-08-31",
@@ -2591,14 +2591,14 @@
       "EEM": 67.0199966430664,
       "MCHI": 54.720001220703125,
       "QQQ": 716.760009765625,
-      "SPBLSCUP": 446.7,
-      "source": "GOOGLE FINANCE · CIERRE SESIÓN VALIDADO",
+      "SPBLSCUP": 450.67,
+      "source": "CIERRE SPBLSCUP AUDITADO · FECHA BLOQUEADA",
       "vc_sbs": 71.8522175,
-      "vc_niveles": 71.10381416651423,
-      "ret_vc_estimado": -0.0005730557643203729,
-      "vc_retornos": 71.55512281273708,
-      "error_niveles_pct": -1.041586967703212,
-      "error_retornos_pct": -0.41348019253951707
+      "vc_niveles": 71.33170014928366,
+      "ret_vc_estimado": 0.0017348923618725107,
+      "vc_retornos": 71.72036301620332,
+      "error_niveles_pct": -0.7244276778463177,
+      "error_retornos_pct": -0.18350788379867256
     },
     {
       "fecha": "2026-09-01",
@@ -2608,27 +2608,27 @@
       "MCHI": 54.40999984741211,
       "QQQ": 707.6400146484375,
       "SPBLSCUP": 446.7,
-      "source": "GOOGLE FINANCE · CIERRE SESIÓN VALIDADO",
+      "source": "CIERRE SPBLSCUP AUDITADO · FECHA BLOQUEADA",
       "vc_sbs": null,
       "vc_niveles": 70.97200471130556,
-      "ret_vc_estimado": -0.002563380191356894,
-      "vc_retornos": 71.66803294895543,
+      "ret_vc_estimado": -0.004891958464706914,
+      "vc_retornos": 71.50071943639291,
       "error_niveles_pct": null,
       "error_retornos_pct": null
     },
     {
       "fecha": "2026-09-02",
       "fase": "PROYECCIÓN",
-      "SPY": null,
-      "EEM": null,
-      "MCHI": null,
-      "QQQ": null,
-      "SPBLSCUP": 446.7,
-      "source": "GOOGLE FINANCE · CIERRE SESIÓN VALIDADO",
+      "SPY": 765.1599731445312,
+      "EEM": 67.1500015258789,
+      "MCHI": 54.540000915527344,
+      "QQQ": 709.239990234375,
+      "SPBLSCUP": 455.17,
+      "source": "CIERRE SPBLSCUP AUDITADO · FECHA BLOQUEADA",
       "vc_sbs": null,
-      "vc_niveles": null,
-      "ret_vc_estimado": null,
-      "vc_retornos": null,
+      "vc_niveles": 71.66371836311457,
+      "ret_vc_estimado": 0.007423206179295875,
+      "vc_retornos": 72.03148401873725,
       "error_niveles_pct": null,
       "error_retornos_pct": null
     }
