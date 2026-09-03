@@ -13,6 +13,7 @@ ROOT = Path(__file__).resolve().parents[1]
 SEED = ROOT / "data" / "fixed_models" / "spblscup_levels_2026.csv"
 SBS = ROOT / "data" / "rolling90" / "sbs_profuturo_f3.csv"
 LIVE = ROOT / "public" / "data" / "live_market.json"
+FIXED_INTRADAY = ROOT / "public" / "data" / "fixed_models_intraday.json"
 LIVE_RET = ROOT / "data" / "analysis" / "googlefinance_alt_rolling30_live_returns.csv"
 OUT_JSON = ROOT / "public" / "data" / "fixed_models_2026.json"
 OUT_CSV = ROOT / "public" / "data" / "fixed_models_2026.csv"
@@ -22,6 +23,16 @@ TRAIN_START = pd.Timestamp("2026-07-07")
 TRAIN_END = pd.Timestamp("2026-08-17")
 VALIDATION_START = pd.Timestamp("2026-08-18")
 HISTORY_START = pd.Timestamp("2026-01-05")
+
+# Cierres SPBLSCUP auditados para las ruedas donde se detectó un desplazamiento
+# de fecha provocado por un snapshot experimental antiguo. Se mantienen como
+# anclas históricas y no pueden ser reemplazados por un dato con otra fecha.
+AUDITED_SPBLSCUP = {
+    "2026-08-28": 454.70,
+    "2026-08-31": 450.67,
+    "2026-09-01": 446.70,
+    "2026-09-02": 455.17,
+}
 
 # Modelo recalibrado sobre la misma muestra original de 30 ruedas, corrigiendo
 # únicamente los VC SBS que estaban mal transcritos en el Excel de calibración:
@@ -102,6 +113,38 @@ def yahoo_history() -> pd.DataFrame:
     return out.sort_values("fecha").drop_duplicates("fecha", keep="last")
 
 
+def session_date(raw) -> pd.Timestamp | None:
+    text = str(raw or "")[:10]
+    d = pd.to_datetime(text, errors="coerce")
+    if pd.isna(d):
+        return None
+    return pd.Timestamp(d).normalize()
+
+
+def upsert_spblscup(spb: pd.DataFrame, d: pd.Timestamp, value: float, source: str) -> pd.DataFrame:
+    mask = spb["fecha"].eq(d)
+    if mask.any():
+        spb.loc[mask, "SPBLSCUP"] = float(value)
+        spb.loc[mask, "source"] = source
+        return spb
+    return pd.concat([spb, pd.DataFrame([{
+        "fecha": d,
+        "SPBLSCUP": float(value),
+        "source": source,
+    }])], ignore_index=True)
+
+
+def apply_audited_spblscup(spb: pd.DataFrame) -> pd.DataFrame:
+    for ds, value in AUDITED_SPBLSCUP.items():
+        spb = upsert_spblscup(
+            spb,
+            pd.Timestamp(ds),
+            value,
+            "CIERRE SPBLSCUP AUDITADO · FECHA BLOQUEADA",
+        )
+    return spb
+
+
 def load_spblscup_levels() -> pd.DataFrame:
     if not SEED.exists():
         raise RuntimeError(f"Falta {SEED}")
@@ -111,6 +154,10 @@ def load_spblscup_levels() -> pd.DataFrame:
     spb = spb.dropna(subset=["fecha", "SPBLSCUP"]).sort_values("fecha")
     if "source" not in spb.columns:
         spb["source"] = "SEMILLA"
+
+    # Restaura primero las ruedas históricas auditadas. Esto corrige cualquier
+    # valor ya persistido con una fecha equivocada en una ejecución anterior.
+    spb = apply_audited_spblscup(spb)
 
     # Completa cierres nuevos persistidos por el flujo Google Finance existente.
     if LIVE_RET.exists():
@@ -137,32 +184,65 @@ def load_spblscup_levels() -> pd.DataFrame:
                 "source": [source[d] for d in sorted(known)],
             })
 
-    # Si el visor de mercado tiene un cierre exacto de la sesión, este prevalece.
+    # live_market contiene también activos experimentales. Solo se acepta un
+    # SPBLSCUP si SU PROPIA fecha coincide con signal_date. Antes se ignoraba
+    # esta comprobación y un cierre antiguo (20/08 = 446.70) se copiaba en la
+    # fecha corriente, causando la repetición observada en 31/08, 01/09 y 02/09.
     if LIVE.exists():
         try:
             live = json.loads(LIVE.read_text(encoding="utf-8"))
-            raw_date = str(live.get("signal_date") or "")[:10]
-            d = pd.to_datetime(raw_date, errors="coerce")
-            if pd.notna(d) and not bool(live.get("market_open")):
-                d = pd.Timestamp(d).normalize()
+            d = session_date(live.get("signal_date"))
+            if d is not None and not bool(live.get("market_open")):
                 for row in live.get("experimental_assets", []):
                     if str(row.get("serie")) != "SPBLSCUP":
                         continue
+                    asset_date = session_date(row.get("timestamp"))
+                    if asset_date != d:
+                        print(
+                            "SPBLSCUP live_market ignorado por fecha desfasada:",
+                            asset_date.date().isoformat() if asset_date is not None else None,
+                            "!=",
+                            d.date().isoformat(),
+                        )
+                        continue
                     if finite(row.get("precio_actual")) and bool(row.get("validado_modelo", True)):
-                        cur = float(row["precio_actual"])
-                        mask = spb["fecha"].eq(d)
-                        if mask.any():
-                            spb.loc[mask, "SPBLSCUP"] = cur
-                            spb.loc[mask, "source"] = "GOOGLE FINANCE · CIERRE SESIÓN VALIDADO"
-                        else:
-                            spb = pd.concat([spb, pd.DataFrame([{
-                                "fecha": d, "SPBLSCUP": cur,
-                                "source": "GOOGLE FINANCE · CIERRE SESIÓN VALIDADO"
-                            }])], ignore_index=True)
+                        spb = upsert_spblscup(
+                            spb,
+                            d,
+                            float(row["precio_actual"]),
+                            "GOOGLE FINANCE · CIERRE SESIÓN VALIDADO · FECHA COINCIDENTE",
+                        )
                         break
         except Exception as exc:
             print("Aviso: live_market no aportó SPBLSCUP:", type(exc).__name__, exc)
 
+    # El snapshot específico de los modelos fijos es una fuente más segura para
+    # el cierre reciente porque conserva la fecha del propio ticker. Se acepta
+    # únicamente si el mercado ya está cerrado y ticker.timestamp = signal_date.
+    if FIXED_INTRADAY.exists():
+        try:
+            snap = json.loads(FIXED_INTRADAY.read_text(encoding="utf-8"))
+            d = session_date(snap.get("signal_date"))
+            if d is not None and not bool(snap.get("market_open")):
+                for row in snap.get("tickers", []):
+                    if str(row.get("ticker")) != "SPBLSCUP":
+                        continue
+                    asset_date = session_date(row.get("timestamp"))
+                    if asset_date != d:
+                        continue
+                    if finite(row.get("price_current")) and bool(row.get("fresh", False)):
+                        spb = upsert_spblscup(
+                            spb,
+                            d,
+                            float(row["price_current"]),
+                            "GOOGLE FINANCE · SNAPSHOT FIJO DE CIERRE · FECHA COINCIDENTE",
+                        )
+                        break
+        except Exception as exc:
+            print("Aviso: fixed_models_intraday no aportó SPBLSCUP:", type(exc).__name__, exc)
+
+    # Las ruedas auditadas prevalecen sobre cualquier fuente automática.
+    spb = apply_audited_spblscup(spb)
     spb = spb.sort_values("fecha").drop_duplicates("fecha", keep="last")
     SEED.parent.mkdir(parents=True, exist_ok=True)
     persist = spb.copy()
@@ -335,7 +415,7 @@ def main() -> None:
         },
         "sources": {
             "SPY_EEM_MCHI_QQQ": "Yahoo Finance · cierre diario no ajustado",
-            "SPBLSCUP": "Semilla auditada + Google Finance (SPBLSCUP:INDEXSP) para cierres nuevos",
+            "SPBLSCUP": "Semilla auditada + Google Finance (SPBLSCUP:INDEXSP) con control estricto de fecha",
             "VC_SBS": "data/rolling90/sbs_profuturo_f3.csv · serie oficial usada por el monitor",
         },
         "rows": rows,
