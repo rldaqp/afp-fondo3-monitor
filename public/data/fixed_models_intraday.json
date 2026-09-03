@@ -1,12 +1,14 @@
 {
-  "generated_at_lima": "2026-09-03T15:02:14.181828-05:00",
-  "generated_at_ny": "2026-09-03T16:02:14.181817-04:00",
+  "generated_at_lima": "2026-09-03T15:07:20.899545-05:00",
+  "generated_at_ny": "2026-09-03T16:07:20.899534-04:00",
   "signal_date": "2026-09-03",
-  "mode": "INTRADÍA",
-  "market_open": true,
-  "fresh_factors": 5,
+  "mode": "CIERRE / ÚLTIMO SNAPSHOT",
+  "market_open": false,
+  "fresh_factors": 4,
   "total_factors": 5,
-  "problems": [],
+  "problems": [
+    "SPBLSCUP Google HTTP: RuntimeError: Google Finance no devolvió precio para SPBLSCUP"
+  ],
   "previous_close_rule": "Cierre regular validado más reciente de la base fija, anterior a la sesión objetivo; proveedor solo como fallback.",
   "models": {
     "niveles": {
@@ -96,8 +98,8 @@
     },
     {
       "ticker": "SPBLSCUP",
-      "timestamp": "2026-09-03",
-      "fresh": true,
+      "timestamp": "2026-09-02",
+      "fresh": false,
       "price_previous": 455.17,
       "price_current": 455.78,
       "return": 0.001340158622053167,
@@ -110,8 +112,7 @@
       "return_contribution": 0.00035425434700696854,
       "level_weight_abs_pct": 20.6104458712817,
       "return_weight_abs_pct": 2.3176771625409147,
-      "source": "GOOGLE FINANCE SPBLSCUP · QUOTE ACTUAL · MOVIMIENTO VERIFICADO + CIERRE BASE FIJA",
-      "fresh_evidence_at": "2026-09-03T16:02:20.022724-04:00"
+      "source": "GOOGLE FINANCE SPBLSCUP · ÚLTIMO QUOTE + CIERRE BASE FIJA"
     }
   ],
   "weight_note": "Peso relativo = participación del valor absoluto del aporte actual de cada factor; no representa tenencia de cartera.",
