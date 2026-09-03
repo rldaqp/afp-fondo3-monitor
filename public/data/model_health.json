@@ -1,5 +1,5 @@
 {
-  "generated_from": "2026-09-02T23:31:50.500981-05:00",
+  "generated_from": "2026-09-02T23:32:36.936229-05:00",
   "validation_start": "2026-08-18",
   "policy": {
     "champion": "Coeficientes fijos calibrados 07/07/2026–17/08/2026.",
@@ -31,20 +31,20 @@
         {
           "date": "2026-08-19",
           "base_error_pct": -0.48465825481728286,
-          "challenger_error_pct": -0.42327167760887185,
+          "challenger_error_pct": -0.42327167760884965,
           "actual_return": 0.00997810334032101,
           "base_pred_return": 0.009072697789006545,
-          "challenger_pred_return": 0.009695665288820265,
-          "challenger_prediction": 70.02993911993448
+          "challenger_pred_return": 0.009695665288820488,
+          "challenger_prediction": 70.0299391199345
         },
         {
           "date": "2026-08-21",
           "base_error_pct": -0.24297444384769884,
-          "challenger_error_pct": -0.22478786435713438,
+          "challenger_error_pct": -0.22478786435715659,
           "actual_return": null,
           "base_pred_return": 0.01563327788910862,
-          "challenger_pred_return": 0.02305437035106861,
-          "challenger_prediction": 71.64443527206824
+          "challenger_pred_return": 0.023054370351068165,
+          "challenger_prediction": 71.64443527206822
         },
         {
           "date": "2026-08-24",
@@ -52,53 +52,53 @@
           "challenger_error_pct": 0.05233049965776004,
           "actual_return": -0.011513122467057602,
           "base_pred_return": -0.009632624509643195,
-          "challenger_pred_return": -0.008767672364884738,
+          "challenger_pred_return": -0.008767672364884516,
           "challenger_prediction": 71.01628033683555
         },
         {
           "date": "2026-08-25",
           "base_error_pct": 0.45974199446847663,
-          "challenger_error_pct": 0.613153563628388,
+          "challenger_error_pct": 0.6131535636284102,
           "actual_return": 0.010778406679012642,
           "base_pred_return": 0.01596583903108706,
-          "challenger_pred_return": 0.01644412021310182,
-          "challenger_prediction": 72.1840805877818
+          "challenger_pred_return": 0.016444120213102043,
+          "challenger_prediction": 72.18408058778182
         },
         {
           "date": "2026-08-26",
           "base_error_pct": -0.02973260681966572,
-          "challenger_error_pct": -0.060351065821173666,
+          "challenger_error_pct": -0.06035106582114036,
           "actual_return": 0.0026986008311480347,
           "base_pred_return": -0.0021868934784133875,
-          "challenger_pred_return": -0.004013465391637494,
-          "challenger_prediction": 71.89437227851558
+          "challenger_pred_return": -0.004013465391637272,
+          "challenger_prediction": 71.8943722785156
         },
         {
           "date": "2026-08-27",
           "base_error_pct": -0.0032776760082731116,
-          "challenger_error_pct": -0.0004879967502091631,
+          "challenger_error_pct": -0.00048799675022026534,
           "actual_return": 0.00548502273579099,
           "base_pred_return": 0.0057511022152401114,
-          "challenger_pred_return": 0.006087300410445362,
-          "challenger_prediction": 72.3320149203953
+          "challenger_pred_return": 0.006087300410444696,
+          "challenger_prediction": 72.33201492039528
         },
         {
           "date": "2026-08-28",
           "base_error_pct": -0.23178698968931988,
-          "challenger_error_pct": -0.11374642056563022,
+          "challenger_error_pct": -0.11374642056565243,
           "actual_return": -0.010178244144002369,
           "base_pred_return": -0.012440153183024494,
           "challenger_pred_return": -0.011299306134013087,
-          "challenger_prediction": 71.51471334051975
+          "challenger_prediction": 71.51471334051973
         },
         {
           "date": "2026-08-31",
           "base_error_pct": -0.7244276778463177,
-          "challenger_error_pct": -0.5295996486778143,
+          "challenger_error_pct": -0.5295996486778254,
           "actual_return": 0.0035765344224913953,
           "base_pred_return": -0.0013789781562998371,
           "challenger_pred_return": -0.0006016234975606549,
-          "challenger_prediction": 71.47168840855278
+          "challenger_prediction": 71.47168840855277
         }
       ],
       "base": {
@@ -139,28 +139,28 @@
         "window": 30,
         "full": {
           "n": 9,
-          "mae_pct": 0.26812735805312,
-          "rmse_pct": 0.3434782516063937,
-          "bias_pct": -0.12024201065619818,
+          "mae_pct": 0.26812735805312365,
+          "rmse_pct": 0.34347825160639883,
+          "bias_pct": -0.12024201065619694,
           "direction_n": 7,
           "direction_accuracy": 0.7142857142857143
         },
         "coefficients": {
-          "intercept": 18.208351191917366,
-          "SPY": -0.028165635081761828,
-          "EEM": 0.922876234298369,
-          "MCHI": -0.29370522071711186,
-          "QQQ": 0.016162075150594868,
-          "SPBLSCUP": 0.03883960776407054
+          "intercept": 18.2083511919173,
+          "SPY": -0.028165635081761745,
+          "EEM": 0.9228762342983713,
+          "MCHI": -0.29370522071711164,
+          "QQQ": 0.01616207515059463,
+          "SPBLSCUP": 0.03883960776407055
         },
-        "effect_drift": 0.19470603853923438
+        "effect_drift": 0.19470603853923693
       },
       "status": {
         "code": "INSUFFICIENT",
         "label": "MANTENER · MUESTRA AÚN CORTA",
         "reason": "Solo hay 9 observaciones fuera de muestra. Se requieren al menos 10 para una primera alerta y 15 para considerar recalibración.",
-        "mae_improvement": 0.08076324518476707,
-        "rmse_improvement": 0.07607659311415493,
+        "mae_improvement": 0.08076324518475453,
+        "rmse_improvement": 0.07607659311414128,
         "challenger_win_share": 0.6666666666666666,
         "challenger_recent5_wins": 3
       }
@@ -173,7 +173,7 @@
           "challenger_error_pct": 0.14035226513986476,
           "actual_return": -0.026653564682672215,
           "base_pred_return": -0.025287196648279477,
-          "challenger_pred_return": -0.025287450913046336,
+          "challenger_pred_return": -0.025287450913046322,
           "challenger_prediction": 69.73054382976468
         },
         {
@@ -182,7 +182,7 @@
           "challenger_error_pct": -0.394733209745346,
           "actual_return": 0.00997810334032101,
           "base_pred_return": 0.006092421533250689,
-          "challenger_pred_return": 0.005991384355280805,
+          "challenger_pred_return": 0.0059913843552808,
           "challenger_prediction": 70.05000954402583
         },
         {
@@ -200,7 +200,7 @@
           "challenger_error_pct": 0.4555237082206842,
           "actual_return": 0.010778406679012642,
           "base_pred_return": 0.014770680223454924,
-          "challenger_pred_return": 0.015382741959010985,
+          "challenger_pred_return": 0.015382741959010961,
           "challenger_prediction": 72.07099034279119
         },
         {
@@ -218,7 +218,7 @@
           "challenger_error_pct": 0.2301068657140748,
           "actual_return": 0.00548502273579099,
           "base_pred_return": 0.008635408142938228,
-          "challenger_pred_return": 0.007798712806832645,
+          "challenger_pred_return": 0.0077987128068326495,
           "challenger_prediction": 72.49880964467145
         },
         {
@@ -227,7 +227,7 @@
           "challenger_error_pct": -0.12429105201459123,
           "actual_return": -0.010178244144002369,
           "base_pred_return": -0.0112265022672201,
-          "challenger_pred_return": -0.011408504017425077,
+          "challenger_pred_return": -0.011408504017425087,
           "challenger_prediction": 71.50716379022298
         },
         {
@@ -236,7 +236,7 @@
           "challenger_error_pct": -0.3092483113811384,
           "actual_return": 0.0035765344224913953,
           "base_pred_return": 0.0017348923618725107,
-          "challenger_pred_return": 0.0004729909363723601,
+          "challenger_pred_return": 0.0004729909363723585,
           "challenger_prediction": 71.63001573069134
         }
       ],
@@ -285,14 +285,14 @@
           "direction_accuracy": 0.875
         },
         "coefficients": {
-          "intercept": 0.00032591382322785914,
-          "SPY": -0.39380695674121124,
-          "EEM": 0.7588443288004922,
-          "MCHI": -0.2554843572506392,
-          "QQQ": 0.3148201748087962,
-          "SPBLSCUP": 0.24575042996697488
+          "intercept": 0.0003259138232278594,
+          "SPY": -0.3938069567412116,
+          "EEM": 0.7588443288004926,
+          "MCHI": -0.25548435725063917,
+          "QQQ": 0.314820174808796,
+          "SPBLSCUP": 0.24575042996697502
         },
-        "effect_drift": 0.22169105986229692
+        "effect_drift": 0.2216910598622972
       },
       "status": {
         "code": "INSUFFICIENT",
