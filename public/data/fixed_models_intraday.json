@@ -1,6 +1,6 @@
 {
-  "generated_at_lima": "2026-09-02T18:42:55.198221-05:00",
-  "generated_at_ny": "2026-09-02T19:42:55.198212-04:00",
+  "generated_at_lima": "2026-09-02T23:31:50.500981-05:00",
+  "generated_at_ny": "2026-09-03T00:31:50.500981-04:00",
   "signal_date": "2026-09-02",
   "mode": "CIERRE / ÚLTIMO SNAPSHOT",
   "market_open": false,
@@ -15,9 +15,9 @@
     },
     "retornos": {
       "return_intraday": 0.007423206179295875,
-      "vc_intraday": 72.05040407407672,
-      "base_vc": 71.51950007914904,
-      "base_rule": "VC estimado por retornos de la sesión anterior",
+      "vc_intraday": 72.03148401873725,
+      "base_vc": 71.50071943639291,
+      "base_rule": "VC estimado por retornos de la sesión anterior · base fija corregida",
       "equation": "RVC = 0.0007122785 - 0.51299471·RSPY + 0.63173761·REEM - 0.29664485·RMCHI + 0.48131281·RQQQ + 0.26433762·RSPBLSCUP"
     }
   },
