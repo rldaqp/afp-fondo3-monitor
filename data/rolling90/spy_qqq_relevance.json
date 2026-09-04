@@ -1,119 +1,119 @@
 {
-  "generated_at_utc": "2026-08-18T00:51:54.199062+00:00",
+  "generated_at_utc": "2026-09-04T01:54:07.686455+00:00",
   "nasdaq_proxy": "QQQ (Nasdaq-100 ETF, Yahoo Finance Close, auto_adjust=False)",
   "method": "Comparación justa con las mismas fechas completas: OLS rolling 90. Se evalúan cuatro variantes: sin SPY/QQQ, SPY, QQQ y ambos. Criterio principal: MAE fuera de muestra; también se reportan acierto direccional, correlaciones y beta estandarizado reciente.",
   "results": {
     "PROFUTURO": {
       "fund": "PROFUTURO",
-      "common_complete_rows": 384,
+      "common_complete_rows": 399,
       "first_date": "2025-01-03",
-      "last_date": "2026-08-13",
-      "spy_qqq_return_corr": 0.9517350481436648,
+      "last_date": "2026-08-27",
+      "spy_qqq_return_corr": 0.9505183846097426,
       "target_corr_full": {
-        "SPY": 0.5613461637017562,
-        "QQQ": 0.6360707167413474
+        "SPY": 0.5559780392410171,
+        "QQQ": 0.635464347165329
       },
       "target_corr_recent_90": {
-        "SPY": 0.7810547093733754,
-        "QQQ": 0.8266819550648236
+        "SPY": 0.7631681587268789,
+        "QQQ": 0.8194489954685686
       },
       "standardized_beta_both_recent_90": {
-        "spy": -0.16456141327621454,
-        "qqq": 0.33026632482528184,
-        "abs_spy": 0.16456141327621454,
-        "abs_qqq": 0.33026632482528184
+        "spy": -0.169164461384902,
+        "qqq": 0.3649651435537889,
+        "abs_spy": 0.169164461384902,
+        "abs_qqq": 0.3649651435537889
       },
       "rolling_90": {
         "NEITHER": {
-          "n_predictions": 294,
-          "mae": 0.00280148110538804,
-          "rmse": 0.0037621028702093107,
-          "direction_accuracy": 0.782312925170068,
-          "pred_actual_corr": 0.9502352472778004
+          "n_predictions": 309,
+          "mae": 0.002930441834443722,
+          "rmse": 0.003923257964517581,
+          "direction_accuracy": 0.7831715210355987,
+          "pred_actual_corr": 0.9465656333996121
         },
         "SPY": {
-          "n_predictions": 294,
-          "mae": 0.002731326474543465,
-          "rmse": 0.0037477092397691417,
-          "direction_accuracy": 0.782312925170068,
-          "pred_actual_corr": 0.9508454764721286,
-          "mae_improvement_vs_neither": 0.02504197894094229
+          "n_predictions": 309,
+          "mae": 0.0028725206137318305,
+          "rmse": 0.003914805506566306,
+          "direction_accuracy": 0.7831715210355987,
+          "pred_actual_corr": 0.9470496078949903,
+          "mae_improvement_vs_neither": 0.019765354163013615
         },
         "QQQ": {
-          "n_predictions": 294,
-          "mae": 0.0026749219487001963,
-          "rmse": 0.0036669667473943047,
-          "direction_accuracy": 0.7993197278911565,
-          "pred_actual_corr": 0.9529537630394895,
-          "mae_improvement_vs_neither": 0.04517580234413676
+          "n_predictions": 309,
+          "mae": 0.002806882958136297,
+          "rmse": 0.0038377412478712114,
+          "direction_accuracy": 0.7993527508090615,
+          "pred_actual_corr": 0.9491657591559907,
+          "mae_improvement_vs_neither": 0.04216390677171711
         },
         "BOTH": {
-          "n_predictions": 294,
-          "mae": 0.0026288125462563283,
-          "rmse": 0.0036380224984494704,
-          "direction_accuracy": 0.8095238095238095,
-          "pred_actual_corr": 0.9535460390323987,
-          "mae_improvement_vs_neither": 0.06163473985229506
+          "n_predictions": 309,
+          "mae": 0.0027612232377859985,
+          "rmse": 0.0037960173577500007,
+          "direction_accuracy": 0.8058252427184466,
+          "pred_actual_corr": 0.9502002207241975,
+          "mae_improvement_vs_neither": 0.05774507948554641
         }
       },
       "winner_by_mae": "BOTH",
-      "qqq_mae_advantage_vs_spy": 0.020650964419292452
+      "qqq_mae_advantage_vs_spy": 0.022850194801652072
     },
     "HABITAT": {
       "fund": "HABITAT",
-      "common_complete_rows": 384,
+      "common_complete_rows": 399,
       "first_date": "2025-01-03",
-      "last_date": "2026-08-13",
-      "spy_qqq_return_corr": 0.9517350481436648,
+      "last_date": "2026-08-26",
+      "spy_qqq_return_corr": 0.9505864227453344,
       "target_corr_full": {
-        "SPY": 0.6485545302164607,
-        "QQQ": 0.7134940523343332
+        "SPY": 0.641259850213499,
+        "QQQ": 0.7121070394905852
       },
       "target_corr_recent_90": {
-        "SPY": 0.7973362864810933,
-        "QQQ": 0.8406056708022459
+        "SPY": 0.7729209647798335,
+        "QQQ": 0.8364876129776564
       },
       "standardized_beta_both_recent_90": {
-        "spy": -0.10562648911949246,
-        "qqq": 0.29253955055491204,
-        "abs_spy": 0.10562648911949246,
-        "abs_qqq": 0.29253955055491204
+        "spy": -0.12199748291826014,
+        "qqq": 0.34612084684322125,
+        "abs_spy": 0.12199748291826014,
+        "abs_qqq": 0.34612084684322125
       },
       "rolling_90": {
         "NEITHER": {
-          "n_predictions": 294,
-          "mae": 0.002722448164257045,
-          "rmse": 0.0036108213645459253,
-          "direction_accuracy": 0.7448979591836735,
-          "pred_actual_corr": 0.931366121415139
+          "n_predictions": 309,
+          "mae": 0.002819600677011145,
+          "rmse": 0.003750079933339274,
+          "direction_accuracy": 0.7443365695792881,
+          "pred_actual_corr": 0.9255247832785172
         },
         "SPY": {
-          "n_predictions": 294,
-          "mae": 0.0026093905490103303,
-          "rmse": 0.0034890070974156304,
-          "direction_accuracy": 0.7551020408163265,
-          "pred_actual_corr": 0.9370507660922281,
-          "mae_improvement_vs_neither": 0.041527922085366265
+          "n_predictions": 309,
+          "mae": 0.002699874236683346,
+          "rmse": 0.003632680718674294,
+          "direction_accuracy": 0.7540453074433657,
+          "pred_actual_corr": 0.9312872116078126,
+          "mae_improvement_vs_neither": 0.042462197326009976
         },
         "QQQ": {
-          "n_predictions": 294,
-          "mae": 0.002515411895934553,
-          "rmse": 0.003413036667912031,
-          "direction_accuracy": 0.7687074829931972,
-          "pred_actual_corr": 0.9395234106887287,
-          "mae_improvement_vs_neither": 0.0760478274814067
+          "n_predictions": 309,
+          "mae": 0.002585713317465323,
+          "rmse": 0.0035316053528225157,
+          "direction_accuracy": 0.7702265372168284,
+          "pred_actual_corr": 0.9349884727480035,
+          "mae_improvement_vs_neither": 0.0829505260985215
         },
         "BOTH": {
-          "n_predictions": 294,
-          "mae": 0.0025251847747949628,
-          "rmse": 0.003431457966336318,
-          "direction_accuracy": 0.7687074829931972,
-          "pred_actual_corr": 0.9387057981022517,
-          "mae_improvement_vs_neither": 0.07245808829418632
+          "n_predictions": 309,
+          "mae": 0.0025852586120808764,
+          "rmse": 0.003531883822383348,
+          "direction_accuracy": 0.7702265372168284,
+          "pred_actual_corr": 0.9348365117330866,
+          "mae_improvement_vs_neither": 0.08311179197852847
         }
       },
-      "winner_by_mae": "QQQ",
-      "qqq_mae_advantage_vs_spy": 0.036015556625442965
+      "winner_by_mae": "BOTH",
+      "qqq_mae_advantage_vs_spy": 0.04228379146958485
     }
   },
   "recommendation": {
