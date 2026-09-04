@@ -13,6 +13,8 @@ on:
       - "scripts/reconcile_fixed_history.py"
       - "scripts/validate_fixed_models.py"
       - "scripts/test_fixed_model_contract.py"
+      - "scripts/profuturo_watchdog.py"
+      - "scripts/test_profuturo_watchdog.py"
       - "scripts/normalize_fixed_intraday_session.py"
       - "scripts/test_fixed_trade_live_date.js"
       - "scripts/test_fixed_dashboard_refresh.js"
@@ -156,3 +158,6 @@ jobs:
 
       - name: Desplegar visor intradia
         uses: actions/deploy-pages@v4
+
+      - name: Confirmar corte publicado
+        run: python scripts/profuturo_watchdog.py --verify-publication

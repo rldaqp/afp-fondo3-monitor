@@ -1,0 +1,39 @@
+name: Probar automatizacion Profuturo
+
+on:
+  push:
+    branches:
+      - migracion-github-actions
+      - fix/profuturo-auto-recovery-20260904
+    paths:
+      - ".github/workflows/test-profuturo-automation.yml"
+      - ".github/workflows/intraday-heartbeat.yml"
+      - ".github/workflows/update-fixed-models-intraday.yml"
+      - ".github/workflows/update-fixed-levels-returns.yml"
+      - "scripts/profuturo_watchdog.py"
+      - "scripts/test_profuturo_watchdog.py"
+
+permissions:
+  contents: read
+
+jobs:
+  regression:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Dependencias de pruebas
+        run: pip install --disable-pip-version-check exchange-calendars requests beautifulsoup4 lxml
+      - name: Apertura frescura duplicados y relevo sin cron
+        run: python -m unittest discover -s scripts -p test_profuturo_watchdog.py -v
+      - name: Ecuaciones SBS cierres y fechas
+        run: python -m unittest discover -s scripts -p test_fixed_model_contract.py -v
+      - name: Calendario de operaciones y actualización del visor
+        run: |
+          node scripts/test_fixed_trade_live_date.js
+          node scripts/test_fixed_dashboard_refresh.js

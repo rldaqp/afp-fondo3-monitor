@@ -45,6 +45,7 @@ jobs:
   build:
     if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -139,3 +140,6 @@ jobs:
 
       - name: Desplegar Pages
         uses: actions/deploy-pages@v4
+
+      - name: Confirmar corte publicado
+        run: python scripts/profuturo_watchdog.py --verify-publication
