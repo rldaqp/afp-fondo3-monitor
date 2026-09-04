@@ -157,6 +157,30 @@ async function settle() {
   assert.match(elements.tradeDataStatus.textContent, /factores actualizados 5\/5/);
   assert.doesNotMatch(elements.tradeDataStatus.textContent, /Pendientes: SPBLSCUP/);
 
+  // New SBS/history and live must arrive as one coherent generation.
+  baseFixture.data_revision = 'new-sbs';
+  liveFixture.base_revision = 'old-sbs';
+  const beforeMixed = elements.tradeMFinal.textContent;
+  await intervals[1]();
+  assert.equal(elements.tradeCalc.disabled, true);
+  assert.equal(elements.tradeSave.disabled, true);
+  assert.match(elements.tradeDataStatus.textContent, /Publicación en transición/);
+  elements.tradeCalc.onclick();
+  assert.equal(elements.tradeMFinal.textContent, beforeMixed);
+  liveFixture.base_revision = 'new-sbs';
+  baseFixture.rows[1].vc_retornos = 71.3860471757;
+  liveFixture.models.retornos.vc_intraday = 71.773518;
+  await intervals[1]();
+  assert.equal(elements.tradeCalc.disabled, false);
+  assert.equal(elements.tradeSave.disabled, false);
+  assert.match(elements.tradeDetail.innerHTML, /71\.3860472/);
+  assert.match(elements.tradeDetail.innerHTML, /71\.7735180/);
+
+  // Refreshing current calculations does not rewrite saved entry/exit estimates.
+  const afterRefresh = JSON.parse(storage.get('profuturo_fondo3_trade_history_v3'));
+  assert.equal(afterRefresh[0].exit_est_vc, saved[0].exit_est_vc);
+  assert.equal(afterRefresh[0].entry_est_vc, saved[0].entry_est_vc);
+
   console.log('OK: cierre vivo disponible y calculable en ambos modelos');
 })().catch(error => {
   console.error(error);

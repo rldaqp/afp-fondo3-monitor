@@ -10,7 +10,7 @@ const URL_KEY='profuturo_fondo3_drive_sync_url_v3';
 const SECRET_KEY='fondo3_drive_sync_key_v1';
 const SNAP_KEY='profuturo_fondo3_drive_sync_snapshot_v3';
 const DEFAULT_URL='https://script.google.com/macros/s/AKfycbxY9JqIeTnweKaEXAOs7hQ6KftlPgVsGOFPwOp7hqL5gJ47OuuHlAJBksTGdOQ2yc_Y0Q/exec';
-let DB=null,LIVE=null,syncing=false,pendingSync=false;
+let DB=null,LIVE=null,syncing=false,pendingSync=false,dataError=null,hasCalculated=false;
 const $=id=>document.getElementById(id);
 const finite=x=>x!==null&&x!==undefined&&x!==''&&Number.isFinite(Number(x));
 const fmt=d=>{if(!d)return'—';const p=String(d).slice(0,10).split('-');return p.length===3?`${p[2]}/${p[1]}/${p[0]}`:String(d)};
@@ -63,7 +63,7 @@ function estimatedAt(date,key){const m=estimateMap(key);return m.has(date)?m.get
 function actualAt(date){const m=officialMap();return m.has(date)?m.get(date):null}
 function liveQuality(){
   const expected=['SPY','EEM','MCHI','QQQ','SPBLSCUP'],d=liveDate(),tickers=Array.isArray(LIVE?.tickers)?LIVE.tickers:[];
-  const pending=expected.filter(name=>{const matches=tickers.filter(t=>t?.ticker===name);return matches.length!==1||matches[0].fresh!==true||String(matches[0].timestamp||'').slice(0,10)!==d});
+  const pending=expected.filter(name=>{const matches=tickers.filter(t=>t?.ticker===name);return matches.length!==1||matches[0].fresh!==true||String(matches[0].timestamp||'').slice(0,10)!==d||(!LIVE?.market_open&&matches[0].close_confirmed===false)});
   return{fresh:expected.length-pending.length,total:expected.length,pending};
 }
 function valueSource(date,official){
@@ -74,6 +74,7 @@ function valueSource(date,official){
 }
 function renderDataStatus(){
   const el=$('tradeDataStatus');if(!el)return;
+  if(dataError){el.className='trademsg pending';el.textContent=dataError;return}
   const d=liveDate();el.className='trademsg';
   if(!d){el.textContent=`Histórico disponible hasta ${fmt(historicalDates().at(-1))}. No hay un snapshot más reciente utilizable.`;return}
   const q=liveQuality(),sbs=actualAt(d)===null?'VC SBS de esa fecha pendiente.':'VC SBS de esa fecha disponible.';
@@ -118,6 +119,7 @@ function installPanel(){
 function currentMode(){return document.querySelector('[data-trademode].active')?.dataset.trademode||'monitor'}
 function bindTabs(){document.querySelectorAll('[data-trademode]').forEach(btn=>btn.onclick=()=>{document.querySelectorAll('[data-trademode]').forEach(x=>x.classList.toggle('active',x===btn));const mode=btn.dataset.trademode;$('tradeForm').classList.toggle('tradehidden',mode==='monitor');$('tradeExitWrap').classList.toggle('tradehidden',mode!=='closed');refreshDateInputs();$('tradeDetail').textContent=mode==='inside'?'Posición abierta: el último cierre/snapshot del visor puede usarse aunque el VC SBS siga pendiente.':'Cierre: indica entrada, salida y capital.'})}
 function calc(){
+  if(dataError){renderDataStatus();return}
   const mode=currentMode();if(mode==='monitor')return;
   const entryReq=$('tradeEntry').value,cap=Number($('tradeCapital').value||0),key=selectedModel();
   if(!entryReq||!finite(cap)||cap<=0){$('tradeDetail').textContent='Completa fecha de entrada y capital.';return}
@@ -127,11 +129,13 @@ function calc(){
   if(mode==='closed'){const xreq=$('tradeExit').value;if(!xreq){$('tradeDetail').textContent='Indica fecha de salida.';return}xd=effective(xreq,'exit');if(!xd||xd<ed){$('tradeDetail').textContent='La fecha de salida no es válida.';return}xo=actualAt(xd);xe=estimatedAt(xd,key);xv=xo??xe}else{xd=timelineDates().at(-1);xo=actualAt(xd);xe=estimatedAt(xd,key);xv=xo??xe}
   if(!finite(xv)){$('tradeDetail').textContent='No hay VC disponible para valorar la posición.';return}
   const units=cap/Number(ev),final=units*Number(xv),gain=final-cap,ret=final/cap-1;
+  hasCalculated=true;
   $('tradeMCap').textContent=money(cap);$('tradeMFinal').textContent=money(final);$('tradeMGain').textContent=money(gain);$('tradeMRet').textContent=pct(ret);
   const nE=estimatedAt(ed,'niveles'),rE=estimatedAt(ed,'retornos'),nX=estimatedAt(xd,'niveles'),rX=estimatedAt(xd,'retornos');
   $('tradeDetail').innerHTML=`<b>${modelLabel(key)}</b> · entrada ${fmt(ed)}: ${vc(ev)} · ${valueSource(ed,eo)}<br>${mode==='closed'?'Salida':'Valoración'} ${fmt(xd)}: ${vc(xv)} · ${valueSource(xd,xo)}<br>Niveles: ${vc(nE)} → ${vc(nX)} · Retornos: ${vc(rE)} → ${vc(rX)} · cuotas: ${units.toFixed(6)}`;
 }
 function saveCurrent(){
+  if(dataError){renderDataStatus();return}
   const mode=currentMode();if(mode==='monitor'){$('tradeDetail').textContent='Selecciona “Sigo dentro” o “Ya salí”.';return}
   const er=$('tradeEntry').value,cap=Number($('tradeCapital').value||0),key=selectedModel();if(!er||!finite(cap)||cap<=0){$('tradeDetail').textContent='Completa fecha de entrada y capital.';return}
   const ed=effective(er,'entry');if(!ed){$('tradeDetail').textContent='No existe fecha efectiva de entrada.';return}
@@ -172,13 +176,13 @@ async function syncNow(){
 }
 function connectDrive(){const url=($('tradeCloudUrl')?.value||DEFAULT_URL).trim(),key=($('tradeCloudKey')?.value||'').trim();if(!/^https:\/\/script\.google\.com\/macros\/s\/.+\/exec(?:\?.*)?$/.test(url)){cloudStatus('URL /exec no válida.','cloud-bad');return}if(key.length<12){cloudStatus('Clave de Drive no válida.','cloud-bad');return}localStorage.setItem(URL_KEY,url);localStorage.setItem(SECRET_KEY,key);syncNow()}
 async function fetchJson(url){const r=await fetch(url+'?v='+Date.now(),{cache:'no-store'});if(!r.ok)throw new Error(`${url}: HTTP ${r.status}`);return r.json()}
-async function loadData(){const [base,live]=await Promise.all([fetchJson(DATA_URL),fetchJson(LIVE_URL).catch(()=>null)]);DB=base;LIVE=live}
+async function loadData(){try{const [base,live]=await Promise.all([fetchJson(DATA_URL),fetchJson(LIVE_URL)]);if((base.data_revision||live.base_revision)&&base.data_revision!==live.base_revision)throw new Error('Publicación en transición: la calculadora espera histórico y snapshot del mismo corte.');DB=base;LIVE=live;dataError=null;$('tradeCalc').disabled=false;$('tradeSave').disabled=false}catch(e){dataError=e.message;$('tradeCalc').disabled=true;$('tradeSave').disabled=true;renderDataStatus();throw e}}
 async function boot(){
   installStyles();installPanel();bindTabs();$('tradeCalc').onclick=calc;$('tradeSave').onclick=saveCurrent;$('tradeCloudConnect').onclick=connectDrive;
   if(!localStorage.getItem(URL_KEY))localStorage.setItem(URL_KEY,DEFAULT_URL);const c=cfg();$('tradeCloudUrl').value=c.url;$('tradeCloudKey').value=c.key;
   try{await loadData();refreshDateInputs(true);renderHistory();cloudStatus(c.key?'Drive Profuturo configurado. Verificando…':'Drive listo: se conserva la misma conexión anterior; ingresa tu clave solo si este navegador no la conserva.',c.key?'cloud-warn':'');if(c.key)setTimeout(syncNow,500)}
   catch(e){$('tradeDetail').textContent='No se pudieron cargar los datos del visor: '+e.message;cloudStatus('Drive disponible; datos del visor pendientes.','cloud-warn')}
-  window.addEventListener('fondo3-local-trade-change',()=>syncNow());setInterval(()=>{if(cfg().key)syncNow()},30000);setInterval(async()=>{try{await loadData();refreshDateInputs();renderHistory()}catch(_e){}},30000);
+  window.addEventListener('fondo3-local-trade-change',()=>syncNow());setInterval(()=>{if(cfg().key)syncNow()},30000);setInterval(async()=>{try{await loadData();refreshDateInputs();renderHistory();if(hasCalculated)calc()}catch(_e){}},30000);
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 })();

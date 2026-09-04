@@ -10,10 +10,12 @@ function zoneParts(date=new Date(),zone='America/New_York'){
 }
 function key(p){return `${p.year}-${p.month}-${p.day}`}
 function minutes(p){return Number(p.hour)*60+Number(p.minute)}
-function marketState(){
+function marketState(data){
   const p=zoneParts();
   const weekday=!['Sat','Sun'].includes(p.weekday);
   const m=minutes(p);
+  const now=Date.now(),opening=Date.parse(data?.session_open_ny||''),closing=Date.parse(data?.session_close_ny||''),nextOpen=Date.parse(data?.next_session_open_ny||''),nextClose=Date.parse(data?.next_session_close_ny||'');
+  if([opening,closing,nextOpen,nextClose].every(Number.isFinite)&&now<nextClose)return{parts:p,open:(now>=opening&&now<closing)||(now>=nextOpen&&now<nextClose),afterClose:now>=closing&&now<nextOpen,minute:m};
   return {parts:p,open:weekday&&m>=570&&m<960,afterClose:weekday&&m>=960,minute:m};
 }
 function ageMinutes(iso){
@@ -67,13 +69,13 @@ async function refresh(){
     const d=await r.json();
     const stamp=d.generated_at_lima||d.generated_at_ny;
     const age=ageMinutes(stamp);
-    const ms=marketState();
+    const ms=marketState(d);
     const snapDate=new Date(d.generated_at_ny||d.generated_at_lima||'');
     const sp=Number.isFinite(snapDate.getTime())?zoneParts(snapDate):null;
     const sameNyDay=sp&&key(sp)===key(ms.parts);
     const snapMinute=sp?minutes(sp):null;
     const staleOpen=ms.open&&(age===null||age>STALE_MINUTES);
-    const closePending=ms.afterClose&&sameNyDay&&snapMinute!==null&&snapMinute<955;
+    const closePending=(ms.afterClose&&sameNyDay&&snapMinute!==null&&snapMinute<960)||(!ms.open&&d.close_consolidated===false);
     const warn=warningNode();
     decorateTickers(d,staleOpen||closePending);
 
@@ -89,8 +91,9 @@ async function refresh(){
       if($('factorStatus'))$('factorStatus').textContent=`DESACTUALIZADO${age===null?'':` · ${age} min`}`;
       if($('marketMode'))$('marketMode').textContent='MERCADO ABIERTO · DATO DESACTUALIZADO';
     }else if(closePending){
-      if(warn){warn.classList.add('show');warn.textContent=`⚠ El mercado ya cerró y el último cálculo disponible es anterior al cierre (${fmtLima(stamp)}). Falta confirmar el snapshot final de cierre.`}
-      if($('factorStatus'))$('factorStatus').textContent='CIERRE PENDIENTE · ÚLTIMO CORTE PRE-CIERRE';
+      const pending=(d.tickers||[]).filter(t=>!t.fresh||!t.close_confirmed||t.timestamp!==d.signal_date).map(t=>t.ticker);
+      if(warn){warn.classList.add('show');warn.textContent=`⚠ El mercado cerró, pero falta confirmar el cierre de ${pending.join(', ')||'los factores'}. Cálculo provisional; no es un cierre consolidado.`}
+      if($('factorStatus'))$('factorStatus').textContent=`CIERRE PENDIENTE · ${d.fresh_factors??0}/5 verificados`;
       if($('marketMode'))$('marketMode').textContent='MERCADO CERRADO · CIERRE PENDIENTE';
     }else if(ms.open){
       if(warn)warn.classList.remove('show');
@@ -98,7 +101,7 @@ async function refresh(){
       if($('marketMode'))$('marketMode').textContent='MERCADO ABIERTO · DATOS INTRADÍA';
     }else{
       if(warn)warn.classList.remove('show');
-      if($('factorStatus'))$('factorStatus').textContent=`CIERRE / ÚLTIMO SNAPSHOT · ${fmtDate(d.signal_date)}`;
+      if($('factorStatus'))$('factorStatus').textContent=`${d.close_consolidated?'CIERRE CONSOLIDADO · 5/5':'CIERRE / ÚLTIMO SNAPSHOT'} · ${fmtDate(d.signal_date)}`;
       if($('marketMode'))$('marketMode').textContent='MERCADO CERRADO · ÚLTIMO DATO';
     }
 

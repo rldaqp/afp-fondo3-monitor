@@ -9,6 +9,11 @@ on:
       - ".github/workflows/update-fixed-levels-returns.yml"
       - "scripts/sync_sbs_official_latest.py"
       - "scripts/build_fixed_levels_returns_monitor.py"
+      - "scripts/fixed_market_quotes.py"
+      - "scripts/fixed_model_contract.py"
+      - "scripts/reconcile_fixed_history.py"
+      - "scripts/validate_fixed_models.py"
+      - "scripts/test_fixed_model_contract.py"
       - "scripts/ensure_profuturo_series_continuity.py"
       - "scripts/build_model_health.py"
       - "data/fixed_models/yahoo_levels_2026.csv"
@@ -33,7 +38,7 @@ permissions:
   id-token: write
 
 concurrency:
-  group: fixed-levels-returns
+  group: profuturo-fixed-publish
   cancel-in-progress: false
 
 jobs:
@@ -53,7 +58,10 @@ jobs:
           python-version: "3.11"
 
       - name: Dependencias
-        run: pip install --disable-pip-version-check pandas numpy yfinance requests beautifulsoup4 lxml selenium
+        run: pip install --disable-pip-version-check pandas numpy yfinance requests beautifulsoup4 lxml selenium exchange-calendars
+
+      - name: Pruebas de regresión SBS y cierres
+        run: python -m unittest discover -s scripts -p test_fixed_model_contract.py -v
 
       - name: Sincronizar último VC oficial SBS
         run: python scripts/sync_sbs_official_latest.py
@@ -64,53 +72,20 @@ jobs:
       - name: Blindar continuidad historica
         run: python scripts/ensure_profuturo_series_continuity.py
 
+      - name: Reconciliar SBS y cierre del mismo corte
+        run: |
+          python scripts/reconcile_fixed_history.py --sbs-only
+          python scripts/build_fixed_models_intraday.py
+          python scripts/reconcile_fixed_history.py
+
       - name: Construir control de salud
         run: python scripts/build_model_health.py
 
       - name: Validar salida
         run: |
-          python - <<'PY'
-          import json
-          import math
-          from pathlib import Path
-          p=Path("public/data/fixed_models_2026.json")
-          d=json.loads(p.read_text(encoding="utf-8"))
-          assert len(d["rows"]) >= 100, len(d["rows"])
-          assert d["training"]["n"] == 30
-          assert abs(d["training"]["levels_r2"]-0.9839967207688474) < 1e-12
-          assert abs(d["training"]["returns_r2"]-0.9518032304214648) < 1e-12
-          assert d["training"]["sbs_corrections"] == {"2026-08-14":70.8740985,"2026-08-17":71.5395979}
-          assert d["model_version"] == "v2-sbs-corrected-20260831"
-          assert d["latest"]["market_date"] >= "2026-09-02"
-          by={r["fecha"]:r for r in d["rows"]}
-          for ds in ("2026-08-27","2026-08-28","2026-08-31","2026-09-01","2026-09-02"):
-              assert ds in by, ds
-              r=by[ds]
-              for k in ("SPY","EEM","MCHI","QQQ","SPBLSCUP","vc_niveles","ret_vc_estimado","vc_retornos"):
-                  v=r.get(k)
-                  assert v is not None and math.isfinite(float(v)), (ds,k,v)
-          assert abs(float(by["2026-08-28"]["SPY"])-769.35) < 0.01
-          assert abs(float(by["2026-08-28"]["EEM"])-67.14) < 0.01
-          assert abs(float(by["2026-08-28"]["MCHI"])-55.23) < 0.01
-          assert abs(float(by["2026-08-28"]["QQQ"])-716.43) < 0.01
-          expected_spb={
-              "2026-08-28":454.70,
-              "2026-08-31":450.67,
-              "2026-09-01":446.70,
-              "2026-09-02":455.17,
-          }
-          for ds,expected in expected_spb.items():
-              assert abs(float(by[ds]["SPBLSCUP"])-expected) < 0.005, (ds,by[ds]["SPBLSCUP"],expected)
-          assert abs(float(by["2026-08-31"]["vc_niveles"])-71.33170014928366) < 1e-6
-          assert abs(float(by["2026-08-31"]["vc_retornos"])-71.72036244265796) < 1e-6
-          assert abs(float(by["2026-09-01"]["vc_retornos"])-71.50071943639291) < 1e-6
-          assert abs(float(by["2026-09-02"]["vc_retornos"])-72.03148401873725) < 1e-6
-          h=json.loads(Path("public/data/model_health.json").read_text(encoding="utf-8"))
-          assert h["policy"]["minimum_change_n"] == 30
-          assert set(h["models"].keys()) == {"niveles","retornos"}
-          print("CONTINUIDAD OK", {ds:{k:by[ds][k] for k in ("SPBLSCUP","vc_niveles","ret_vc_estimado","vc_retornos")} for ds in ("2026-08-28","2026-08-31","2026-09-01","2026-09-02")})
-          print("SALUD", h["models"]["niveles"]["status"], h["models"]["retornos"]["status"])
-          PY
+          python scripts/validate_fixed_models.py
+          node scripts/test_fixed_trade_live_date.js
+          node scripts/test_fixed_dashboard_refresh.js
 
       - name: Persistir datos
         env:
@@ -122,6 +97,7 @@ jobs:
             data/rolling90/sbs_profuturo_f3.csv \
             data/fixed_models/spblscup_levels_2026.csv \
             data/fixed_models/yahoo_levels_2026.csv \
+            public/data/fixed_models_intraday.json \
             public/data/sbs_sync_status.json \
             public/data/series.json \
             public/data/fixed_models_2026.json \
@@ -147,6 +123,9 @@ jobs:
           if ! grep -q 'model_health_v1.js' public/index.html; then
             sed -i 's#</body>#<script src="data/model_health_v1.js?rev=HEALTH1-20260831"></script></body>#' public/index.html
           fi
+
+      - name: Verificar generación antes de desplegar
+        run: python scripts/validate_fixed_models.py
 
       - name: Configurar Pages
         uses: actions/configure-pages@v5

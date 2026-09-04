@@ -8,8 +8,14 @@ on:
     paths:
       - ".github/workflows/update-fixed-models-intraday.yml"
       - "scripts/build_fixed_models_intraday.py"
+      - "scripts/fixed_market_quotes.py"
+      - "scripts/fixed_model_contract.py"
+      - "scripts/reconcile_fixed_history.py"
+      - "scripts/validate_fixed_models.py"
+      - "scripts/test_fixed_model_contract.py"
       - "scripts/normalize_fixed_intraday_session.py"
       - "scripts/test_fixed_trade_live_date.js"
+      - "scripts/test_fixed_dashboard_refresh.js"
       - "public/index.html"
       - "public/data/fixed_trade_runtime_v1.js"
       - "public/data/model_signal_v1.js"
@@ -38,8 +44,8 @@ permissions:
   id-token: write
 
 concurrency:
-  group: fixed-models-intraday
-  cancel-in-progress: true
+  group: profuturo-fixed-publish
+  cancel-in-progress: false
 
 jobs:
   update:
@@ -59,81 +65,33 @@ jobs:
           python-version: "3.11"
 
       - name: Dependencias
-        run: pip install --disable-pip-version-check pandas numpy requests yfinance selenium
+        run: pip install --disable-pip-version-check pandas numpy yfinance requests beautifulsoup4 lxml selenium exchange-calendars
+
+      - name: Pruebas de regresión SBS y cierres
+        run: python -m unittest discover -s scripts -p test_fixed_model_contract.py -v
+
+      - name: Actualizar SBS y base de retornos
+        run: |
+          python scripts/sync_sbs_official_latest.py
+          python scripts/reconcile_fixed_history.py --sbs-only
 
       - name: Calcular snapshot intradia fijo
         run: python scripts/build_fixed_models_intraday.py
 
-      - name: Normalizar sesion antes de apertura
-        run: python scripts/normalize_fixed_intraday_session.py
-
-      - name: Validar snapshot
+      - name: Consolidar cierre y validar generación
         run: |
-          python - <<'PY'
-          import json
-          import math
-          from datetime import datetime
-          from pathlib import Path
-          from zoneinfo import ZoneInfo
-
-          d=json.loads(Path("public/data/fixed_models_intraday.json").read_text(encoding="utf-8"))
-          tickers=d["tickers"]
-          expected={"SPY","EEM","MCHI","QQQ","SPBLSCUP"}
-          names=[x["ticker"] for x in tickers]
-          assert len(names)==len(expected) and set(names)==expected, names
-          assert float(d["models"]["niveles"]["vc_intraday"]) > 0
-          assert float(d["models"]["retornos"]["vc_intraday"]) > 0
-          assert "16.07900257" in d["models"]["niveles"]["equation"]
-          assert "0.0007122785" in d["models"]["retornos"]["equation"]
-
-          def finite(value):
-              try:
-                  return value is not None and math.isfinite(float(value))
-              except Exception:
-                  return False
-
-          def validate_weights(weight_key, contribution_key):
-              weights=[x.get(weight_key) for x in tickers]
-              contributions=[float(x[contribution_key]) for x in tickers]
-              if all(not finite(x) for x in weights):
-                  # Retornos exactamente planos: el denominador es cero y el
-                  # peso relativo no está definido. Es válido y se muestra “—”.
-                  assert all(abs(x) < 1e-15 for x in contributions), contributions
-                  return
-              assert all(finite(x) for x in weights), weights
-              assert abs(sum(float(x) for x in weights)-100) < 1e-6, weights
-
-          validate_weights("level_weight_abs_pct", "level_contribution")
-          validate_weights("return_weight_abs_pct", "return_contribution")
-          assert d["mode"] in {"INTRADÍA","INTRADÍA PARCIAL","CIERRE / ÚLTIMO SNAPSHOT"}
-          assert d.get("previous_close_rule")
-          assert all(x.get("previous_close_basis") for x in tickers)
-          assert all(float(x["price_previous"]) > 0 and float(x["price_current"]) > 0 for x in tickers)
-
-          signal_date=str(d.get("signal_date") or "")[:10]
-          fresh=[x for x in tickers if bool(x.get("fresh")) and str(x.get("timestamp") or "")[:10]==signal_date]
-          assert int(d.get("fresh_factors",-1))==len(fresh), (d.get("fresh_factors"), fresh)
-          assert int(d.get("total_factors",-1))==len(expected)
-          if bool(d.get("market_open")):
-              today=datetime.now(ZoneInfo("America/New_York")).date().isoformat()
-              assert signal_date==today, (signal_date,today)
-              expected_mode="INTRADÍA" if len(fresh)==len(expected) else "INTRADÍA PARCIAL"
-              assert d["mode"]==expected_mode, (d["mode"],expected_mode)
-          else:
-              assert d["mode"]=="CIERRE / ÚLTIMO SNAPSHOT", d["mode"]
-          print("OK intradia", d["signal_date"], d["mode"], f"fresh={d.get('fresh_factors')}/{d.get('total_factors')}")
-          print("BASES", {x["ticker"]:(x.get("previous_close_date"),x.get("previous_close_basis")) for x in tickers})
-          if d.get("problems"):
-              print("ADVERTENCIAS", d["problems"])
-          PY
+          python scripts/reconcile_fixed_history.py
+          python scripts/build_model_health.py
+          python scripts/validate_fixed_models.py
 
       - name: Validar fecha viva en operaciones
         run: |
           node --check public/data/fixed_trade_runtime_v1.js
           node scripts/test_fixed_trade_live_date.js
+          node scripts/test_fixed_dashboard_refresh.js
           grep -q "const LIVE_URL='data/fixed_models_intraday.json'" public/data/fixed_trade_runtime_v1.js
           grep -q 'function refreshDateInputs' public/data/fixed_trade_runtime_v1.js
-          grep -q 'FIXEDTRADE2-20260903' public/index.html
+          grep -q 'FIXEDTRADE3-20260903' public/index.html
 
       - name: Guardar snapshot en rama
         env:
@@ -141,7 +99,11 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add public/data/fixed_models_intraday.json
+          git add public/data/fixed_models_intraday.json \
+            public/data/fixed_models_2026.json public/data/fixed_models_2026.csv \
+            public/data/sbs_sync_status.json public/data/series.json public/data/model_health.json \
+            data/rolling90/sbs_profuturo_f3.csv \
+            data/fixed_models/yahoo_levels_2026.csv data/fixed_models/spblscup_levels_2026.csv
           if git diff --cached --quiet; then
             echo "Sin cambios intradia."
           else
@@ -158,7 +120,8 @@ jobs:
               sleep 2
             done
             if [ "$PUSHED" -ne 1 ]; then
-              echo "No se persistió este corte en la rama; se publicará el snapshot calculado y el próximo ciclo reintentará."
+              echo "No se persistió el corte: no se publicará una versión distinta al repositorio."
+              exit 1
             fi
           fi
 
@@ -174,9 +137,12 @@ jobs:
             sed -i 's#</body>#<script src="data/model_health_v1.js?rev=HEALTH1-20260831"></script></body>#' public/index.html
           fi
           if ! grep -q 'fixed_ticker_freshness_v1.js' public/index.html; then
-            sed -i 's#</body>#<script src="data/fixed_ticker_freshness_v1.js?rev=LIVESTATUS3-20260902"></script></body>#' public/index.html
+            sed -i 's#</body>#<script src="data/fixed_ticker_freshness_v1.js?rev=LIVESTATUS4-20260903"></script></body>#' public/index.html
           fi
-          sed -i 's#fixed_ticker_freshness_v1.js?rev=[^"]*#fixed_ticker_freshness_v1.js?rev=LIVESTATUS3-20260902#g' public/index.html
+          sed -i 's#fixed_ticker_freshness_v1.js?rev=[^"]*#fixed_ticker_freshness_v1.js?rev=LIVESTATUS4-20260903#g' public/index.html
+
+      - name: Verificar generación antes de desplegar
+        run: python scripts/validate_fixed_models.py
 
       - name: Configurar Pages
         uses: actions/configure-pages@v5

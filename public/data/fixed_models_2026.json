@@ -1,5 +1,5 @@
 {
-  "generated_at_lima": "2026-09-03T12:06:55.184410-05:00",
+  "generated_at_lima": "2026-09-03T20:50:27.957190-05:00",
   "model_version": "v2-sbs-corrected-20260831",
   "history_start": "2026-01-05",
   "training": {
@@ -50,36 +50,36 @@
   "metrics": {
     "validation_from_2026_08_18": {
       "niveles": {
-        "n": 9,
-        "mae_pct": 0.29168475086245316,
-        "rmse_pct": 0.37176051620951833
+        "n": 10,
+        "mae_pct": 0.27831731309932106,
+        "rmse_pct": 0.3562050267416145
       },
       "retornos": {
-        "n": 9,
-        "mae_pct": 0.25212609581817874,
-        "rmse_pct": 0.273212401588134
+        "n": 10,
+        "mae_pct": 0.31732847188344127,
+        "rmse_pct": 0.3859134761044472
       }
     },
     "retrospective_before_2026_07_07": {
       "niveles": {
         "n": 117,
         "mae_pct": 6.560402172992797,
-        "rmse_pct": 7.6305874959433835
+        "rmse_pct": 7.630587495943384
       },
       "retornos": {
         "n": 116,
-        "mae_pct": 0.5649984517653024,
+        "mae_pct": 0.5649984517653025,
         "rmse_pct": 0.7565563636992436
       }
     }
   },
   "latest": {
-    "market_date": "2026-09-02",
-    "vc_niveles": 71.66371836311457,
-    "ret_vc_estimado": 0.007423206179295875,
-    "vc_retornos": 72.03148401873725,
-    "latest_sbs_date": "2026-08-31",
-    "latest_sbs_vc": 71.8522175
+    "market_date": "2026-09-03",
+    "vc_niveles": 71.97775231698063,
+    "ret_vc_estimado": 0.005427791319846456,
+    "vc_retornos": 71.77351574287653,
+    "latest_sbs_date": "2026-09-01",
+    "latest_sbs_vc": 70.8600385
   },
   "sources": {
     "SPY_EEM_MCHI_QQQ": "Yahoo Finance · cierre diario no ajustado",
@@ -146,10 +146,10 @@
       "SPBLSCUP": 371.35,
       "source": "RECONSTRUIDO DESDE RETORNOS · ANCLA 2026-02-19=431.09",
       "vc_sbs": 64.81597359999999,
-      "vc_niveles": 56.417447377942096,
+      "vc_niveles": 56.41744737794208,
       "ret_vc_estimado": 0.0006425855066173546,
       "vc_retornos": 64.78826556551067,
-      "error_niveles_pct": -12.957494511905153,
+      "error_niveles_pct": -12.957494511905177,
       "error_retornos_pct": -0.0427487746466948
     },
     {
@@ -163,7 +163,7 @@
       "source": "RECONSTRUIDO DESDE RETORNOS · ANCLA 2026-02-19=431.09",
       "vc_sbs": 65.4085085,
       "vc_niveles": 57.2018792268793,
-      "ret_vc_estimado": 0.012210916701496578,
+      "ret_vc_estimado": 0.012210916701496577,
       "vc_retornos": 65.60743605455599,
       "error_niveles_pct": -12.54673048097511,
       "error_retornos_pct": 0.30413100545778615
@@ -178,10 +178,10 @@
       "SPBLSCUP": 393.24,
       "source": "RECONSTRUIDO DESDE RETORNOS · ANCLA 2026-02-19=431.09",
       "vc_sbs": 66.2644858,
-      "vc_niveles": 57.843726794882734,
-      "ret_vc_estimado": 0.00797414006129304,
+      "vc_niveles": 57.84372679488273,
+      "ret_vc_estimado": 0.007974140061293038,
       "vc_retornos": 65.93008510797927,
-      "error_niveles_pct": -12.707801024115495,
+      "error_niveles_pct": -12.707801024115506,
       "error_retornos_pct": -0.504645419010763
     },
     {
@@ -195,7 +195,7 @@
       "source": "RECONSTRUIDO DESDE RETORNOS · ANCLA 2026-02-19=431.09",
       "vc_sbs": 66.4142661,
       "vc_niveles": 57.81763167355152,
-      "ret_vc_estimado": 0.00033676586121601966,
+      "ret_vc_estimado": 0.0003367658612160199,
       "vc_retornos": 66.28680141662848,
       "error_niveles_pct": -12.94395757306801,
       "error_retornos_pct": -0.19192364962612452
@@ -226,10 +226,10 @@
       "SPBLSCUP": 402.73,
       "source": "RECONSTRUIDO DESDE RETORNOS · ANCLA 2026-02-19=431.09",
       "vc_sbs": 66.9858961,
-      "vc_niveles": 58.70040486168791,
-      "ret_vc_estimado": 0.007205359073741357,
+      "vc_niveles": 58.7004048616879,
+      "ret_vc_estimado": 0.007205359073741358,
       "vc_retornos": 67.1527710856018,
-      "error_niveles_pct": -12.369008583453278,
+      "error_niveles_pct": -12.36900858345329,
       "error_retornos_pct": 0.2491195838489224
     },
     {
@@ -258,10 +258,10 @@
       "SPBLSCUP": 415.61,
       "source": "RECONSTRUIDO DESDE RETORNOS · ANCLA 2026-02-19=431.09",
       "vc_sbs": 67.20638579999999,
-      "vc_niveles": 59.565942599811116,
+      "vc_niveles": 59.56594259981111,
       "ret_vc_estimado": 0.007092919671118974,
       "vc_retornos": 67.4925289849643,
-      "error_niveles_pct": -11.368626819073613,
+      "error_niveles_pct": -11.368626819073624,
       "error_retornos_pct": 0.42576785160839403
     },
     {
@@ -291,7 +291,7 @@
       "source": "RECONSTRUIDO DESDE RETORNOS · ANCLA 2026-02-19=431.09",
       "vc_sbs": 68.3665282,
       "vc_niveles": 59.96655856050269,
-      "ret_vc_estimado": 0.0021880388039970116,
+      "ret_vc_estimado": 0.002188038803997012,
       "vc_retornos": 67.69681306205331,
       "error_niveles_pct": -12.286669896303604,
       "error_retornos_pct": -0.9795950673222809
@@ -306,10 +306,10 @@
       "SPBLSCUP": 419.83,
       "source": "RECONSTRUIDO DESDE RETORNOS · ANCLA 2026-02-19=431.09",
       "vc_sbs": 69.1839112,
-      "vc_niveles": 60.81487159096189,
-      "ret_vc_estimado": 0.012014170198339075,
+      "vc_niveles": 60.814871590961886,
+      "ret_vc_estimado": 0.012014170198339074,
       "vc_retornos": 69.18789530566436,
-      "error_niveles_pct": -12.096800345450987,
+      "error_niveles_pct": -12.096800345450998,
       "error_retornos_pct": 0.005758717012738224
     },
     {
@@ -338,10 +338,10 @@
       "SPBLSCUP": 437.01,
       "source": "RECONSTRUIDO DESDE RETORNOS · ANCLA 2026-02-19=431.09",
       "vc_sbs": 70.4966383,
-      "vc_niveles": 62.616800301989365,
+      "vc_niveles": 62.61680030198937,
       "ret_vc_estimado": 0.015433158570433989,
       "vc_retornos": 70.86960978371522,
-      "error_niveles_pct": -11.177608164062825,
+      "error_niveles_pct": -11.177608164062814,
       "error_retornos_pct": 0.5290627932186265
     },
     {
@@ -354,10 +354,10 @@
       "SPBLSCUP": 441.77,
       "source": "RECONSTRUIDO DESDE RETORNOS · ANCLA 2026-02-19=431.09",
       "vc_sbs": 70.9825421,
-      "vc_niveles": 63.043349224619575,
+      "vc_niveles": 63.04334922461956,
       "ret_vc_estimado": 0.006623552757722263,
       "vc_retornos": 70.96357650302211,
-      "error_niveles_pct": -11.184711959450134,
+      "error_niveles_pct": -11.184711959450155,
       "error_retornos_pct": -0.026718678166204324
     },
     {
@@ -403,7 +403,7 @@
       "source": "RECONSTRUIDO DESDE RETORNOS · ANCLA 2026-02-19=431.09",
       "vc_sbs": 67.3680682,
       "vc_niveles": 61.34060099380953,
-      "ret_vc_estimado": 0.008687517494530922,
+      "ret_vc_estimado": 0.00868751749453092,
       "vc_retornos": 67.86493646913341,
       "error_niveles_pct": -8.9470684958582,
       "error_retornos_pct": 0.7375426999900458
@@ -418,10 +418,10 @@
       "SPBLSCUP": 443.86,
       "source": "RECONSTRUIDO DESDE RETORNOS · ANCLA 2026-02-19=431.09",
       "vc_sbs": 69.0049085,
-      "vc_niveles": 63.0477928525694,
-      "ret_vc_estimado": 0.018011912340015344,
+      "vc_niveles": 63.04779285256939,
+      "ret_vc_estimado": 0.01801191234001534,
       "vc_retornos": 68.58149593893457,
-      "error_niveles_pct": -8.632886814755503,
+      "error_niveles_pct": -8.632886814755524,
       "error_retornos_pct": -0.6135977429278627
     },
     {
@@ -434,7 +434,7 @@
       "SPBLSCUP": 429.86,
       "source": "RECONSTRUIDO DESDE RETORNOS · ANCLA 2026-02-19=431.09",
       "vc_sbs": 67.75380750000001,
-      "vc_niveles": 61.75868872323466,
+      "vc_niveles": 61.758688723234656,
       "ret_vc_estimado": -0.01833652732492072,
       "vc_retornos": 67.7395981097361,
       "error_niveles_pct": -8.848386530550844,
@@ -451,7 +451,7 @@
       "source": "RECONSTRUIDO DESDE RETORNOS · ANCLA 2026-02-19=431.09",
       "vc_sbs": 66.4806454,
       "vc_niveles": 61.129382080530064,
-      "ret_vc_estimado": -0.007359393718532073,
+      "ret_vc_estimado": -0.007359393718532075,
       "vc_retornos": 67.25518055467788,
       "error_niveles_pct": -8.049355248091405,
       "error_retornos_pct": 1.1650536032218994
@@ -498,7 +498,7 @@
       "SPBLSCUP": 439.72,
       "source": "RECONSTRUIDO DESDE RETORNOS · ANCLA 2026-02-19=431.09",
       "vc_sbs": 68.9387323,
-      "vc_niveles": 63.14169742356935,
+      "vc_niveles": 63.14169742356934,
       "ret_vc_estimado": -0.002858933174808053,
       "vc_retornos": 69.33135159440212,
       "error_niveles_pct": -8.408966459092627,
@@ -530,7 +530,7 @@
       "SPBLSCUP": 430.52,
       "source": "RECONSTRUIDO DESDE RETORNOS · ANCLA 2026-02-19=431.09",
       "vc_sbs": 68.28001669999999,
-      "vc_niveles": 63.34193424712689,
+      "vc_niveles": 63.341934247126886,
       "ret_vc_estimado": -0.011289447833170414,
       "vc_retornos": 68.98346403551712,
       "error_niveles_pct": -7.232104928400085,
@@ -626,10 +626,10 @@
       "SPBLSCUP": 438.81,
       "source": "GOOGLE FINANCE · ARCHIVO HISTÓRICO",
       "vc_sbs": 70.5307253,
-      "vc_niveles": 64.36437057505017,
-      "ret_vc_estimado": -0.004027659115774149,
+      "vc_niveles": 64.36437057505019,
+      "ret_vc_estimado": -0.00402765911577415,
       "vc_retornos": 69.71287713673618,
-      "error_niveles_pct": -8.742792164296409,
+      "error_niveles_pct": -8.742792164296386,
       "error_retornos_pct": -1.1595629561232057
     },
     {
@@ -659,7 +659,7 @@
       "source": "GOOGLE FINANCE · ARCHIVO HISTÓRICO",
       "vc_sbs": 72.0136832,
       "vc_niveles": 66.4078127300936,
-      "ret_vc_estimado": 0.013062920675259722,
+      "ret_vc_estimado": 0.01306292067525972,
       "vc_retornos": 72.39723153308842,
       "error_niveles_pct": -7.784451816382598,
       "error_retornos_pct": 0.5326047995950933
@@ -691,7 +691,7 @@
       "source": "GOOGLE FINANCE · ARCHIVO HISTÓRICO",
       "vc_sbs": 72.1394286,
       "vc_niveles": 66.87825786156532,
-      "ret_vc_estimado": 0.005068286797229544,
+      "ret_vc_estimado": 0.0050682867972295445,
       "vc_retornos": 72.34716151507328,
       "error_niveles_pct": -7.293058512574202,
       "error_retornos_pct": 0.2879603000810027
@@ -707,7 +707,7 @@
       "source": "GOOGLE FINANCE · ARCHIVO HISTÓRICO",
       "vc_sbs": 72.0701188,
       "vc_niveles": 66.23239936135803,
-      "ret_vc_estimado": -0.006964506337304244,
+      "ret_vc_estimado": -0.006964506337304242,
       "vc_retornos": 71.6370130923458,
       "error_niveles_pct": -8.100055245977988,
       "error_retornos_pct": -0.6009504561191426
@@ -722,10 +722,10 @@
       "SPBLSCUP": 432.36,
       "source": "GOOGLE FINANCE · ARCHIVO HISTÓRICO",
       "vc_sbs": 69.2514343,
-      "vc_niveles": 62.79468851283508,
-      "ret_vc_estimado": -0.03926142436990024,
+      "vc_niveles": 62.794688512835066,
+      "ret_vc_estimado": -0.03926142436990023,
       "vc_retornos": 69.24054328140409,
-      "error_niveles_pct": -9.323627521119693,
+      "error_niveles_pct": -9.323627521119704,
       "error_retornos_pct": -0.015726776933933095
     },
     {
@@ -738,10 +738,10 @@
       "SPBLSCUP": 436.7,
       "source": "GOOGLE FINANCE · ARCHIVO HISTÓRICO",
       "vc_sbs": 69.74213900000001,
-      "vc_niveles": 63.510994264218084,
+      "vc_niveles": 63.5109942642181,
       "ret_vc_estimado": 0.012696605228626888,
       "vc_retornos": 70.13069242282329,
-      "error_niveles_pct": -8.934547785782598,
+      "error_niveles_pct": -8.934547785782577,
       "error_retornos_pct": 0.5571286289674626
     },
     {
@@ -754,10 +754,10 @@
       "SPBLSCUP": 417.78,
       "source": "GOOGLE FINANCE · ARCHIVO HISTÓRICO",
       "vc_sbs": 67.8341914,
-      "vc_niveles": 61.68301079699254,
+      "vc_niveles": 61.683010796992534,
       "ret_vc_estimado": -0.01958875326790224,
       "vc_retornos": 68.37597744675327,
-      "error_niveles_pct": -9.0679648066203,
+      "error_niveles_pct": -9.06796480662031,
       "error_retornos_pct": 0.7986916856699944
     },
     {
@@ -787,7 +787,7 @@
       "source": "GOOGLE FINANCE · ARCHIVO HISTÓRICO",
       "vc_sbs": 67.96706710000001,
       "vc_niveles": 61.661349572373666,
-      "ret_vc_estimado": 0.012139610728499227,
+      "ret_vc_estimado": 0.012139610728499225,
       "vc_retornos": 68.18038964833656,
       "error_niveles_pct": -9.277607224611783,
       "error_retornos_pct": 0.31386163540452205
@@ -802,10 +802,10 @@
       "SPBLSCUP": 427.24,
       "source": "GOOGLE FINANCE · ARCHIVO HISTÓRICO",
       "vc_sbs": 68.4964052,
-      "vc_niveles": 62.28674801352206,
+      "vc_niveles": 62.28674801352204,
       "ret_vc_estimado": 0.007205801582462316,
       "vc_retornos": 68.4568242996645,
-      "error_niveles_pct": -9.065668728667731,
+      "error_niveles_pct": -9.065668728667752,
       "error_retornos_pct": -0.05778536876486218
     },
     {
@@ -819,7 +819,7 @@
       "source": "GOOGLE FINANCE · ARCHIVO HISTÓRICO",
       "vc_sbs": 67.9244297,
       "vc_niveles": 62.252103554252784,
-      "ret_vc_estimado": 0.0016551056571250354,
+      "ret_vc_estimado": 0.0016551056571250356,
       "vc_retornos": 68.60977398773925,
       "error_niveles_pct": -8.350936726005697,
       "error_retornos_pct": 1.0089805549581943
@@ -835,7 +835,7 @@
       "source": "GOOGLE FINANCE · ARCHIVO HISTÓRICO",
       "vc_sbs": 66.5923372,
       "vc_niveles": 60.027546234056004,
-      "ret_vc_estimado": -0.02780325075071964,
+      "ret_vc_estimado": -0.027803250750719644,
       "vc_retornos": 66.03590974895127,
       "error_niveles_pct": -9.858177745327733,
       "error_retornos_pct": -0.8355727917727096
@@ -851,7 +851,7 @@
       "source": "GOOGLE FINANCE · ARCHIVO HISTÓRICO",
       "vc_sbs": 65.5049918,
       "vc_niveles": 59.40792714868323,
-      "ret_vc_estimado": -0.007030417177167135,
+      "ret_vc_estimado": -0.007030417177167134,
       "vc_retornos": 66.12416528868141,
       "error_niveles_pct": -9.30778629807686,
       "error_retornos_pct": 0.9452309994509633
@@ -867,7 +867,7 @@
       "source": "GOOGLE FINANCE · ARCHIVO HISTÓRICO",
       "vc_sbs": 66.1903339,
       "vc_niveles": 60.762282720851545,
-      "ret_vc_estimado": 0.01909017652013545,
+      "ret_vc_estimado": 0.019090176520135445,
       "vc_retornos": 66.75549365641203,
       "error_niveles_pct": -8.20067048966564,
       "error_retornos_pct": 0.8538403164212394
@@ -882,7 +882,7 @@
       "SPBLSCUP": 405.96,
       "source": "GOOGLE FINANCE · ARCHIVO HISTÓRICO",
       "vc_sbs": 66.2901412,
-      "vc_niveles": 61.27347075389469,
+      "vc_niveles": 61.2734707538947,
       "ret_vc_estimado": 0.008450031894309783,
       "vc_retornos": 66.74964433255,
       "error_niveles_pct": -7.567747413555514,
@@ -930,10 +930,10 @@
       "SPBLSCUP": 363.59,
       "source": "GOOGLE FINANCE · ARCHIVO HISTÓRICO",
       "vc_sbs": 62.2845025,
-      "vc_niveles": 57.61211543413595,
+      "vc_niveles": 57.612115434135944,
       "ret_vc_estimado": -0.020704901767908332,
       "vc_retornos": 62.38820362054653,
-      "error_niveles_pct": -7.501684814555675,
+      "error_niveles_pct": -7.501684814555687,
       "error_retornos_pct": 0.16649586395351967
     },
     {
@@ -946,10 +946,10 @@
       "SPBLSCUP": 375.3,
       "source": "GOOGLE FINANCE · ARCHIVO HISTÓRICO",
       "vc_sbs": 63.7514175,
-      "vc_niveles": 59.41407607237456,
+      "vc_niveles": 59.414076072374556,
       "ret_vc_estimado": 0.02567058355466359,
       "vc_retornos": 63.883382025586904,
-      "error_niveles_pct": -6.80352154934506,
+      "error_niveles_pct": -6.803521549345071,
       "error_retornos_pct": 0.2069985747170211
     },
     {
@@ -963,7 +963,7 @@
       "source": "GOOGLE FINANCE · ARCHIVO HISTÓRICO",
       "vc_sbs": 63.8695262,
       "vc_niveles": 58.96030903145376,
-      "ret_vc_estimado": -0.007366241733381425,
+      "ret_vc_estimado": -0.007366241733381426,
       "vc_retornos": 63.28180914784928,
       "error_niveles_pct": -7.686321569340593,
       "error_retornos_pct": -0.9201838296253428
@@ -978,10 +978,10 @@
       "SPBLSCUP": 386.99,
       "source": "GOOGLE FINANCE · ARCHIVO HISTÓRICO",
       "vc_sbs": 64.86870640000001,
-      "vc_niveles": 59.78434696688878,
+      "vc_niveles": 59.784346966888776,
       "ret_vc_estimado": 0.011408289907183036,
       "vc_retornos": 64.59816827112402,
-      "error_niveles_pct": -7.837923268824776,
+      "error_niveles_pct": -7.837923268824786,
       "error_retornos_pct": -0.41705491582916254
     },
     {
@@ -1011,7 +1011,7 @@
       "source": "GOOGLE FINANCE · ARCHIVO HISTÓRICO",
       "vc_sbs": 63.6131059,
       "vc_niveles": 58.274990792721695,
-      "ret_vc_estimado": -0.0018884959532096115,
+      "ret_vc_estimado": -0.001888495953209611,
       "vc_retornos": 63.2631863787413,
       "error_niveles_pct": -8.391533524034877,
       "error_retornos_pct": -0.5500745739545732
@@ -1027,7 +1027,7 @@
       "source": "GOOGLE FINANCE · ARCHIVO HISTÓRICO",
       "vc_sbs": 63.1341003,
       "vc_niveles": 57.821066420351514,
-      "ret_vc_estimado": -0.007495406546797734,
+      "ret_vc_estimado": -0.007495406546797735,
       "vc_retornos": 63.13629980957501,
       "error_niveles_pct": -8.415474132682753,
       "error_retornos_pct": 0.003483869358333891
@@ -1074,10 +1074,10 @@
       "SPBLSCUP": 400.97,
       "source": "GOOGLE FINANCE · ARCHIVO HISTÓRICO",
       "vc_sbs": 65.8954016,
-      "vc_niveles": 60.80423735228122,
-      "ret_vc_estimado": 0.0021988231033564193,
+      "vc_niveles": 60.804237352281234,
+      "ret_vc_estimado": 0.0021988231033564197,
       "vc_retornos": 66.5719113995769,
-      "error_niveles_pct": -7.726129781594315,
+      "error_niveles_pct": -7.7261297815942935,
       "error_retornos_pct": 1.0266418948069678
     },
     {
@@ -1090,10 +1090,10 @@
       "SPBLSCUP": 419.57,
       "source": "GOOGLE FINANCE · ARCHIVO HISTÓRICO",
       "vc_sbs": 68.1833191,
-      "vc_niveles": 63.684802048728486,
-      "ret_vc_estimado": 0.039706304867360556,
+      "vc_niveles": 63.6848020487285,
+      "ret_vc_estimado": 0.03970630486736055,
       "vc_retornos": 68.51186450528675,
-      "error_niveles_pct": -6.597679770727849,
+      "error_niveles_pct": -6.597679770727827,
       "error_retornos_pct": 0.481855987099844
     },
     {
@@ -1106,10 +1106,10 @@
       "SPBLSCUP": 420.88,
       "source": "GOOGLE FINANCE · ARCHIVO HISTÓRICO",
       "vc_sbs": 68.1696927,
-      "vc_niveles": 63.64740718023966,
-      "ret_vc_estimado": 0.0006275626049401712,
+      "vc_niveles": 63.647407180239654,
+      "ret_vc_estimado": 0.0006275626049401715,
       "vc_retornos": 68.22610840134787,
-      "error_niveles_pct": -6.633865198222222,
+      "error_niveles_pct": -6.633865198222233,
       "error_retornos_pct": 0.08275774631425481
     },
     {
@@ -1123,7 +1123,7 @@
       "source": "GOOGLE FINANCE · ARCHIVO HISTÓRICO",
       "vc_sbs": 68.6648503,
       "vc_niveles": 63.74233126070288,
-      "ret_vc_estimado": 0.0030898955117829663,
+      "ret_vc_estimado": 0.0030898955117829668,
       "vc_retornos": 68.38032992751336,
       "error_niveles_pct": -7.168906679021935,
       "error_retornos_pct": -0.4143610176728818
@@ -1139,7 +1139,7 @@
       "source": "GOOGLE FINANCE · ARCHIVO HISTÓRICO",
       "vc_sbs": 69.1042024,
       "vc_niveles": 64.39338061813892,
-      "ret_vc_estimado": 0.0089592335311399,
+      "ret_vc_estimado": 0.008959233531139898,
       "vc_retornos": 69.28003472921846,
       "error_niveles_pct": -6.816983075201644,
       "error_retornos_pct": 0.2544452046500334
@@ -1186,10 +1186,10 @@
       "SPBLSCUP": 406.12,
       "source": "GOOGLE FINANCE · ARCHIVO HISTÓRICO",
       "vc_sbs": 69.4941034,
-      "vc_niveles": 64.04073738501975,
-      "ret_vc_estimado": 0.009718144065664331,
+      "vc_niveles": 64.04073738501977,
+      "ret_vc_estimado": 0.00971814406566433,
       "vc_retornos": 69.47369153577039,
-      "error_niveles_pct": -7.847235590034607,
+      "error_niveles_pct": -7.847235590034584,
       "error_retornos_pct": -0.029372080839906722
     },
     {
@@ -1203,7 +1203,7 @@
       "source": "GOOGLE FINANCE · ARCHIVO HISTÓRICO",
       "vc_sbs": 70.09192780000001,
       "vc_niveles": 64.51242873027049,
-      "ret_vc_estimado": 0.007387378920328016,
+      "ret_vc_estimado": 0.007387378920328015,
       "vc_retornos": 70.00748267454426,
       "error_niveles_pct": -7.960259112361756,
       "error_retornos_pct": -0.12047767568428291
@@ -1219,7 +1219,7 @@
       "source": "GOOGLE FINANCE · ARCHIVO HISTÓRICO",
       "vc_sbs": 69.7637761,
       "vc_niveles": 64.01814496323561,
-      "ret_vc_estimado": -0.005864670849910704,
+      "ret_vc_estimado": -0.005864670849910705,
       "vc_retornos": 69.6808617142173,
       "error_niveles_pct": -8.235837361395903,
       "error_retornos_pct": -0.11885019764963367
@@ -1234,10 +1234,10 @@
       "SPBLSCUP": 387.95,
       "source": "GOOGLE FINANCE · ARCHIVO HISTÓRICO",
       "vc_sbs": 68.2148193,
-      "vc_niveles": 63.0289412170524,
+      "vc_niveles": 63.02894121705239,
       "ret_vc_estimado": -0.009428153417029787,
       "vc_retornos": 69.10603251597789,
-      "error_niveles_pct": -7.6022748959295505,
+      "error_niveles_pct": -7.602274895929561,
       "error_retornos_pct": 1.3064803588475948
     },
     {
@@ -1250,10 +1250,10 @@
       "SPBLSCUP": 390.1,
       "source": "GOOGLE FINANCE · ARCHIVO HISTÓRICO",
       "vc_sbs": 69.3758296,
-      "vc_niveles": 64.01577568923281,
+      "vc_niveles": 64.0157756892328,
       "ret_vc_estimado": 0.015788521669346432,
       "vc_retornos": 69.29183045268861,
-      "error_niveles_pct": -7.726111444968131,
+      "error_niveles_pct": -7.726111444968153,
       "error_retornos_pct": -0.12107840410082726
     },
     {
@@ -1266,10 +1266,10 @@
       "SPBLSCUP": 386.07,
       "source": "GOOGLE FINANCE · ARCHIVO HISTÓRICO",
       "vc_sbs": 68.5443047,
-      "vc_niveles": 63.318094778773116,
+      "vc_niveles": 63.3180947787731,
       "ret_vc_estimado": -0.0077644041073288705,
       "vc_retornos": 68.83716762370442,
-      "error_niveles_pct": -7.624572083852332,
+      "error_niveles_pct": -7.624572083852355,
       "error_retornos_pct": 0.4272607694923769
     },
     {
@@ -1299,7 +1299,7 @@
       "source": "GOOGLE FINANCE · ARCHIVO HISTÓRICO",
       "vc_sbs": 68.8970772,
       "vc_niveles": 64.23833232572521,
-      "ret_vc_estimado": -9.091894582813256e-05,
+      "ret_vc_estimado": -9.091894582813234e-05,
       "vc_retornos": 69.29207256497014,
       "error_niveles_pct": -6.761890436587037,
       "error_retornos_pct": 0.573312223134681
@@ -1330,10 +1330,10 @@
       "SPBLSCUP": 370.33,
       "source": "GOOGLE FINANCE · ARCHIVO HISTÓRICO",
       "vc_sbs": 67.05704010000001,
-      "vc_niveles": 62.931573791859485,
-      "ret_vc_estimado": -0.003043731171234862,
+      "vc_niveles": 62.93157379185948,
+      "ret_vc_estimado": -0.0030437311712348614,
       "vc_retornos": 67.52586582756474,
-      "error_niveles_pct": -6.152174778350417,
+      "error_niveles_pct": -6.152174778350428,
       "error_retornos_pct": 0.699144678717678
     },
     {
@@ -1363,7 +1363,7 @@
       "source": "GOOGLE FINANCE · ARCHIVO HISTÓRICO",
       "vc_sbs": 67.9996896,
       "vc_niveles": 65.41481201461977,
-      "ret_vc_estimado": 0.021116554719508032,
+      "ret_vc_estimado": 0.021116554719508036,
       "vc_retornos": 69.66171133748652,
       "error_niveles_pct": -3.801307918588248,
       "error_retornos_pct": 2.4441607708258317
@@ -1379,7 +1379,7 @@
       "source": "GOOGLE FINANCE · ARCHIVO HISTÓRICO",
       "vc_sbs": 69.8290569,
       "vc_niveles": 67.36328501165691,
-      "ret_vc_estimado": 0.025662235069312117,
+      "ret_vc_estimado": 0.02566223506931212,
       "vc_retornos": 69.74471361915545,
       "error_niveles_pct": -3.531154504741829,
       "error_retornos_pct": -0.1207853644154655
@@ -1410,10 +1410,10 @@
       "SPBLSCUP": 395.92,
       "source": "GOOGLE FINANCE · ARCHIVO HISTÓRICO",
       "vc_sbs": 70.3897559,
-      "vc_niveles": 68.28698650884292,
-      "ret_vc_estimado": 0.02512651609819769,
+      "vc_niveles": 68.2869865088429,
+      "ret_vc_estimado": 0.025126516098197688,
       "vc_retornos": 71.25016651439113,
-      "error_niveles_pct": -2.987323033403333,
+      "error_niveles_pct": -2.987323033403355,
       "error_retornos_pct": 1.222352036017127
     },
     {
@@ -1459,7 +1459,7 @@
       "source": "GOOGLE FINANCE · ARCHIVO HISTÓRICO",
       "vc_sbs": 71.0845734,
       "vc_niveles": 67.81039195587498,
-      "ret_vc_estimado": 0.008971000497717272,
+      "ret_vc_estimado": 0.00897100049771727,
       "vc_retornos": 71.44811312156577,
       "error_niveles_pct": -4.606036566753902,
       "error_retornos_pct": 0.5114185879967259
@@ -1507,7 +1507,7 @@
       "source": "GOOGLE FINANCE · ARCHIVO HISTÓRICO",
       "vc_sbs": 67.9831173,
       "vc_niveles": 65.90068690988804,
-      "ret_vc_estimado": -0.0035248323938032082,
+      "ret_vc_estimado": -0.0035248323938032087,
       "vc_retornos": 68.23752235851282,
       "error_niveles_pct": -3.0631581381043382,
       "error_retornos_pct": 0.37421799502097564
@@ -1522,10 +1522,10 @@
       "SPBLSCUP": 384.08,
       "source": "GOOGLE FINANCE · ARCHIVO HISTÓRICO",
       "vc_sbs": 67.128032,
-      "vc_niveles": 65.2237996365304,
+      "vc_niveles": 65.22379963653042,
       "ret_vc_estimado": -0.007906317358920396,
       "vc_retornos": 67.44562119957749,
-      "error_niveles_pct": -2.8367171012396164,
+      "error_niveles_pct": -2.836717101239594,
       "error_retornos_pct": 0.47310965347155953
     },
     {
@@ -1555,7 +1555,7 @@
       "source": "GOOGLE FINANCE · ARCHIVO HISTÓRICO",
       "vc_sbs": 68.9077609,
       "vc_niveles": 67.75883690361074,
-      "ret_vc_estimado": 0.013065439221113391,
+      "ret_vc_estimado": 0.01306543922111339,
       "vc_retornos": 69.35674676169337,
       "error_niveles_pct": -1.6673361336709158,
       "error_retornos_pct": 0.6515751721274832
@@ -1587,7 +1587,7 @@
       "source": "GOOGLE FINANCE · ARCHIVO HISTÓRICO",
       "vc_sbs": 70.1458301,
       "vc_niveles": 70.2976727596052,
-      "ret_vc_estimado": 0.03749585589877661,
+      "ret_vc_estimado": 0.0374958558987766,
       "vc_retornos": 71.23121094525962,
       "error_niveles_pct": 0.21646712197822549,
       "error_retornos_pct": 1.5473205516454813
@@ -1635,7 +1635,7 @@
       "source": "GOOGLE FINANCE · ARCHIVO HISTÓRICO",
       "vc_sbs": 71.1479104,
       "vc_niveles": 71.79607355101795,
-      "ret_vc_estimado": 0.012984678603960761,
+      "ret_vc_estimado": 0.01298467860396076,
       "vc_retornos": 72.07839217872082,
       "error_niveles_pct": 0.9110079935923832,
       "error_retornos_pct": 1.3078132210623927
@@ -1650,7 +1650,7 @@
       "SPBLSCUP": 413.5,
       "source": "GOOGLE FINANCE · ARCHIVO HISTÓRICO",
       "vc_sbs": 72.00246680000001,
-      "vc_niveles": 72.01728165806064,
+      "vc_niveles": 72.01728165806065,
       "ret_vc_estimado": 0.001550340766388786,
       "vc_retornos": 71.2582139059365,
       "error_niveles_pct": 0.020575486811846844,
@@ -1682,10 +1682,10 @@
       "SPBLSCUP": 400.44,
       "source": "GOOGLE FINANCE · ARCHIVO HISTÓRICO",
       "vc_sbs": 70.506511,
-      "vc_niveles": 70.3807857045856,
-      "ret_vc_estimado": -0.010559451583281866,
+      "vc_niveles": 70.38078570458562,
+      "ret_vc_estimado": -0.010559451583281865,
       "vc_retornos": 70.35411468755598,
-      "error_niveles_pct": -0.17831728393764568,
+      "error_niveles_pct": -0.17831728393762347,
       "error_retornos_pct": -0.21614502020107507
     },
     {
@@ -1714,10 +1714,10 @@
       "SPBLSCUP": 376.34,
       "source": "GOOGLE FINANCE · ARCHIVO HISTÓRICO",
       "vc_sbs": 67.10059100000001,
-      "vc_niveles": 66.95112653466464,
+      "vc_niveles": 66.95112653466465,
       "ret_vc_estimado": 0.02086875554337053,
       "vc_retornos": 68.42804385878472,
-      "error_niveles_pct": -0.22274686870548122,
+      "error_niveles_pct": -0.222746868705459,
       "error_retornos_pct": 1.978302782437047
     },
     {
@@ -1730,10 +1730,10 @@
       "SPBLSCUP": 403.92,
       "source": "GOOGLE FINANCE · ARCHIVO HISTÓRICO",
       "vc_sbs": 68.1275219,
-      "vc_niveles": 68.37270297595654,
+      "vc_niveles": 68.37270297595656,
       "ret_vc_estimado": 0.01468889317746358,
       "vc_retornos": 68.08622441334369,
-      "error_niveles_pct": 0.35988550459302715,
+      "error_niveles_pct": 0.35988550459304935,
       "error_retornos_pct": -0.060617919901650996
     },
     {
@@ -1795,7 +1795,7 @@
       "source": "GOOGLE FINANCE · ARCHIVO HISTÓRICO",
       "vc_sbs": 73.1777194,
       "vc_niveles": 72.99047732711479,
-      "ret_vc_estimado": 0.02576519229986255,
+      "ret_vc_estimado": 0.025765192299862554,
       "vc_retornos": 72.86376379594878,
       "error_niveles_pct": -0.25587306412450106,
       "error_retornos_pct": -0.4290316870017352
@@ -1827,7 +1827,7 @@
       "source": "GOOGLE FINANCE · ARCHIVO HISTÓRICO",
       "vc_sbs": 72.6023076,
       "vc_niveles": 73.10423628020948,
-      "ret_vc_estimado": 0.009841937526458044,
+      "ret_vc_estimado": 0.009841937526458042,
       "vc_retornos": 73.29840374969856,
       "error_niveles_pct": 0.6913398441477092,
       "error_retornos_pct": 0.9587796486217437
@@ -1842,10 +1842,10 @@
       "SPBLSCUP": 432.78,
       "source": "GOOGLE FINANCE · ARCHIVO HISTÓRICO",
       "vc_sbs": 72.61369810000001,
-      "vc_niveles": 74.7746394130836,
-      "ret_vc_estimado": 0.0271026616084621,
+      "vc_niveles": 74.77463941308362,
+      "ret_vc_estimado": 0.027102661608462093,
       "vc_retornos": 74.57002337487629,
-      "error_niveles_pct": 2.97594168817521,
+      "error_niveles_pct": 2.975941688175232,
       "error_retornos_pct": 2.6941545824895607
     },
     {
@@ -1890,10 +1890,10 @@
       "SPBLSCUP": 421.48,
       "source": "GOOGLE FINANCE · ARCHIVO HISTÓRICO",
       "vc_sbs": 71.4791849,
-      "vc_niveles": 72.43181060376133,
+      "vc_niveles": 72.43181060376132,
       "ret_vc_estimado": 0.018024269952442364,
       "vc_retornos": 72.04070969788272,
-      "error_niveles_pct": 1.3327316268282319,
+      "error_niveles_pct": 1.3327316268282097,
       "error_retornos_pct": 0.7855780653742706
     },
     {
@@ -1922,10 +1922,10 @@
       "SPBLSCUP": 421.88,
       "source": "BASE RLD · CIERRES VALIDADOS",
       "vc_sbs": 70.9226332,
-      "vc_niveles": 70.94116215973848,
+      "vc_niveles": 70.94116215973847,
       "ret_vc_estimado": -0.010242208888519008,
       "vc_retornos": 70.41589799541977,
-      "error_niveles_pct": 0.026125594753678705,
+      "error_niveles_pct": 0.0261255947536565,
       "error_retornos_pct": -0.7144901165066164
     },
     {
@@ -1954,10 +1954,10 @@
       "SPBLSCUP": 428.94,
       "source": "BASE RLD · CIERRES VALIDADOS",
       "vc_sbs": 71.3369613,
-      "vc_niveles": 71.87130624286822,
-      "ret_vc_estimado": 0.016675672096628912,
+      "vc_niveles": 71.87130624286823,
+      "ret_vc_estimado": 0.016675672096628916,
       "vc_retornos": 71.50875173960794,
-      "error_niveles_pct": 0.749043599742194,
+      "error_niveles_pct": 0.7490435997422162,
       "error_retornos_pct": 0.24081547135923476
     },
     {
@@ -1987,7 +1987,7 @@
       "source": "BASE RLD · CIERRES VALIDADOS",
       "vc_sbs": 69.8131004,
       "vc_niveles": 69.92847450807687,
-      "ret_vc_estimado": -0.0009709762557685844,
+      "ret_vc_estimado": -0.0009709762557685842,
       "vc_retornos": 69.86735831940929,
       "error_niveles_pct": 0.16526140139290213,
       "error_retornos_pct": 0.07771882225315885
@@ -2002,10 +2002,10 @@
       "SPBLSCUP": 429.44,
       "source": "BASE RLD · CIERRES VALIDADOS",
       "vc_sbs": 70.9792394,
-      "vc_niveles": 70.89251233486578,
+      "vc_niveles": 70.89251233486577,
       "ret_vc_estimado": 0.014129460155652763,
       "vc_retornos": 70.79952182044438,
-      "error_niveles_pct": -0.12218652364738292,
+      "error_niveles_pct": -0.12218652364740512,
       "error_retornos_pct": -0.2531973871160109
     },
     {
@@ -2019,7 +2019,7 @@
       "source": "BASE RLD · CIERRES VALIDADOS",
       "vc_sbs": 71.0624925,
       "vc_niveles": 71.37685991839714,
-      "ret_vc_estimado": 0.005800698210363635,
+      "ret_vc_estimado": 0.005800698210363636,
       "vc_retornos": 71.39096854696054,
       "error_niveles_pct": 0.44238163810133013,
       "error_retornos_pct": 0.4622354710686949
@@ -2050,10 +2050,10 @@
       "SPBLSCUP": 438.77,
       "source": "BASE RLD · CIERRES VALIDADOS",
       "vc_sbs": 70.5044231,
-      "vc_niveles": 70.48122170568112,
+      "vc_niveles": 70.48122170568114,
       "ret_vc_estimado": 0.016382832203830487,
       "vc_retornos": 70.56163860560223,
-      "error_niveles_pct": -0.032907714578367386,
+      "error_niveles_pct": -0.03290771457834518,
       "error_retornos_pct": 0.08115165416087144
     },
     {
@@ -2098,10 +2098,10 @@
       "SPBLSCUP": 430.9,
       "source": "BASE RLD · CIERRES VALIDADOS",
       "vc_sbs": 68.2147702,
-      "vc_niveles": 68.03062436175568,
+      "vc_niveles": 68.03062436175567,
       "ret_vc_estimado": -0.005045512230092121,
       "vc_retornos": 68.05850153362033,
-      "error_niveles_pct": -0.26995009688431937,
+      "error_niveles_pct": -0.2699500968843416,
       "error_retornos_pct": -0.2290833289059102
     },
     {
@@ -2115,7 +2115,7 @@
       "source": "BASE RLD · CIERRES VALIDADOS",
       "vc_sbs": 68.06385,
       "vc_niveles": 67.87645890810201,
-      "ret_vc_estimado": -0.0019211459521712505,
+      "ret_vc_estimado": -0.0019211459521712507,
       "vc_retornos": 68.08371967035198,
       "error_niveles_pct": -0.27531662093459586,
       "error_retornos_pct": 0.02919269237926514
@@ -2147,7 +2147,7 @@
       "source": "BASE RLD · CIERRES VALIDADOS",
       "vc_sbs": 70.0996577,
       "vc_niveles": 70.07184815441464,
-      "ret_vc_estimado": 0.0010974297960321517,
+      "ret_vc_estimado": 0.0010974297960321515,
       "vc_retornos": 70.09873691153328,
       "error_niveles_pct": -0.03967144276848522,
       "error_retornos_pct": -0.0013135420299126288
@@ -2163,7 +2163,7 @@
       "source": "BASE RLD · CIERRES VALIDADOS",
       "vc_sbs": 69.6767473,
       "vc_niveles": 69.81628282562184,
-      "ret_vc_estimado": -0.004662307110144909,
+      "ret_vc_estimado": -0.00466230711014491,
       "vc_retornos": 69.77283156748656,
       "error_niveles_pct": 0.20026125074561474,
       "error_retornos_pct": 0.13790004730396266
@@ -2194,10 +2194,10 @@
       "SPBLSCUP": 437.17,
       "source": "BASE RLD · CIERRES VALIDADOS",
       "vc_sbs": 68.2402784,
-      "vc_niveles": 68.08082416540451,
-      "ret_vc_estimado": -0.0014593460167311105,
+      "vc_niveles": 68.08082416540452,
+      "ret_vc_estimado": -0.0014593460167311102,
       "vc_retornos": 68.26288953275413,
-      "error_niveles_pct": -0.2336658617668963,
+      "error_niveles_pct": -0.2336658617668741,
       "error_retornos_pct": 0.03313458456544183
     },
     {
@@ -2290,10 +2290,10 @@
       "SPBLSCUP": 445.78,
       "source": "BASE RLD · CIERRES VALIDADOS",
       "vc_sbs": 69.7841504,
-      "vc_niveles": 69.82510394271156,
-      "ret_vc_estimado": 0.02725920856944272,
+      "vc_niveles": 69.82510394271155,
+      "ret_vc_estimado": 0.027259208569442722,
       "vc_retornos": 69.9905144303674,
-      "error_niveles_pct": 0.05868602322565142,
+      "error_niveles_pct": 0.058686023225629214,
       "error_retornos_pct": 0.2957176223892244
     },
     {
@@ -2370,10 +2370,10 @@
       "SPBLSCUP": 449.85,
       "source": "BASE RLD · CIERRES VALIDADOS",
       "vc_sbs": 69.498597,
-      "vc_niveles": 69.69213263707782,
-      "ret_vc_estimado": 0.008162834544604683,
+      "vc_niveles": 69.6921326370778,
+      "ret_vc_estimado": 0.008162834544604682,
       "vc_retornos": 69.77623780766952,
-      "error_niveles_pct": 0.2784741641299826,
+      "error_niveles_pct": 0.2784741641299604,
       "error_retornos_pct": 0.3994912410526963
     },
     {
@@ -2483,7 +2483,7 @@
       "source": "BASE RLD · CIERRES VALIDADOS",
       "vc_sbs": null,
       "vc_niveles": 70.52878022436109,
-      "ret_vc_estimado": 0.007092969133468136,
+      "ret_vc_estimado": 0.007092969133468137,
       "vc_retornos": 70.82644760951841,
       "error_niveles_pct": null,
       "error_retornos_pct": null
@@ -2515,7 +2515,7 @@
       "source": "BASE RLD · CIERRES VALIDADOS",
       "vc_sbs": 70.9791366,
       "vc_niveles": 70.94137809431336,
-      "ret_vc_estimado": -0.00888828057502038,
+      "ret_vc_estimado": -0.008888280575020382,
       "vc_retornos": 71.16761559293647,
       "error_niveles_pct": -0.05319662579079676,
       "error_retornos_pct": 0.2655413998603917
@@ -2562,10 +2562,10 @@
       "SPBLSCUP": 461.34,
       "source": "BASE RLD · CIERRES VALIDADOS",
       "vc_sbs": 72.3323679,
-      "vc_niveles": 72.32999707933112,
-      "ret_vc_estimado": 0.008635408142938228,
+      "vc_niveles": 72.32999707933111,
+      "ret_vc_estimado": 0.008635408142938226,
       "vc_retornos": 72.55899965596247,
-      "error_niveles_pct": -0.0032776760082731116,
+      "error_niveles_pct": -0.003277676008295316,
       "error_retornos_pct": 0.313319973536319
     },
     {
@@ -2579,7 +2579,7 @@
       "source": "CIERRE SPBLSCUP AUDITADO · FECHA BLOQUEADA",
       "vc_sbs": 71.5961514,
       "vc_niveles": 71.4302009357645,
-      "ret_vc_estimado": -0.011226494143315443,
+      "ret_vc_estimado": -0.011226494143315445,
       "vc_retornos": 71.5203289953985,
       "error_niveles_pct": -0.2317868502572762,
       "error_retornos_pct": -0.10590290555966275
@@ -2595,26 +2595,26 @@
       "source": "CIERRE SPBLSCUP AUDITADO · FECHA BLOQUEADA",
       "vc_sbs": 71.8522175,
       "vc_niveles": 71.33170014928366,
-      "ret_vc_estimado": 0.001734884351031855,
+      "ret_vc_estimado": 0.0017348843510318552,
       "vc_retornos": 71.72036244265796,
       "error_niveles_pct": -0.7244276778463177,
       "error_retornos_pct": -0.1835086820278553
     },
     {
       "fecha": "2026-09-01",
-      "fase": "PROYECCIÓN",
+      "fase": "VALIDACIÓN",
       "SPY": 761.780029296875,
       "EEM": 66.7699966430664,
       "MCHI": 54.40999984741211,
       "QQQ": 707.6400146484375,
       "SPBLSCUP": 446.7,
       "source": "CIERRE SPBLSCUP AUDITADO · FECHA BLOQUEADA",
-      "vc_sbs": null,
+      "vc_sbs": 70.8600385,
       "vc_niveles": 70.97200471130556,
       "ret_vc_estimado": -0.004891958464706914,
       "vc_retornos": 71.50071943639291,
-      "error_niveles_pct": null,
-      "error_retornos_pct": null
+      "error_niveles_pct": 0.15801037323111,
+      "error_retornos_pct": 0.9041498564708039
     },
     {
       "fecha": "2026-09-02",
@@ -2628,9 +2628,26 @@
       "vc_sbs": null,
       "vc_niveles": 71.66371836311457,
       "ret_vc_estimado": 0.007423206179295875,
-      "vc_retornos": 72.03148401873725,
+      "vc_retornos": 71.38604717565835,
+      "error_niveles_pct": null,
+      "error_retornos_pct": null
+    },
+    {
+      "fecha": "2026-09-03",
+      "fase": "PROYECCIÓN",
+      "SPY": 773.17,
+      "EEM": 67.47,
+      "MCHI": 54.37,
+      "QQQ": 717.67,
+      "SPBLSCUP": 455.91,
+      "source": "CIERRE REGULAR VERIFICADO · 5/5 CON FECHA PROPIA",
+      "vc_sbs": null,
+      "vc_niveles": 71.97775231698063,
+      "ret_vc_estimado": 0.005427791319846456,
+      "vc_retornos": 71.77351574287653,
       "error_niveles_pct": null,
       "error_retornos_pct": null
     }
-  ]
+  ],
+  "data_revision": "a01ead46d6b70db17b80163e956e66c393597784f6286963271c51306fb716cb"
 }
