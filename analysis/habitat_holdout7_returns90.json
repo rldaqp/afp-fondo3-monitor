@@ -1,0 +1,187 @@
+{
+  "fund": "HÁBITAT Fondo 3",
+  "logic": "Mismo holdout de 7 últimas fechas SBS. Niveles 90 y Retornos 90 usan las 90 observaciones previas al 25/08; Retornos 30 usa las 30 observaciones previas. Ningún modelo usa las 7 fechas de validación para estimar coeficientes. Retornos aplica el retorno estimado al VC SBS real de la rueda anterior.",
+  "holdout": {
+    "start": "2026-08-25",
+    "end": "2026-09-02",
+    "n": 7
+  },
+  "levels90": {
+    "training": {
+      "start": "2026-04-08",
+      "end": "2026-08-24",
+      "n": 90
+    },
+    "r2_train": 0.9786463140497912,
+    "adj_r2_train": 0.9773752613146597,
+    "coefficients": {
+      "intercept": 5.9149458385726605,
+      "SPY": 0.009638037272382771,
+      "EEM": 0.2499235340418412,
+      "MCHI": -0.10598322287868225,
+      "QQQ": 0.0008095188071174497,
+      "SPBLSCUP": 0.019211218790480176
+    },
+    "train_metrics": {
+      "n": 90,
+      "mae_pct": 0.4229273143706526,
+      "rmse_pct": 0.508284833563226,
+      "bias_pct": 0.002502516316127417,
+      "max_abs_pct": 1.1618582567340052,
+      "r2_vc_oos": 0.9786463140497912
+    },
+    "holdout_metrics": {
+      "n": 7,
+      "mae_pct": 0.23917529968832435,
+      "rmse_pct": 0.3049296710375872,
+      "bias_pct": 0.16395029481202558,
+      "max_abs_pct": 0.5649198548847378,
+      "r2_vc_oos": 0.6685951165276909
+    }
+  },
+  "returns30": {
+    "training": {
+      "start": "2026-07-14",
+      "end": "2026-08-24",
+      "n": 30
+    },
+    "r2_train": 0.9508972345744008,
+    "adj_r2_train": 0.9406674917774009,
+    "coefficients": {
+      "intercept": 0.0003554704109698088,
+      "ret_SPY": -0.2504153829205219,
+      "ret_EEM": 0.45098639200277807,
+      "ret_MCHI": -0.1973046244901245,
+      "ret_QQQ": 0.3430070337584321,
+      "ret_SPBLSCUP": 0.22473113965817426
+    },
+    "train_return_mae_pct": 0.21123234064673843,
+    "holdout_metrics": {
+      "n": 7,
+      "mae_pct": 0.21225315958526916,
+      "rmse_pct": 0.2751190316191135,
+      "bias_pct": 0.07974014600314407,
+      "max_abs_pct": 0.5578169819780321,
+      "r2_vc_oos": 0.7307598064414811
+    }
+  },
+  "returns90": {
+    "training": {
+      "start": "2026-04-08",
+      "end": "2026-08-24",
+      "n": 90
+    },
+    "r2_train": 0.9167656847435979,
+    "adj_r2_train": 0.9118112612164311,
+    "coefficients": {
+      "intercept": 0.00018668787363660926,
+      "ret_SPY": -0.04476310548379303,
+      "ret_EEM": 0.29585506012582186,
+      "ret_MCHI": -0.07179602484031535,
+      "ret_QQQ": 0.24765960708145573,
+      "ret_SPBLSCUP": 0.2764083963807225
+    },
+    "train_return_mae_pct": 0.2845203764258324,
+    "holdout_metrics": {
+      "n": 7,
+      "mae_pct": 0.20695034854068142,
+      "rmse_pct": 0.2542571037432542,
+      "bias_pct": 0.009997624342348934,
+      "max_abs_pct": 0.4612069702671029,
+      "r2_vc_oos": 0.7699037509712189
+    }
+  },
+  "rows": [
+    {
+      "fecha": "2026-08-25",
+      "vc_sbs": 33.6190684,
+      "vc_niveles90": 33.754605623952,
+      "error_niveles90_pct": 0.40315579937961754,
+      "vc_retornos30": 33.64969339829626,
+      "error_retornos30_pct": 0.09109413125871768,
+      "vc_retornos90": 33.590034124089755,
+      "error_retornos90_pct": -0.08636252368685593,
+      "retorno_real_pct": 1.02736073437159,
+      "retorno_estimado30_pct": 1.119390730966176,
+      "retorno_estimado90_pct": 0.9401109560271762
+    },
+    {
+      "fecha": "2026-08-26",
+      "vc_sbs": 33.7030493,
+      "vc_niveles90": 33.70239477774707,
+      "error_niveles90_pct": -0.001942026809242936,
+      "vc_retornos30": 33.59313940866,
+      "error_retornos30_pct": -0.32611260293293753,
+      "vc_retornos90": 33.58362976947442,
+      "error_retornos90_pct": -0.35432856375278154,
+      "retorno_real_pct": 0.24980138949954,
+      "retorno_estimado30_pct": -0.07712584724686587,
+      "retorno_estimado90_pct": -0.10541229192888471
+    },
+    {
+      "fecha": "2026-08-27",
+      "vc_sbs": 33.8280192,
+      "vc_niveles90": 33.872343107298654,
+      "error_niveles90_pct": 0.13102720273570068,
+      "vc_retornos30": 33.92680148027015,
+      "error_retornos30_pct": 0.2920131967707684,
+      "vc_retornos90": 33.869500712013725,
+      "error_retornos90_pct": 0.12262471464401514,
+      "retorno_real_pct": 0.37079701272013,
+      "retorno_estimado30_pct": 0.6638929857012918,
+      "retorno_estimado90_pct": 0.49387641614291106
+    },
+    {
+      "fecha": "2026-08-28",
+      "vc_sbs": 33.563826,
+      "vc_niveles90": 33.571686887815744,
+      "error_niveles90_pct": 0.023420714359989603,
+      "vc_retornos30": 33.528373098625764,
+      "error_retornos30_pct": -0.10562830761378095,
+      "vc_retornos90": 33.56464859203212,
+      "error_retornos90_pct": 0.0024508291519564906,
+      "retorno_real_pct": -0.78098926939239,
+      "retorno_estimado30_pct": -0.8857926312582802,
+      "retorno_estimado90_pct": -0.7785575809531233
+    },
+    {
+      "fecha": "2026-08-31",
+      "vc_sbs": 33.584196,
+      "vc_niveles90": 33.496425218314656,
+      "error_niveles90_pct": -0.26134549025780274,
+      "vc_retornos30": 33.57343070788595,
+      "error_retornos30_pct": -0.03205463699071931,
+      "vc_retornos90": 33.50069109733288,
+      "error_retornos90_pct": -0.24864344725452625,
+      "retorno_real_pct": 0.06069033965316,
+      "retorno_estimado30_pct": 0.028616248594388813,
+      "retorno_estimado90_pct": -0.1881040101540081
+    },
+    {
+      "fecha": "2026-09-01",
+      "vc_sbs": 33.2364965,
+      "vc_niveles90": 33.33235587686674,
+      "error_niveles90_pct": 0.2884160093911792,
+      "vc_retornos30": 33.42189532169154,
+      "error_retornos30_pct": 0.5578169819780321,
+      "vc_retornos90": 33.38978553853058,
+      "error_retornos90_pct": 0.4612069702671029,
+      "retorno_real_pct": -1.03530690447375,
+      "retorno_estimado30_pct": -0.48326504022447264,
+      "retorno_estimado90_pct": -0.5788748418137346
+    },
+    {
+      "fecha": "2026-09-02",
+      "vc_sbs": 33.4213366,
+      "vc_niveles90": 33.61014036622126,
+      "error_niveles90_pct": 0.5649198548847378,
+      "vc_retornos30": 33.44842534848675,
+      "error_retornos30_pct": 0.08105225955192807,
+      "vc_retornos90": 33.479167340472436,
+      "error_retornos90_pct": 0.17303539102753174,
+      "retorno_real_pct": 0.55613593328043,
+      "retorno_estimado30_pct": 0.6376389535724674,
+      "retorno_estimado90_pct": 0.7301336362947639
+    }
+  ]
+}
