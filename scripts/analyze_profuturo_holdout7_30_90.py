@@ -16,7 +16,7 @@ N_HOLDOUT = 7
 
 
 def ols(frame: pd.DataFrame, xcols: list[str], ycol: str):
-    d = frame[[ycol, *xcols]].dropna().copy()
+    d = frame[['fecha', ycol, *xcols]].dropna().copy()
     X = d[xcols].to_numpy(float)
     y = d[ycol].to_numpy(float)
     X1 = np.column_stack([np.ones(len(X)), X])
