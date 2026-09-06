@@ -76,18 +76,43 @@ def phase(date: pd.Timestamp, has_actual: bool) -> str:
     return "VALIDACIÓN" if has_actual else "PROYECCIÓN"
 
 
+def metrics(frame: pd.DataFrame, mask: pd.Series, error_col: str) -> dict:
+    e = pd.to_numeric(frame.loc[mask, error_col], errors="coerce").dropna().to_numpy(float)
+    return {
+        "n": int(e.size),
+        "mae_pct": float(np.mean(np.abs(e))) if e.size else None,
+        "rmse_pct": float(np.sqrt(np.mean(e ** 2))) if e.size else None,
+        "bias_pct": float(np.mean(e)) if e.size else None,
+    }
+
+
 def metric_block(frame: pd.DataFrame, mask: pd.Series) -> dict:
-    d = frame.loc[mask]
-    out = {}
-    for key, col in (("niveles", "error_niveles_pct"), ("retornos", "error_retornos_pct")):
-        e = pd.to_numeric(d[col], errors="coerce").dropna().to_numpy(float)
-        out[key] = {
-            "n": int(e.size),
-            "mae_pct": float(np.mean(np.abs(e))) if e.size else None,
-            "rmse_pct": float(np.sqrt(np.mean(e ** 2))) if e.size else None,
-            "bias_pct": float(np.mean(e)) if e.size else None,
-        }
-    return out
+    return {
+        "niveles": metrics(frame, mask, "error_niveles_pct"),
+        "retornos": metrics(frame, mask, "error_retornos_pct"),
+        "niveles_raw": metrics(frame, mask, "error_niveles_raw_pct"),
+    }
+
+
+def chained_vc(df: pd.DataFrame, return_col: str) -> list[float]:
+    values = []
+    previous_estimate = np.nan
+    for i, row in df.iterrows():
+        if i == 0 or not finite(row[return_col]):
+            values.append(np.nan)
+            continue
+        previous_actual = df.iloc[i - 1]["vc_sbs"]
+        if finite(previous_actual):
+            base = float(previous_actual)
+        elif finite(previous_estimate):
+            base = float(previous_estimate)
+        else:
+            base = np.nan
+        value = base * (1.0 + float(row[return_col])) if finite(base) else np.nan
+        values.append(value)
+        if finite(value):
+            previous_estimate = value
+    return values
 
 
 def clean(value):
@@ -142,39 +167,42 @@ def main() -> None:
     for name in FACTORS:
         return_coeff[name] = return_coeff_raw[f"ret_{name}"]
 
-    df["vc_niveles"] = float(level_coeff["intercept"])
+    # 1) Nivel absoluto bruto del OLS. Se conserva para auditoría y diagnóstico.
+    df["vc_niveles_raw"] = float(level_coeff["intercept"])
     level_valid = pd.Series(True, index=df.index)
     for name in FACTORS:
         level_valid &= df[name].notna()
-        df["vc_niveles"] += float(level_coeff[name]) * df[name]
-    df.loc[~level_valid, "vc_niveles"] = np.nan
+        df["vc_niveles_raw"] += float(level_coeff[name]) * df[name]
+    df.loc[~level_valid, "vc_niveles_raw"] = np.nan
 
+    # 2) Variación implícita del modelo de niveles entre dos ruedas consecutivas.
+    # Esta es la magnitud comparable con el modelo de retornos.
+    previous_raw = df["vc_niveles_raw"].shift(1)
+    df["ret_niveles_implicito"] = np.where(
+        df["vc_niveles_raw"].notna() & previous_raw.notna() & previous_raw.ne(0),
+        df["vc_niveles_raw"] / previous_raw - 1.0,
+        np.nan,
+    )
+
+    # 3) VC operativo de niveles: usa la misma regla de base que Retornos.
+    # Si existe SBS del día anterior, ambos modelos arrancan exactamente del mismo VC.
+    # Si SBS aún no fue publicado, cada modelo mantiene su cadena consecutiva propia.
+    df["vc_niveles"] = chained_vc(df, "ret_niveles_implicito")
+
+    # Modelo de retornos explícitos de los cinco factores.
     df["ret_vc_estimado"] = float(return_coeff["intercept"])
     return_valid = pd.Series(True, index=df.index)
     for name in FACTORS:
         return_valid &= df[f"ret_{name}"].notna()
         df["ret_vc_estimado"] += float(return_coeff[name]) * df[f"ret_{name}"]
     df.loc[~return_valid, "ret_vc_estimado"] = np.nan
+    df["vc_retornos"] = chained_vc(df, "ret_vc_estimado")
 
-    estimated = []
-    previous_estimate = np.nan
-    for i, row in df.iterrows():
-        if i == 0 or not finite(row["ret_vc_estimado"]):
-            estimated.append(np.nan)
-            continue
-        previous_actual = df.iloc[i - 1]["vc_sbs"]
-        if finite(previous_actual):
-            base = float(previous_actual)
-        elif finite(previous_estimate):
-            base = float(previous_estimate)
-        else:
-            base = np.nan
-        value = base * (1.0 + float(row["ret_vc_estimado"])) if finite(base) else np.nan
-        estimated.append(value)
-        if finite(value):
-            previous_estimate = value
-    df["vc_retornos"] = estimated
-
+    df["error_niveles_raw_pct"] = np.where(
+        df["vc_sbs"].notna() & df["vc_niveles_raw"].notna(),
+        (df["vc_niveles_raw"] / df["vc_sbs"] - 1.0) * 100.0,
+        np.nan,
+    )
     df["error_niveles_pct"] = np.where(
         df["vc_sbs"].notna() & df["vc_niveles"].notna(),
         (df["vc_niveles"] / df["vc_sbs"] - 1.0) * 100.0,
@@ -196,13 +224,15 @@ def main() -> None:
         **level_fit,
         "coefficients": level_coeff,
         "equation": equation(level_coeff, "VC"),
-        "target": "nivel del valor cuota Hábitat Fondo 3",
+        "target": "nivel absoluto bruto del valor cuota Hábitat Fondo 3",
+        "operational_rule": "El VC mostrado se ancla al VC de la rueda anterior usando la variación implícita entre dos niveles OLS consecutivos.",
     }
     return_model = {
         **return_fit,
         "coefficients": return_coeff,
         "equation": equation(return_coeff, "r"),
         "target": "retorno diario del valor cuota Hábitat Fondo 3",
+        "operational_rule": "El retorno estimado se aplica al VC de la rueda anterior.",
     }
 
     rows = []
@@ -212,7 +242,7 @@ def main() -> None:
     payload = {
         "fund": "HÁBITAT Fondo 3",
         "generated_at_lima": datetime.now(LIMA).isoformat(),
-        "model_version": "habitat-fixed-levels-returns-v1",
+        "model_version": "habitat-fixed-levels-returns-v2-anchored",
         "history_start": HISTORY_START.date().isoformat(),
         "training": {
             "start": TRAIN_START.date().isoformat(),
@@ -235,11 +265,12 @@ def main() -> None:
             "training": training_metrics,
             "validation": validation_metrics,
         },
+        "comparison_rule": "Ambos VC operativos parten del VC de la rueda anterior; Niveles usa la variación implícita del OLS en niveles y Retornos usa la regresión explícita de retornos.",
         "anti_stale_rules": [
             "Una fecha aparece una sola vez; cualquier duplicado se resuelve antes del cálculo.",
             "Los cinco factores deben pertenecer a la misma rueda de mercado para estimar el nivel.",
             "No se copia un precio o cierre antiguo a una fecha nueva.",
-            "El modelo de retornos usa como base el VC SBS de la rueda anterior cuando existe; en su defecto, el último VC estimado consecutivo.",
+            "Niveles y Retornos usan el VC SBS de la rueda anterior cuando existe; si aún no existe SBS, cada modelo encadena solo desde su estimación consecutiva anterior.",
         ],
         "rows": rows,
     }
@@ -255,6 +286,13 @@ def main() -> None:
         "training": payload["training"],
         "latest": payload["latest"],
         "validation": payload["metrics"]["validation"],
+        "latest_operational": {
+            "niveles": clean(df.iloc[-1]["vc_niveles"]),
+            "niveles_raw": clean(df.iloc[-1]["vc_niveles_raw"]),
+            "retornos": clean(df.iloc[-1]["vc_retornos"]),
+            "ret_niveles": clean(df.iloc[-1]["ret_niveles_implicito"]),
+            "ret_retornos": clean(df.iloc[-1]["ret_vc_estimado"]),
+        },
     }, ensure_ascii=False))
 
 
