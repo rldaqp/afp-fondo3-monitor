@@ -20,6 +20,7 @@ BACKTEST = ROOT / "analysis" / "backtest_blind3_rolling30_resid_newtickers.json"
 ALT_BASE = ANALYSIS / "googlefinance_alt_6030_returns_20260303_20260820.csv"
 ALT_LIVE = ANALYSIS / "googlefinance_alt_rolling30_live_returns.csv"
 SHADOW = DATA / "dual_rolling30_shadow.csv"
+QQQ_CACHE = ROOT / "data" / "fixed_models" / "yahoo_levels_2026.csv"
 
 TRAIN = 30
 THRESHOLD = 0.001
@@ -76,14 +77,32 @@ def extract_close(raw: pd.DataFrame, ticker: str) -> pd.Series:
 
 
 def load_qqq_daily(start: pd.Timestamp, end: pd.Timestamp) -> pd.DataFrame:
-    raw = yf.download("QQQ", start=(start-pd.Timedelta(days=15)).strftime("%Y-%m-%d"), end=(end+pd.Timedelta(days=3)).strftime("%Y-%m-%d"), auto_adjust=False, actions=False, progress=False, threads=False)
-    s = extract_close(raw, "QQQ")
-    if s.empty:
-        raise RuntimeError("No se pudo obtener QQQ diario")
-    idx = pd.to_datetime(s.index)
-    if getattr(idx, "tz", None) is not None:
-        idx = idx.tz_localize(None)
-    q = pd.DataFrame({"fecha": idx.normalize(), "QQQ": s.to_numpy(float)})
+    frames: list[pd.DataFrame] = []
+    if QQQ_CACHE.exists() and QQQ_CACHE.stat().st_size > 0:
+        cached = read_csv(QQQ_CACHE)
+        cached["QQQ"] = pd.to_numeric(cached.get("QQQ"), errors="coerce")
+        cached = cached.dropna(subset=["QQQ"])[["fecha", "QQQ"]]
+        if not cached.empty:
+            frames.append(cached)
+
+    try:
+        raw = yf.download("QQQ", start=(start-pd.Timedelta(days=15)).strftime("%Y-%m-%d"), end=(end+pd.Timedelta(days=3)).strftime("%Y-%m-%d"), auto_adjust=False, actions=False, progress=False, threads=False)
+        s = extract_close(raw, "QQQ")
+        if not s.empty:
+            idx = pd.to_datetime(s.index)
+            if getattr(idx, "tz", None) is not None:
+                idx = idx.tz_localize(None)
+            frames.append(pd.DataFrame({"fecha": idx.normalize(), "QQQ": s.to_numpy(float)}))
+        else:
+            print("QQQ Yahoo no disponible; se usa el cache validado de modelos fijos.")
+    except Exception as exc:
+        print(f"QQQ Yahoo no disponible ({type(exc).__name__}: {exc}); se usa el cache validado.")
+
+    if not frames:
+        raise RuntimeError("No se pudo obtener QQQ diario ni existe un cache validado")
+
+    q = pd.concat(frames, ignore_index=True)
+    q = q.loc[q["fecha"].between(start - pd.Timedelta(days=15), end + pd.Timedelta(days=3))]
     q = q.sort_values("fecha").drop_duplicates("fecha", keep="last")
     q["ret_QQQ"] = q["QQQ"].pct_change(fill_method=None)
     return q.reset_index(drop=True)
@@ -233,7 +252,8 @@ def forward_chain(common: pd.DataFrame, factors: pd.DataFrame, features: list[st
             fallback_used.append(d.date().isoformat())
     if not rows and anchor_date==signal_date:
         hist=one_step_history(common,features,1)
-        if hist: rows=[{**hist[-1],"actual_vc":float(latest["valor_cuota"]),"chain_source":"HISTÓRICO ONE-STEP"}]
+        if hist and pd.Timestamp(hist[-1]["fecha"]).normalize()==signal_date:
+            rows=[{**hist[-1],"actual_vc":float(latest["valor_cuota"]),"chain_source":"HISTÓRICO ONE-STEP"}]
     if not rows:
         rows=[{"fecha":signal_date.date().isoformat(),"base_vc":float(latest["valor_cuota"]),"vc_estimated":float(latest["valor_cuota"]),"return_estimated":0.0,"signal":"NEUTRO","actual_vc":float(latest["valor_cuota"]),"chain_source":"ANCLA SBS"}]
     meta={"anchor_date":anchor_date.date().isoformat(),"anchor_vc":float(latest["valor_cuota"]),"train_start":pd.Timestamp(train.iloc[0]["fecha"]).date().isoformat(),"train_end":pd.Timestamp(train.iloc[-1]["fecha"]).date().isoformat(),"train_n":len(train),"coefficients":coeff,"blind_chain_sessions":len(rows),"fallback_frozen_sessions":fallback_used}

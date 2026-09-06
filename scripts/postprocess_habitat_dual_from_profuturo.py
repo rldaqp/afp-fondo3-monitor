@@ -14,6 +14,28 @@ HAB_RUNTIME = HAB_DATA / "dual_trade_runtime_v1.js"
 HABITAT_APPS_SCRIPT = "https://script.google.com/macros/s/AKfycbxoYHkCu0cZPx_KsMlI0Jd5PEATgxBjZTR8oK8qs1cUjRHJbiK0t-bxkH5ACprgp81S7g/exec"
 
 
+def current_habitat_dual_is_valid() -> bool:
+    if not HAB_HTML.exists() or not HAB_RUNTIME.exists():
+        return False
+    html = HAB_HTML.read_text(encoding="utf-8")
+    runtime = HAB_RUNTIME.read_text(encoding="utf-8")
+    html_tokens = (
+        "Hábitat Fondo 3",
+        "Modelo A · Rolling 30 + QQQ",
+        "Modelo B · Rolling 30 + nuevos tickers",
+        "data/dual_rolling30_monitor.json",
+        "data/dual_trade_runtime_v1.js",
+    )
+    runtime_tokens = (
+        "const FUND='HABITAT';",
+        "habitat_fondo3_trade_history_v3",
+        HABITAT_APPS_SCRIPT,
+    )
+    return all(token in html for token in html_tokens) and all(
+        token in runtime for token in runtime_tokens
+    )
+
+
 def build_html() -> str:
     html = PROF_HTML.read_text(encoding="utf-8")
     # La UI se clona deliberadamente del visor Profuturo para garantizar la
@@ -51,11 +73,14 @@ def build_runtime() -> str:
 
 
 def main() -> None:
-    HAB_DATA.mkdir(parents=True, exist_ok=True)
-    html = build_html()
-    runtime = build_runtime()
-    HAB_HTML.write_text(html, encoding="utf-8")
-    HAB_RUNTIME.write_text(runtime, encoding="utf-8")
+    if current_habitat_dual_is_valid():
+        print("Interfaz y runtime duales de Hábitat conservados; se actualizaron solo sus datos.")
+    else:
+        HAB_DATA.mkdir(parents=True, exist_ok=True)
+        html = build_html()
+        runtime = build_runtime()
+        HAB_HTML.write_text(html, encoding="utf-8")
+        HAB_RUNTIME.write_text(runtime, encoding="utf-8")
 
     final = HAB_HTML.read_text(encoding="utf-8")
     assert "Hábitat Fondo 3" in final

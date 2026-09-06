@@ -126,14 +126,32 @@ def main() -> None:
     if insights["challenger_huber"]["status"] != "NO APLICA EN HÁBITAT":
         raise AssertionError("Se activó un modelo distinto de OLS.")
 
-    required_html = [
-        "Hábitat Fondo 3",
-        "VC real vs VC estimado",
-        "Indicadores oficiales SBS del Fondo 3",
-        "HABITAT_CHART_OFFICIAL_VS_OLS_V6",
-        "VC SBS real (oficial)",
-        "VC estimado OLS",
-    ]
+    dual_ui = all(
+        marker in html
+        for marker in (
+            "Modelo A · Rolling 30 + QQQ",
+            "Modelo B · Rolling 30 + nuevos tickers",
+            "data/dual_rolling30_monitor.json",
+        )
+    )
+    required_html = (
+        [
+            "Hábitat Fondo 3",
+            "Modelo A · Rolling 30 + QQQ",
+            "Modelo B · Rolling 30 + nuevos tickers",
+            "VC estimado diario vs VC real SBS",
+            "data/dual_rolling30_monitor.json",
+        ]
+        if dual_ui
+        else [
+            "Hábitat Fondo 3",
+            "VC real vs VC estimado",
+            "Indicadores oficiales SBS del Fondo 3",
+            "HABITAT_CHART_OFFICIAL_VS_OLS_V6",
+            "VC SBS real (oficial)",
+            "VC estimado OLS",
+        ]
+    )
     for marker in required_html:
         if marker not in html:
             raise AssertionError(f"El visor no contiene: {marker}")

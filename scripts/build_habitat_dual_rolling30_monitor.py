@@ -85,7 +85,7 @@ def main() -> None:
     if not PROF_DUAL.exists():
         raise RuntimeError("Falta el monitor dual de Profuturo que provee el snapshot común de mercado")
     prof = json.loads(PROF_DUAL.read_text(encoding="utf-8"))
-    signal_date = pd.Timestamp(str(prof["signal_date"])).normalize()
+    prof_signal_date = pd.Timestamp(str(prof["signal_date"])).normalize()
     market_mode = prof.get("market_mode")
     market_open = bool(prof.get("market_open"))
 
@@ -93,6 +93,12 @@ def main() -> None:
     latest_sbs = sbs.iloc[-1]
     if not base.finite(latest_sbs["valor_cuota"]):
         raise RuntimeError("El último VC SBS de Hábitat no es numérico")
+    latest_sbs_date = pd.Timestamp(latest_sbs["fecha"]).normalize()
+    signal_date = max(prof_signal_date, latest_sbs_date)
+    market_snapshot_is_current = prof_signal_date >= signal_date
+    if not market_snapshot_is_current:
+        market_mode = "ÚLTIMO SBS OFICIAL · SNAPSHOT DE MERCADO DUAL PENDIENTE"
+        market_open = False
 
     # El shadow es independiente por AFP. Las funciones/método son exactamente
     # los mismos del monitor Profuturo; solo cambia el target SBS de Hábitat.
@@ -113,8 +119,12 @@ def main() -> None:
         "ret_USD_PEN": "USD/PEN",
         "ret_QQQ": "QQQ",
     }
-    qlive, qassets = asset_returns(prof["models"]["qqq"], QQQ_FEATURES, qmap)
-    qf_live = base.extend_with_live(qf, signal_date, qlive, QQQ_FEATURES)
+    if market_snapshot_is_current:
+        qlive, qassets = asset_returns(prof["models"]["qqq"], QQQ_FEATURES, qmap)
+        qf_live = base.extend_with_live(qf, signal_date, qlive, QQQ_FEATURES)
+    else:
+        qassets = [dict(x) for x in prof["models"]["qqq"].get("intraday_assets", [])]
+        qf_live = qf
     qcommon = base.build_common(sbs, qf, QQQ_FEATURES)
 
     nf = base.load_new_factors()
@@ -126,8 +136,12 @@ def main() -> None:
         "ret_SPBLSCUP": "SPBLSCUP",
         "ret_USD_PEN_alt": "USD/PEN",
     }
-    nlive, nassets = asset_returns(prof["models"]["new_tickers"], NEW_FEATURES, nmap)
-    nf_live = base.extend_with_live(nf, signal_date, nlive, NEW_FEATURES)
+    if market_snapshot_is_current:
+        nlive, nassets = asset_returns(prof["models"]["new_tickers"], NEW_FEATURES, nmap)
+        nf_live = base.extend_with_live(nf, signal_date, nlive, NEW_FEATURES)
+    else:
+        nassets = [dict(x) for x in prof["models"]["new_tickers"].get("intraday_assets", [])]
+        nf_live = nf
     ncommon = base.build_common(sbs, nf, NEW_FEATURES)
 
     if len(qcommon) < TRAIN or len(ncommon) < TRAIN:
@@ -154,7 +168,7 @@ def main() -> None:
         "market_mode": market_mode,
         "market_open": market_open,
         "latest_sbs": {
-            "fecha": pd.Timestamp(latest_sbs["fecha"]).date().isoformat(),
+            "fecha": latest_sbs_date.date().isoformat(),
             "vc": float(latest_sbs["valor_cuota"]),
         },
         "rule": "Dos modelos OLS Rolling 30 con exactamente las mismas canastas y reglas de Profuturo, recalibrados exclusivamente contra los VC SBS de Hábitat Fondo 3. Si SBS está atrasada, se encadenan los días faltantes; al publicarse un VC real, ambos modelos vuelven a anclarse automáticamente a Hábitat.",

@@ -16,6 +16,7 @@ on:
       - "scripts/build_habitat_qqq_incremental_challenger.py"
       - "scripts/postprocess_habitat_qqq_incremental_ui.py"
       - "scripts/postprocess_habitat_weight_charts.py"
+      - "scripts/build_dual_rolling30_monitor.py"
       - "scripts/build_habitat_dual_rolling30_monitor.py"
       - "scripts/postprocess_habitat_dual_from_profuturo.py"
       - "scripts/build_qqq_incremental_challenger.py"
@@ -76,11 +77,6 @@ jobs:
         run: |
           python scripts/run_habitat_exact_pipeline_stable_ui.py
           python scripts/update_habitat_live_market.py
-          python scripts/build_habitat_qqq_incremental_challenger.py
-          python scripts/postprocess_live_consistency.py
-          python scripts/postprocess_trade_runtime_fixes.py habitat
-          python scripts/postprocess_habitat_qqq_incremental_ui.py
-          python scripts/postprocess_habitat_weight_charts.py
 
       - name: Validar base y fuentes de Hábitat antes de migrar UI
         run: |
@@ -159,21 +155,24 @@ jobs:
             fi
           fi
 
-      - name: Actualizar rama y preservar operaciones Profuturo
+      - name: Actualizar rama y comprobar runtimes de operaciones
         run: |
           git fetch origin migracion-github-actions
           git reset --hard origin/migracion-github-actions
-          python scripts/ensure_dual_trade_runtime.py
+          node --check public/data/fixed_trade_runtime_v1.js
+          node --check public/habitat/data/dual_trade_runtime_v1.js
+          node --check public/habitat/data/cross_afp_operation_v3.js
 
-      - name: Verificar ambos visores duales antes de publicar
+      - name: Verificar ambos visores vigentes antes de publicar
         run: |
           test -s public/index.html
-          test -s public/data/dual_rolling30_monitor.json
-          test -s public/data/dual_trade_runtime_v1.js
-          grep -q "Dos modelos Rolling 30" public/index.html
-          grep -q "dual_rolling30_monitor.json" public/index.html
-          grep -q "Conectar Drive" public/data/dual_trade_runtime_v1.js
-          ! grep -q "OLS OFICIAL · ROLLING 90" public/index.html
+          test -s public/data/fixed_models_2026.json
+          test -s public/data/fixed_models_intraday.json
+          test -s public/data/fixed_trade_runtime_v1.js
+          grep -q "Modelo de niveles" public/index.html
+          grep -q "Modelo de retornos" public/index.html
+          grep -q "fixed_models_2026.json" public/index.html
+          grep -q "Conectar Drive" public/data/fixed_trade_runtime_v1.js
           test -s public/habitat/index.html
           test -s public/habitat/data/dual_rolling30_monitor.json
           test -s public/habitat/data/dual_trade_runtime_v1.js
