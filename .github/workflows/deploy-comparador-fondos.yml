@@ -42,9 +42,10 @@ jobs:
           test -s public/habitat/data/series.json
           test -s public/data/fixed_models_2026.json
           test -s public/habitat/data/fixed_models_2026.json
-          grep -q 'comparator_runtime_v6.js?rev=CMPV6-20260906-1' public/comparador-fondos/index.html
+          grep -q 'comparator_runtime_v6.js?rev=CMPV6-20260906-' public/comparador-fondos/index.html
           grep -q 'Niveles · modelo vigente' public/comparador-fondos/comparator_runtime_v6.js
           grep -q 'Retornos · modelo vigente' public/comparador-fondos/comparator_runtime_v6.js
+          grep -q 'SBS oficial si existe; modelo solo si está pendiente' public/comparador-fondos/comparator_runtime_v6.js
           ! grep -q 'Modelo A · Rolling 30' public/comparador-fondos/index.html
           ! grep -q 'Modelo B · Rolling 30' public/comparador-fondos/index.html
           grep -q 'fixed_models_2026.json' public/comparador-fondos/comparator_runtime_v6.js
