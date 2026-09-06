@@ -6,12 +6,16 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE = ROOT / "public" / "data" / "fixed_trade_runtime_v1.js"
 OUT = ROOT / "public" / "habitat" / "data" / "fixed_trade_runtime_v1.js"
+INDEX = ROOT / "public" / "habitat" / "index.html"
 HABITAT_DRIVE_URL = "https://script.google.com/macros/s/AKfycbxoYHkCu0cZPx_KsMlI0Jd5PEATgxBjZTR8oK8qs1cUjRHJbiK0t-bxkH5ACprgp81S7g/exec"
+SCRIPT_TAG = '<script src="data/fixed_trade_runtime_v1.js?rev=HABITAT-FIXED-20260905"></script>'
 
 
 def main() -> None:
     if not SOURCE.exists():
         raise RuntimeError(f"Falta runtime Profuturo de referencia: {SOURCE}")
+    if not INDEX.exists():
+        raise RuntimeError(f"Falta visor Hábitat: {INDEX}")
 
     text = SOURCE.read_text(encoding="utf-8")
     # Mantenemos exactamente la misma lógica operativa del visor Profuturo y
@@ -49,6 +53,14 @@ def main() -> None:
 
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_text(text, encoding="utf-8")
+
+    html = INDEX.read_text(encoding="utf-8")
+    if SCRIPT_TAG not in html:
+        if "</body>" not in html:
+            raise RuntimeError("No se encontró </body> para inyectar runtime Hábitat")
+        html = html.replace("</body>", f"{SCRIPT_TAG}\n</body>", 1)
+        INDEX.write_text(html, encoding="utf-8")
+
     print("Runtime de operaciones Hábitat instalado desde la lógica Profuturo:", OUT)
 
 
