@@ -42,8 +42,8 @@ permissions:
   id-token: write
 
 concurrency:
-  group: fondo3-data-writes
-  cancel-in-progress: false
+  group: habitat-fondo3-data-writes-v2
+  cancel-in-progress: true
 
 jobs:
   build:
