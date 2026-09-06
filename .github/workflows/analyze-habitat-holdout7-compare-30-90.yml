@@ -1,0 +1,38 @@
+name: Analyze Habitat holdout7 compare 30 90
+
+on:
+  push:
+    branches: [migracion-github-actions]
+    paths:
+      - 'scripts/analyze_habitat_holdout7_compare_30_90.py'
+      - '.github/workflows/analyze-habitat-holdout7-compare-30-90.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: migracion-github-actions
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install dependencies
+        run: python -m pip install --upgrade pip pandas numpy
+      - name: Run Habitat 7-day holdout comparison
+        run: python scripts/analyze_habitat_holdout7_compare_30_90.py
+      - name: Commit diagnostic results
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add analysis/habitat_holdout7_compare_30_90.json public/habitat/data/holdout7_compare_30_90.json
+          if git diff --cached --quiet; then
+            echo 'No changes to commit'
+          else
+            git commit -m 'Update Habitat 7-day holdout 30 vs 90 diagnostic'
+            git push origin HEAD:migracion-github-actions
+          fi
