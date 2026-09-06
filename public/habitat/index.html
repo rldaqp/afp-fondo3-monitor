@@ -151,5 +151,6 @@ function bind(){document.querySelectorAll('[data-range] button').forEach(b=>b.ad
 async function main(){try{[DB,LIVE]=await Promise.all([fetchJson(BASE_URL),fetchJson(LIVE_URL,true)]);if(DB?.fund!=='HÁBITAT Fondo 3')throw new Error('La base cargada no corresponde a Hábitat Fondo 3');renderTop();renderFactors();renderValidation();renderCharts();renderMethod();bind()}catch(e){const el=$('loadError');el.style.display='block';el.textContent=`No se pudo cargar el visor Hábitat: ${e.message}`;console.error(e)}}
 main();
 </script>
+<script src="data/fixed_trade_runtime_v1.js?rev=HABITAT-FIXED-20260905"></script>
 </body>
 </html>
