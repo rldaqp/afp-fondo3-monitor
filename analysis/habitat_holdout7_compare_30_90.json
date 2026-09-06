@@ -1,0 +1,187 @@
+{
+  "fund": "HÁBITAT Fondo 3",
+  "logic": "Mismo holdout de 7 últimas fechas SBS; Niveles 30 y Retornos 30 usan 30 observaciones previas; Niveles 90 usa 90 observaciones previas. Ningún modelo usa las 7 fechas de validación para estimar coeficientes.",
+  "holdout": {
+    "start": "2026-08-25",
+    "end": "2026-09-02",
+    "n": 7
+  },
+  "levels30": {
+    "training": {
+      "start": "2026-07-14",
+      "end": "2026-08-24",
+      "n": 30
+    },
+    "r2_train": 0.9711701656668033,
+    "adj_r2_train": 0.9651639501807205,
+    "coefficients": {
+      "intercept": 3.5366854106109398,
+      "SPY": 0.01748071583983472,
+      "EEM": 0.2314102136840348,
+      "MCHI": -0.17793975902328235,
+      "QQQ": 0.0015727262495545923,
+      "SPBLSCUP": 0.021574069105784924
+    },
+    "train_metrics": {
+      "n": 30,
+      "mae_pct": 0.26995987119113657,
+      "rmse_pct": 0.3306508756775135,
+      "bias_pct": 0.001098907404123069,
+      "max_abs_pct": 0.6169459463395754,
+      "r2_vc_oos": 0.9711701656668033
+    },
+    "holdout_metrics": {
+      "n": 7,
+      "mae_pct": 0.37514864158033306,
+      "rmse_pct": 0.4430201371509043,
+      "bias_pct": 0.36100355412965746,
+      "max_abs_pct": 0.7796332115275195,
+      "r2_vc_oos": 0.2987717097903021
+    }
+  },
+  "levels90": {
+    "training": {
+      "start": "2026-04-08",
+      "end": "2026-08-24",
+      "n": 90
+    },
+    "r2_train": 0.9786463140497912,
+    "adj_r2_train": 0.9773752613146597,
+    "coefficients": {
+      "intercept": 5.9149458385726605,
+      "SPY": 0.009638037272382771,
+      "EEM": 0.2499235340418412,
+      "MCHI": -0.10598322287868225,
+      "QQQ": 0.0008095188071174497,
+      "SPBLSCUP": 0.019211218790480176
+    },
+    "train_metrics": {
+      "n": 90,
+      "mae_pct": 0.4229273143706526,
+      "rmse_pct": 0.508284833563226,
+      "bias_pct": 0.002502516316127417,
+      "max_abs_pct": 1.1618582567340052,
+      "r2_vc_oos": 0.9786463140497912
+    },
+    "holdout_metrics": {
+      "n": 7,
+      "mae_pct": 0.23917529968832435,
+      "rmse_pct": 0.3049296710375872,
+      "bias_pct": 0.16395029481202558,
+      "max_abs_pct": 0.5649198548847378,
+      "r2_vc_oos": 0.6685951165276909
+    }
+  },
+  "returns30": {
+    "training": {
+      "start": "2026-07-14",
+      "end": "2026-08-24",
+      "n": 30
+    },
+    "r2_train": 0.9508972345744008,
+    "adj_r2_train": 0.9406674917774009,
+    "coefficients": {
+      "intercept": 0.0003554704109698088,
+      "ret_SPY": -0.2504153829205219,
+      "ret_EEM": 0.45098639200277807,
+      "ret_MCHI": -0.1973046244901245,
+      "ret_QQQ": 0.3430070337584321,
+      "ret_SPBLSCUP": 0.22473113965817426
+    },
+    "train_return_mae_pct": 0.21123234064673843,
+    "holdout_metrics": {
+      "n": 7,
+      "mae_pct": 0.21225315958526916,
+      "rmse_pct": 0.2751190316191135,
+      "bias_pct": 0.07974014600314407,
+      "max_abs_pct": 0.5578169819780321,
+      "r2_vc_oos": 0.7307598064414811
+    }
+  },
+  "rows": [
+    {
+      "fecha": "2026-08-25",
+      "vc_sbs": 33.6190684,
+      "vc_niveles30": 33.81100968245167,
+      "error_niveles30_pct": 0.5709298073579783,
+      "vc_niveles90": 33.754605623952,
+      "error_niveles90_pct": 0.40315579937961754,
+      "vc_retornos30": 33.64969339829626,
+      "error_retornos30_pct": 0.09109413125871768,
+      "retorno_real_pct": 1.02736073437159,
+      "retorno_estimado30_pct": 1.119390730966176
+    },
+    {
+      "fecha": "2026-08-26",
+      "vc_sbs": 33.7030493,
+      "vc_niveles30": 33.75905938731316,
+      "error_niveles30_pct": 0.16618700229344974,
+      "vc_niveles90": 33.70239477774707,
+      "error_niveles90_pct": -0.001942026809242936,
+      "vc_retornos30": 33.59313940866,
+      "error_retornos30_pct": -0.32611260293293753,
+      "retorno_real_pct": 0.24980138949954,
+      "retorno_estimado30_pct": -0.07712584724686587
+    },
+    {
+      "fecha": "2026-08-27",
+      "vc_sbs": 33.8280192,
+      "vc_niveles30": 33.9799062584998,
+      "error_niveles30_pct": 0.44899778967786297,
+      "vc_niveles90": 33.872343107298654,
+      "error_niveles90_pct": 0.13102720273570068,
+      "vc_retornos30": 33.92680148027015,
+      "error_retornos30_pct": 0.2920131967707684,
+      "retorno_real_pct": 0.37079701272013,
+      "retorno_estimado30_pct": 0.6638929857012918
+    },
+    {
+      "fecha": "2026-08-28",
+      "vc_sbs": 33.563826,
+      "vc_niveles30": 33.631219989165295,
+      "error_niveles30_pct": 0.20079352444890564,
+      "vc_niveles90": 33.571686887815744,
+      "error_niveles90_pct": 0.023420714359989603,
+      "vc_retornos30": 33.528373098625764,
+      "error_retornos30_pct": -0.10562830761378095,
+      "retorno_real_pct": -0.78098926939239,
+      "retorno_estimado30_pct": -0.8857926312582802
+    },
+    {
+      "fecha": "2026-08-31",
+      "vc_sbs": 33.584196,
+      "vc_niveles30": 33.567569201371676,
+      "error_niveles30_pct": -0.0495078060773646,
+      "vc_niveles90": 33.496425218314656,
+      "error_niveles90_pct": -0.26134549025780274,
+      "vc_retornos30": 33.57343070788595,
+      "error_retornos30_pct": -0.03205463699071931,
+      "retorno_real_pct": 0.06069033965316,
+      "retorno_estimado30_pct": 0.028616248594388813
+    },
+    {
+      "fecha": "2026-09-01",
+      "vc_sbs": 33.2364965,
+      "vc_niveles30": 33.372763260586446,
+      "error_niveles30_pct": 0.40999134967925066,
+      "vc_niveles90": 33.33235587686674,
+      "error_niveles90_pct": 0.2884160093911792,
+      "vc_retornos30": 33.42189532169154,
+      "error_retornos30_pct": 0.5578169819780321,
+      "retorno_real_pct": -1.03530690447375,
+      "retorno_estimado30_pct": -0.48326504022447264
+    },
+    {
+      "fecha": "2026-09-02",
+      "vc_sbs": 33.4213366,
+      "vc_niveles30": 33.68190043987,
+      "error_niveles30_pct": 0.7796332115275195,
+      "vc_niveles90": 33.61014036622126,
+      "error_niveles90_pct": 0.5649198548847378,
+      "vc_retornos30": 33.44842534848675,
+      "error_retornos30_pct": 0.08105225955192807,
+      "retorno_real_pct": 0.55613593328043,
+      "retorno_estimado30_pct": 0.6376389535724674
+    }
+  ]
+}
