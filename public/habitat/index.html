@@ -7,21 +7,23 @@
 <title>Hábitat Fondo 3 · Niveles vs Retornos</title>
 <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
 <style>
-:root{color-scheme:dark;--bg:#07111f;--card:#0f1b2d;--inner:#0b1728;--line:#26364a;--text:#f8fafc;--muted:#9aa9bd;--blue:#38bdf8;--orange:#fb923c;--green:#4ade80;--red:#f87171;--yellow:#fbbf24;--active:#2563eb}*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}.wrap{max-width:1180px;margin:auto;padding:14px}h1{margin:0;font-size:1.5rem}h2{font-size:1.03rem;margin:0}h3{font-size:.88rem;margin:0}.sub,.small{color:var(--muted);font-size:.74rem;line-height:1.45}.topgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:12px 0}.card,.model,.chartbox,.validation,.method{border:1px solid var(--line);background:var(--card);border-radius:12px}.card{padding:11px}.label{font-size:.68rem;color:var(--muted)}.value{font-size:1.08rem;font-weight:900;margin-top:4px}.signal{font-size:.82rem;font-weight:900;margin-top:3px}.up{color:var(--green)}.down{color:var(--red)}.flat{color:var(--yellow)}.globaldock{position:sticky;top:0;z-index:100;background:rgba(7,17,31,.985);border:1px solid #3a506b;border-radius:11px;padding:7px 8px;margin:8px 0 12px;box-shadow:0 8px 22px rgba(0,0,0,.34);backdrop-filter:blur(8px)}.docktitle{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:5px}.docktitle b{font-size:.78rem}.tickerbar{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:5px}.tickerchip{background:#101e32;border:1px solid #2a3e58;border-radius:8px;padding:6px;min-width:0}.tickerchip.stale{border-color:#854d0e}.tickerchip .sym{font-size:.7rem;font-weight:900}.tickerchip .line{display:flex;justify-content:space-between;gap:4px;align-items:baseline;margin-top:2px}.tickerchip .price{font-size:.78rem;font-weight:850}.tickerchip .ret{font-size:.68rem;font-weight:900}.tickerchip .src{font-size:.54rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}.validation{padding:9px 10px;margin:8px 0 12px;background:#0a1625}.validationgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:6px}.validationgrid div{background:#0c1a2b;border:1px solid var(--line);border-radius:8px;padding:7px}.validationgrid span{display:block;font-size:.62rem;color:var(--muted)}.validationgrid b{font-size:.82rem}.model{padding:11px;margin:13px 0}.modelhead{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;margin-bottom:7px}.modelmeta{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}.mini{background:var(--inner);border:1px solid var(--line);border-radius:8px;padding:7px}.mini span{font-size:.62rem;color:var(--muted)}.mini b{display:block;margin-top:2px;font-size:.85rem}.charts{display:grid;grid-template-columns:1fr;gap:8px}.chartbox{padding:8px;background:var(--inner)}.charttop{display:flex;justify-content:space-between;gap:8px;align-items:flex-start;flex-wrap:wrap}.controls{display:flex;gap:4px;flex-wrap:wrap}.controls button{border:1px solid #35465d;background:#132238;color:#fff;border-radius:8px;padding:6px 9px;font-weight:800;font-size:.72rem;cursor:pointer}.controls button.active{background:var(--active)}.chart{height:310px}.legendnote{font-size:.62rem;color:var(--muted);line-height:1.4;margin-top:3px}.method{padding:11px;margin:13px 0;background:#0a1625}.equation{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.68rem;line-height:1.55;word-break:break-word;background:#07111f;border:1px solid var(--line);border-radius:8px;padding:8px;margin-top:5px}.error{display:none;background:#451a1a;border:1px solid #7f1d1d;padding:10px;border-radius:9px;margin:10px 0}.footer{font-size:.66rem;color:var(--muted);padding:8px 2px 18px}.statuspill{display:inline-block;border-radius:999px;padding:3px 7px;font-size:.62rem;font-weight:900;background:#172554;color:#bfdbfe}.warn{background:#713f12;color:#fde68a}.ok{background:#14532d;color:#bbf7d0}@media(max-width:900px){.topgrid,.modelmeta,.validationgrid{grid-template-columns:repeat(2,1fr)}.tickerbar{grid-template-columns:repeat(3,1fr)}.chart{height:285px}}@media(max-width:620px){.wrap{padding:8px}.globaldock{top:0;margin-left:-8px;margin-right:-8px;border-radius:0}.tickerbar{display:flex;overflow-x:auto}.tickerchip{min-width:130px}.chart{height:270px}.modelhead{display:block}.topgrid{grid-template-columns:repeat(2,1fr)}}
+:root{color-scheme:dark;--bg:#07111f;--card:#0f1b2d;--inner:#0b1728;--line:#26364a;--text:#f8fafc;--muted:#9aa9bd;--blue:#38bdf8;--orange:#fb923c;--green:#4ade80;--red:#f87171;--yellow:#fbbf24;--active:#2563eb}*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}.wrap{max-width:1180px;margin:auto;padding:14px}h1{margin:0;font-size:1.5rem}h2{font-size:1.03rem;margin:0}h3{font-size:.88rem;margin:0}.sub,.small{color:var(--muted);font-size:.74rem;line-height:1.45}.topgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:12px 0}.card,.model,.chartbox,.validation,.method{border:1px solid var(--line);background:var(--card);border-radius:12px}.card{padding:11px}.label{font-size:.68rem;color:var(--muted)}.value{font-size:1.08rem;font-weight:900;margin-top:4px}.signal{font-size:.82rem;font-weight:900;margin-top:3px}.up{color:var(--green)}.down{color:var(--red)}.flat{color:var(--yellow)}.globaldock{position:sticky;top:0;z-index:100;background:rgba(7,17,31,.985);border:1px solid #3a506b;border-radius:11px;padding:7px 8px;margin:8px 0 12px;box-shadow:0 8px 22px rgba(0,0,0,.34);backdrop-filter:blur(8px)}.docktitle{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:5px}.docktitle b{font-size:.78rem}.tickerbar{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:5px}.tickerchip{background:#101e32;border:1px solid #2a3e58;border-radius:8px;padding:6px;min-width:0}.tickerchip.stale{border-color:#854d0e}.tickerchip .sym{font-size:.7rem;font-weight:900}.tickerchip .line{display:flex;justify-content:space-between;gap:4px;align-items:baseline;margin-top:2px}.tickerchip .price{font-size:.78rem;font-weight:850}.tickerchip .ret{font-size:.68rem;font-weight:900}.tickerchip .src{font-size:.54rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}.validation{padding:9px 10px;margin:8px 0 12px;background:#0a1625}.validationgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:6px}.validationgrid div{background:#0c1a2b;border:1px solid var(--line);border-radius:8px;padding:7px}.validationgrid span{display:block;font-size:.62rem;color:var(--muted)}.validationgrid b{font-size:.82rem}.model{padding:11px;margin:13px 0}.modelhead{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;margin-bottom:7px}.modelmeta{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}.mini{background:var(--inner);border:1px solid var(--line);border-radius:8px;padding:7px}.mini span{font-size:.62rem;color:var(--muted)}.mini b{display:block;margin-top:2px;font-size:.85rem}.charts{display:grid;grid-template-columns:1fr;gap:8px}.chartbox{padding:8px;background:var(--inner)}.charttop{display:flex;justify-content:space-between;gap:8px;align-items:flex-start;flex-wrap:wrap}.controls{display:flex;gap:4px;flex-wrap:wrap}.controls button{border:1px solid #35465d;background:#132238;color:#fff;border-radius:8px;padding:6px 9px;font-weight:800;font-size:.72rem;cursor:pointer}.controls button.active{background:var(--active)}.chart{height:310px}.legendnote{font-size:.62rem;color:var(--muted);line-height:1.4;margin-top:3px}.method{padding:11px;margin:13px 0;background:#0a1625}.equation{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.68rem;line-height:1.55;word-break:break-word;background:#07111f;border:1px solid var(--line);border-radius:8px;padding:8px;margin-top:5px}.error{display:none;background:#451a1a;border:1px solid #7f1d1d;padding:10px;border-radius:9px;margin:10px 0}.footer{font-size:.66rem;color:var(--muted);padding:8px 2px 18px}.statuspill{display:inline-block;border-radius:999px;padding:3px 7px;font-size:.62rem;font-weight:900;background:#172554;color:#bfdbfe}.gapnote{margin:8px 0 12px;padding:8px 10px;border:1px solid #29415e;background:#0a1625;border-radius:10px;font-size:.72rem;color:#cbd5e1}.gapnote b{font-size:.82rem}@media(max-width:900px){.topgrid,.validationgrid{grid-template-columns:repeat(2,1fr)}.modelmeta{grid-template-columns:repeat(2,1fr)}.tickerbar{grid-template-columns:repeat(3,1fr)}.chart{height:285px}}@media(max-width:620px){.wrap{padding:8px}.globaldock{top:0;margin-left:-8px;margin-right:-8px;border-radius:0}.tickerbar{display:flex;overflow-x:auto}.tickerchip{min-width:130px}.chart{height:270px}.modelhead{display:block}.topgrid{grid-template-columns:repeat(2,1fr)}}
 </style>
 </head>
 <body>
 <main class="wrap">
 <h1>Hábitat Fondo 3</h1>
-<div class="sub">Misma arquitectura metodológica del visor Profuturo · modelo fijo de niveles + modelo fijo de retornos · calibración propia con la serie SBS de Hábitat</div>
+<div class="sub">Misma arquitectura metodológica del visor Profuturo · Niveles y Retornos expresados sobre una base comparable · calibración propia con la serie SBS de Hábitat</div>
 <div id="loadError" class="error"></div>
 
 <section class="topgrid">
   <div class="card"><div class="label">Último VC SBS oficial</div><div class="value" id="sbsVc">—</div><div class="small" id="sbsDate">—</div></div>
-  <div class="card"><div class="label">Modelo de niveles</div><div class="value" id="levelVc">—</div><div class="signal" id="levelChange">—</div><div class="small" id="levelDate">—</div></div>
+  <div class="card"><div class="label">Modelo de niveles · operativo</div><div class="value" id="levelVc">—</div><div class="signal" id="levelChange">—</div><div class="small" id="levelDate">—</div></div>
   <div class="card"><div class="label">Modelo de retornos</div><div class="value" id="returnVc">—</div><div class="signal" id="returnChange">—</div><div class="small" id="returnDate">—</div></div>
   <div class="card"><div class="label">Estado de mercado</div><div class="value" id="marketState">—</div><div class="small" id="marketDetail">—</div></div>
 </section>
+
+<div class="gapnote">Brecha actual Niveles–Retornos: <b id="modelGap">—</b> <span class="small" id="gapExplain">· ambos se calculan sobre el VC de la rueda anterior.</span></div>
 
 <section class="globaldock">
   <div class="docktitle"><b>Factores del modelo · Hábitat</b><span class="small" id="factorQuality">—</span></div>
@@ -29,30 +31,32 @@
 </section>
 
 <section class="validation">
-  <div><b>Validación fuera de muestra</b> <span class="small">· desde 18/08/2026 · sin recalibrar los coeficientes con la validación</span></div>
+  <div><b>Validación fuera de muestra</b> <span class="small">· desde 18/08/2026 · Niveles mostrado = versión anclada comparable; el nivel OLS absoluto queda solo como diagnóstico.</span></div>
   <div class="validationgrid">
-    <div><span>Niveles · MAE</span><b id="vLevelMae">—</b></div>
-    <div><span>Niveles · RMSE</span><b id="vLevelRmse">—</b></div>
+    <div><span>Niveles anclado · MAE</span><b id="vLevelMae">—</b></div>
+    <div><span>Niveles anclado · RMSE</span><b id="vLevelRmse">—</b></div>
     <div><span>Retornos · MAE</span><b id="vReturnMae">—</b></div>
     <div><span>Retornos · RMSE</span><b id="vReturnRmse">—</b></div>
   </div>
 </section>
 
 <section class="model">
-  <div class="modelhead"><div><h2>Modelo de niveles</h2><div class="small">Estima directamente el valor cuota a partir del nivel de los cinco factores.</div></div><span class="statuspill" id="levelStatus">FIJO</span></div>
+  <div class="modelhead"><div><h2>Modelo de niveles</h2><div class="small">La ecuación estima un nivel OLS bruto; para seguimiento operativo se usa su variación entre dos ruedas y se aplica sobre el VC anterior.</div></div><span class="statuspill" id="levelStatus">FIJO</span></div>
   <div class="modelmeta">
-    <div class="mini"><span>VC estimado</span><b id="mLevelVc">—</b></div>
-    <div class="mini"><span>Variación vs rueda anterior</span><b id="mLevelRet">—</b></div>
+    <div class="mini"><span>VC operativo</span><b id="mLevelVc">—</b></div>
+    <div class="mini"><span>Variación implícita</span><b id="mLevelRet">—</b></div>
+    <div class="mini"><span>Nivel OLS bruto</span><b id="mLevelRaw">—</b></div>
     <div class="mini"><span>R² entrenamiento</span><b id="mLevelR2">—</b></div>
-    <div class="mini"><span>Error estándar</span><b id="mLevelSe">—</b></div>
+    <div class="mini"><span>Error estándar bruto</span><b id="mLevelSe">—</b></div>
   </div>
 </section>
 
 <section class="model">
-  <div class="modelhead"><div><h2>Modelo de retornos</h2><div class="small">Estima el retorno diario y lo aplica sobre el VC SBS de la rueda anterior cuando está disponible.</div></div><span class="statuspill" id="returnStatus">FIJO</span></div>
+  <div class="modelhead"><div><h2>Modelo de retornos</h2><div class="small">Estima el retorno diario de los cinco factores y lo aplica sobre el VC de la rueda anterior.</div></div><span class="statuspill" id="returnStatus">FIJO</span></div>
   <div class="modelmeta">
     <div class="mini"><span>VC estimado</span><b id="mReturnVc">—</b></div>
     <div class="mini"><span>Retorno estimado</span><b id="mReturnRet">—</b></div>
+    <div class="mini"><span>Base utilizada</span><b id="mReturnBase">—</b></div>
     <div class="mini"><span>R² entrenamiento</span><b id="mReturnR2">—</b></div>
     <div class="mini"><span>Error estándar retorno</span><b id="mReturnSe">—</b></div>
   </div>
@@ -60,12 +64,13 @@
 
 <section class="charts">
   <div class="chartbox">
-    <div class="charttop"><div><h3>Valor cuota · SBS vs modelos</h3><div class="small">Una observación por fecha; el snapshot vigente sustituye, no duplica, la misma rueda.</div></div><div class="controls" data-range><button data-n="7">7</button><button data-n="15">15</button><button data-n="30" class="active">30</button><button data-n="90">90</button><button data-n="0">2026</button></div></div>
+    <div class="charttop"><div><h3>Valor cuota · SBS vs modelos</h3><div class="small">Una observación por fecha; ambos modelos operativos parten del VC de la rueda anterior.</div></div><div class="controls" data-range><button data-n="7">7</button><button data-n="15">15</button><button data-n="30" class="active">30</button><button data-n="90">90</button><button data-n="0">2026</button></div></div>
     <div id="vcChart" class="chart"></div>
   </div>
   <div class="chartbox">
-    <div class="charttop"><div><h3>Retorno diario estimado</h3><div class="small">Comparación de variaciones diarias; no se reutilizan retornos de fechas anteriores.</div></div></div>
+    <div class="charttop"><div><h3>Retorno diario · niveles vs retornos vs SBS</h3><div class="small">Mismo formato de puntos del visor Profuturo.</div></div></div>
     <div id="retChart" class="chart"></div>
+    <div class="legendnote">Aguja vertical = magnitud desde 0. Verde = SUBE, rojo = BAJA, amarillo = NEUTRO. Rombo naranja = retorno real SBS. Símbolo abierto = SBS pendiente. Bandas punteadas = ±0.10%.</div>
   </div>
   <div class="chartbox">
     <div class="charttop"><div><h3>Peso matemático de los factores</h3><div class="small">Aporte absoluto al cálculo actual; no representa composición de cartera.</div></div></div>
@@ -76,7 +81,7 @@
 <section class="method">
   <h2>Metodología aplicada a Hábitat</h2>
   <div class="small" id="methodText">—</div>
-  <h3 style="margin-top:10px">Ecuación · niveles</h3><div class="equation" id="levelEq">—</div>
+  <h3 style="margin-top:10px">Ecuación · niveles bruto</h3><div class="equation" id="levelEq">—</div>
   <h3 style="margin-top:10px">Ecuación · retornos</h3><div class="equation" id="returnEq">—</div>
 </section>
 
@@ -92,9 +97,11 @@ let DB=null,LIVE=null,RANGE=30;
 const $=id=>document.getElementById(id);
 const finite=x=>x!==null&&x!==undefined&&x!==''&&Number.isFinite(Number(x));
 const vc=x=>finite(x)?Number(x).toFixed(7):'—';
-const pct=x=>finite(x)?`${Number(x)>=0?'+':''}${(Number(x)*100).toFixed(2)}%`:'—';
-const pctPlain=x=>finite(x)?`${Number(x).toFixed(2)}%`:'—';
+const pct=x=>finite(x)?`${Number(x)>=0?'+':''}${(Number(x)*100).toFixed(3)}%`:'—';
+const pctPlain=x=>finite(x)?`${Number(x).toFixed(3)}%`:'—';
 const fmt=d=>{if(!d)return'—';const p=String(d).slice(0,10).split('-');return p.length===3?`${p[2]}/${p[1]}/${p[0]}`:String(d)};
+const sig=v=>!finite(v)?'NEUTRO':Number(v)>.001?'SUBE':Number(v)<-.001?'BAJA':'NEUTRO';
+const sigColor=s=>s==='SUBE'?'#4ade80':s==='BAJA'?'#f87171':'#fbbf24';
 function cls(x){return !finite(x)?'flat':Number(x)>0?'up':Number(x)<0?'down':'flat'}
 async function fetchJson(url,optional=false){try{const r=await fetch(`${url}?v=${Date.now()}`,{cache:'no-store'});if(!r.ok)throw new Error(`${r.status} ${r.statusText}`);return await r.json()}catch(e){if(optional)return null;throw e}}
 function combinedRows(){
@@ -102,7 +109,7 @@ function combinedRows(){
   for(const r of (DB?.rows||[])){if(r?.fecha)map.set(String(r.fecha).slice(0,10),{...r,fecha:String(r.fecha).slice(0,10)})}
   const d=String(LIVE?.signal_date||'').slice(0,10);
   if(/^\d{4}-\d{2}-\d{2}$/.test(d)&&finite(LIVE?.models?.niveles?.vc_intraday)&&finite(LIVE?.models?.retornos?.vc_intraday)){
-    const r={...(map.get(d)||{}),fecha:d,vc_niveles:Number(LIVE.models.niveles.vc_intraday),vc_retornos:Number(LIVE.models.retornos.vc_intraday),ret_vc_estimado:finite(LIVE.models.retornos.return_intraday)?Number(LIVE.models.retornos.return_intraday):null,live:true};
+    const r={...(map.get(d)||{}),fecha:d,vc_niveles:Number(LIVE.models.niveles.vc_intraday),vc_niveles_raw:finite(LIVE.models.niveles.vc_raw_intraday)?Number(LIVE.models.niveles.vc_raw_intraday):null,ret_niveles_implicito:finite(LIVE.models.niveles.return_intraday)?Number(LIVE.models.niveles.return_intraday):null,vc_retornos:Number(LIVE.models.retornos.vc_intraday),ret_vc_estimado:finite(LIVE.models.retornos.return_intraday)?Number(LIVE.models.retornos.return_intraday):null,live:true};
     for(const t of (LIVE.tickers||[])){if(FACTORS.includes(t.ticker)&&finite(t.price_current))r[t.ticker]=Number(t.price_current)}
     map.set(d,r);
   }
@@ -110,19 +117,19 @@ function combinedRows(){
 }
 function displayRows(){const r=combinedRows().filter(x=>x.fecha>='2026-01-01');return RANGE===0?r:r.slice(-RANGE)}
 function latestEstimate(key){const rows=combinedRows().filter(r=>finite(r[key]));return rows.length?rows.at(-1):null}
-function priorEstimate(date,key){const rows=combinedRows().filter(r=>r.fecha<date&&finite(r[key]));return rows.length?rows.at(-1):null}
+function priorBaseRow(date){const rows=combinedRows(),idx=rows.findIndex(r=>r.fecha===date);return idx>0?rows[idx-1]:null}
+function sbsReturns(rows){return rows.map(r=>{if(r.live||!finite(r.vc_sbs))return null;const p=priorBaseRow(r.fecha);return p&&finite(p.vc_sbs)&&Number(p.vc_sbs)!==0?Number(r.vc_sbs)/Number(p.vc_sbs)-1:null})}
 function renderTop(){
   const latest=DB.latest||{};$('sbsVc').textContent=vc(latest.latest_sbs_vc);$('sbsDate').textContent=`SBS ${fmt(latest.latest_sbs_date)}`;
   const l=latestEstimate('vc_niveles'),rp=latestEstimate('vc_retornos');
-  const lp=l?priorEstimate(l.fecha,'vc_niveles'):null,rr=rp?priorEstimate(rp.fecha,'vc_retornos'):null;
-  const lret=l&&lp?Number(l.vc_niveles)/Number(lp.vc_niveles)-1:null;const rret=rp&&rr?Number(rp.vc_retornos)/Number(rr.vc_retornos)-1:null;
+  const lret=l&&finite(l.ret_niveles_implicito)?Number(l.ret_niveles_implicito):null;const rret=rp&&finite(rp.ret_vc_estimado)?Number(rp.ret_vc_estimado):null;
   $('levelVc').textContent=vc(l?.vc_niveles);$('levelDate').textContent=fmt(l?.fecha);$('levelChange').textContent=pct(lret);$('levelChange').className=`signal ${cls(lret)}`;
   $('returnVc').textContent=vc(rp?.vc_retornos);$('returnDate').textContent=fmt(rp?.fecha);$('returnChange').textContent=pct(rret);$('returnChange').className=`signal ${cls(rret)}`;
-  $('mLevelVc').textContent=vc(l?.vc_niveles);$('mLevelRet').textContent=pct(lret);$('mLevelRet').className=cls(lret);
-  $('mReturnVc').textContent=vc(rp?.vc_retornos);$('mReturnRet').textContent=pct(rp?.ret_vc_estimado ?? LIVE?.models?.retornos?.return_intraday);
-  $('mReturnRet').className=cls(rp?.ret_vc_estimado ?? LIVE?.models?.retornos?.return_intraday);
+  $('mLevelVc').textContent=vc(l?.vc_niveles);$('mLevelRet').textContent=pct(lret);$('mLevelRet').className=cls(lret);$('mLevelRaw').textContent=vc(l?.vc_niveles_raw ?? LIVE?.models?.niveles?.vc_raw_intraday);
+  $('mReturnVc').textContent=vc(rp?.vc_retornos);$('mReturnRet').textContent=pct(rret);$('mReturnRet').className=cls(rret);$('mReturnBase').textContent=vc(LIVE?.models?.retornos?.base_vc ?? priorBaseRow(rp?.fecha)?.vc_sbs);
   $('mLevelR2').textContent=finite(DB.models?.niveles?.r2)?Number(DB.models.niveles.r2).toFixed(4):'—';$('mLevelSe').textContent=finite(DB.models?.niveles?.stderr)?Number(DB.models.niveles.stderr).toFixed(6):'—';
   $('mReturnR2').textContent=finite(DB.models?.retornos?.r2)?Number(DB.models.retornos.r2).toFixed(4):'—';$('mReturnSe').textContent=finite(DB.models?.retornos?.stderr)?Number(DB.models.retornos.stderr).toFixed(6):'—';
+  const gap=l&&rp&&finite(l.vc_niveles)&&finite(rp.vc_retornos)?Number(l.vc_niveles)/Number(rp.vc_retornos)-1:null;$('modelGap').textContent=pct(gap);$('modelGap').className=cls(gap);
   const open=LIVE?.market_open===true,con=LIVE?.close_consolidated===true,fresh=Number(LIVE?.fresh_factors||0),total=Number(LIVE?.total_factors||5);
   $('marketState').textContent=open?'ABIERTO':con?'CIERRE OK':LIVE?'PARCIAL':'HISTÓRICO';$('marketState').className=`value ${open?'up':con?'up':'flat'}`;
   $('marketDetail').textContent=LIVE?`${fmt(LIVE.signal_date)} · ${fresh}/${total} factores actuales${LIVE.problems?.length?` · ${LIVE.problems.length} alerta(s)`:''}`:'Sin snapshot intradía disponible';
@@ -135,18 +142,28 @@ function renderFactors(){
   const fresh=list.filter(t=>t.fresh===true).length;$('factorQuality').textContent=LIVE?`${fresh}/${FACTORS.length} con fecha ${fmt(LIVE.signal_date)}`:`histórico ${fmt(list[0]?.timestamp)}`;
 }
 function renderValidation(){const m=DB.metrics?.validation||{};$('vLevelMae').textContent=pctPlain(m.niveles?.mae_pct);$('vLevelRmse').textContent=pctPlain(m.niveles?.rmse_pct);$('vReturnMae').textContent=pctPlain(m.retornos?.mae_pct);$('vReturnRmse').textContent=pctPlain(m.retornos?.rmse_pct)}
-const layout=(title)=>({paper_bgcolor:'transparent',plot_bgcolor:'transparent',font:{color:'#cbd5e1',size:10},margin:{l:52,r:20,t:18,b:45},xaxis:{gridcolor:'#1f3044',tickangle:-35},yaxis:{gridcolor:'#1f3044',title},legend:{orientation:'h',y:1.12},hovermode:'x unified'});
+const baseLayout={paper_bgcolor:'#0b1728',plot_bgcolor:'#0b1728',font:{color:'#dbe7f5',size:10},margin:{l:52,r:10,t:12,b:40},xaxis:{type:'date',gridcolor:'#213147',zeroline:false,tickformat:'%d %b'},yaxis:{gridcolor:'#213147'},legend:{orientation:'h',x:0,y:1.12,font:{size:9}},hovermode:'x unified'};
+const config={responsive:true,displaylogo:false,displayModeBar:false};
 function renderCharts(){
-  const rows=displayRows(),x=rows.map(r=>r.fecha);Plotly.react('vcChart',[
-    {x,y:rows.map(r=>r.vc_sbs),name:'SBS oficial',mode:'lines+markers',connectgaps:false,line:{width:2.5}},
-    {x,y:rows.map(r=>r.vc_niveles),name:'Niveles',mode:'lines',connectgaps:false,line:{width:2}},
-    {x,y:rows.map(r=>r.vc_retornos),name:'Retornos',mode:'lines',connectgaps:false,line:{width:2}}
-  ],layout('Valor cuota'),{responsive:true,displaylogo:false});
-  let prevS=null,prevL=null;const sbsRet=[],levRet=[],modRet=[];for(const r of rows){sbsRet.push(finite(r.vc_sbs)&&finite(prevS)?Number(r.vc_sbs)/prevS-1:null);if(finite(r.vc_sbs))prevS=Number(r.vc_sbs);levRet.push(finite(r.vc_niveles)&&finite(prevL)?Number(r.vc_niveles)/prevL-1:null);if(finite(r.vc_niveles))prevL=Number(r.vc_niveles);modRet.push(finite(r.ret_vc_estimado)?Number(r.ret_vc_estimado):null)}
-  Plotly.react('retChart',[{x,y:sbsRet,name:'SBS',mode:'lines+markers'},{x,y:levRet,name:'Niveles',mode:'lines'},{x,y:modRet,name:'Retornos',mode:'lines'}],{...layout('Retorno'),yaxis:{gridcolor:'#1f3044',tickformat:'.2%',title:'Retorno'}},{responsive:true,displaylogo:false});
-  const ticks=LIVE?.tickers||[];Plotly.react('weightChart',[{x:FACTORS,y:FACTORS.map(f=>ticks.find(t=>t.ticker===f)?.level_weight_abs_pct??null),name:'Niveles',type:'bar'},{x:FACTORS,y:FACTORS.map(f=>ticks.find(t=>t.ticker===f)?.return_weight_abs_pct??null),name:'Retornos',type:'bar'}],{...layout('Peso %'),barmode:'group',yaxis:{gridcolor:'#1f3044',ticksuffix:'%',title:'Aporte absoluto'}},{responsive:true,displaylogo:false});
+  const rows=displayRows(),x=rows.map(r=>r.fecha);
+  Plotly.react('vcChart',[
+    {x,y:rows.map(r=>r.vc_sbs),type:'scatter',mode:'lines+markers',name:'VC real SBS',line:{color:'#fb923c',width:2},marker:{color:'#fb923c',size:6,symbol:'diamond'},connectgaps:false},
+    {x,y:rows.map(r=>r.vc_niveles),type:'scatter',mode:'lines+markers',name:'Niveles anclado',line:{color:'#38bdf8',width:2},marker:{color:'#38bdf8',size:rows.map(r=>r.live?9:5),symbol:rows.map(r=>r.live?'circle-open':'circle')}},
+    {x,y:rows.map(r=>r.vc_retornos),type:'scatter',mode:'lines+markers',name:'Retornos',line:{color:'#fbbf24',width:2},marker:{color:'#fbbf24',size:rows.map(r=>r.live?9:5),symbol:rows.map(r=>r.live?'square-open':'circle')}}
+  ],{...baseLayout,yaxis:{...baseLayout.yaxis,title:'Valor cuota'}},config);
+
+  const real=sbsReturns(rows),lev=rows.map(r=>finite(r.ret_niveles_implicito)?Number(r.ret_niveles_implicito):null),ret=rows.map(r=>finite(r.ret_vc_estimado)?Number(r.ret_vc_estimado):null),shapes=[];
+  rows.forEach((r,i)=>{if(lev[i]!==null)shapes.push({type:'line',x0:r.fecha,x1:r.fecha,y0:0,y1:lev[i]*100,line:{color:'#48647f',width:1}});if(ret[i]!==null)shapes.push({type:'line',x0:r.fecha,x1:r.fecha,y0:0,y1:ret[i]*100,line:{color:'#6b5b2a',width:1}});if(real[i]!==null)shapes.push({type:'line',x0:r.fecha,x1:r.fecha,y0:0,y1:real[i]*100,line:{color:'#7c2d12',width:1}})});
+  shapes.push({type:'line',xref:'paper',x0:0,x1:1,y0:.1,y1:.1,line:{color:'#94a3b8',width:1,dash:'dot'}},{type:'line',xref:'paper',x0:0,x1:1,y0:-.1,y1:-.1,line:{color:'#94a3b8',width:1,dash:'dot'}});
+  Plotly.react('retChart',[
+    {x,y:lev.map(v=>v===null?null:v*100),type:'scatter',mode:'markers',name:'Niveles implícito',marker:{size:rows.map(r=>r.live?9:7),color:lev.map(v=>sigColor(sig(v))),symbol:rows.map((r,i)=>real[i]===null?'circle-open':'circle'),line:{width:1}},customdata:lev.map((v,i)=>`${sig(v)}${rows[i].live?' · INTRADÍA':''}`),hovertemplate:'%{x|%d/%m/%Y}<br>Niveles %{y:.3f}% · %{customdata}<extra></extra>'},
+    {x,y:ret.map(v=>v===null?null:v*100),type:'scatter',mode:'markers',name:'Modelo retornos',marker:{size:rows.map(r=>r.live?10:8),color:ret.map(v=>sigColor(sig(v))),symbol:rows.map((r,i)=>real[i]===null?'square-open':'square'),line:{width:1}},customdata:ret.map((v,i)=>`${sig(v)}${rows[i].live?' · INTRADÍA':''}`),hovertemplate:'%{x|%d/%m/%Y}<br>Retornos %{y:.3f}% · %{customdata}<extra></extra>'},
+    {x,y:real.map(v=>v===null?null:v*100),type:'scatter',mode:'markers',name:'Retorno real SBS',marker:{size:7,color:'#fb923c',symbol:'diamond'},hovertemplate:'%{x|%d/%m/%Y}<br>SBS %{y:.3f}%<extra></extra>'}
+  ],{...baseLayout,shapes,yaxis:{...baseLayout.yaxis,title:'Retorno %',autorange:true,zeroline:true,zerolinecolor:'#cbd5e1',zerolinewidth:1}},config);
+
+  const ticks=LIVE?.tickers||[];Plotly.react('weightChart',[{x:FACTORS,y:FACTORS.map(f=>ticks.find(t=>t.ticker===f)?.level_weight_abs_pct??null),name:'Niveles',type:'bar'},{x:FACTORS,y:FACTORS.map(f=>ticks.find(t=>t.ticker===f)?.return_weight_abs_pct??null),name:'Retornos',type:'bar'}],{...baseLayout,barmode:'group',yaxis:{...baseLayout.yaxis,ticksuffix:'%',title:'Aporte absoluto'}},config);
 }
-function renderMethod(){const tr=DB.training||{};$('methodText').textContent=`Factores: ${FACTORS.join(', ')}. Entrenamiento fijo ${fmt(tr.start)}–${fmt(tr.end)} (${tr.n_levels||'—'} observaciones en niveles; ${tr.n_returns||'—'} en retornos). Validación desde ${fmt(DB.validation_start)}. Los coeficientes se estiman con el VC de Hábitat; no se copian los coeficientes de Profuturo.`;$('levelEq').textContent=DB.models?.niveles?.equation||'—';$('returnEq').textContent=DB.models?.retornos?.equation||'—'}
+function renderMethod(){const tr=DB.training||{};$('methodText').textContent=`Factores: ${FACTORS.join(', ')}. Entrenamiento fijo ${fmt(tr.start)}–${fmt(tr.end)}. Niveles conserva la regresión absoluta para obtener la variación implícita entre dos ruedas, pero el VC operativo se vuelve a anclar al VC de la rueda anterior. Retornos estima directamente la variación diaria y también se aplica sobre el VC anterior. Por eso la comparación de ambos VC queda en la misma base.`;$('levelEq').textContent=DB.models?.niveles?.equation||'—';$('returnEq').textContent=DB.models?.retornos?.equation||'—'}
 function bind(){document.querySelectorAll('[data-range] button').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('[data-range] button').forEach(x=>x.classList.remove('active'));b.classList.add('active');RANGE=Number(b.dataset.n);renderCharts()}))}
 async function main(){try{[DB,LIVE]=await Promise.all([fetchJson(BASE_URL),fetchJson(LIVE_URL,true)]);if(DB?.fund!=='HÁBITAT Fondo 3')throw new Error('La base cargada no corresponde a Hábitat Fondo 3');renderTop();renderFactors();renderValidation();renderCharts();renderMethod();bind()}catch(e){const el=$('loadError');el.style.display='block';el.textContent=`No se pudo cargar el visor Hábitat: ${e.message}`;console.error(e)}}
 main();
