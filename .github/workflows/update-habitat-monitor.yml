@@ -11,27 +11,14 @@ on:
       - "scripts/run_habitat_exact_pipeline_stable_ui.py"
       - "scripts/update_habitat_live_market.py"
       - "scripts/habitat_complete_official_calendar.py"
-      - "scripts/build_habitat_exact_parity.py"
-      - "scripts/build_habitat_profuturo_parity.py"
-      - "scripts/build_habitat_qqq_incremental_challenger.py"
-      - "scripts/postprocess_habitat_qqq_incremental_ui.py"
-      - "scripts/postprocess_habitat_weight_charts.py"
-      - "scripts/build_dual_rolling30_monitor.py"
-      - "scripts/build_habitat_dual_rolling30_monitor.py"
-      - "scripts/postprocess_habitat_dual_from_profuturo.py"
-      - "scripts/build_qqq_incremental_challenger.py"
-      - "scripts/enrich_habitat_daily_sbs.py"
-      - "scripts/postprocess_habitat_chart_clarity.py"
-      - "scripts/postprocess_live_consistency.py"
-      - "scripts/postprocess_habitat_sbs_indicators.py"
-      - "scripts/postprocess_trade_cloud_fund_routing.py"
-      - "scripts/postprocess_trade_runtime_fixes.py"
       - "scripts/validate_habitat_official.py"
-      - "scripts/ensure_dual_trade_runtime.py"
-      - "scripts/finalize_notebook_parity_v4.py"
-      - "scripts/finalize_notebook_parity_v5.py"
-      - "scripts/finalize_fx_hybrid.py"
-      - "requirements.txt"
+      - "scripts/build_habitat_fixed_levels_returns_monitor.py"
+      - "scripts/build_habitat_fixed_models_intraday.py"
+      - "scripts/validate_habitat_fixed_models.py"
+      - "scripts/build_fixed_levels_returns_monitor.py"
+      - "scripts/fixed_market_quotes.py"
+      - "data/fixed_models/spblscup_levels_2026.csv"
+      - "public/habitat/index.html"
   schedule:
     - cron: "20 5-23 * * 1-5"
     - cron: "20 0-4 * * 2-6"
@@ -42,12 +29,13 @@ permissions:
   id-token: write
 
 concurrency:
-  group: habitat-fondo3-data-writes-v2
+  group: habitat-fondo3-data-writes-v3
   cancel-in-progress: true
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -69,73 +57,84 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
+          pip install exchange-calendars beautifulsoup4 lxml
 
-      - name: Generar base Hábitat y actualizar SBS/mercado
+      - name: Actualizar serie oficial Hábitat y fuentes base
         env:
           PYTHONUTF8: "1"
           PYTHONIOENCODING: "utf-8"
         run: |
           python scripts/run_habitat_exact_pipeline_stable_ui.py
           python scripts/update_habitat_live_market.py
+          # El pipeline histórico puede regenerar la UI antigua. Se restaura
+          # deliberadamente el visor fijo niveles/retornos comprometido en Git.
+          git restore public/habitat/index.html
 
-      - name: Validar base y fuentes de Hábitat antes de migrar UI
+      - name: Validar serie SBS Hábitat
         run: |
           python scripts/validate_habitat_official.py
           PYTHONPATH=scripts python -c "from habitat_complete_official_calendar import validate_official_estimate_calendar; validate_official_estimate_calendar()"
-          test -s public/habitat/data/live_market.json
-          test -s public/habitat/data/latest.json
+          test -s data/rolling90/sbs_habitat_f3.csv
           python - <<'PY'
-          import json
-          from pathlib import Path
-          latest=json.loads(Path('public/habitat/data/latest.json').read_text(encoding='utf-8'))
-          live=json.loads(Path('public/habitat/data/live_market.json').read_text(encoding='utf-8'))
-          assert float(latest['latest_sbs_vc']) > 0
-          assert live.get('signal_date')
-          print('Base Hábitat válida:', latest['latest_sbs_date'], latest['latest_sbs_vc'], live['signal_date'])
+          import pandas as pd
+          p='data/rolling90/sbs_habitat_f3.csv'
+          d=pd.read_csv(p)
+          d['fecha']=pd.to_datetime(d['fecha'], errors='coerce')
+          d['valor_cuota']=pd.to_numeric(d['valor_cuota'], errors='coerce')
+          d=d.dropna(subset=['fecha','valor_cuota']).sort_values('fecha')
+          assert len(d)>30
+          assert not d['fecha'].duplicated().any()
+          assert float(d.iloc[-1]['valor_cuota'])>0
+          print('SBS Hábitat válido:', d.iloc[-1]['fecha'].date(), d.iloc[-1]['valor_cuota'])
           PY
 
-      - name: Construir modelos A y B Rolling 30 de Hábitat
+      - name: Construir Hábitat con la misma lógica de Profuturo
         env:
           PYTHONUTF8: "1"
           PYTHONIOENCODING: "utf-8"
         run: |
-          python scripts/build_habitat_dual_rolling30_monitor.py
-          python scripts/postprocess_habitat_dual_from_profuturo.py
+          python scripts/build_habitat_fixed_levels_returns_monitor.py
+          python scripts/build_habitat_fixed_models_intraday.py
+          python scripts/validate_habitat_fixed_models.py
+
+      - name: Verificar paridad del visor
+        run: |
+          test -s public/habitat/data/fixed_models_2026.json
+          test -s public/habitat/data/fixed_models_intraday.json
+          test -s public/habitat/data/fixed_models_2026.csv
+          grep -q "Hábitat Fondo 3 · Niveles vs Retornos" public/habitat/index.html
+          grep -q "Modelo de niveles" public/habitat/index.html
+          grep -q "Modelo de retornos" public/habitat/index.html
+          grep -q "data/fixed_models_2026.json" public/habitat/index.html
+          grep -q "data/fixed_models_intraday.json" public/habitat/index.html
+          ! grep -q "Modelo A · Rolling 30" public/habitat/index.html
+          ! grep -q "Modelo B · Rolling 30" public/habitat/index.html
           python - <<'PY'
           import json
           from pathlib import Path
-          d=json.loads(Path('public/habitat/data/dual_rolling30_monitor.json').read_text(encoding='utf-8'))
-          assert d['fund']=='HÁBITAT Fondo 3'
-          assert float(d['latest_sbs']['vc']) > 0
-          assert set(d['models'])=={'qqq','new_tickers'}
-          a=d['models']['qqq']; b=d['models']['new_tickers']
-          assert a['features_display']==['SPY','EEM','EPU','MCHI','USD/PEN','QQQ']
-          assert b['features_display']==['.INX','CPER','EEM','NDX','SPBLSCUP','USD/PEN']
-          assert int(a['current']['train_n'])==30
-          assert int(b['current']['train_n'])==30
-          assert len(a['current']['coefficients'])==7
-          assert len(b['current']['coefficients'])==7
-          html=Path('public/habitat/index.html').read_text(encoding='utf-8')
-          assert 'Modelo A · Rolling 30 + QQQ' in html
-          assert 'Modelo B · Rolling 30 + nuevos tickers' in html
-          assert 'Último VC SBS oficial' in html
-          assert 'data/dual_rolling30_monitor.json' in html
-          assert 'Pesos de los factores' in html or 'FACTOR_WEIGHT' in html
-          print('Hábitat dual Rolling30 validado. SBS:', d['latest_sbs'])
-          print('A:', a['current']['vc_estimated'], a['current']['signal'])
-          print('B:', b['current']['vc_estimated'], b['current']['signal'])
+          b=json.loads(Path('public/habitat/data/fixed_models_2026.json').read_text(encoding='utf-8'))
+          l=json.loads(Path('public/habitat/data/fixed_models_intraday.json').read_text(encoding='utf-8'))
+          assert b['fund']=='HÁBITAT Fondo 3'
+          assert list(b['models'])==['niveles','retornos']
+          assert b['factors']==['SPY','EEM','MCHI','QQQ','SPBLSCUP']
+          assert l['fund']=='HÁBITAT Fondo 3'
+          assert l['total_factors']==5
+          assert len({x['ticker'] for x in l['tickers']})==5
+          print('Paridad Hábitat OK:', l['signal_date'], l['fresh_factors'], '/5')
           PY
-          node --check public/habitat/data/dual_trade_runtime_v1.js
 
       - name: Guardar resultados de Hábitat
         run: |
           git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/rolling90 public/habitat
+          git config user.email "4189824+github-actions[bot]@users.noreply.github.com"
+          git add \
+            data/rolling90 \
+            data/fixed_models/spblscup_levels_2026.csv \
+            public/habitat
           if git diff --cached --quiet; then
             echo "No hay cambios de Hábitat para confirmar."
           else
-            git commit -m "Actualizar Hábitat Fondo 3 con modelos A B Rolling30"
+            git commit -m "Actualizar Hábitat Fondo 3 niveles retornos"
             PUSHED=0
             for attempt in 1 2 3; do
               if git push origin HEAD:migracion-github-actions; then
@@ -143,46 +142,31 @@ jobs:
                 break
               fi
               echo "Rama ocupada; reintento Hábitat ${attempt}/3..."
-              git reset --hard HEAD
-              git clean -fd
-              if ! git pull --rebase origin migracion-github-actions; then
+              git fetch origin migracion-github-actions
+              if ! git rebase origin/migracion-github-actions; then
                 git rebase --abort || true
+                git reset --hard origin/migracion-github-actions
+                break
               fi
               sleep 2
             done
             if [ "$PUSHED" -ne 1 ]; then
-              echo "Push Hábitat pendiente; el próximo ciclo reintentará sin generar fallo por carrera de escritura."
+              echo "El siguiente ciclo reintentará la persistencia de datos."
             fi
           fi
 
-      - name: Actualizar rama y comprobar runtimes de operaciones
+      - name: Actualizar rama antes de publicar
         run: |
           git fetch origin migracion-github-actions
           git reset --hard origin/migracion-github-actions
-          node --check public/data/fixed_trade_runtime_v1.js
-          node --check public/habitat/data/dual_trade_runtime_v1.js
-          node --check public/habitat/data/cross_afp_operation_v3.js
-
-      - name: Verificar ambos visores vigentes antes de publicar
-        run: |
           test -s public/index.html
-          test -s public/data/fixed_models_2026.json
-          test -s public/data/fixed_models_intraday.json
-          test -s public/data/fixed_trade_runtime_v1.js
-          grep -q "Modelo de niveles" public/index.html
-          grep -q "Modelo de retornos" public/index.html
-          grep -q "fixed_models_2026.json" public/index.html
-          grep -q "Conectar Drive" public/data/fixed_trade_runtime_v1.js
           test -s public/habitat/index.html
-          test -s public/habitat/data/dual_rolling30_monitor.json
-          test -s public/habitat/data/dual_trade_runtime_v1.js
+          test -s public/habitat/data/fixed_models_2026.json
+          test -s public/habitat/data/fixed_models_intraday.json
+          grep -q "Profuturo Fondo 3" public/index.html
           grep -q "Hábitat Fondo 3" public/habitat/index.html
-          grep -q "Modelo A · Rolling 30 + QQQ" public/habitat/index.html
-          grep -q "Modelo B · Rolling 30 + nuevos tickers" public/habitat/index.html
-          grep -q "dual_rolling30_monitor.json" public/habitat/index.html
-          grep -q "const FUND='HABITAT';" public/habitat/data/dual_trade_runtime_v1.js
-          grep -q "habitat_fondo3_trade_history_v3" public/habitat/data/dual_trade_runtime_v1.js
-          ! grep -q "OLS OFICIAL · ROLLING 90" public/habitat/index.html
+          grep -q "Modelo de niveles" public/habitat/index.html
+          grep -q "Modelo de retornos" public/habitat/index.html
 
       - name: Configurar GitHub Pages
         uses: actions/configure-pages@v5
