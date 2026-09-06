@@ -1,7 +1,7 @@
 {
   "fund": "HÁBITAT Fondo 3",
-  "generated_at_lima": "2026-09-05T23:36:19.187713-05:00",
-  "generated_at_ny": "2026-09-06T00:36:19.187713-04:00",
+  "generated_at_lima": "2026-09-05T23:51:46.816440-05:00",
+  "generated_at_ny": "2026-09-06T00:51:46.816440-04:00",
   "signal_date": "2026-09-04",
   "market_open": false,
   "session_open_ny": "2026-09-04T09:30:00-04:00",
@@ -16,9 +16,17 @@
   "latest_sbs_date": "2026-09-02",
   "latest_sbs_vc": 33.4213366,
   "previous_close_rule": "Cierre regular validado de la sesión anterior; un dato antiguo nunca se reasigna a la fecha corriente.",
+  "comparison_rule": "Ambos modelos se expresan sobre el VC de la rueda anterior; la diferencia corresponde a la señal diaria estimada por cada ecuación.",
+  "model_gap_pct": -0.150227075960363,
   "models": {
     "niveles": {
-      "vc_intraday": 34.186187403343226,
+      "return_intraday": 0.0027510798588818997,
+      "vc_intraday": 33.77337645935727,
+      "vc_raw_intraday": 34.186187403343226,
+      "vc_raw_previous": 34.092396497996575,
+      "base_vc": 33.680718114120836,
+      "base_date": "2026-09-03",
+      "base_rule": "VC estimado por Niveles de la sesión anterior",
       "equation": "1.792974461733 + 0.017789197990×VC_SPY + 0.252814591611×VC_EEM − 0.194531858202×VC_MCHI − 0.001857308084×VC_QQQ + 0.029386454584×VC_SPBLSCUP"
     },
     "retornos": {
@@ -26,7 +34,7 @@
       "vc_intraday": 33.82418955028596,
       "base_vc": 33.596612916345165,
       "base_date": "2026-09-03",
-      "base_rule": "VC estimado por retornos de la sesión anterior",
+      "base_rule": "VC estimado por Retornos de la sesión anterior",
       "equation": "0.000647322199 − 0.183249799919×r_SPY + 0.446105219639×r_EEM − 0.211277070292×r_MCHI + 0.277919355976×r_QQQ + 0.263060974772×r_SPBLSCUP"
     }
   },
