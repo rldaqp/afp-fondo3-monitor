@@ -99,6 +99,10 @@ def google_snapshot(ticker, now, baseline):
     return quote_record(ticker, price, stamp, confirmed, baseline, now, "GOOGLE FINANCE")
 
 
+def model_level(coeff: dict, prices: dict[str, float]) -> float:
+    return float(coeff["intercept"]) + sum(float(coeff[x]) * float(prices[x]) for x in FACTORS)
+
+
 def main() -> None:
     if not BASE.exists():
         raise RuntimeError(f"Falta la base fija de Hábitat: {BASE}")
@@ -159,21 +163,39 @@ def main() -> None:
             )
 
     prior_rows = [r for r in rows if str(r.get("fecha", ""))[:10] < target]
+    if not prior_rows:
+        raise RuntimeError("Hábitat: no existe fila previa para anclar los modelos")
     prior = prior_rows[-1]
+
+    # Ambos modelos usan el VC SBS previo cuando existe. Si SBS está pendiente,
+    # cada modelo continúa exclusivamente desde su propia cadena de la rueda previa.
     if positive(prior.get("vc_sbs")):
-        return_base = float(prior["vc_sbs"])
-        base_rule = "VC SBS real de la sesión anterior"
-    elif positive(prior.get("vc_retornos")):
-        return_base = float(prior["vc_retornos"])
-        base_rule = "VC estimado por retornos de la sesión anterior"
+        level_base = return_base = float(prior["vc_sbs"])
+        level_base_rule = return_base_rule = "VC SBS real de la sesión anterior"
     else:
-        raise RuntimeError("Hábitat: no existe VC base consecutivo para el modelo de retornos")
+        if not positive(prior.get("vc_niveles")):
+            raise RuntimeError("Hábitat: no existe VC base consecutivo para Niveles")
+        if not positive(prior.get("vc_retornos")):
+            raise RuntimeError("Hábitat: no existe VC base consecutivo para Retornos")
+        level_base = float(prior["vc_niveles"])
+        return_base = float(prior["vc_retornos"])
+        level_base_rule = "VC estimado por Niveles de la sesión anterior"
+        return_base_rule = "VC estimado por Retornos de la sesión anterior"
 
     level_coeff = base["models"]["niveles"]["coefficients"]
     return_coeff = base["models"]["retornos"]["coefficients"]
-    level_contrib = {x: float(level_coeff[x]) * float(fmap[x]["price_current"]) for x in FACTORS}
+
+    current_prices = {x: float(fmap[x]["price_current"]) for x in FACTORS}
+    previous_prices = {x: float(fmap[x]["price_previous"]) for x in FACTORS}
+    raw_level_current = model_level(level_coeff, current_prices)
+    raw_level_previous = model_level(level_coeff, previous_prices)
+    if not positive(raw_level_previous):
+        raise RuntimeError("Hábitat: nivel OLS previo inválido")
+    level_return = raw_level_current / raw_level_previous - 1.0
+    vc_levels = level_base * (1.0 + level_return)
+
+    level_contrib = {x: float(level_coeff[x]) * current_prices[x] for x in FACTORS}
     return_contrib = {x: float(return_coeff[x]) * float(fmap[x]["return"]) for x in FACTORS}
-    vc_levels = float(level_coeff["intercept"]) + sum(level_contrib.values())
     ret_est = float(return_coeff["intercept"]) + sum(return_contrib.values())
     vc_returns = return_base * (1.0 + ret_est)
     level_den = sum(abs(v) for v in level_contrib.values())
@@ -200,6 +222,7 @@ def main() -> None:
         and all(row["close_confirmed"] for row in tickers)
         and all(str(row["timestamp"])[:10] == target for row in tickers)
     )
+    gap_pct = (vc_levels / vc_returns - 1.0) * 100.0 if positive(vc_returns) else None
 
     payload = {
         "fund": "HÁBITAT Fondo 3",
@@ -219,9 +242,17 @@ def main() -> None:
         "latest_sbs_date": base["latest"]["latest_sbs_date"],
         "latest_sbs_vc": base["latest"]["latest_sbs_vc"],
         "previous_close_rule": "Cierre regular validado de la sesión anterior; un dato antiguo nunca se reasigna a la fecha corriente.",
+        "comparison_rule": "Ambos modelos se expresan sobre el VC de la rueda anterior; la diferencia corresponde a la señal diaria estimada por cada ecuación.",
+        "model_gap_pct": gap_pct,
         "models": {
             "niveles": {
+                "return_intraday": level_return,
                 "vc_intraday": vc_levels,
+                "vc_raw_intraday": raw_level_current,
+                "vc_raw_previous": raw_level_previous,
+                "base_vc": level_base,
+                "base_date": prior["fecha"],
+                "base_rule": level_base_rule,
                 "equation": base["models"]["niveles"]["equation"],
             },
             "retornos": {
@@ -229,7 +260,7 @@ def main() -> None:
                 "vc_intraday": vc_returns,
                 "base_vc": return_base,
                 "base_date": prior["fecha"],
-                "base_rule": base_rule,
+                "base_rule": return_base_rule,
                 "equation": base["models"]["retornos"]["equation"],
             },
         },
@@ -251,7 +282,11 @@ def main() -> None:
         "fresh_factors": fresh,
         "close_consolidated": consolidated,
         "vc_niveles": vc_levels,
+        "vc_niveles_raw": raw_level_current,
+        "ret_niveles": level_return,
         "vc_retornos": vc_returns,
+        "ret_retornos": ret_est,
+        "gap_pct": gap_pct,
         "problems": problems,
     }, ensure_ascii=False))
 
