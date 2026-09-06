@@ -12,6 +12,7 @@ LIVE = ROOT / "public" / "habitat" / "data" / "fixed_models_intraday.json"
 TRADE = ROOT / "public" / "habitat" / "data" / "fixed_trade_runtime_v1.js"
 INDEX = ROOT / "public" / "habitat" / "index.html"
 FACTORS = ["SPY", "EEM", "MCHI", "QQQ", "SPBLSCUP"]
+MODEL_VERSION = "habitat-rolling90-levels-returns-v4"
 
 
 def finite(value) -> bool:
@@ -31,62 +32,59 @@ def patch_ui() -> None:
         html = html.replace(old_weight, new_weight, 1)
     assert new_weight in html, "No se pudo fijar el eje categórico del gráfico de pesos"
 
-    # El visor debe dejar claro que el modelo principal de Niveles es el OLS
-    # absoluto directo, igual que Profuturo. La serie rebasada queda únicamente
-    # como diagnóstico y no reemplaza al modelo.
-    headers = [
+    # Identidad productiva: únicamente Niveles 90 + Retornos 90.
+    old_headers = [
+        "Misma lógica matemática que Profuturo · Niveles = OLS absoluto · Retornos = variación aplicada al VC previo · calibración propia con la serie SBS de Hábitat",
         "Misma arquitectura metodológica del visor Profuturo · Niveles y Retornos expresados sobre una base comparable · calibración propia con la serie SBS de Hábitat",
-        "Mismos cinco factores y ecuaciones base del visor Profuturo · Hábitat añade una normalización comparativa de Niveles · calibración propia con la serie SBS de Hábitat",
     ]
-    final_header = "Misma lógica matemática que Profuturo · Niveles = OLS absoluto · Retornos = variación aplicada al VC previo · calibración propia con la serie SBS de Hábitat"
-    for text in headers:
+    final_header = "Dos modelos productivos actualizados · Niveles 90 = OLS absoluto · Retornos 90 = variación aplicada al VC previo · calibración móvil con las 90 observaciones SBS más recientes"
+    for text in old_headers:
         html = html.replace(text, final_header)
 
-    html = html.replace("Modelo de niveles · operativo", "Modelo de niveles")
-    html = html.replace("Niveles normalizado · comparación", "Modelo de niveles")
     html = html.replace(
-        "La ecuación estima un nivel OLS bruto; para seguimiento operativo se usa su variación entre dos ruedas y se aplica sobre el VC anterior.",
+        "<div><b>Validación fuera de muestra</b> <span class=\"small\">· desde 18/08/2026 · Niveles = OLS absoluto directo, igual que Profuturo; la normalización queda solo como diagnóstico.</span></div>",
+        "<div><b>Backtest móvil de 7 ruedas</b> <span class=\"small\">· las 7 últimas fechas SBS quedan fuera del ajuste; ambos modelos se entrenan con las 90 observaciones inmediatamente anteriores.</span></div>",
+    )
+
+    html = html.replace("<h2>Modelo de niveles</h2>", "<h2>Modelo de niveles · 90 ruedas</h2>")
+    html = html.replace("<h2>Modelo de retornos</h2>", "<h2>Modelo de retornos · 90 ruedas</h2>")
+    html = html.replace('<span class="statuspill" id="levelStatus">FIJO</span>', '<span class="statuspill" id="levelStatus">90 RUEDAS</span>')
+    html = html.replace('<span class="statuspill" id="returnStatus">FIJO</span>', '<span class="statuspill" id="returnStatus">90 RUEDAS</span>')
+
+    html = html.replace(
         "Estima directamente el valor cuota a partir del nivel actual de los cinco factores, igual que Profuturo.",
-    )
-    html = html.replace("<span>VC operativo</span>", "<span>VC estimado</span>")
-    html = html.replace("Nivel OLS bruto", "Niveles normalizado · diagnóstico")
-    html = html.replace("Nivel OLS original · diagnóstico", "Niveles normalizado · diagnóstico")
-    html = html.replace("Error estándar bruto", "Error estándar")
-    html = html.replace("Ecuación · niveles bruto", "Ecuación de Niveles")
-    html = html.replace("Ecuación original de Niveles", "Ecuación de Niveles")
-    html = html.replace(
-        "Niveles mostrado = versión anclada comparable; el nivel OLS absoluto queda solo como diagnóstico.",
-        "Niveles = OLS absoluto directo, igual que Profuturo; la normalización queda solo como diagnóstico.",
-    )
-    html = html.replace("Niveles anclado · MAE", "Niveles · MAE")
-    html = html.replace("Niveles anclado · RMSE", "Niveles · RMSE")
-    html = html.replace("Niveles anclado", "Niveles")
-    html = html.replace(
-        "Una observación por fecha; ambos modelos operativos parten del VC de la rueda anterior.",
-        "Una observación por fecha; Niveles es absoluto y Retornos aplica la variación estimada sobre el VC previo.",
+        "Estima directamente el valor cuota con los cinco factores usando las 90 observaciones SBS más recientes.",
     )
     html = html.replace(
-        "· ambos se calculan sobre el VC de la rueda anterior.",
-        "· compara Niveles absoluto contra Retornos aplicado al VC previo.",
+        "Estima el retorno diario de los cinco factores y lo aplica sobre el VC de la rueda anterior.",
+        "Estima el retorno diario con 90 observaciones y lo aplica sobre el VC de la rueda anterior.",
     )
 
-    # Mostrar en la tercera mini-tarjeta la normalización diagnóstica, no repetir
-    # el mismo OLS absoluto que ya es el valor principal.
+    # Se elimina del visor la tarjeta de normalización: solo quedan dos modelos.
+    normalized_card = '    <div class="mini"><span>Niveles normalizado · diagnóstico</span><b id="mLevelRaw">—</b></div>\n'
+    html = html.replace(normalized_card, "")
     html = html.replace(
-        "$('mLevelRaw').textContent=vc(l?.vc_niveles_raw ?? LIVE?.models?.niveles?.vc_raw_intraday);",
+        ".modelmeta{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}",
+        ".modelmeta{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:6px}",
+    )
+
+    # Evita intentar escribir sobre una tarjeta eliminada.
+    assignments = [
         "$('mLevelRaw').textContent=vc(l?.vc_niveles_normalizado ?? LIVE?.models?.niveles?.vc_normalized_intraday);",
+        "$('mLevelRaw').textContent=vc(l?.vc_niveles_raw ?? LIVE?.models?.niveles?.vc_raw_intraday);",
+    ]
+    for assignment in assignments:
+        html = html.replace(assignment, "")
+
+    # Textos metodológicos antiguos que todavía mencionaban una tercera referencia.
+    html = html.replace(
+        "Niveles estima directamente el VC con los niveles actuales de los cinco factores, igual que Profuturo. Retornos estima la variación diaria de esos factores y la aplica sobre el VC previo. La serie normalizada de Niveles se conserva únicamente como diagnóstico para estudiar la brecha, no como reemplazo del modelo principal.",
+        "Hábitat mantiene únicamente dos modelos productivos, ambos con ventana móvil de 90 observaciones. Niveles 90 estima directamente el VC absoluto y Retornos 90 estima la variación diaria para aplicarla sobre el VC previo.",
     )
-
-    # Incorporar el diagnóstico normalizado en el punto live cuando todavía no
-    # existe una fila histórica para esa misma fecha.
-    old_live_fragment = "vc_niveles_raw:finite(LIVE.models.niveles.vc_raw_intraday)?Number(LIVE.models.niveles.vc_raw_intraday):null,ret_niveles_implicito:finite(LIVE.models.niveles.return_intraday)?Number(LIVE.models.niveles.return_intraday):null,"
-    new_live_fragment = "vc_niveles_raw:finite(LIVE.models.niveles.vc_raw_intraday)?Number(LIVE.models.niveles.vc_raw_intraday):null,vc_niveles_normalizado:finite(LIVE.models.niveles.vc_normalized_intraday)?Number(LIVE.models.niveles.vc_normalized_intraday):null,ret_niveles_implicito:finite(LIVE.models.niveles.return_intraday)?Number(LIVE.models.niveles.return_intraday):null,"
-    if old_live_fragment in html:
-        html = html.replace(old_live_fragment, new_live_fragment, 1)
-
-    old_method = "Niveles conserva la regresión absoluta para obtener la variación implícita entre dos ruedas, pero el VC operativo se vuelve a anclar al VC de la rueda anterior. Retornos estima directamente la variación diaria y también se aplica sobre el VC anterior. Por eso la comparación de ambos VC queda en la misma base."
-    new_method = "Niveles estima directamente el VC con los niveles actuales de los cinco factores, igual que Profuturo. Retornos estima la variación diaria de esos factores y la aplica sobre el VC previo. La serie normalizada de Niveles se conserva únicamente como diagnóstico para estudiar la brecha, no como reemplazo del modelo principal."
-    html = html.replace(old_method, new_method)
+    html = html.replace(
+        "Niveles = OLS absoluto directo, igual que Profuturo; la normalización queda solo como diagnóstico.",
+        "Niveles 90 y Retornos 90 se recalibran con la información SBS más reciente.",
+    )
 
     INDEX.write_text(html, encoding="utf-8")
 
@@ -96,47 +94,55 @@ def main() -> None:
         raise SystemExit(f"Falta {BASE}")
     base = json.loads(BASE.read_text(encoding="utf-8"))
     assert base.get("fund") == "HÁBITAT Fondo 3"
-    assert base.get("model_version") == "habitat-fixed-levels-returns-v3-profuturo-parity"
+    assert base.get("model_version") == MODEL_VERSION
+    assert base.get("window") == 90
     assert base.get("factors") == FACTORS
-    assert base.get("training", {}).get("start") == "2026-07-07"
-    assert base.get("training", {}).get("end") == "2026-08-17"
-    assert base.get("validation_start") == "2026-08-18"
-    assert int(base["training"]["n_levels"]) > 20
-    assert int(base["training"]["n_returns"]) > 20
+    assert int(base.get("training", {}).get("n_levels", 0)) == 90
+    assert int(base.get("training", {}).get("n_returns", 0)) == 90
+    assert base.get("training", {}).get("end") == base.get("latest", {}).get("latest_sbs_date")
     assert finite(base["latest"]["latest_sbs_vc"])
-    assert "Misma lógica que Profuturo" in base.get("comparison_rule", "")
+    assert "dos modelos productivos" in base.get("comparison_rule", "").lower()
+
+    backtest = base.get("backtest7", {})
+    assert int(backtest.get("n", 0)) == 7
+    assert int(backtest.get("window", 0)) == 90
+    assert backtest.get("training_end") < backtest.get("holdout_start")
 
     rows = base.get("rows", [])
     dates = [str(r.get("fecha", ""))[:10] for r in rows]
     assert len(rows) == len(set(dates)), "Fechas duplicadas en base Hábitat"
     assert dates == sorted(dates), "Fechas no ordenadas en base Hábitat"
     useful = [r for r in rows if finite(r.get("vc_niveles")) and finite(r.get("vc_retornos"))]
-    assert useful, "No existen observaciones comparables de Niveles y Retornos"
+    assert useful, "No existen observaciones comparables de Niveles 90 y Retornos 90"
     for row in useful[-10:]:
         assert finite(row.get("vc_niveles_raw")), "Falta alias OLS de auditoría"
         assert abs(float(row["vc_niveles_raw"]) - float(row["vc_niveles"])) < 1e-12
         assert finite(row.get("ret_niveles_implicito")), "Falta retorno implícito de Niveles"
-        assert finite(row.get("vc_niveles_normalizado")), "Falta diagnóstico normalizado de Niveles"
 
+    assert list(base.get("models", {})) == ["niveles", "retornos"]
     for key in ("niveles", "retornos"):
         model = base["models"][key]
         coeff = model["coefficients"]
         assert set(coeff) == {"intercept", *FACTORS}
         assert all(finite(v) for v in coeff.values())
+        assert int(model.get("window", 0)) == 90
+        assert int(model.get("n", 0)) == 90
         assert finite(model["r2"])
         assert finite(model["adj_r2"])
         assert finite(model["stderr"])
         assert model.get("operational_rule")
 
     validation = base.get("metrics", {}).get("validation", {})
-    assert finite(validation.get("niveles", {}).get("mae_pct"))
-    assert finite(validation.get("retornos", {}).get("mae_pct"))
-    assert finite(validation.get("niveles_normalizado", {}).get("mae_pct"))
+    for key in ("niveles", "retornos"):
+        assert int(validation.get(key, {}).get("n", 0)) == 7
+        assert finite(validation.get(key, {}).get("mae_pct"))
+        assert finite(validation.get(key, {}).get("rmse_pct"))
+        assert finite(validation.get(key, {}).get("bias_pct"))
+        assert finite(validation.get(key, {}).get("r2_vc_oos"))
 
     if LIVE.exists():
         live = json.loads(LIVE.read_text(encoding="utf-8"))
         assert live.get("fund") == "HÁBITAT Fondo 3"
-        assert "Misma lógica que Profuturo" in live.get("comparison_rule", "")
         signal_date = str(live.get("signal_date", ""))[:10]
         assert len(signal_date) == 10
         tickers = live.get("tickers", [])
@@ -157,16 +163,13 @@ def main() -> None:
         assert abs(float(levels["vc_intraday"]) - float(levels["vc_raw_intraday"])) < 1e-12
         assert finite(levels["vc_raw_previous"])
         assert finite(levels["return_intraday"])
-        if levels.get("vc_normalized_intraday") is not None:
-            assert finite(levels["vc_normalized_intraday"])
         assert finite(returns["vc_intraday"])
         assert finite(returns["return_intraday"])
         assert finite(returns["base_vc"])
 
     patch_ui()
 
-    # Copia la misma lógica de operaciones del visor Profuturo y la aísla con
-    # identidad, localStorage y endpoint de Drive propios de Hábitat.
+    # Se conserva el runtime de operaciones independiente de Hábitat.
     install_trade_runtime()
     assert TRADE.exists() and TRADE.stat().st_size > 1000
     runtime = TRADE.read_text(encoding="utf-8")
@@ -181,12 +184,15 @@ def main() -> None:
     assert "Retorno real SBS" in html
     assert "Aguja vertical" in html
     assert "xaxis:{type:'category'" in html
-    assert "Misma lógica matemática que Profuturo" in html
-    assert "Niveles normalizado · diagnóstico" in html
-    assert "Niveles anclado" not in html
+    assert "Dos modelos productivos actualizados" in html
+    assert "Modelo de niveles · 90 ruedas" in html
+    assert "Modelo de retornos · 90 ruedas" in html
+    assert 'id="mLevelRaw"' not in html
+    assert "Niveles normalizado · diagnóstico" not in html
 
     print(
-        "Hábitat con paridad matemática Profuturo validado:",
+        "Hábitat rolling90 validado:",
+        base["training"],
         base["latest"],
         base["metrics"]["validation"],
     )
