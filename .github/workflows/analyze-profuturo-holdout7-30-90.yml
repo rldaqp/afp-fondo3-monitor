@@ -1,0 +1,51 @@
+name: Analizar Profuturo holdout 7 · 30 vs 90
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - migracion-github-actions
+    paths:
+      - "scripts/analyze_profuturo_holdout7_30_90.py"
+      - ".github/workflows/analyze-profuturo-holdout7-30-90.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: profuturo-holdout7-30-90
+  cancel-in-progress: true
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Descargar repositorio
+        uses: actions/checkout@v4
+        with:
+          ref: migracion-github-actions
+          fetch-depth: 0
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Instalar dependencias
+        run: pip install numpy pandas
+
+      - name: Ejecutar diagnóstico Profuturo
+        run: python scripts/analyze_profuturo_holdout7_30_90.py
+
+      - name: Guardar diagnóstico
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add analysis/profuturo_holdout7_30_90.json public/data/profuturo_holdout7_30_90.json
+          if git diff --cached --quiet; then
+            echo "Sin cambios."
+          else
+            git commit -m "Guardar diagnóstico Profuturo holdout7 30 vs 90"
+            git push origin HEAD:migracion-github-actions
+          fi
