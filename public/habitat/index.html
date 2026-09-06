@@ -13,17 +13,17 @@
 <body>
 <main class="wrap">
 <h1>Hábitat Fondo 3</h1>
-<div class="sub">Mismos cinco factores y ecuaciones base del visor Profuturo · Hábitat añade una normalización comparativa de Niveles · calibración propia con la serie SBS de Hábitat</div>
+<div class="sub">Misma lógica matemática que Profuturo · Niveles = OLS absoluto · Retornos = variación aplicada al VC previo · calibración propia con la serie SBS de Hábitat</div>
 <div id="loadError" class="error"></div>
 
 <section class="topgrid">
   <div class="card"><div class="label">Último VC SBS oficial</div><div class="value" id="sbsVc">—</div><div class="small" id="sbsDate">—</div></div>
-  <div class="card"><div class="label">Niveles normalizado · comparación</div><div class="value" id="levelVc">—</div><div class="signal" id="levelChange">—</div><div class="small" id="levelDate">—</div></div>
+  <div class="card"><div class="label">Modelo de niveles</div><div class="value" id="levelVc">—</div><div class="signal" id="levelChange">—</div><div class="small" id="levelDate">—</div></div>
   <div class="card"><div class="label">Modelo de retornos</div><div class="value" id="returnVc">—</div><div class="signal" id="returnChange">—</div><div class="small" id="returnDate">—</div></div>
   <div class="card"><div class="label">Estado de mercado</div><div class="value" id="marketState">—</div><div class="small" id="marketDetail">—</div></div>
 </section>
 
-<div class="gapnote">Brecha actual Niveles–Retornos: <b id="modelGap">—</b> <span class="small" id="gapExplain">· ambos se calculan sobre el VC de la rueda anterior.</span></div>
+<div class="gapnote">Brecha actual Niveles–Retornos: <b id="modelGap">—</b> <span class="small" id="gapExplain">· compara Niveles absoluto contra Retornos aplicado al VC previo.</span></div>
 
 <section class="globaldock">
   <div class="docktitle"><b>Factores del modelo · Hábitat</b><span class="small" id="factorQuality">—</span></div>
@@ -31,23 +31,23 @@
 </section>
 
 <section class="validation">
-  <div><b>Validación fuera de muestra</b> <span class="small">· desde 18/08/2026 · Niveles mostrado = versión anclada comparable; el nivel OLS absoluto queda solo como diagnóstico.</span></div>
+  <div><b>Validación fuera de muestra</b> <span class="small">· desde 18/08/2026 · Niveles = OLS absoluto directo, igual que Profuturo; la normalización queda solo como diagnóstico.</span></div>
   <div class="validationgrid">
-    <div><span>Niveles anclado · MAE</span><b id="vLevelMae">—</b></div>
-    <div><span>Niveles anclado · RMSE</span><b id="vLevelRmse">—</b></div>
+    <div><span>Niveles · MAE</span><b id="vLevelMae">—</b></div>
+    <div><span>Niveles · RMSE</span><b id="vLevelRmse">—</b></div>
     <div><span>Retornos · MAE</span><b id="vReturnMae">—</b></div>
     <div><span>Retornos · RMSE</span><b id="vReturnRmse">—</b></div>
   </div>
 </section>
 
 <section class="model">
-  <div class="modelhead"><div><h2>Modelo de niveles</h2><div class="small">La ecuación estima un nivel OLS bruto; para seguimiento operativo se usa su variación entre dos ruedas y se aplica sobre el VC anterior.</div></div><span class="statuspill" id="levelStatus">FIJO</span></div>
+  <div class="modelhead"><div><h2>Modelo de niveles</h2><div class="small">Estima directamente el valor cuota a partir del nivel actual de los cinco factores, igual que Profuturo.</div></div><span class="statuspill" id="levelStatus">FIJO</span></div>
   <div class="modelmeta">
-    <div class="mini"><span>VC operativo</span><b id="mLevelVc">—</b></div>
+    <div class="mini"><span>VC estimado</span><b id="mLevelVc">—</b></div>
     <div class="mini"><span>Variación implícita</span><b id="mLevelRet">—</b></div>
-    <div class="mini"><span>Nivel OLS original · diagnóstico</span><b id="mLevelRaw">—</b></div>
+    <div class="mini"><span>Niveles normalizado · diagnóstico</span><b id="mLevelRaw">—</b></div>
     <div class="mini"><span>R² entrenamiento</span><b id="mLevelR2">—</b></div>
-    <div class="mini"><span>Error estándar bruto</span><b id="mLevelSe">—</b></div>
+    <div class="mini"><span>Error estándar</span><b id="mLevelSe">—</b></div>
   </div>
 </section>
 
@@ -64,7 +64,7 @@
 
 <section class="charts">
   <div class="chartbox">
-    <div class="charttop"><div><h3>Valor cuota · SBS vs modelos</h3><div class="small">Una observación por fecha; ambos modelos operativos parten del VC de la rueda anterior.</div></div><div class="controls" data-range><button data-n="7">7</button><button data-n="15">15</button><button data-n="30" class="active">30</button><button data-n="90">90</button><button data-n="0">2026</button></div></div>
+    <div class="charttop"><div><h3>Valor cuota · SBS vs modelos</h3><div class="small">Una observación por fecha; Niveles es absoluto y Retornos aplica la variación estimada sobre el VC previo.</div></div><div class="controls" data-range><button data-n="7">7</button><button data-n="15">15</button><button data-n="30" class="active">30</button><button data-n="90">90</button><button data-n="0">2026</button></div></div>
     <div id="vcChart" class="chart"></div>
   </div>
   <div class="chartbox">
@@ -81,7 +81,7 @@
 <section class="method">
   <h2>Metodología aplicada a Hábitat</h2>
   <div class="small" id="methodText">—</div>
-  <h3 style="margin-top:10px">Ecuación original de Niveles</h3><div class="equation" id="levelEq">—</div>
+  <h3 style="margin-top:10px">Ecuación de Niveles</h3><div class="equation" id="levelEq">—</div>
   <h3 style="margin-top:10px">Ecuación · retornos</h3><div class="equation" id="returnEq">—</div>
 </section>
 
@@ -109,7 +109,7 @@ function combinedRows(){
   for(const r of (DB?.rows||[])){if(r?.fecha)map.set(String(r.fecha).slice(0,10),{...r,fecha:String(r.fecha).slice(0,10)})}
   const d=String(LIVE?.signal_date||'').slice(0,10);
   if(/^\d{4}-\d{2}-\d{2}$/.test(d)&&finite(LIVE?.models?.niveles?.vc_intraday)&&finite(LIVE?.models?.retornos?.vc_intraday)){
-    const r={...(map.get(d)||{}),fecha:d,vc_niveles:Number(LIVE.models.niveles.vc_intraday),vc_niveles_raw:finite(LIVE.models.niveles.vc_raw_intraday)?Number(LIVE.models.niveles.vc_raw_intraday):null,ret_niveles_implicito:finite(LIVE.models.niveles.return_intraday)?Number(LIVE.models.niveles.return_intraday):null,vc_retornos:Number(LIVE.models.retornos.vc_intraday),ret_vc_estimado:finite(LIVE.models.retornos.return_intraday)?Number(LIVE.models.retornos.return_intraday):null,live:true};
+    const r={...(map.get(d)||{}),fecha:d,vc_niveles:Number(LIVE.models.niveles.vc_intraday),vc_niveles_raw:finite(LIVE.models.niveles.vc_raw_intraday)?Number(LIVE.models.niveles.vc_raw_intraday):null,vc_niveles_normalizado:finite(LIVE.models.niveles.vc_normalized_intraday)?Number(LIVE.models.niveles.vc_normalized_intraday):null,ret_niveles_implicito:finite(LIVE.models.niveles.return_intraday)?Number(LIVE.models.niveles.return_intraday):null,vc_retornos:Number(LIVE.models.retornos.vc_intraday),ret_vc_estimado:finite(LIVE.models.retornos.return_intraday)?Number(LIVE.models.retornos.return_intraday):null,live:true};
     for(const t of (LIVE.tickers||[])){if(FACTORS.includes(t.ticker)&&finite(t.price_current))r[t.ticker]=Number(t.price_current)}
     map.set(d,r);
   }
@@ -125,7 +125,7 @@ function renderTop(){
   const lret=l&&finite(l.ret_niveles_implicito)?Number(l.ret_niveles_implicito):null;const rret=rp&&finite(rp.ret_vc_estimado)?Number(rp.ret_vc_estimado):null;
   $('levelVc').textContent=vc(l?.vc_niveles);$('levelDate').textContent=fmt(l?.fecha);$('levelChange').textContent=pct(lret);$('levelChange').className=`signal ${cls(lret)}`;
   $('returnVc').textContent=vc(rp?.vc_retornos);$('returnDate').textContent=fmt(rp?.fecha);$('returnChange').textContent=pct(rret);$('returnChange').className=`signal ${cls(rret)}`;
-  $('mLevelVc').textContent=vc(l?.vc_niveles);$('mLevelRet').textContent=pct(lret);$('mLevelRet').className=cls(lret);$('mLevelRaw').textContent=vc(l?.vc_niveles_raw ?? LIVE?.models?.niveles?.vc_raw_intraday);
+  $('mLevelVc').textContent=vc(l?.vc_niveles);$('mLevelRet').textContent=pct(lret);$('mLevelRet').className=cls(lret);$('mLevelRaw').textContent=vc(l?.vc_niveles_normalizado ?? LIVE?.models?.niveles?.vc_normalized_intraday);
   $('mReturnVc').textContent=vc(rp?.vc_retornos);$('mReturnRet').textContent=pct(rret);$('mReturnRet').className=cls(rret);$('mReturnBase').textContent=vc(LIVE?.models?.retornos?.base_vc ?? priorBaseRow(rp?.fecha)?.vc_sbs);
   $('mLevelR2').textContent=finite(DB.models?.niveles?.r2)?Number(DB.models.niveles.r2).toFixed(4):'—';$('mLevelSe').textContent=finite(DB.models?.niveles?.stderr)?Number(DB.models.niveles.stderr).toFixed(6):'—';
   $('mReturnR2').textContent=finite(DB.models?.retornos?.r2)?Number(DB.models.retornos.r2).toFixed(4):'—';$('mReturnSe').textContent=finite(DB.models?.retornos?.stderr)?Number(DB.models.retornos.stderr).toFixed(6):'—';
@@ -148,7 +148,7 @@ function renderCharts(){
   const rows=displayRows(),x=rows.map(r=>r.fecha);
   Plotly.react('vcChart',[
     {x,y:rows.map(r=>r.vc_sbs),type:'scatter',mode:'lines+markers',name:'VC real SBS',line:{color:'#fb923c',width:2},marker:{color:'#fb923c',size:6,symbol:'diamond'},connectgaps:false},
-    {x,y:rows.map(r=>r.vc_niveles),type:'scatter',mode:'lines+markers',name:'Niveles anclado',line:{color:'#38bdf8',width:2},marker:{color:'#38bdf8',size:rows.map(r=>r.live?9:5),symbol:rows.map(r=>r.live?'circle-open':'circle')}},
+    {x,y:rows.map(r=>r.vc_niveles),type:'scatter',mode:'lines+markers',name:'Niveles',line:{color:'#38bdf8',width:2},marker:{color:'#38bdf8',size:rows.map(r=>r.live?9:5),symbol:rows.map(r=>r.live?'circle-open':'circle')}},
     {x,y:rows.map(r=>r.vc_retornos),type:'scatter',mode:'lines+markers',name:'Retornos',line:{color:'#fbbf24',width:2},marker:{color:'#fbbf24',size:rows.map(r=>r.live?9:5),symbol:rows.map(r=>r.live?'square-open':'circle')}}
   ],{...baseLayout,yaxis:{...baseLayout.yaxis,title:'Valor cuota'}},config);
 
@@ -163,7 +163,7 @@ function renderCharts(){
 
   const ticks=LIVE?.tickers||[];Plotly.react('weightChart',[{x:FACTORS,y:FACTORS.map(f=>ticks.find(t=>t.ticker===f)?.level_weight_abs_pct??null),name:'Niveles',type:'bar'},{x:FACTORS,y:FACTORS.map(f=>ticks.find(t=>t.ticker===f)?.return_weight_abs_pct??null),name:'Retornos',type:'bar'}],{...baseLayout,barmode:'group',xaxis:{type:'category',gridcolor:'#213147',zeroline:false},yaxis:{...baseLayout.yaxis,ticksuffix:'%',title:'Aporte absoluto'}},config);
 }
-function renderMethod(){const tr=DB.training||{};$('methodText').textContent=`Factores: ${FACTORS.join(', ')}. Entrenamiento fijo ${fmt(tr.start)}–${fmt(tr.end)}. Niveles conserva la regresión absoluta para obtener la variación implícita entre dos ruedas, pero el VC operativo se vuelve a anclar al VC de la rueda anterior. Retornos estima directamente la variación diaria y también se aplica sobre el VC anterior. Por eso la comparación de ambos VC queda en la misma base.`;$('levelEq').textContent=DB.models?.niveles?.equation||'—';$('returnEq').textContent=DB.models?.retornos?.equation||'—'}
+function renderMethod(){const tr=DB.training||{};$('methodText').textContent=`Factores: ${FACTORS.join(', ')}. Entrenamiento fijo ${fmt(tr.start)}–${fmt(tr.end)}. Niveles estima directamente el VC con los niveles actuales de los cinco factores, igual que Profuturo. Retornos estima la variación diaria de esos factores y la aplica sobre el VC previo. La serie normalizada de Niveles se conserva únicamente como diagnóstico para estudiar la brecha, no como reemplazo del modelo principal.`;$('levelEq').textContent=DB.models?.niveles?.equation||'—';$('returnEq').textContent=DB.models?.retornos?.equation||'—'}
 function bind(){document.querySelectorAll('[data-range] button').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('[data-range] button').forEach(x=>x.classList.remove('active'));b.classList.add('active');RANGE=Number(b.dataset.n);renderCharts()}))}
 async function main(){try{[DB,LIVE]=await Promise.all([fetchJson(BASE_URL),fetchJson(LIVE_URL,true)]);if(DB?.fund!=='HÁBITAT Fondo 3')throw new Error('La base cargada no corresponde a Hábitat Fondo 3');renderTop();renderFactors();renderValidation();renderCharts();renderMethod();bind()}catch(e){const el=$('loadError');el.style.display='block';el.textContent=`No se pudo cargar el visor Hábitat: ${e.message}`;console.error(e)}}
 main();
