@@ -66,12 +66,11 @@ jobs:
         run: |
           python scripts/run_habitat_exact_pipeline_stable_ui.py
           python scripts/update_habitat_live_market.py
-          # El pipeline histórico puede regenerar la UI antigua. Se restaura
-          # deliberadamente el visor fijo niveles/retornos comprometido en Git.
-          git restore public/habitat/index.html
 
       - name: Validar serie SBS Hábitat
         run: |
+          # Este validador pertenece al pipeline histórico y por ello se ejecuta
+          # mientras la UI temporal generada por ese pipeline aún está presente.
           python scripts/validate_habitat_official.py
           PYTHONPATH=scripts python -c "from habitat_complete_official_calendar import validate_official_estimate_calendar; validate_official_estimate_calendar()"
           test -s data/rolling90/sbs_habitat_f3.csv
@@ -93,6 +92,9 @@ jobs:
           PYTHONUTF8: "1"
           PYTHONIOENCODING: "utf-8"
         run: |
+          # El pipeline histórico puede regenerar la UI antigua. A partir de
+          # este punto se restaura el visor fijo niveles/retornos comprometido.
+          git restore public/habitat/index.html
           python scripts/build_habitat_fixed_levels_returns_monitor.py
           python scripts/build_habitat_fixed_models_intraday.py
           python scripts/validate_habitat_fixed_models.py
@@ -126,7 +128,7 @@ jobs:
       - name: Guardar resultados de Hábitat
         run: |
           git config user.name "github-actions[bot]"
-          git config user.email "4189824+github-actions[bot]@users.noreply.github.com"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add \
             data/rolling90 \
             data/fixed_models/spblscup_levels_2026.csv \
