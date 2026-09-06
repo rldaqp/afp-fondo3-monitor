@@ -4,9 +4,13 @@ import json
 import math
 from pathlib import Path
 
+from install_habitat_fixed_trade_runtime import main as install_trade_runtime
+
 ROOT = Path(__file__).resolve().parents[1]
 BASE = ROOT / "public" / "habitat" / "data" / "fixed_models_2026.json"
 LIVE = ROOT / "public" / "habitat" / "data" / "fixed_models_intraday.json"
+TRADE = ROOT / "public" / "habitat" / "data" / "fixed_trade_runtime_v1.js"
+INDEX = ROOT / "public" / "habitat" / "index.html"
 FACTORS = ["SPY", "EEM", "MCHI", "QQQ", "SPBLSCUP"]
 
 
@@ -61,6 +65,17 @@ def main() -> None:
                 )
         assert finite(live["models"]["niveles"]["vc_intraday"])
         assert finite(live["models"]["retornos"]["vc_intraday"])
+
+    # Copia la misma lógica de operaciones del visor Profuturo y la aísla con
+    # identidad, localStorage y endpoint de Drive propios de Hábitat.
+    install_trade_runtime()
+    assert TRADE.exists() and TRADE.stat().st_size > 1000
+    runtime = TRADE.read_text(encoding="utf-8")
+    html = INDEX.read_text(encoding="utf-8")
+    assert "const FUND='HABITAT';" in runtime
+    assert "habitat_fondo3_trade_history_v3" in runtime
+    assert "Profuturo" not in runtime and "PROFUTURO" not in runtime
+    assert "data/fixed_trade_runtime_v1.js" in html
 
     print(
         "Hábitat niveles/retornos validado:",
