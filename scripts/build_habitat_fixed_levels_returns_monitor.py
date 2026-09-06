@@ -17,10 +17,10 @@ OUT_CSV = ROOT / "public" / "habitat" / "data" / "fixed_models_2026.csv"
 LIMA = ZoneInfo("America/Lima")
 
 HISTORY_START = pd.Timestamp("2026-01-05")
-TRAIN_START = pd.Timestamp("2026-07-07")
-TRAIN_END = pd.Timestamp("2026-08-17")
-VALIDATION_START = pd.Timestamp("2026-08-18")
+WINDOW = 90
+BACKTEST_DAYS = 7
 FACTORS = ["SPY", "EEM", "MCHI", "QQQ", "SPBLSCUP"]
+RET_FACTORS = [f"ret_{x}" for x in FACTORS]
 
 
 def finite(value) -> bool:
@@ -56,6 +56,7 @@ def ols_fit(frame: pd.DataFrame, y_col: str, x_cols: list[str]) -> dict:
         "r2": float(r2),
         "adj_r2": float(adj),
         "stderr": stderr,
+        "fitted": fitted,
     }
 
 
@@ -64,33 +65,40 @@ def equation(coeff: dict, prefix: str = "VC") -> str:
     for name in FACTORS:
         value = float(coeff[name])
         sign = "+" if value >= 0 else "−"
-        bits.append(f" {sign} {abs(value):.12f}×{prefix}_{name if prefix == 'r' else name}")
+        bits.append(f" {sign} {abs(value):.12f}×{prefix}_{name}")
     return "".join(bits)
 
 
-def phase(date: pd.Timestamp, has_actual: bool) -> str:
-    if date < TRAIN_START:
-        return "RETROSPECTIVO"
-    if date <= TRAIN_END:
-        return "ENTRENAMIENTO"
-    return "VALIDACIÓN" if has_actual else "PROYECCIÓN"
+def model_level(coeff: dict, frame: pd.DataFrame) -> np.ndarray:
+    x = frame[FACTORS].to_numpy(float)
+    beta = np.array([float(coeff[x]) for x in FACTORS], dtype=float)
+    return float(coeff["intercept"]) + x @ beta
 
 
-def metrics(frame: pd.DataFrame, mask: pd.Series, error_col: str) -> dict:
-    e = pd.to_numeric(frame.loc[mask, error_col], errors="coerce").dropna().to_numpy(float)
+def model_return(coeff: dict, frame: pd.DataFrame) -> np.ndarray:
+    x = frame[RET_FACTORS].to_numpy(float)
+    beta = np.array([float(coeff[x.replace("ret_", "")]) for x in RET_FACTORS], dtype=float)
+    return float(coeff["intercept"]) + x @ beta
+
+
+def error_metrics(actual, predicted) -> dict:
+    a = np.asarray(actual, float)
+    p = np.asarray(predicted, float)
+    ok = np.isfinite(a) & np.isfinite(p) & (a != 0)
+    if not ok.any():
+        return {"n": 0, "mae_pct": None, "rmse_pct": None, "bias_pct": None, "max_abs_pct": None, "r2_vc_oos": None}
+    a = a[ok]
+    p = p[ok]
+    e = (p / a - 1.0) * 100.0
+    sse = float(np.sum((a - p) ** 2))
+    sst = float(np.sum((a - np.mean(a)) ** 2))
     return {
-        "n": int(e.size),
-        "mae_pct": float(np.mean(np.abs(e))) if e.size else None,
-        "rmse_pct": float(np.sqrt(np.mean(e ** 2))) if e.size else None,
-        "bias_pct": float(np.mean(e)) if e.size else None,
-    }
-
-
-def metric_block(frame: pd.DataFrame, mask: pd.Series) -> dict:
-    return {
-        "niveles": metrics(frame, mask, "error_niveles_pct"),
-        "retornos": metrics(frame, mask, "error_retornos_pct"),
-        "niveles_normalizado": metrics(frame, mask, "error_niveles_normalizado_pct"),
+        "n": int(len(a)),
+        "mae_pct": float(np.mean(np.abs(e))),
+        "rmse_pct": float(np.sqrt(np.mean(e ** 2))),
+        "bias_pct": float(np.mean(e)),
+        "max_abs_pct": float(np.max(np.abs(e))),
+        "r2_vc_oos": float(1.0 - sse / sst) if sst else None,
     }
 
 
@@ -113,6 +121,13 @@ def chained_vc(df: pd.DataFrame, return_col: str) -> list[float]:
         if finite(value):
             previous_estimate = value
     return values
+
+
+def one_step_return_vc(frame: pd.DataFrame, predicted_returns: np.ndarray, full_real: pd.DataFrame) -> np.ndarray:
+    prior_map = full_real[["fecha", "vc_sbs"]].copy()
+    prior_map["prev_sbs_vc"] = prior_map["vc_sbs"].shift(1)
+    prev = frame["fecha"].map(prior_map.set_index("fecha")["prev_sbs_vc"]).to_numpy(float)
+    return prev * (1.0 + np.asarray(predicted_returns, float))
 
 
 def clean(value):
@@ -157,30 +172,28 @@ def main() -> None:
         df[f"ret_{name}"] = df[name].pct_change(fill_method=None)
     df["ret_vc_sbs"] = df["vc_sbs"].pct_change(fill_method=None)
 
-    train_mask = df["fecha"].between(TRAIN_START, TRAIN_END)
-    level_fit = ols_fit(df.loc[train_mask], "vc_sbs", FACTORS)
-    return_fit = ols_fit(df.loc[train_mask], "ret_vc_sbs", [f"ret_{x}" for x in FACTORS])
+    usable = df.dropna(subset=["vc_sbs", "ret_vc_sbs", *FACTORS, *RET_FACTORS]).copy().reset_index(drop=True)
+    if len(usable) < WINDOW + BACKTEST_DAYS:
+        raise RuntimeError(f"Hábitat: se requieren al menos {WINDOW + BACKTEST_DAYS} observaciones completas")
+
+    # PRODUCCIÓN: ambos modelos usan las 90 observaciones SBS más recientes.
+    train = usable.tail(WINDOW).copy().reset_index(drop=True)
+    train_start = pd.Timestamp(train["fecha"].min())
+    train_end = pd.Timestamp(train["fecha"].max())
+
+    level_fit = ols_fit(train, "vc_sbs", FACTORS)
+    return_fit_raw = ols_fit(train, "ret_vc_sbs", RET_FACTORS)
 
     level_coeff = level_fit["coefficients"]
-    return_coeff_raw = return_fit["coefficients"]
-    return_coeff = {"intercept": return_coeff_raw["intercept"]}
+    return_coeff = {"intercept": return_fit_raw["coefficients"]["intercept"]}
     for name in FACTORS:
-        return_coeff[name] = return_coeff_raw[f"ret_{name}"]
+        return_coeff[name] = return_fit_raw["coefficients"][f"ret_{name}"]
 
-    # MODELO DE NIVELES PRINCIPAL: igual tratamiento que Profuturo.
-    # Estima directamente el VC a partir del NIVEL de los cinco factores.
-    df["vc_niveles"] = float(level_coeff["intercept"])
-    level_valid = pd.Series(True, index=df.index)
-    for name in FACTORS:
-        level_valid &= df[name].notna()
-        df["vc_niveles"] += float(level_coeff[name]) * df[name]
-    df.loc[~level_valid, "vc_niveles"] = np.nan
-
-    # Alias de auditoría para compatibilidad con el visor previo.
-    df["vc_niveles_raw"] = df["vc_niveles"]
-
-    # Variación implícita del OLS de niveles. Sirve para comparar la señal diaria,
-    # pero NO sustituye al modelo de Niveles principal.
+    # NIVELES 90: OLS absoluto directo.
+    df["vc_niveles"] = np.nan
+    valid_level = df[FACTORS].notna().all(axis=1)
+    df.loc[valid_level, "vc_niveles"] = model_level(level_coeff, df.loc[valid_level])
+    df["vc_niveles_raw"] = df["vc_niveles"]  # alias de compatibilidad/auditoría
     previous_level = df["vc_niveles"].shift(1)
     df["ret_niveles_implicito"] = np.where(
         df["vc_niveles"].notna() & previous_level.notna() & previous_level.ne(0),
@@ -188,18 +201,11 @@ def main() -> None:
         np.nan,
     )
 
-    # Diagnóstico adicional: rebase del movimiento de Niveles sobre el VC previo.
-    # No es el modelo Profuturo y no se usa como Niveles principal.
-    df["vc_niveles_normalizado"] = chained_vc(df, "ret_niveles_implicito")
-
-    # MODELO DE RETORNOS: estima el retorno diario y lo aplica al VC previo,
-    # exactamente la arquitectura utilizada en Profuturo.
-    df["ret_vc_estimado"] = float(return_coeff["intercept"])
-    return_valid = pd.Series(True, index=df.index)
-    for name in FACTORS:
-        return_valid &= df[f"ret_{name}"].notna()
-        df["ret_vc_estimado"] += float(return_coeff[name]) * df[f"ret_{name}"]
-    df.loc[~return_valid, "ret_vc_estimado"] = np.nan
+    # RETORNOS 90: retorno diario aplicado al VC SBS previo; si SBS aún no existe,
+    # continúa desde la estimación consecutiva anterior.
+    df["ret_vc_estimado"] = np.nan
+    valid_return = df[RET_FACTORS].notna().all(axis=1)
+    df.loc[valid_return, "ret_vc_estimado"] = model_return(return_coeff, df.loc[valid_return])
     df["vc_retornos"] = chained_vc(df, "ret_vc_estimado")
 
     df["error_niveles_pct"] = np.where(
@@ -207,36 +213,69 @@ def main() -> None:
         (df["vc_niveles"] / df["vc_sbs"] - 1.0) * 100.0,
         np.nan,
     )
-    df["error_niveles_normalizado_pct"] = np.where(
-        df["vc_sbs"].notna() & df["vc_niveles_normalizado"].notna(),
-        (df["vc_niveles_normalizado"] / df["vc_sbs"] - 1.0) * 100.0,
-        np.nan,
-    )
     df["error_retornos_pct"] = np.where(
         df["vc_sbs"].notna() & df["vc_retornos"].notna(),
         (df["vc_retornos"] / df["vc_sbs"] - 1.0) * 100.0,
         np.nan,
     )
+
+    def phase(date: pd.Timestamp, has_actual: bool) -> str:
+        if date < train_start:
+            return "RETROSPECTIVO"
+        if date <= train_end and has_actual:
+            return "ENTRENAMIENTO 90"
+        return "PROYECCIÓN" if not has_actual else "SBS POSTERIOR"
+
     df["fase"] = [phase(d, finite(v)) for d, v in zip(df["fecha"], df["vc_sbs"])]
 
+    # Diagnóstico móvil de 7 días: deja las 7 últimas fechas SBS completamente
+    # fuera del ajuste y entrena ambos modelos con las 90 observaciones anteriores.
+    holdout = usable.tail(BACKTEST_DAYS).copy().reset_index(drop=True)
+    holdout_start = pd.Timestamp(holdout["fecha"].min())
+    bt_pool = usable.loc[usable["fecha"] < holdout_start].copy()
+    bt_train = bt_pool.tail(WINDOW).copy().reset_index(drop=True)
+    if len(bt_train) != WINDOW:
+        raise RuntimeError("Hábitat: no hay 90 observaciones previas para el backtest de 7 días")
+
+    bt_level_fit = ols_fit(bt_train, "vc_sbs", FACTORS)
+    bt_return_fit_raw = ols_fit(bt_train, "ret_vc_sbs", RET_FACTORS)
+    bt_return_coeff = {"intercept": bt_return_fit_raw["coefficients"]["intercept"]}
+    for name in FACTORS:
+        bt_return_coeff[name] = bt_return_fit_raw["coefficients"][f"ret_{name}"]
+
+    bt_level_pred = model_level(bt_level_fit["coefficients"], holdout)
+    bt_ret_pred = model_return(bt_return_coeff, holdout)
+    bt_ret_vc = one_step_return_vc(holdout, bt_ret_pred, usable)
+    validation_metrics = {
+        "niveles": error_metrics(holdout["vc_sbs"], bt_level_pred),
+        "retornos": error_metrics(holdout["vc_sbs"], bt_ret_vc),
+    }
+
+    train_level_pred = model_level(level_coeff, train)
+    train_ret_pred = model_return(return_coeff, train)
+    train_ret_vc = one_step_return_vc(train, train_ret_pred, usable)
+    training_metrics = {
+        "niveles": error_metrics(train["vc_sbs"], train_level_pred),
+        "retornos": error_metrics(train["vc_sbs"], train_ret_vc),
+    }
+
     latest_sbs = sbs.iloc[-1]
-    validation_mask = (df["fecha"] >= VALIDATION_START) & df["vc_sbs"].notna()
-    training_metrics = metric_block(df, train_mask & df["vc_sbs"].notna())
-    validation_metrics = metric_block(df, validation_mask)
 
     level_model = {
-        **level_fit,
+        **{k: v for k, v in level_fit.items() if k != "fitted"},
         "coefficients": level_coeff,
+        "window": WINDOW,
         "equation": equation(level_coeff, "VC"),
         "target": "nivel absoluto del valor cuota Hábitat Fondo 3",
-        "operational_rule": "El VC de Niveles es el resultado OLS absoluto directo de los cinco factores, igual que en Profuturo.",
+        "operational_rule": "Niveles 90: OLS absoluto directo estimado con las 90 observaciones SBS más recientes disponibles.",
     }
     return_model = {
-        **return_fit,
+        **{k: v for k, v in return_fit_raw.items() if k != "fitted"},
         "coefficients": return_coeff,
+        "window": WINDOW,
         "equation": equation(return_coeff, "r"),
         "target": "retorno diario del valor cuota Hábitat Fondo 3",
-        "operational_rule": "El retorno estimado se aplica al VC SBS de la rueda anterior cuando existe; si no, continúa desde la estimación consecutiva anterior.",
+        "operational_rule": "Retornos 90: estima el retorno con las 90 observaciones SBS más recientes y lo aplica al VC SBS de la rueda anterior; si aún no existe SBS, continúa desde la estimación consecutiva anterior.",
     }
 
     rows = [{k: clean(v) for k, v in record.items()} for record in df.to_dict(orient="records")]
@@ -244,15 +283,26 @@ def main() -> None:
     payload = {
         "fund": "HÁBITAT Fondo 3",
         "generated_at_lima": datetime.now(LIMA).isoformat(),
-        "model_version": "habitat-fixed-levels-returns-v3-profuturo-parity",
+        "model_version": "habitat-rolling90-levels-returns-v4",
         "history_start": HISTORY_START.date().isoformat(),
+        "window": WINDOW,
         "training": {
-            "start": TRAIN_START.date().isoformat(),
-            "end": TRAIN_END.date().isoformat(),
-            "n_levels": level_fit["n"],
-            "n_returns": return_fit["n"],
+            "start": train_start.date().isoformat(),
+            "end": train_end.date().isoformat(),
+            "n_levels": int(level_fit["n"]),
+            "n_returns": int(return_fit_raw["n"]),
+            "rule": "90 observaciones completas más recientes hasta el último VC SBS disponible",
         },
-        "validation_start": VALIDATION_START.date().isoformat(),
+        "validation_start": holdout_start.date().isoformat(),
+        "backtest7": {
+            "holdout_start": holdout_start.date().isoformat(),
+            "holdout_end": pd.Timestamp(holdout["fecha"].max()).date().isoformat(),
+            "n": BACKTEST_DAYS,
+            "training_start": pd.Timestamp(bt_train["fecha"].min()).date().isoformat(),
+            "training_end": pd.Timestamp(bt_train["fecha"].max()).date().isoformat(),
+            "window": WINDOW,
+            "rule": "Las 7 últimas fechas SBS quedan fuera; ambos modelos se ajustan con las 90 observaciones inmediatamente anteriores.",
+        },
         "factors": FACTORS,
         "latest": {
             "latest_sbs_date": pd.Timestamp(latest_sbs["fecha"]).date().isoformat(),
@@ -267,7 +317,7 @@ def main() -> None:
             "training": training_metrics,
             "validation": validation_metrics,
         },
-        "comparison_rule": "Misma lógica que Profuturo: Niveles estima el VC absoluto con los niveles actuales de los factores; Retornos estima la variación diaria de los factores y la aplica sobre el VC previo. La versión normalizada de Niveles es solo un diagnóstico adicional.",
+        "comparison_rule": "Hábitat mantiene únicamente dos modelos productivos, ambos con ventana móvil de 90 observaciones: Niveles 90 estima el VC absoluto; Retornos 90 estima la variación diaria y la aplica sobre el VC previo.",
         "anti_stale_rules": [
             "Una fecha aparece una sola vez; cualquier duplicado se resuelve antes del cálculo.",
             "Los cinco factores deben pertenecer a la misma rueda de mercado para estimar Niveles.",
@@ -285,13 +335,18 @@ def main() -> None:
 
     print(json.dumps({
         "fund": payload["fund"],
+        "model_version": payload["model_version"],
         "training": payload["training"],
+        "backtest7": payload["backtest7"],
         "latest": payload["latest"],
-        "validation": payload["metrics"]["validation"],
+        "r2": {
+            "niveles90": level_model["r2"],
+            "retornos90": return_model["r2"],
+        },
+        "validation7": validation_metrics,
         "latest_models": {
-            "niveles": clean(df.iloc[-1]["vc_niveles"]),
-            "niveles_normalizado_diagnostico": clean(df.iloc[-1]["vc_niveles_normalizado"]),
-            "retornos": clean(df.iloc[-1]["vc_retornos"]),
+            "niveles90": clean(df.iloc[-1]["vc_niveles"]),
+            "retornos90": clean(df.iloc[-1]["vc_retornos"]),
             "ret_niveles_implicito": clean(df.iloc[-1]["ret_niveles_implicito"]),
             "ret_retornos": clean(df.iloc[-1]["ret_vc_estimado"]),
         },
