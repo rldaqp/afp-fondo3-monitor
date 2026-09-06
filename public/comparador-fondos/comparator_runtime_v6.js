@@ -76,7 +76,9 @@ function fixedModelMap(db,kind){
   const field=kind==='niveles'?'vc_niveles':'vc_retornos';
   const out=new Map();
   for(const r of (Array.isArray(db?.rows)?db.rows:[])){
-    const d=String(r?.fecha||'').slice(0,10), v=Number(r?.[field]);
+    const d=String(r?.fecha||'').slice(0,10);
+    const actual=Number(r?.vc_sbs), estimated=Number(r?.[field]);
+    const v=(Number.isFinite(actual)&&actual>0)?actual:estimated;
     if(d && Number.isFinite(v) && v>0) out.set(d,v);
   }
   return out;
@@ -108,7 +110,7 @@ function fundSourceLabel(src,fund){
 function sourceHint(src){
   if(src==='sbs') return `Solo VC oficiales SBS · última fecha común ${fmt(DATA?.sets?.sbs?.at(-1)?.fecha)}`;
   const h=DATA?.windows?.[src]?.habitat, p=DATA?.windows?.[src]?.profuturo;
-  return `${sourceName(src)} vigente · Hábitat ${h||'—'} ruedas · Profuturo ${p||'—'} ruedas`;
+  return `${sourceName(src)} vigente · SBS oficial si existe; modelo solo si está pendiente · Hábitat ${h||'—'} · Profuturo ${p||'—'} ruedas`;
 }
 
 function volatility(values){
@@ -219,18 +221,18 @@ function calculate(){
   const hg=hf-cap, pg=pf-cap, hr=hf/cap-1, pr=pf/cap-1;
   $('opHabFinal').textContent=money(hf); $('opProFinal').textContent=money(pf);
   paint('opHabGain',hg); paint('opProGain',pg); paint('opHabRet',hr,true); paint('opProRet',pr,true);
-  $('opHabMeta').textContent=`${fundSourceLabel(src,'habitat')} · ${fmt(entry.fecha)} VC ${vc(entry.habitat)} → ${fmt(exit.fecha)} VC ${vc(exit.habitat)} · escala propia Hábitat`;
-  $('opProMeta').textContent=`${fundSourceLabel(src,'profuturo')} · ${fmt(entry.fecha)} VC ${vc(entry.profuturo)} → ${fmt(exit.fecha)} VC ${vc(exit.profuturo)} · escala propia Profuturo`;
+  $('opHabMeta').textContent=`${fundSourceLabel(src,'habitat')} · ${fmt(entry.fecha)} VC ${vc(entry.habitat)} → ${fmt(exit.fecha)} VC ${vc(exit.habitat)} · SBS prevalece cuando existe`;
+  $('opProMeta').textContent=`${fundSourceLabel(src,'profuturo')} · ${fmt(entry.fecha)} VC ${vc(entry.profuturo)} → ${fmt(exit.fecha)} VC ${vc(exit.profuturo)} · SBS prevalece cuando existe`;
   const winner=hf>pf?'Hábitat':pf>hf?'Profuturo':'Empate', diff=Math.abs(hf-pf);
   $('opHabCard').classList.toggle('winner',hf>pf); $('opProCard').classList.toggle('winner',pf>hf);
-  const lead=src==='sbs'?'SBS real':`${sourceName(src)} · modelos vigentes`;
+  const lead=src==='sbs'?'SBS real':`${sourceName(src)} · misma regla de cada visor`;
   $('opWinner').textContent=winner==='Empate' ? `${lead} · empate · ${fmt(entry.fecha)} → ${fmt(exit.fecha)} · ${money(hf)}.` : `${lead} · más rentable: ${winner} · ventaja ${money(diff)} · ${fmt(entry.fecha)} → ${fmt(exit.fecha)}.`;
   saveState();
 }
 function installOperation(){
   const p=$('operationPanel'); if(!p) return;
   p.innerHTML=`
-    <div class="head"><div><h2>Operación comparada · Hábitat vs Profuturo</h2><div class="sub">Mismo monto y mismas fechas. Elige SBS real, Niveles o Retornos. Cada AFP usa automáticamente la ventana de su modelo vigente.</div></div></div>
+    <div class="head"><div><h2>Operación comparada · Hábitat vs Profuturo</h2><div class="sub">Mismo monto y mismas fechas. Elige SBS real, Niveles o Retornos. Igual que en cada visor individual, si existe VC SBS para una fecha se usa el dato oficial; el modelo solo valora fechas todavía pendientes.</div></div></div>
     <div class="opmodes"><button type="button" class="opbtn active" data-opmode="inside">Sigo dentro</button><button type="button" class="opbtn" data-opmode="closed">Ya salí</button></div>
     <div class="opinputs">
       <label>Fuente de valoración<select id="opSource"><option value="sbs">SBS real</option><option value="niveles">Niveles · modelo vigente</option><option value="retornos">Retornos · modelo vigente</option></select><span id="opSourceHint" class="sourcehint"></span></label>
@@ -244,7 +246,7 @@ function installOperation(){
       <div class="opfund" id="opHabCard"><h3>Hábitat Fondo 3</h3><div class="opmetrics"><div class="opmini"><span>Capital final</span><b id="opHabFinal">—</b></div><div class="opmini"><span>Ganancia / pérdida</span><b id="opHabGain">—</b></div><div class="opmini"><span>Rentabilidad</span><b id="opHabRet">—</b></div></div><div class="opmeta" id="opHabMeta">—</div></div>
       <div class="opfund" id="opProCard"><h3>Profuturo Fondo 3</h3><div class="opmetrics"><div class="opmini"><span>Capital final</span><b id="opProFinal">—</b></div><div class="opmini"><span>Ganancia / pérdida</span><b id="opProGain">—</b></div><div class="opmini"><span>Rentabilidad</span><b id="opProRet">—</b></div></div><div class="opmeta" id="opProMeta">—</div></div>
     </div>
-    <div class="note" style="margin-top:10px"><b>Importante:</b> “SBS real” solo permite fechas con VC oficial común. Niveles y Retornos usan los modelos vigentes de cada AFP y permiten fechas estimadas posteriores al último VC SBS cuando existen en ambos modelos. No se reemplaza silenciosamente una fecha solicitada por otra.</div>`;
+    <div class="note" style="margin-top:10px"><b>Regla de valoración:</b> si la fecha ya tiene VC SBS oficial, ese VC prevalece. Solo cuando SBS aún no publicó la fecha se utiliza Niveles o Retornos. Así la misma operación debe coincidir con el visor individual de referencia.</div>`;
 
   const s=readState();
   $('opSource').value=normalizeSource(s.source||'sbs');
