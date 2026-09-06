@@ -13,12 +13,12 @@
 <body>
 <main class="wrap">
 <h1>Hábitat Fondo 3</h1>
-<div class="sub">Misma arquitectura metodológica del visor Profuturo · Niveles y Retornos expresados sobre una base comparable · calibración propia con la serie SBS de Hábitat</div>
+<div class="sub">Mismos cinco factores y ecuaciones base del visor Profuturo · Hábitat añade una normalización comparativa de Niveles · calibración propia con la serie SBS de Hábitat</div>
 <div id="loadError" class="error"></div>
 
 <section class="topgrid">
   <div class="card"><div class="label">Último VC SBS oficial</div><div class="value" id="sbsVc">—</div><div class="small" id="sbsDate">—</div></div>
-  <div class="card"><div class="label">Modelo de niveles · operativo</div><div class="value" id="levelVc">—</div><div class="signal" id="levelChange">—</div><div class="small" id="levelDate">—</div></div>
+  <div class="card"><div class="label">Niveles normalizado · comparación</div><div class="value" id="levelVc">—</div><div class="signal" id="levelChange">—</div><div class="small" id="levelDate">—</div></div>
   <div class="card"><div class="label">Modelo de retornos</div><div class="value" id="returnVc">—</div><div class="signal" id="returnChange">—</div><div class="small" id="returnDate">—</div></div>
   <div class="card"><div class="label">Estado de mercado</div><div class="value" id="marketState">—</div><div class="small" id="marketDetail">—</div></div>
 </section>
@@ -45,7 +45,7 @@
   <div class="modelmeta">
     <div class="mini"><span>VC operativo</span><b id="mLevelVc">—</b></div>
     <div class="mini"><span>Variación implícita</span><b id="mLevelRet">—</b></div>
-    <div class="mini"><span>Nivel OLS bruto</span><b id="mLevelRaw">—</b></div>
+    <div class="mini"><span>Nivel OLS original · diagnóstico</span><b id="mLevelRaw">—</b></div>
     <div class="mini"><span>R² entrenamiento</span><b id="mLevelR2">—</b></div>
     <div class="mini"><span>Error estándar bruto</span><b id="mLevelSe">—</b></div>
   </div>
@@ -81,7 +81,7 @@
 <section class="method">
   <h2>Metodología aplicada a Hábitat</h2>
   <div class="small" id="methodText">—</div>
-  <h3 style="margin-top:10px">Ecuación · niveles bruto</h3><div class="equation" id="levelEq">—</div>
+  <h3 style="margin-top:10px">Ecuación original de Niveles</h3><div class="equation" id="levelEq">—</div>
   <h3 style="margin-top:10px">Ecuación · retornos</h3><div class="equation" id="returnEq">—</div>
 </section>
 
@@ -161,7 +161,7 @@ function renderCharts(){
     {x,y:real.map(v=>v===null?null:v*100),type:'scatter',mode:'markers',name:'Retorno real SBS',marker:{size:7,color:'#fb923c',symbol:'diamond'},hovertemplate:'%{x|%d/%m/%Y}<br>SBS %{y:.3f}%<extra></extra>'}
   ],{...baseLayout,shapes,yaxis:{...baseLayout.yaxis,title:'Retorno %',autorange:true,zeroline:true,zerolinecolor:'#cbd5e1',zerolinewidth:1}},config);
 
-  const ticks=LIVE?.tickers||[];Plotly.react('weightChart',[{x:FACTORS,y:FACTORS.map(f=>ticks.find(t=>t.ticker===f)?.level_weight_abs_pct??null),name:'Niveles',type:'bar'},{x:FACTORS,y:FACTORS.map(f=>ticks.find(t=>t.ticker===f)?.return_weight_abs_pct??null),name:'Retornos',type:'bar'}],{...baseLayout,barmode:'group',yaxis:{...baseLayout.yaxis,ticksuffix:'%',title:'Aporte absoluto'}},config);
+  const ticks=LIVE?.tickers||[];Plotly.react('weightChart',[{x:FACTORS,y:FACTORS.map(f=>ticks.find(t=>t.ticker===f)?.level_weight_abs_pct??null),name:'Niveles',type:'bar'},{x:FACTORS,y:FACTORS.map(f=>ticks.find(t=>t.ticker===f)?.return_weight_abs_pct??null),name:'Retornos',type:'bar'}],{...baseLayout,barmode:'group',xaxis:{type:'category',gridcolor:'#213147',zeroline:false},yaxis:{...baseLayout.yaxis,ticksuffix:'%',title:'Aporte absoluto'}},config);
 }
 function renderMethod(){const tr=DB.training||{};$('methodText').textContent=`Factores: ${FACTORS.join(', ')}. Entrenamiento fijo ${fmt(tr.start)}–${fmt(tr.end)}. Niveles conserva la regresión absoluta para obtener la variación implícita entre dos ruedas, pero el VC operativo se vuelve a anclar al VC de la rueda anterior. Retornos estima directamente la variación diaria y también se aplica sobre el VC anterior. Por eso la comparación de ambos VC queda en la misma base.`;$('levelEq').textContent=DB.models?.niveles?.equation||'—';$('returnEq').textContent=DB.models?.retornos?.equation||'—'}
 function bind(){document.querySelectorAll('[data-range] button').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('[data-range] button').forEach(x=>x.classList.remove('active'));b.classList.add('active');RANGE=Number(b.dataset.n);renderCharts()}))}
