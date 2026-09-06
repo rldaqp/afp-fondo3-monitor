@@ -90,7 +90,7 @@ def metric_block(frame: pd.DataFrame, mask: pd.Series) -> dict:
     return {
         "niveles": metrics(frame, mask, "error_niveles_pct"),
         "retornos": metrics(frame, mask, "error_retornos_pct"),
-        "niveles_raw": metrics(frame, mask, "error_niveles_raw_pct"),
+        "niveles_normalizado": metrics(frame, mask, "error_niveles_normalizado_pct"),
     }
 
 
@@ -167,29 +167,33 @@ def main() -> None:
     for name in FACTORS:
         return_coeff[name] = return_coeff_raw[f"ret_{name}"]
 
-    # 1) Nivel absoluto bruto del OLS. Se conserva para auditoría y diagnóstico.
-    df["vc_niveles_raw"] = float(level_coeff["intercept"])
+    # MODELO DE NIVELES PRINCIPAL: igual tratamiento que Profuturo.
+    # Estima directamente el VC a partir del NIVEL de los cinco factores.
+    df["vc_niveles"] = float(level_coeff["intercept"])
     level_valid = pd.Series(True, index=df.index)
     for name in FACTORS:
         level_valid &= df[name].notna()
-        df["vc_niveles_raw"] += float(level_coeff[name]) * df[name]
-    df.loc[~level_valid, "vc_niveles_raw"] = np.nan
+        df["vc_niveles"] += float(level_coeff[name]) * df[name]
+    df.loc[~level_valid, "vc_niveles"] = np.nan
 
-    # 2) Variación implícita del modelo de niveles entre dos ruedas consecutivas.
-    # Esta es la magnitud comparable con el modelo de retornos.
-    previous_raw = df["vc_niveles_raw"].shift(1)
+    # Alias de auditoría para compatibilidad con el visor previo.
+    df["vc_niveles_raw"] = df["vc_niveles"]
+
+    # Variación implícita del OLS de niveles. Sirve para comparar la señal diaria,
+    # pero NO sustituye al modelo de Niveles principal.
+    previous_level = df["vc_niveles"].shift(1)
     df["ret_niveles_implicito"] = np.where(
-        df["vc_niveles_raw"].notna() & previous_raw.notna() & previous_raw.ne(0),
-        df["vc_niveles_raw"] / previous_raw - 1.0,
+        df["vc_niveles"].notna() & previous_level.notna() & previous_level.ne(0),
+        df["vc_niveles"] / previous_level - 1.0,
         np.nan,
     )
 
-    # 3) VC operativo de niveles: usa la misma regla de base que Retornos.
-    # Si existe SBS del día anterior, ambos modelos arrancan exactamente del mismo VC.
-    # Si SBS aún no fue publicado, cada modelo mantiene su cadena consecutiva propia.
-    df["vc_niveles"] = chained_vc(df, "ret_niveles_implicito")
+    # Diagnóstico adicional: rebase del movimiento de Niveles sobre el VC previo.
+    # No es el modelo Profuturo y no se usa como Niveles principal.
+    df["vc_niveles_normalizado"] = chained_vc(df, "ret_niveles_implicito")
 
-    # Modelo de retornos explícitos de los cinco factores.
+    # MODELO DE RETORNOS: estima el retorno diario y lo aplica al VC previo,
+    # exactamente la arquitectura utilizada en Profuturo.
     df["ret_vc_estimado"] = float(return_coeff["intercept"])
     return_valid = pd.Series(True, index=df.index)
     for name in FACTORS:
@@ -198,14 +202,14 @@ def main() -> None:
     df.loc[~return_valid, "ret_vc_estimado"] = np.nan
     df["vc_retornos"] = chained_vc(df, "ret_vc_estimado")
 
-    df["error_niveles_raw_pct"] = np.where(
-        df["vc_sbs"].notna() & df["vc_niveles_raw"].notna(),
-        (df["vc_niveles_raw"] / df["vc_sbs"] - 1.0) * 100.0,
-        np.nan,
-    )
     df["error_niveles_pct"] = np.where(
         df["vc_sbs"].notna() & df["vc_niveles"].notna(),
         (df["vc_niveles"] / df["vc_sbs"] - 1.0) * 100.0,
+        np.nan,
+    )
+    df["error_niveles_normalizado_pct"] = np.where(
+        df["vc_sbs"].notna() & df["vc_niveles_normalizado"].notna(),
+        (df["vc_niveles_normalizado"] / df["vc_sbs"] - 1.0) * 100.0,
         np.nan,
     )
     df["error_retornos_pct"] = np.where(
@@ -224,25 +228,23 @@ def main() -> None:
         **level_fit,
         "coefficients": level_coeff,
         "equation": equation(level_coeff, "VC"),
-        "target": "nivel absoluto bruto del valor cuota Hábitat Fondo 3",
-        "operational_rule": "El VC mostrado se ancla al VC de la rueda anterior usando la variación implícita entre dos niveles OLS consecutivos.",
+        "target": "nivel absoluto del valor cuota Hábitat Fondo 3",
+        "operational_rule": "El VC de Niveles es el resultado OLS absoluto directo de los cinco factores, igual que en Profuturo.",
     }
     return_model = {
         **return_fit,
         "coefficients": return_coeff,
         "equation": equation(return_coeff, "r"),
         "target": "retorno diario del valor cuota Hábitat Fondo 3",
-        "operational_rule": "El retorno estimado se aplica al VC de la rueda anterior.",
+        "operational_rule": "El retorno estimado se aplica al VC SBS de la rueda anterior cuando existe; si no, continúa desde la estimación consecutiva anterior.",
     }
 
-    rows = []
-    for record in df.to_dict(orient="records"):
-        rows.append({k: clean(v) for k, v in record.items()})
+    rows = [{k: clean(v) for k, v in record.items()} for record in df.to_dict(orient="records")]
 
     payload = {
         "fund": "HÁBITAT Fondo 3",
         "generated_at_lima": datetime.now(LIMA).isoformat(),
-        "model_version": "habitat-fixed-levels-returns-v2-anchored",
+        "model_version": "habitat-fixed-levels-returns-v3-profuturo-parity",
         "history_start": HISTORY_START.date().isoformat(),
         "training": {
             "start": TRAIN_START.date().isoformat(),
@@ -265,12 +267,12 @@ def main() -> None:
             "training": training_metrics,
             "validation": validation_metrics,
         },
-        "comparison_rule": "Ambos VC operativos parten del VC de la rueda anterior; Niveles usa la variación implícita del OLS en niveles y Retornos usa la regresión explícita de retornos.",
+        "comparison_rule": "Misma lógica que Profuturo: Niveles estima el VC absoluto con los niveles actuales de los factores; Retornos estima la variación diaria de los factores y la aplica sobre el VC previo. La versión normalizada de Niveles es solo un diagnóstico adicional.",
         "anti_stale_rules": [
             "Una fecha aparece una sola vez; cualquier duplicado se resuelve antes del cálculo.",
-            "Los cinco factores deben pertenecer a la misma rueda de mercado para estimar el nivel.",
+            "Los cinco factores deben pertenecer a la misma rueda de mercado para estimar Niveles.",
             "No se copia un precio o cierre antiguo a una fecha nueva.",
-            "Niveles y Retornos usan el VC SBS de la rueda anterior cuando existe; si aún no existe SBS, cada modelo encadena solo desde su estimación consecutiva anterior.",
+            "Retornos usa el VC SBS de la rueda anterior cuando existe; si no existe aún, encadena únicamente desde su estimación consecutiva anterior.",
         ],
         "rows": rows,
     }
@@ -286,11 +288,11 @@ def main() -> None:
         "training": payload["training"],
         "latest": payload["latest"],
         "validation": payload["metrics"]["validation"],
-        "latest_operational": {
+        "latest_models": {
             "niveles": clean(df.iloc[-1]["vc_niveles"]),
-            "niveles_raw": clean(df.iloc[-1]["vc_niveles_raw"]),
+            "niveles_normalizado_diagnostico": clean(df.iloc[-1]["vc_niveles_normalizado"]),
             "retornos": clean(df.iloc[-1]["vc_retornos"]),
-            "ret_niveles": clean(df.iloc[-1]["ret_niveles_implicito"]),
+            "ret_niveles_implicito": clean(df.iloc[-1]["ret_niveles_implicito"]),
             "ret_retornos": clean(df.iloc[-1]["ret_vc_estimado"]),
         },
     }, ensure_ascii=False))
