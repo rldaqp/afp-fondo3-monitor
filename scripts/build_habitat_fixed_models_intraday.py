@@ -164,35 +164,43 @@ def main() -> None:
 
     prior_rows = [r for r in rows if str(r.get("fecha", ""))[:10] < target]
     if not prior_rows:
-        raise RuntimeError("Hábitat: no existe fila previa para anclar los modelos")
+        raise RuntimeError("Hábitat: no existe fila previa para el cálculo")
     prior = prior_rows[-1]
 
-    # Ambos modelos usan el VC SBS previo cuando existe. Si SBS está pendiente,
-    # cada modelo continúa exclusivamente desde su propia cadena de la rueda previa.
+    # Retornos necesita una base de VC previa. Niveles NO: igual que Profuturo,
+    # su VC principal es el resultado absoluto directo de la ecuación OLS.
     if positive(prior.get("vc_sbs")):
-        level_base = return_base = float(prior["vc_sbs"])
-        level_base_rule = return_base_rule = "VC SBS real de la sesión anterior"
-    else:
-        if not positive(prior.get("vc_niveles")):
-            raise RuntimeError("Hábitat: no existe VC base consecutivo para Niveles")
-        if not positive(prior.get("vc_retornos")):
-            raise RuntimeError("Hábitat: no existe VC base consecutivo para Retornos")
-        level_base = float(prior["vc_niveles"])
+        return_base = float(prior["vc_sbs"])
+        return_base_rule = "VC SBS real de la sesión anterior"
+    elif positive(prior.get("vc_retornos")):
         return_base = float(prior["vc_retornos"])
-        level_base_rule = "VC estimado por Niveles de la sesión anterior"
         return_base_rule = "VC estimado por Retornos de la sesión anterior"
+    else:
+        raise RuntimeError("Hábitat: no existe VC base consecutivo para Retornos")
+
+    # Para el diagnóstico normalizado de Niveles se usa una base comparable,
+    # pero esta serie NO reemplaza al Niveles principal.
+    if positive(prior.get("vc_sbs")):
+        normalized_base = float(prior["vc_sbs"])
+        normalized_base_rule = "VC SBS real de la sesión anterior"
+    elif positive(prior.get("vc_niveles_normalizado")):
+        normalized_base = float(prior["vc_niveles_normalizado"])
+        normalized_base_rule = "VC normalizado de Niveles de la sesión anterior"
+    else:
+        normalized_base = None
+        normalized_base_rule = "Sin base consecutiva para diagnóstico normalizado"
 
     level_coeff = base["models"]["niveles"]["coefficients"]
     return_coeff = base["models"]["retornos"]["coefficients"]
 
     current_prices = {x: float(fmap[x]["price_current"]) for x in FACTORS}
     previous_prices = {x: float(fmap[x]["price_previous"]) for x in FACTORS}
-    raw_level_current = model_level(level_coeff, current_prices)
-    raw_level_previous = model_level(level_coeff, previous_prices)
-    if not positive(raw_level_previous):
+    level_current = model_level(level_coeff, current_prices)
+    level_previous = model_level(level_coeff, previous_prices)
+    if not positive(level_previous):
         raise RuntimeError("Hábitat: nivel OLS previo inválido")
-    level_return = raw_level_current / raw_level_previous - 1.0
-    vc_levels = level_base * (1.0 + level_return)
+    level_return = level_current / level_previous - 1.0
+    level_normalized = normalized_base * (1.0 + level_return) if positive(normalized_base) else None
 
     level_contrib = {x: float(level_coeff[x]) * current_prices[x] for x in FACTORS}
     return_contrib = {x: float(return_coeff[x]) * float(fmap[x]["return"]) for x in FACTORS}
@@ -222,7 +230,7 @@ def main() -> None:
         and all(row["close_confirmed"] for row in tickers)
         and all(str(row["timestamp"])[:10] == target for row in tickers)
     )
-    gap_pct = (vc_levels / vc_returns - 1.0) * 100.0 if positive(vc_returns) else None
+    gap_pct = (level_current / vc_returns - 1.0) * 100.0 if positive(vc_returns) else None
 
     payload = {
         "fund": "HÁBITAT Fondo 3",
@@ -242,17 +250,18 @@ def main() -> None:
         "latest_sbs_date": base["latest"]["latest_sbs_date"],
         "latest_sbs_vc": base["latest"]["latest_sbs_vc"],
         "previous_close_rule": "Cierre regular validado de la sesión anterior; un dato antiguo nunca se reasigna a la fecha corriente.",
-        "comparison_rule": "Ambos modelos se expresan sobre el VC de la rueda anterior; la diferencia corresponde a la señal diaria estimada por cada ecuación.",
+        "comparison_rule": "Misma lógica que Profuturo: Niveles es OLS absoluto directo; Retornos estima la variación diaria y la aplica al VC previo. Niveles normalizado se conserva solo como diagnóstico.",
         "model_gap_pct": gap_pct,
         "models": {
             "niveles": {
+                "vc_intraday": level_current,
                 "return_intraday": level_return,
-                "vc_intraday": vc_levels,
-                "vc_raw_intraday": raw_level_current,
-                "vc_raw_previous": raw_level_previous,
-                "base_vc": level_base,
-                "base_date": prior["fecha"],
-                "base_rule": level_base_rule,
+                "vc_normalized_intraday": level_normalized,
+                "vc_raw_intraday": level_current,
+                "vc_raw_previous": level_previous,
+                "normalized_base_vc": normalized_base,
+                "normalized_base_date": prior["fecha"],
+                "normalized_base_rule": normalized_base_rule,
                 "equation": base["models"]["niveles"]["equation"],
             },
             "retornos": {
@@ -281,9 +290,9 @@ def main() -> None:
         "mode": payload["mode"],
         "fresh_factors": fresh,
         "close_consolidated": consolidated,
-        "vc_niveles": vc_levels,
-        "vc_niveles_raw": raw_level_current,
-        "ret_niveles": level_return,
+        "vc_niveles": level_current,
+        "vc_niveles_normalizado_diagnostico": level_normalized,
+        "ret_niveles_implicito": level_return,
         "vc_retornos": vc_returns,
         "ret_retornos": ret_est,
         "gap_pct": gap_pct,
