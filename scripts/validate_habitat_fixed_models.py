@@ -21,6 +21,32 @@ def finite(value) -> bool:
         return False
 
 
+def patch_ui() -> None:
+    html = INDEX.read_text(encoding="utf-8")
+
+    # El gráfico de pesos usa tickers (categorías), no fechas. El layout base
+    # heredaba xaxis.type='date' de los gráficos temporales y Plotly no podía
+    # ubicar SPY/EEM/MCHI/QQQ/SPBLSCUP como barras visibles.
+    old_weight = "{...baseLayout,barmode:'group',yaxis:{...baseLayout.yaxis,ticksuffix:'%',title:'Aporte absoluto'}},config);"
+    new_weight = "{...baseLayout,barmode:'group',xaxis:{type:'category',gridcolor:'#213147',zeroline:false},yaxis:{...baseLayout.yaxis,ticksuffix:'%',title:'Aporte absoluto'}},config);"
+    if old_weight in html:
+        html = html.replace(old_weight, new_weight, 1)
+    assert new_weight in html, "No se pudo fijar el eje categórico del gráfico de pesos"
+
+    # Transparencia metodológica: el rebase/anclaje de Niveles fue añadido en
+    # Hábitat para comparar señales; Profuturo muestra directamente su OLS de
+    # niveles. No debe presentarse como si ambos tratamientos fueran idénticos.
+    html = html.replace(
+        "Misma arquitectura metodológica del visor Profuturo · Niveles y Retornos expresados sobre una base comparable · calibración propia con la serie SBS de Hábitat",
+        "Mismos cinco factores y ecuaciones base del visor Profuturo · Hábitat añade una normalización comparativa de Niveles · calibración propia con la serie SBS de Hábitat",
+    )
+    html = html.replace("Modelo de niveles · operativo", "Niveles normalizado · comparación")
+    html = html.replace("Nivel OLS bruto", "Nivel OLS original · diagnóstico")
+    html = html.replace("Ecuación · niveles bruto", "Ecuación original de Niveles")
+
+    INDEX.write_text(html, encoding="utf-8")
+
+
 def main() -> None:
     if not BASE.exists():
         raise SystemExit(f"Falta {BASE}")
@@ -43,7 +69,7 @@ def main() -> None:
     useful = [r for r in rows if finite(r.get("vc_niveles")) and finite(r.get("vc_retornos"))]
     assert useful, "No existen observaciones comparables de Niveles y Retornos"
     for row in useful[-10:]:
-        assert finite(row.get("vc_niveles_raw")), "Falta nivel OLS bruto de auditoría"
+        assert finite(row.get("vc_niveles_raw")), "Falta nivel OLS original de auditoría"
         assert finite(row.get("ret_niveles_implicito")), "Falta retorno implícito de Niveles"
 
     for key in ("niveles", "retornos"):
@@ -90,6 +116,8 @@ def main() -> None:
         if levels.get("base_rule") == "VC SBS real de la sesión anterior":
             assert abs(float(levels["base_vc"]) - float(returns["base_vc"])) < 1e-12
 
+    patch_ui()
+
     # Copia la misma lógica de operaciones del visor Profuturo y la aísla con
     # identidad, localStorage y endpoint de Drive propios de Hábitat.
     install_trade_runtime()
@@ -105,6 +133,9 @@ def main() -> None:
     assert "Modelo retornos" in html
     assert "Retorno real SBS" in html
     assert "Aguja vertical" in html
+    assert "xaxis:{type:'category'" in html
+    assert "Niveles normalizado · comparación" in html
+    assert "Nivel OLS original · diagnóstico" in html
 
     print(
         "Hábitat niveles/retornos anclados validado:",
