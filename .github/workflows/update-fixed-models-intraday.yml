@@ -7,6 +7,10 @@ on:
       - migracion-github-actions
     paths:
       - ".github/workflows/update-fixed-models-intraday.yml"
+      - "scripts/sync_sbs_official_latest.py"
+      - "scripts/apply_sbs_reference_corrections.py"
+      - "scripts/sync_public_series_from_sbs.py"
+      - "data/rolling90/sbs_reference_corrections.csv"
       - "scripts/build_fixed_models_intraday.py"
       - "scripts/fixed_market_quotes.py"
       - "scripts/fixed_model_contract.py"
@@ -72,9 +76,11 @@ jobs:
       - name: Pruebas de regresión SBS y cierres
         run: python -m unittest discover -s scripts -p test_fixed_model_contract.py -v
 
-      - name: Actualizar SBS y base de retornos
+      - name: Actualizar, proteger SBS y base de retornos
         run: |
           python scripts/sync_sbs_official_latest.py
+          python scripts/apply_sbs_reference_corrections.py
+          python scripts/sync_public_series_from_sbs.py
           python scripts/reconcile_fixed_history.py --sbs-only
 
       - name: Calcular snapshot intradia fijo
