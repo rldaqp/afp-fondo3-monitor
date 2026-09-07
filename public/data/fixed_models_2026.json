@@ -1,5 +1,5 @@
 {
-  "generated_at_lima": "2026-09-05T00:59:48.906477-05:00",
+  "generated_at_lima": "2026-09-07T09:16:07.674624-05:00",
   "model_version": "v2-sbs-corrected-20260831",
   "history_start": "2026-01-05",
   "training": {
@@ -50,14 +50,14 @@
   "metrics": {
     "validation_from_2026_08_18": {
       "niveles": {
-        "n": 11,
-        "mae_pct": 0.26608753936320934,
-        "rmse_pct": 0.3423841168150885
+        "n": 12,
+        "mae_pct": 0.30419764020295226,
+        "rmse_pct": 0.3886746643709293
       },
       "retornos": {
-        "n": 11,
-        "mae_pct": 0.31068328719840593,
-        "rmse_pct": 0.3752503536240429
+        "n": 12,
+        "mae_pct": 0.31171937048812454,
+        "rmse_pct": 0.37050758626057506
       }
     },
     "retrospective_before_2026_07_07": {
@@ -2474,19 +2474,19 @@
     },
     {
       "fecha": "2026-08-20",
-      "fase": "PROYECCIÓN",
+      "fase": "VALIDACIÓN",
       "SPY": 762.5999755859375,
       "EEM": 66.62000274658203,
       "MCHI": 55.5099983215332,
       "QQQ": 710.9299926757812,
       "SPBLSCUP": 446.7,
       "source": "BASE RLD · CIERRES VALIDADOS",
-      "vc_sbs": null,
+      "vc_sbs": 71.0427094,
       "vc_niveles": 70.52878022436109,
       "ret_vc_estimado": 0.007092969133468137,
       "vc_retornos": 70.82644760951841,
-      "error_niveles_pct": null,
-      "error_retornos_pct": null
+      "error_niveles_pct": -0.7234087494401242,
+      "error_retornos_pct": -0.3044109554774299
     },
     {
       "fecha": "2026-08-21",
@@ -2500,9 +2500,9 @@
       "vc_sbs": 71.8058461,
       "vc_niveles": 71.63137624478838,
       "ret_vc_estimado": 0.012377367631048908,
-      "vc_retornos": 71.70309258958265,
+      "vc_retornos": 71.92203113174959,
       "error_niveles_pct": -0.24297444384769884,
-      "error_retornos_pct": -0.1430990873281357
+      "error_retornos_pct": 0.16180441852573502
     },
     {
       "fecha": "2026-08-24",
@@ -2665,5 +2665,5 @@
       "error_retornos_pct": null
     }
   ],
-  "data_revision": "05d8bb51cb522fff0cce73d728b22c9725b91e7726aa125820001e053c020a68"
+  "data_revision": "5cdbca80334f020c6c39f47a8c276fca7885352f33fd35be571ad0084b8a5486"
 }
