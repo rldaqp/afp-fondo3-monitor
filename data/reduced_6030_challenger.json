@@ -1,8 +1,8 @@
 {
-  "generated_at_lima": "2026-09-07T13:11:42.655190-05:00",
+  "generated_at_lima": "2026-09-07T16:33:25.134254-05:00",
   "signal_date": "2026-09-07",
-  "mode": "INTRADÍA PROVISIONAL",
-  "market_open": true,
+  "mode": "INTRADIA PROVISIONAL - ULTIMO CORTE",
+  "market_open": false,
   "role": "UNICO CHALLENGER EN SOMBRA; no reemplaza el OLS rolling 90 oficial.",
   "official": {
     "model": "OLS rolling 90 oficial · SPY EEM EPU MCHI NEM FCX USD/PEN",
@@ -45,7 +45,7 @@
   },
   "qqq": {
     "return": 0.0001390558346530124,
-    "source": "INTRADIA YAHOO"
+    "source": "ULTIMO CORTE YAHOO"
   },
   "blind_backtest": {
     "design": "Bloques no superpuestos: entrenar 60 observaciones, congelar 30, un solo VC SBS como ancla al inicio; dentro del bloque SBS solo evalua y nunca corrige.",
