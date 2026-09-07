@@ -1,7 +1,7 @@
 {
   "fund": "HÁBITAT Fondo 3",
-  "generated_at_lima": "2026-09-07T05:22:23.023063-05:00",
-  "generated_at_ny": "2026-09-07T06:22:23.023063-04:00",
+  "generated_at_lima": "2026-09-07T11:29:47.560848-05:00",
+  "generated_at_ny": "2026-09-07T12:29:47.560848-04:00",
   "signal_date": "2026-09-04",
   "market_open": false,
   "session_open_ny": "2026-09-04T09:30:00-04:00",
@@ -12,7 +12,9 @@
   "close_consolidated": true,
   "fresh_factors": 5,
   "total_factors": 5,
-  "problems": [],
+  "problems": [
+    "SPBLSCUP: falta dato propio de 2026-09-04; no se reutiliza como si fuera actual el dato de 2026-09-04"
+  ],
   "latest_sbs_date": "2026-09-02",
   "latest_sbs_vc": 33.4213366,
   "previous_close_rule": "Cierre regular validado de la sesión anterior; un dato antiguo nunca se reasigna a la fecha corriente.",
@@ -127,7 +129,7 @@
       "close_confirmed": true,
       "previous_close_date": "2026-09-03",
       "previous_close_basis": "CIERRE BASE FIJA",
-      "source": "GOOGLE FINANCE SPBLSCUP · CIERRE REGULAR CONFIRMADO",
+      "source": "CACHE DE CIERRE VERIFICADO · MISMA FECHA",
       "level_coefficient": 0.02201015659378243,
       "return_coefficient": 0.2916575736226409,
       "level_contribution": 9.992170890445347,
