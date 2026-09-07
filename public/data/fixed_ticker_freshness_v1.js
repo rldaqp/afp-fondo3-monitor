@@ -73,9 +73,16 @@ async function refresh(){
     const snapDate=new Date(d.generated_at_ny||d.generated_at_lima||'');
     const sp=Number.isFinite(snapDate.getTime())?zoneParts(snapDate):null;
     const sameNyDay=sp&&key(sp)===key(ms.parts);
+    const snapSignalDay=sp&&d.signal_date&&key(sp)===String(d.signal_date).slice(0,10);
     const snapMinute=sp?minutes(sp):null;
     const staleOpen=ms.open&&(age===null||age>STALE_MINUTES);
-    const closePending=(ms.afterClose&&sameNyDay&&snapMinute!==null&&snapMinute<960)||(!ms.open&&d.close_consolidated===false);
+    const consolidated=d.close_consolidated===true;
+    const explicitPending=d.close_consolidated===false;
+    // Si el backend ya confirmó el cierre, esa señal es autoritativa.
+    // La inferencia por hora solo se usa como respaldo cuando close_consolidated no viene definido
+    // y únicamente si el snapshot corresponde a la misma sesión bursátil de signal_date.
+    const inferredPending=d.close_consolidated==null&&ms.afterClose&&sameNyDay&&snapSignalDay&&snapMinute!==null&&snapMinute<960;
+    const closePending=!consolidated&&(explicitPending||inferredPending);
     const warn=warningNode();
     decorateTickers(d,staleOpen||closePending);
 
@@ -101,8 +108,9 @@ async function refresh(){
       if($('marketMode'))$('marketMode').textContent='MERCADO ABIERTO · DATOS INTRADÍA';
     }else{
       if(warn)warn.classList.remove('show');
-      if($('factorStatus'))$('factorStatus').textContent=`${d.close_consolidated?'CIERRE CONSOLIDADO · 5/5':'CIERRE / ÚLTIMO SNAPSHOT'} · ${fmtDate(d.signal_date)}`;
-      if($('marketMode'))$('marketMode').textContent='MERCADO CERRADO · ÚLTIMO DATO';
+      const verified=`${d.fresh_factors??'—'}/${d.total_factors??'—'}`;
+      if($('factorStatus'))$('factorStatus').textContent=`${consolidated?`CIERRE CONSOLIDADO · ${verified}`:'CIERRE / ÚLTIMO SNAPSHOT'} · ${fmtDate(d.signal_date)}`;
+      if($('marketMode'))$('marketMode').textContent=consolidated?'MERCADO CERRADO · ÚLTIMO CIERRE CONSOLIDADO':'MERCADO CERRADO · ÚLTIMO DATO';
     }
 
     setClass($('factorStatus'),'staletxt',staleOpen||closePending);
