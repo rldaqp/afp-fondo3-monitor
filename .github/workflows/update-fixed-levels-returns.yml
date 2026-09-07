@@ -8,6 +8,8 @@ on:
     paths:
       - ".github/workflows/update-fixed-levels-returns.yml"
       - "scripts/sync_sbs_official_latest.py"
+      - "scripts/apply_sbs_reference_corrections.py"
+      - "scripts/sync_public_series_from_sbs.py"
       - "scripts/build_fixed_levels_returns_monitor.py"
       - "scripts/fixed_market_quotes.py"
       - "scripts/fixed_model_contract.py"
@@ -16,6 +18,7 @@ on:
       - "scripts/test_fixed_model_contract.py"
       - "scripts/ensure_profuturo_series_continuity.py"
       - "scripts/build_model_health.py"
+      - "data/rolling90/sbs_reference_corrections.csv"
       - "data/fixed_models/yahoo_levels_2026.csv"
       - "public/index.html"
       - "public/data/model_signal_v1.js"
@@ -64,8 +67,11 @@ jobs:
       - name: Pruebas de regresión SBS y cierres
         run: python -m unittest discover -s scripts -p test_fixed_model_contract.py -v
 
-      - name: Sincronizar último VC oficial SBS
-        run: python scripts/sync_sbs_official_latest.py
+      - name: Sincronizar y proteger VC oficiales SBS
+        run: |
+          python scripts/sync_sbs_official_latest.py
+          python scripts/apply_sbs_reference_corrections.py
+          python scripts/sync_public_series_from_sbs.py
 
       - name: Construir serie fija 2026
         run: python scripts/build_fixed_levels_returns_monitor.py
