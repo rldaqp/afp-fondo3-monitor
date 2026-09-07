@@ -1,6 +1,6 @@
 {
-  "generated_at_lima": "2026-09-07T13:20:42.787672-05:00",
-  "generated_at_ny": "2026-09-07T14:20:42.787672-04:00",
+  "generated_at_lima": "2026-09-07T16:34:06.850950-05:00",
+  "generated_at_ny": "2026-09-07T17:34:06.850950-04:00",
   "signal_date": "2026-09-04",
   "market_open": false,
   "session_open_ny": "2026-09-04T09:30:00-04:00",
@@ -12,9 +12,9 @@
   "fresh_factors": 5,
   "total_factors": 5,
   "problems": [],
-  "base_revision": "5cdbca80334f020c6c39f47a8c276fca7885352f33fd35be571ad0084b8a5486",
-  "latest_sbs_date": "2026-09-02",
-  "latest_sbs_vc": 71.5608212,
+  "base_revision": "07e000ac8c44f5bd4d05d8b734427f7417c713142d81f34af6691f7db5efd98e",
+  "latest_sbs_date": "2026-09-03",
+  "latest_sbs_vc": 71.9725724,
   "previous_close_rule": "Cierre regular validado de la sesión anterior; sin reutilizar otra fecha.",
   "models": {
     "niveles": {
@@ -23,10 +23,10 @@
     },
     "retornos": {
       "return_intraday": 0.01100613153407198,
-      "vc_intraday": 72.74112242684873,
-      "base_vc": 71.94923963168594,
+      "vc_intraday": 72.76471199867991,
+      "base_vc": 71.9725724,
       "base_date": "2026-09-03",
-      "base_rule": "VC estimado por retornos de la sesión anterior",
+      "base_rule": "VC SBS real de la sesión anterior",
       "equation": "RVC = 0.0007122785 - 0.51299471·RSPY + 0.63173761·REEM - 0.29664485·RMCHI + 0.48131281·RQQQ + 0.26433762·RSPBLSCUP"
     }
   },
