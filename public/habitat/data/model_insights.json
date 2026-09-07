@@ -10,7 +10,7 @@
   "performance": {
     "window_n": 90,
     "classification_accuracy": 0.7555555555555555,
-    "mae_return_pp": 0.31850930704700203,
+    "mae_return_pp": 0.3199190450292653,
     "sube_n": 44,
     "sube_accuracy": 0.9090909090909091,
     "baja_n": 34,
@@ -23,66 +23,66 @@
     "label": "Banda empírica 80%"
   },
   "benchmarks": {
-    "zero_change_mae_pp": 0.9626784818567429,
-    "ols_mae_pp": 0.31850930704700203,
-    "ols_mae_improvement_vs_zero": 0.6691425922051515
+    "zero_change_mae_pp": 0.9519532559374149,
+    "ols_mae_pp": 0.3199190450292653,
+    "ols_mae_improvement_vs_zero": 0.6639340818113677
   },
   "contributions": [
     {
       "feature": "ret_EEM",
       "label": "EEM",
       "value": 0.0182302609350129,
-      "coefficient": 0.387478088868709,
-      "contribution_pp": 0.7063826666676682
+      "coefficient": 0.38639073311795585,
+      "contribution_pp": 0.7044003887611265
     },
     {
       "feature": "ret_MCHI",
       "label": "MCHI",
       "value": 0.009931964799261062,
-      "coefficient": -0.06536428713067541,
-      "contribution_pp": -0.0649195798910661
+      "coefficient": -0.06943005195573237,
+      "contribution_pp": -0.06895768320352007
     },
     {
       "feature": "ret_SPY",
       "label": "SPY",
       "value": -0.0038542371465761782,
-      "coefficient": 0.14241806309574978,
-      "contribution_pp": -0.054891298912706867
+      "coefficient": 0.1519369885811349,
+      "contribution_pp": -0.058560118532833084
     },
     {
       "feature": "ret_EPU",
       "label": "EPU",
       "value": -0.003352132101377525,
-      "coefficient": 0.16057799866316677,
-      "contribution_pp": -0.05382786640937586
+      "coefficient": 0.15674235583798346,
+      "contribution_pp": -0.05254210826500433
     },
     {
       "feature": "ret_NEM",
       "label": "NEM",
       "value": -0.01794063075436425,
-      "coefficient": 0.017695996635277766,
-      "contribution_pp": -0.03174773414639906
+      "coefficient": 0.022165955835155515,
+      "contribution_pp": -0.03976712289560708
     },
     {
       "feature": "intercept",
       "label": "Base",
       "value": 1.0,
-      "coefficient": 0.00014613306551465306,
-      "contribution_pp": 0.014613306551465307
+      "coefficient": 0.00015072376559559242,
+      "contribution_pp": 0.015072376559559241
     },
     {
       "feature": "ret_FCX",
       "label": "FCX",
       "value": 0.0023429686336822186,
-      "coefficient": 0.048771060554707465,
-      "contribution_pp": 0.01142690651110957
+      "coefficient": 0.04616384500128144,
+      "contribution_pp": 0.01081604408481701
     },
     {
       "feature": "ret_USD_PEN",
       "label": "USD/PEN",
       "value": 0.0008925914906277033,
-      "coefficient": 0.013177302264600168,
-      "contribution_pp": 0.0011761947870811275
+      "coefficient": 0.017144463445993567,
+      "contribution_pp": 0.0015303002183271568
     }
   ],
   "quality": {
@@ -90,7 +90,7 @@
     "warnings": [],
     "critical": [],
     "training_n": 90,
-    "latest_sbs_date": "2026-09-02",
+    "latest_sbs_date": "2026-09-03",
     "fx_provisional": false
   },
   "challenger_huber": {
