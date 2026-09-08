@@ -95,8 +95,10 @@ jobs:
       - name: Validar fecha viva en operaciones
         run: |
           node --check public/data/fixed_trade_runtime_v1.js
+          node --check public/data/fixed_ticker_freshness_v1.js
           node scripts/test_fixed_trade_live_date.js
           node scripts/test_fixed_dashboard_refresh.js
+          node scripts/test_fixed_ticker_freshness.js
           grep -q "const LIVE_URL='data/fixed_models_intraday.json'" public/data/fixed_trade_runtime_v1.js
           grep -q 'function refreshDateInputs' public/data/fixed_trade_runtime_v1.js
           grep -q 'FIXEDTRADE3-20260903' public/index.html
@@ -145,9 +147,9 @@ jobs:
             sed -i 's#</body>#<script src="data/model_health_v1.js?rev=HEALTH1-20260831"></script></body>#' public/index.html
           fi
           if ! grep -q 'fixed_ticker_freshness_v1.js' public/index.html; then
-            sed -i 's#</body>#<script src="data/fixed_ticker_freshness_v1.js?rev=LIVESTATUS4-20260903"></script></body>#' public/index.html
+            sed -i 's#</body>#<script src="data/fixed_ticker_freshness_v1.js?rev=LIVESTATUS5-20260908"></script></body>#' public/index.html
           fi
-          sed -i 's#fixed_ticker_freshness_v1.js?rev=[^"]*#fixed_ticker_freshness_v1.js?rev=LIVESTATUS4-20260903#g' public/index.html
+          sed -i 's#fixed_ticker_freshness_v1.js?rev=[^"]*#fixed_ticker_freshness_v1.js?rev=LIVESTATUS5-20260908#g' public/index.html
 
       - name: Verificar generación antes de desplegar
         run: python scripts/validate_fixed_models.py

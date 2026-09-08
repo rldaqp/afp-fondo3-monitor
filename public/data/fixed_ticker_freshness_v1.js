@@ -82,7 +82,9 @@ async function refresh(){
     // La inferencia por hora solo se usa como respaldo cuando close_consolidated no viene definido
     // y únicamente si el snapshot corresponde a la misma sesión bursátil de signal_date.
     const inferredPending=d.close_consolidated==null&&ms.afterClose&&sameNyDay&&snapSignalDay&&snapMinute!==null&&snapMinute<960;
-    const closePending=!consolidated&&(explicitPending||inferredPending);
+    // close_consolidated=false es el estado normal de un snapshot intradía.
+    // Solo puede representar un cierre pendiente cuando la sesión ya no está abierta.
+    const closePending=!ms.open&&!consolidated&&(explicitPending||inferredPending);
     const warn=warningNode();
     decorateTickers(d,staleOpen||closePending);
 
