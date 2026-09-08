@@ -1,5 +1,5 @@
 {
-  "generated_at_lima": "2026-09-08T14:48:06.716649-05:00",
+  "generated_at_lima": "2026-09-08T14:53:53.167037-05:00",
   "model_version": "v2-sbs-corrected-20260831",
   "history_start": "2026-01-05",
   "training": {
@@ -50,14 +50,14 @@
   "metrics": {
     "validation_from_2026_08_18": {
       "niveles": {
-        "n": 13,
-        "mae_pct": 0.281351592141293,
-        "rmse_pct": 0.3734318764471593
+        "n": 14,
+        "mae_pct": 0.2832757250253789,
+        "rmse_pct": 0.36916025837056937
       },
       "retornos": {
-        "n": 13,
-        "mae_pct": 0.290234724474093,
-        "rmse_pct": 0.35608571218447355
+        "n": 14,
+        "mae_pct": 0.2891518697616169,
+        "rmse_pct": 0.35091997156947813
       }
     },
     "retrospective_before_2026_07_07": {
@@ -78,8 +78,8 @@
     "vc_niveles": 72.74047570492102,
     "ret_vc_estimado": 0.011006116908593412,
     "vc_retornos": 72.7647109460466,
-    "latest_sbs_date": "2026-09-03",
-    "latest_sbs_vc": 71.9725724
+    "latest_sbs_date": "2026-09-04",
+    "latest_sbs_vc": 72.9654204
   },
   "sources": {
     "SPY_EEM_MCHI_QQQ": "Yahoo Finance · cierre diario no ajustado",
@@ -2650,20 +2650,20 @@
     },
     {
       "fecha": "2026-09-04",
-      "fase": "PROYECCIÓN",
+      "fase": "VALIDACIÓN",
       "SPY": 770.1900024414062,
       "EEM": 68.69999694824219,
       "MCHI": 54.90999984741211,
       "QQQ": 718.9600219726562,
       "SPBLSCUP": 453.98,
       "source": "GOOGLE FINANCE · SNAPSHOT FIJO DE CIERRE · FECHA COINCIDENTE",
-      "vc_sbs": null,
+      "vc_sbs": 72.9654204,
       "vc_niveles": 72.74047570492102,
       "ret_vc_estimado": 0.011006116908593412,
       "vc_retornos": 72.7647109460466,
-      "error_niveles_pct": null,
-      "error_retornos_pct": null
+      "error_niveles_pct": -0.3082894525184954,
+      "error_retornos_pct": -0.2750747584994273
     }
   ],
-  "data_revision": "ffbfb71902cb30cac3654b058aed366900c60cb12620b560f01459d6dcc04ac1"
+  "data_revision": "e5553f894f0aadac97ea6ea284c4528a7d6dab11b71cabf1fb47b9979face7f4"
 }
