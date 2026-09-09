@@ -1,5 +1,5 @@
 {
-  "generated_at_lima": "2026-09-09T15:09:05.556807-05:00",
+  "generated_at_lima": "2026-09-09T17:00:26.142542-05:00",
   "model_version": "v2-sbs-corrected-20260831",
   "history_start": "2026-01-05",
   "training": {
@@ -75,11 +75,11 @@
   },
   "latest": {
     "market_date": "2026-09-09",
-    "vc_niveles": 73.57814319652444,
-    "ret_vc_estimado": 0.003676135685253038,
-    "vc_retornos": 74.06184850705382,
-    "latest_sbs_date": "2026-09-04",
-    "latest_sbs_vc": 72.9654204
+    "vc_niveles": 73.5597587948288,
+    "ret_vc_estimado": 0.003512990280771729,
+    "vc_retornos": 74.04980991233018,
+    "latest_sbs_date": "2026-09-07",
+    "latest_sbs_vc": 72.8783897
   },
   "sources": {
     "SPY_EEM_MCHI_QQQ": "Yahoo Finance · cierre diario no ajustado",
@@ -2683,19 +2683,19 @@
     {
       "fecha": "2026-09-09",
       "fase": "PROYECCIÓN",
-      "SPY": 762.45,
+      "SPY": 762.4,
       "EEM": 68.48,
       "MCHI": 53.34,
       "QQQ": 716.31,
-      "SPBLSCUP": 460.26,
+      "SPBLSCUP": 459.92,
       "source": "CIERRE REGULAR VERIFICADO · 5/5 CON FECHA PROPIA",
       "vc_sbs": null,
-      "vc_niveles": 73.57814319652444,
-      "ret_vc_estimado": 0.003676135685253038,
-      "vc_retornos": 74.06184850705382,
+      "vc_niveles": 73.5597587948288,
+      "ret_vc_estimado": 0.003512990280771729,
+      "vc_retornos": 74.04980991233018,
       "error_niveles_pct": null,
       "error_retornos_pct": null
     }
   ],
-  "data_revision": "4e7d8fbeb60c5f49d2a9b129882644e0a97cf9f2acbecfb37c508cf9e7419cd3"
+  "data_revision": "ff933d9c938c901e7df82645d251e5731c1ead69c3f4016b625892abd0930d88"
 }
