@@ -1,5 +1,5 @@
 {
-  "generated_at_lima": "2026-09-08T19:18:11.061700-05:00",
+  "generated_at_lima": "2026-09-08T19:30:02.318166-05:00",
   "mode": "CIERRE DIARIO",
   "market_open": false,
   "signal_date": "2026-09-08",
@@ -88,7 +88,7 @@
   ],
   "action": "CIERRE",
   "engine": "LIVE HABITAT INDEPENDIENTE",
-  "warning": "Cierre OLS pesado pendiente; cálculo provisional coherente con los activos del mismo día.",
+  "warning": null,
   "fx_source": "YAHOO PEN=X PROVISIONAL",
   "fx_provisional": true,
   "fx_rule": "Histórico/entrenamiento: BCRP. Predicción: BCRP si existe; si está rezagado, Yahoo PEN=X provisional; 0 % solo si ambas fuentes faltan.",
