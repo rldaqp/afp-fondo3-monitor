@@ -1,6 +1,6 @@
 {
   "fund": "HÁBITAT Fondo 3",
-  "generated_at_lima": "2026-09-09T13:39:45.914872-05:00",
+  "generated_at_lima": "2026-09-09T16:44:21.555510-05:00",
   "model_version": "habitat-rolling90-levels-returns-v4",
   "history_start": "2026-01-05",
   "window": 90,
@@ -31,7 +31,7 @@
   "latest": {
     "latest_sbs_date": "2026-09-04",
     "latest_sbs_vc": 33.9088742,
-    "latest_market_date": "2026-09-08"
+    "latest_market_date": "2026-09-09"
   },
   "models": {
     "niveles": {
@@ -3839,6 +3839,29 @@
       "ret_niveles_implicito": 0.005056225145960269,
       "ret_vc_estimado": 0.003932614902703344,
       "vc_retornos": 34.042224744012806,
+      "error_niveles_pct": null,
+      "error_retornos_pct": null,
+      "fase": "PROYECCIÓN"
+    },
+    {
+      "fecha": "2026-09-09",
+      "SPBLSCUP": 460.26,
+      "SPY": 762.4000244140625,
+      "EEM": 68.4800033569336,
+      "MCHI": 53.34000015258789,
+      "QQQ": 716.3099975585938,
+      "vc_sbs": null,
+      "ret_SPY": -0.004647758964528403,
+      "ret_EEM": -0.005084969705219211,
+      "ret_MCHI": -0.01130677667701907,
+      "ret_QQQ": -0.002853705432890319,
+      "ret_SPBLSCUP": 0.006979237315947184,
+      "ret_vc_sbs": null,
+      "vc_niveles": 34.11558153217535,
+      "vc_niveles_raw": 34.11558153217535,
+      "ret_niveles_implicito": 0.0007534699072659912,
+      "ret_vc_estimado": 0.0008999238121915746,
+      "vc_retornos": 34.07286015267992,
       "error_niveles_pct": null,
       "error_retornos_pct": null,
       "fase": "PROYECCIÓN"
