@@ -19,7 +19,7 @@
     "neutro_accuracy": 0.08333333333333333
   },
   "uncertainty": {
-    "relative_q80": 0.005010530431900402,
+    "relative_q80": 0.0050105304319004,
     "label": "Banda empírica 80%"
   },
   "benchmarks": {
@@ -32,57 +32,57 @@
       "feature": "ret_FCX",
       "label": "FCX",
       "value": 0.05348548343326298,
-      "coefficient": 0.04733761545313961,
-      "contribution_pp": 0.2531875247089072
+      "coefficient": 0.04733761545313957,
+      "contribution_pp": 0.253187524708907
     },
     {
       "feature": "ret_EPU",
       "label": "EPU",
       "value": 0.012260007651744065,
-      "coefficient": 0.15596442001322805,
-      "contribution_pp": 0.1912124982762001
+      "coefficient": 0.15596442001322824,
+      "contribution_pp": 0.19121249827620035
     },
     {
       "feature": "ret_MCHI",
       "label": "MCHI",
       "value": -0.017483137627761325,
-      "coefficient": -0.06851078978674616,
-      "contribution_pp": 0.11977835668283081
+      "coefficient": -0.06851078978674643,
+      "contribution_pp": 0.11977835668283128
     },
     {
       "feature": "ret_SPY",
       "label": "SPY",
       "value": -0.0054921259109329545,
-      "coefficient": 0.1413871784976128,
-      "contribution_pp": -0.07765161865004418
+      "coefficient": 0.14138717849761287,
+      "contribution_pp": -0.07765161865004423
     },
     {
       "feature": "ret_EEM",
       "label": "EEM",
       "value": 0.0018923564568780193,
-      "coefficient": 0.3907915924459219,
-      "contribution_pp": 0.07395169932586837
-    },
-    {
-      "feature": "ret_USD_PEN",
-      "label": "USD/PEN",
-      "value": -0.009820539347260904,
-      "coefficient": 0.024333096546773597,
-      "contribution_pp": -0.023896413207828853
+      "coefficient": 0.3907915924459218,
+      "contribution_pp": 0.07395169932586836
     },
     {
       "feature": "ret_NEM",
       "label": "NEM",
       "value": -0.007807010918808088,
-      "coefficient": 0.022000208977769276,
-      "contribution_pp": -0.017175587170550448
+      "coefficient": 0.022000208977769442,
+      "contribution_pp": -0.017175587170550576
     },
     {
       "feature": "intercept",
       "label": "Base",
       "value": 1.0,
-      "coefficient": 0.00015951144336992192,
-      "contribution_pp": 0.01595114433699219
+      "coefficient": 0.00015951144336992106,
+      "contribution_pp": 0.015951144336992105
+    },
+    {
+      "feature": "ret_USD_PEN",
+      "label": "USD/PEN",
+      "value": -0.0014880952380952328,
+      "coefficient": 0.024333096546773604,
+      "contribution_pp": -0.0036209965099365353
     }
   ],
   "quality": {
@@ -91,7 +91,7 @@
     "critical": [],
     "training_n": 90,
     "latest_sbs_date": "2026-09-04",
-    "fx_provisional": true
+    "fx_provisional": false
   },
   "challenger_huber": {
     "status": "NO APLICA EN HÁBITAT",
