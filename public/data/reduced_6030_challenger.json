@@ -1,5 +1,5 @@
 {
-  "generated_at_lima": "2026-09-09T17:00:19.310184-05:00",
+  "generated_at_lima": "2026-09-09T19:07:09.707535-05:00",
   "signal_date": "2026-09-09",
   "mode": "CIERRE DIARIO",
   "market_open": false,
@@ -12,16 +12,16 @@
   },
   "challenger": {
     "model": "OLS 60/30 · sin NEM ni FCX + QQQ",
-    "return_estimated": -0.0014593149428986036,
+    "return_estimated": -0.0014787122947044066,
     "signal": "BAJA",
-    "vc_estimated": 71.91539885607914,
+    "vc_estimated": 71.91400184911413,
     "blind_chain": true,
     "reanchored_with_latest_sbs": false
   },
   "comparison": {
     "same_signal": true,
-    "vc_difference": 0.603071307633229,
-    "return_difference_pp": -0.003064423026771703
+    "vc_difference": 0.6016743006682219,
+    "return_difference_pp": -0.005004158207352004
   },
   "cycle": {
     "train_window": 60,
@@ -44,8 +44,8 @@
     "rule": "Coeficientes congelados 30 sesiones. El VC se encadena desde el ancla del ciclo y no se corrige con SBS dentro del bloque."
   },
   "qqq": {
-    "return": -0.002853705432890319,
-    "source": "CIERRE DIARIO YAHOO"
+    "return": -0.002895423042904577,
+    "source": "ULTIMO CORTE YAHOO"
   },
   "blind_backtest": {
     "design": "Bloques no superpuestos: entrenar 60 observaciones, congelar 30, un solo VC SBS como ancla al inicio; dentro del bloque SBS solo evalua y nunca corrige.",
