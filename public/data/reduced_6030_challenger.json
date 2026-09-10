@@ -1,5 +1,5 @@
 {
-  "generated_at_lima": "2026-09-10T16:50:48.618136-05:00",
+  "generated_at_lima": "2026-09-10T18:33:07.843509-05:00",
   "signal_date": "2026-09-10",
   "mode": "CIERRE DIARIO",
   "market_open": false,
@@ -52,16 +52,16 @@
     "n_blocks": 10,
     "n_predictions": 300,
     "official_current_7f": {
-      "vc_mae": 0.9237423519720216,
-      "vc_rmse": 1.700110822983303,
-      "mean_endpoint_abs_error": 1.7523057813757164
+      "vc_mae": 0.923742351972024,
+      "vc_rmse": 1.7001108229833057,
+      "mean_endpoint_abs_error": 1.7523057813757212
     },
     "challenger_6030": {
-      "vc_mae": 0.7890758034935107,
-      "vc_rmse": 1.471612153052181,
-      "mean_endpoint_abs_error": 1.4012091494916923
+      "vc_mae": 0.7890758034935097,
+      "vc_rmse": 1.4716121530521804,
+      "mean_endpoint_abs_error": 1.401209149491688
     },
-    "mae_improvement_pct": 14.578366813107827,
+    "mae_improvement_pct": 14.578366813108163,
     "challenger_better_blocks": 7,
     "official_better_blocks": 3
   },
