@@ -2779,16 +2779,24 @@
     "fecha": "2026-09-09",
     "ret_estimado": -0.0018786451201441043,
     "senal": "BAJA",
-    "vc_real": null,
+    "vc_real": 34.0874437,
     "vc_estimado": 33.9006512359685,
-    "tipo": "PENDIENTE"
+    "tipo": "HISTORICO"
   },
   {
     "fecha": "2026-09-10",
-    "ret_estimado": -0.015841783174654112,
+    "ret_estimado": -0.015537632317258248,
     "senal": "BAJA",
     "vc_real": null,
-    "vc_estimado": 33.36360446960872,
+    "vc_estimado": 33.55780553315416,
+    "tipo": "PENDIENTE"
+  },
+  {
+    "fecha": "2026-09-11",
+    "ret_estimado": 0.006091074663108596,
+    "senal": "SUBE",
+    "vc_real": null,
+    "vc_estimado": 33.762208632186685,
     "tipo": "PENDIENTE"
   }
 ]
