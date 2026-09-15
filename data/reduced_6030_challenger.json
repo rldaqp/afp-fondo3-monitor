@@ -1,27 +1,27 @@
 {
-  "generated_at_lima": "2026-09-15T15:26:09.434545-05:00",
+  "generated_at_lima": "2026-09-15T18:05:54.311024-05:00",
   "signal_date": "2026-09-15",
-  "mode": "INTRADIA PROVISIONAL - ULTIMO CORTE",
+  "mode": "CIERRE DIARIO",
   "market_open": false,
   "role": "UNICO CHALLENGER EN SOMBRA; no reemplaza el OLS rolling 90 oficial.",
   "official": {
     "model": "OLS rolling 90 oficial · SPY EEM EPU MCHI NEM FCX USD/PEN",
-    "return_estimated": -0.00029296514632879073,
-    "signal": "NEUTRO",
-    "vc_estimated": 71.39343322909922
+    "return_estimated": -0.0013750058619089525,
+    "signal": "BAJA",
+    "vc_estimated": 71.31615998915423
   },
   "challenger": {
     "model": "OLS 60/30 · sin NEM ni FCX + QQQ",
-    "return_estimated": -0.0011363508599510803,
+    "return_estimated": -0.0033869005853309447,
     "signal": "BAJA",
-    "vc_estimated": 69.36117060551669,
+    "vc_estimated": 69.20489225502044,
     "blind_chain": true,
     "reanchored_with_latest_sbs": false
   },
   "comparison": {
-    "same_signal": false,
-    "vc_difference": -2.0322626235825254,
-    "return_difference_pp": -0.08433857136222896
+    "same_signal": true,
+    "vc_difference": -2.11126773413379,
+    "return_difference_pp": -0.20118947234219922
   },
   "cycle": {
     "train_window": 60,
@@ -52,24 +52,24 @@
     "n_blocks": 10,
     "n_predictions": 300,
     "official_current_7f": {
-      "vc_mae": 0.9237423519720216,
-      "vc_rmse": 1.700110822983303,
-      "mean_endpoint_abs_error": 1.7523057813757164
+      "vc_mae": 0.923742351972024,
+      "vc_rmse": 1.7001108229833057,
+      "mean_endpoint_abs_error": 1.7523057813757212
     },
     "challenger_6030": {
-      "vc_mae": 0.7890758034935107,
-      "vc_rmse": 1.471612153052181,
-      "mean_endpoint_abs_error": 1.4012091494916923
+      "vc_mae": 0.7890758034935097,
+      "vc_rmse": 1.4716121530521804,
+      "mean_endpoint_abs_error": 1.401209149491688
     },
-    "mae_improvement_pct": 14.578366813107827,
+    "mae_improvement_pct": 14.578366813108163,
     "challenger_better_blocks": 7,
     "official_better_blocks": 3
   },
   "forward_sbs": {
-    "evaluated": 16,
-    "pending": 3,
-    "challenger_vc_mae": 0.618931481658251,
-    "official_vc_mae": 0.9137977263484487
+    "evaluated": 17,
+    "pending": 2,
+    "challenger_vc_mae": 0.6781946659674631,
+    "official_vc_mae": 0.8949817145077634
   },
   "ledger": "data/rolling90/reduced_6030_shadow.csv"
 }
