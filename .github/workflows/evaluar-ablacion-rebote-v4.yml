@@ -1,0 +1,126 @@
+name: Evaluar ablacion de rebote V4
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - modelo-salida-60-20-20
+    paths:
+      - "src/modelo_salida/08_ablacion_variables_rebote_v4.py"
+      - ".github/workflows/evaluar-ablacion-rebote-v4.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ablacion-rebote-v4
+  cancel-in-progress: true
+
+jobs:
+  evaluar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Descargar rama experimental
+        uses: actions/checkout@v4
+        with:
+          ref: modelo-salida-60-20-20
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Instalar dependencias
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt tabulate
+
+      - name: Validar sintaxis
+        run: |
+          python -m py_compile \
+            src/modelo_salida/00_ejecutar_constructor_seguro.py \
+            src/modelo_salida/04_modelo_rebote_salida_v2.py \
+            src/modelo_salida/06_modelo_selectivo_diario_v4.py \
+            src/modelo_salida/08_ablacion_variables_rebote_v4.py
+
+      - name: Reconstruir base diaria
+        run: python src/modelo_salida/00_ejecutar_constructor_seguro.py
+
+      - name: Ejecutar prueba de ablacion
+        run: python src/modelo_salida/08_ablacion_variables_rebote_v4.py
+
+      - name: Auditar resultados
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          import pandas as pd
+
+          raiz = Path("data/processed/modelo_salida")
+          resumen = pd.read_csv(raiz / "v4_ablacion_resumen.csv", encoding="utf-8-sig")
+          pred = pd.read_csv(raiz / "v4_ablacion_predicciones.csv", encoding="utf-8-sig")
+          seleccion = pd.read_csv(raiz / "v4_ablacion_seleccion_congelar.csv", encoding="utf-8-sig")
+
+          variantes = {
+              "base_sin_rebote", "completo", "completo_sin_distancia_temporal",
+              "completo_sin_nivel_fraccion_recuperada",
+              "completo_sin_velocidad_rebote",
+              "completo_sin_retroceso_desde_maximo",
+          }
+          afps = {"Habitat", "Integra", "Prima", "Profuturo"}
+          if len(resumen) != 24 or set(resumen["afp"]) != afps:
+              raise SystemExit("La tabla de ablacion esta incompleta")
+          if set(resumen["variante"]) != variantes:
+              raise SystemExit("Faltan variantes de ablacion")
+          if len(seleccion) != 4 or set(seleccion["afp"]) != afps:
+              raise SystemExit("La seleccion para congelar esta incompleta")
+
+          decision = pd.to_datetime(pred["fecha_cuota"], errors="coerce")
+          objetivo = pd.to_datetime(pred["fecha_objetivo_t1"], errors="coerce")
+          if decision.isna().any() or objetivo.isna().any() or not (objetivo > decision).all():
+              raise SystemExit("Fuga temporal o fechas invalidas")
+          if not pred["probabilidad_riesgo"].between(0, 1).all():
+              raise SystemExit("Probabilidades fuera de 0-1")
+
+          tamanos = pred.groupby(["afp", "variante"]).size().unstack()
+          if not tamanos.nunique(axis=1).eq(1).all():
+              raise SystemExit("Las variantes no usan las mismas fechas por AFP")
+
+          manifiesto = json.loads((raiz / "v4_ablacion_manifiesto.json").read_text(encoding="utf-8"))
+          if manifiesto.get("frecuencia") != "diaria":
+              raise SystemExit("Frecuencia distinta de diaria")
+          print(seleccion.to_string(index=False))
+          PY
+
+      - name: Subir resultados como artefacto
+        uses: actions/upload-artifact@v4
+        with:
+          name: ablacion-rebote-v4
+          path: |
+            data/processed/modelo_salida/v4_ablacion_*.csv
+            data/processed/modelo_salida/v4_ablacion_*.json
+            docs/modelo_salida_resultados_v4_ablacion.md
+          retention-days: 30
+
+      - name: Guardar resultados en rama experimental
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- \
+            data/processed/modelo_salida/v4_ablacion_resumen.csv \
+            data/processed/modelo_salida/v4_ablacion_deltas.csv \
+            data/processed/modelo_salida/v4_ablacion_estabilidad.csv \
+            data/processed/modelo_salida/v4_ablacion_predicciones.csv \
+            data/processed/modelo_salida/v4_ablacion_candidatos_validacion.csv \
+            data/processed/modelo_salida/v4_ablacion_seleccion_congelar.csv \
+            data/processed/modelo_salida/v4_ablacion_manifiesto.json \
+            docs/modelo_salida_resultados_v4_ablacion.md
+          if git diff --cached --quiet; then
+            echo "No hay resultados nuevos."
+          else
+            git commit -m "Guardar resultados de ablacion V4 [skip ci]"
+            git push
+          fi

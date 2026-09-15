@@ -1,0 +1,136 @@
+name: Evaluar modelo de salida V4 diario
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - modelo-salida-60-20-20
+    paths:
+      - "src/modelo_salida/06_modelo_selectivo_diario_v4.py"
+      - "config/modelo_salida_v4_selectivo_diario.json"
+      - ".github/workflows/evaluar-modelo-salida-v4-diario.yml"
+  pull_request:
+    branches:
+      - migracion-github-actions
+    paths:
+      - "src/modelo_salida/06_modelo_selectivo_diario_v4.py"
+      - "config/modelo_salida_v4_selectivo_diario.json"
+      - ".github/workflows/evaluar-modelo-salida-v4-diario.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: modelo-salida-v4-diario
+  cancel-in-progress: true
+
+jobs:
+  evaluar:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Descargar rama experimental
+        uses: actions/checkout@v4
+        with:
+          ref: modelo-salida-60-20-20
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Instalar dependencias
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install tabulate
+
+      - name: Validar sintaxis
+        run: |
+          python -m py_compile \
+            src/modelo_salida/00_ejecutar_constructor_seguro.py \
+            src/modelo_salida/01_construir_base_salida.py \
+            src/modelo_salida/04_modelo_rebote_salida_v2.py \
+            src/modelo_salida/06_modelo_selectivo_diario_v4.py
+
+      - name: Reconstruir base temporal diaria
+        run: |
+          python src/modelo_salida/00_ejecutar_constructor_seguro.py
+
+      - name: Evaluar modelo selectivo diario
+        run: |
+          python src/modelo_salida/06_modelo_selectivo_diario_v4.py
+
+      - name: Auditar resultados y temporalidad
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          import pandas as pd
+
+          raiz = Path("data/processed/modelo_salida")
+          resumen = pd.read_csv(raiz / "v4_resumen.csv", encoding="utf-8-sig")
+          pred = pd.read_csv(raiz / "v4_predicciones_test_diarias.csv", encoding="utf-8-sig")
+          zonas = pd.read_csv(raiz / "v4_evidencia_zonas_rebote.csv", encoding="utf-8-sig")
+
+          if set(resumen["afp"]) != {"Habitat", "Integra", "Prima", "Profuturo"}:
+              raise SystemExit("El resumen V4 no contiene las cuatro AFP")
+          if not resumen["frecuencia"].eq("diaria").all():
+              raise SystemExit("La V4 contiene una frecuencia distinta de diaria")
+          if pred.empty or zonas.empty:
+              raise SystemExit("La evaluacion V4 esta vacia")
+
+          decision = pd.to_datetime(pred["fecha_cuota"], errors="coerce")
+          objetivo = pd.to_datetime(pred["fecha_objetivo_t1"], errors="coerce")
+          if decision.isna().any() or objetivo.isna().any():
+              raise SystemExit("Hay fechas invalidas")
+          if not (objetivo > decision).all():
+              raise SystemExit("Fuga temporal: objetivo no posterior a la decision")
+          if pred.duplicated(["afp", "fecha_cuota"]).any():
+              raise SystemExit("Hay mas de una prediccion por AFP y dia")
+          if not pred["estado_diario"].isin(["RIESGO_ALTO", "SIN_SENAL"]).all():
+              raise SystemExit("Estado diario no reconocido")
+          if not pred["probabilidad_riesgo"].between(0, 1).all():
+              raise SystemExit("Probabilidades fuera del rango 0-1")
+
+          manifiesto = json.loads((raiz / "v4_manifiesto.json").read_text(encoding="utf-8"))
+          if manifiesto.get("frecuencia") != "diaria":
+              raise SystemExit("El manifiesto no confirma frecuencia diaria")
+
+          print(resumen[[
+              "afp", "modelo_elegido", "modo_selectivo",
+              "test_cobertura_dias_pct", "test_precision_alerta_pct",
+              "test_mejora_precision_pp", "test_cobertura_caidas_pct",
+              "test_proteccion_neta_suma_pct", "estado"
+          ]].to_string(index=False))
+          PY
+
+      - name: Subir resultados como artefacto
+        uses: actions/upload-artifact@v4
+        with:
+          name: modelo-salida-v4-diario
+          path: |
+            data/processed/modelo_salida/v4_*.csv
+            data/processed/modelo_salida/v4_*.json
+            docs/modelo_salida_resultados_v4.md
+          retention-days: 30
+
+      - name: Guardar resultados en la rama experimental
+        if: github.event_name != 'pull_request'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- \
+            data/processed/modelo_salida/v4_resumen.csv \
+            data/processed/modelo_salida/v4_candidatos_validacion.csv \
+            data/processed/modelo_salida/v4_evidencia_zonas_rebote.csv \
+            data/processed/modelo_salida/v4_predicciones_test_diarias.csv \
+            data/processed/modelo_salida/v4_manifiesto.json \
+            docs/modelo_salida_resultados_v4.md
+          if git diff --cached --quiet; then
+            echo "No hay resultados V4 nuevos."
+          else
+            git commit -m "Guardar resultados del modelo de salida V4 [skip ci]"
+            git push
+          fi

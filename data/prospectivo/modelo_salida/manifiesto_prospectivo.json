@@ -1,0 +1,59 @@
+{
+  "version": "modelo_salida_v4_congelado_2026-07-16",
+  "config_hash_sha256": "ee6a77da6e0eb19f056e6912fd850fa6a0491635193e2ddbfcf538c9d36cc8c2",
+  "frecuencia": "diaria",
+  "generado_utc": "2026-07-16T02:29:40+00:00",
+  "max_antiguedad_calendario_dias": 5,
+  "n_senales_nuevas": 0,
+  "n_senales_prospectivas_acumuladas": 0,
+  "n_resultados_verificados": 0,
+  "regla_append_only": true,
+  "regla_frescura": "Solo se registra cuando retorno_real_t1 esta ausente, la fecha objetivo es posterior a la ultima SBS de la base y la decision no supera cinco dias.",
+  "estado_ejecucion": [
+    {
+      "generado_utc": "2026-07-16T02:29:40+00:00",
+      "afp": "Habitat",
+      "model_id": "v4-20260716-habitat-completo-gbd2n100-c15",
+      "habilitado_senal": true,
+      "estado_ejecucion": "SIN_OBJETIVO_PENDIENTE",
+      "detalle": "No existe una fila cuya cuota objetivo siga sin conocerse.",
+      "ultima_fecha_factores": "2026-07-02 00:00:00",
+      "ultima_fecha_sbs_base": "2026-07-08 00:00:00",
+      "antiguedad_calendario_dias": 14
+    },
+    {
+      "generado_utc": "2026-07-16T02:29:40+00:00",
+      "afp": "Integra",
+      "model_id": "v4-20260716-integra-sin-nivel-gbd2n100-c05",
+      "habilitado_senal": false,
+      "estado_ejecucion": "SIN_OBJETIVO_PENDIENTE",
+      "detalle": "No existe una fila cuya cuota objetivo siga sin conocerse.",
+      "ultima_fecha_factores": "2026-07-01 00:00:00",
+      "ultima_fecha_sbs_base": "2026-07-08 00:00:00",
+      "antiguedad_calendario_dias": 15
+    },
+    {
+      "generado_utc": "2026-07-16T02:29:40+00:00",
+      "afp": "Prima",
+      "model_id": "v4-20260716-prima-base-logc1bal-c10",
+      "habilitado_senal": false,
+      "estado_ejecucion": "SIN_OBJETIVO_PENDIENTE",
+      "detalle": "No existe una fila cuya cuota objetivo siga sin conocerse.",
+      "ultima_fecha_factores": "2026-06-30 00:00:00",
+      "ultima_fecha_sbs_base": "2026-07-08 00:00:00",
+      "antiguedad_calendario_dias": 16
+    },
+    {
+      "generado_utc": "2026-07-16T02:29:40+00:00",
+      "afp": "Profuturo",
+      "model_id": "v4-20260716-profuturo-base-logc005bal-c15",
+      "habilitado_senal": false,
+      "estado_ejecucion": "SIN_OBJETIVO_PENDIENTE",
+      "detalle": "No existe una fila cuya cuota objetivo siga sin conocerse.",
+      "ultima_fecha_factores": "2026-07-01 00:00:00",
+      "ultima_fecha_sbs_base": "2026-07-08 00:00:00",
+      "antiguedad_calendario_dias": 15
+    }
+  ],
+  "senales_nuevas": []
+}

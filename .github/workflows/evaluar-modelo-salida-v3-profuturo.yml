@@ -1,0 +1,137 @@
+name: Evaluar modelo de salida V3 Profuturo
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - modelo-salida-60-20-20
+    paths:
+      - "src/modelo_salida/05_modelo_profuturo_calibrado_v3.py"
+      - "config/modelo_salida_v3_profuturo.json"
+      - ".github/workflows/evaluar-modelo-salida-v3-profuturo.yml"
+  pull_request:
+    branches:
+      - migracion-github-actions
+    paths:
+      - "src/modelo_salida/05_modelo_profuturo_calibrado_v3.py"
+      - "config/modelo_salida_v3_profuturo.json"
+      - ".github/workflows/evaluar-modelo-salida-v3-profuturo.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: modelo-salida-v3-profuturo
+  cancel-in-progress: true
+
+jobs:
+  evaluar:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Descargar rama experimental
+        uses: actions/checkout@v4
+        with:
+          ref: modelo-salida-60-20-20
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Instalar dependencias
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Validar sintaxis
+        run: |
+          python -m py_compile \
+            src/modelo_salida/00_ejecutar_constructor_seguro.py \
+            src/modelo_salida/01_construir_base_salida.py \
+            src/modelo_salida/04_modelo_rebote_salida_v2.py \
+            src/modelo_salida/05_modelo_profuturo_calibrado_v3.py
+
+      - name: Reconstruir base temporal
+        run: |
+          python src/modelo_salida/00_ejecutar_constructor_seguro.py
+
+      - name: Evaluar calibracion de Profuturo
+        run: |
+          python src/modelo_salida/05_modelo_profuturo_calibrado_v3.py
+
+      - name: Auditar test reservado
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          import pandas as pd
+
+          raiz = Path("data/processed/modelo_salida")
+          resumen = pd.read_csv(raiz / "v3_profuturo_resumen.csv", encoding="utf-8-sig")
+          pred = pd.read_csv(raiz / "v3_profuturo_predicciones_test.csv", encoding="utf-8-sig")
+          estabilidad = pd.read_csv(
+              raiz / "v3_profuturo_estabilidad_temporal.csv", encoding="utf-8-sig"
+          )
+
+          if len(resumen) != 1 or resumen.iloc[0]["afp"] != "Profuturo":
+              raise SystemExit("El resumen V3 no corresponde exclusivamente a Profuturo")
+          if len(pred) < 100:
+              raise SystemExit("El test V3 es demasiado pequeno")
+          if set(estabilidad["segmento"]) != {
+              "test_primera_mitad", "test_segunda_mitad"
+          }:
+              raise SystemExit("Faltan segmentos de estabilidad temporal")
+
+          decision = pd.to_datetime(pred["fecha_cuota"], errors="coerce")
+          objetivo = pd.to_datetime(pred["fecha_objetivo_t1"], errors="coerce")
+          if decision.isna().any() or objetivo.isna().any():
+              raise SystemExit("Existen fechas invalidas")
+          if not (objetivo > decision).all():
+              raise SystemExit("Fuga temporal: objetivo no posterior a la decision")
+          if not pred["probabilidad_calibrada"].between(0, 1).all():
+              raise SystemExit("Probabilidades calibradas fuera de 0-1")
+
+          manifiesto = json.loads(
+              (raiz / "v3_profuturo_manifiesto.json").read_text(encoding="utf-8")
+          )
+          if manifiesto.get("version") != "modelo_salida_v3_profuturo_calibrado":
+              raise SystemExit("Version inesperada del manifiesto V3")
+
+          print(resumen[[
+              "afp", "C", "balanceado", "calibrador", "umbral_probabilidad",
+              "auc", "brier", "precision_alerta_pct", "cobertura_caidas_pct",
+              "proteccion_neta_suma_pct", "estado"
+          ]].to_string(index=False))
+          print(estabilidad.to_string(index=False))
+          PY
+
+      - name: Subir resultados como artefacto
+        uses: actions/upload-artifact@v4
+        with:
+          name: modelo-salida-v3-profuturo
+          path: |
+            data/processed/modelo_salida/v3_profuturo_*.csv
+            data/processed/modelo_salida/v3_profuturo_*.json
+            docs/modelo_salida_resultados_v3_profuturo.md
+          retention-days: 30
+
+      - name: Guardar resultados en la rama experimental
+        if: github.event_name != 'pull_request'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- \
+            data/processed/modelo_salida/v3_profuturo_candidatos_validacion.csv \
+            data/processed/modelo_salida/v3_profuturo_predicciones_test.csv \
+            data/processed/modelo_salida/v3_profuturo_estabilidad_temporal.csv \
+            data/processed/modelo_salida/v3_profuturo_resumen.csv \
+            data/processed/modelo_salida/v3_profuturo_manifiesto.json \
+            docs/modelo_salida_resultados_v3_profuturo.md
+          if git diff --cached --quiet; then
+            echo "No hay resultados V3 nuevos."
+          else
+            git commit -m "Guardar resultados del modelo de salida V3 [skip ci]"
+            git push
+          fi

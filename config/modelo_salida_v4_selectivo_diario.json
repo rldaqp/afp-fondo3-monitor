@@ -1,0 +1,45 @@
+{
+  "version": "modelo_salida_v4_selectivo_diario",
+  "frecuencia": "diaria",
+  "afps": ["Habitat", "Integra", "Prima", "Profuturo"],
+  "configuracion_episodios": {
+    "version": "modelo_salida_v2_rebote",
+    "episodio": {
+      "cuantil_shock_entrenamiento": 0.25,
+      "amplitud_negativa_minima": 0.55,
+      "max_dias_desde_shock": 10,
+      "rebote_acumulado_minimo": 0.002,
+      "min_dias_positivos": 1
+    },
+    "objetivo": {
+      "caida_absoluta_minima": 0.0025,
+      "multiplicador_volatilidad": 0.75
+    }
+  },
+  "modelos": {
+    "logistica_C": [0.05, 0.2, 1.0],
+    "gradient_boosting": [
+      {"n_estimators": 80, "learning_rate": 0.03, "max_depth": 1},
+      {"n_estimators": 100, "learning_rate": 0.03, "max_depth": 2}
+    ]
+  },
+  "seleccion_selectiva": {
+    "coberturas_objetivo": [0.05, 0.10, 0.15, 0.20, 0.25, 0.30],
+    "min_alertas_validacion": 12,
+    "mejora_precision_minima_pp": 7.0,
+    "min_eventos_zona": 18,
+    "max_zonas_seleccionadas": 4
+  },
+  "walk_forward": {
+    "reentrenar_cada_observaciones": 60,
+    "minimo_eventos_historial": 500
+  },
+  "criterios_aprobacion": {
+    "min_alertas_test": 20,
+    "min_auc_test": 0.55,
+    "min_mejora_precision_pp": 8.0,
+    "min_cobertura_caidas_pct": 15.0,
+    "proteccion_neta_positiva": true
+  },
+  "advertencia": "Modelo experimental de frecuencia diaria y prediccion selectiva. El estado SIN_SENAL es una salida valida. No constituye una recomendacion financiera."
+}

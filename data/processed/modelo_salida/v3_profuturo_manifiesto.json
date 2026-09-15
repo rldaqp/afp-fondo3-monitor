@@ -1,0 +1,76 @@
+{
+  "version": "modelo_salida_v3_profuturo_calibrado",
+  "regla": "Modelo base entrenado con 60%; calibrador y umbral elegidos con validacion; el 20% final permanece intacto hasta la evaluacion.",
+  "configuracion": {
+    "version": "modelo_salida_v3_profuturo_calibrado",
+    "afp": "Profuturo",
+    "configuracion_v2": {
+      "version": "modelo_salida_v2_rebote",
+      "episodio": {
+        "cuantil_shock_entrenamiento": 0.25,
+        "amplitud_negativa_minima": 0.55,
+        "max_dias_desde_shock": 10,
+        "rebote_acumulado_minimo": 0.004,
+        "min_dias_positivos": 1
+      },
+      "objetivo": {
+        "caida_absoluta_minima": 0.0025,
+        "multiplicador_volatilidad": 0.75
+      },
+      "seleccion": {
+        "umbrales_probabilidad": [0.45, 0.5, 0.55, 0.6, 0.65, 0.7],
+        "min_alertas_validacion": 15
+      },
+      "walk_forward": {
+        "reentrenar_cada_observaciones": 60,
+        "minimo_eventos_historial": 500
+      }
+    },
+    "candidatos": {
+      "C": [0.05, 0.2, 1.0],
+      "balanceado": [false, true],
+      "calibrador": ["platt", "isotonic"]
+    },
+    "seleccion": {
+      "umbrales_probabilidad": [0.15, 0.175, 0.2, 0.225, 0.25, 0.275, 0.3],
+      "min_alertas_validacion": 15,
+      "mejora_precision_minima_pp": 5.0
+    },
+    "advertencia": "Modelo experimental para seguimiento prospectivo. No constituye una recomendacion financiera."
+  },
+  "ganador": {
+    "C": 0.2,
+    "balanceado": false,
+    "calibrador": "isotonic",
+    "umbral_probabilidad": 0.175,
+    "n": 282,
+    "prevalencia_pct": 15.957446808510639,
+    "auc": 0.5632911392405064,
+    "brier": 0.13258694933331908,
+    "n_alertas": 61,
+    "precision_alerta_pct": 21.311475409836063,
+    "cobertura_caidas_pct": 28.888888888888886,
+    "falsas_alarmas_pct": 20.253164556962027,
+    "perdida_evitada_suma_pct": 12.638517200062832,
+    "ganancia_sacrificada_suma_pct": 10.83469175124015,
+    "proteccion_neta_suma_pct": 1.803825448822681,
+    "puntaje_validacion": 0.04047125516563369,
+    "mejora_precision_pp": 5.354028601325425,
+    "brier_base_validacion": 0.13411045722046175
+  },
+  "criterios_principales": {
+    "alertas_min_20": true,
+    "auc_min_0_55": true,
+    "brier_mejor_que_base": true,
+    "precision_supera_prevalencia_8pp": true,
+    "cobertura_caidas_min_15pct": true,
+    "proteccion_neta_positiva": true
+  },
+  "criterios_estabilidad": {
+    "auc_primera_mitad_min_0_55": true,
+    "auc_segunda_mitad_min_0_55": false,
+    "proteccion_neta_positiva_primera_mitad": true,
+    "proteccion_neta_positiva_segunda_mitad": true
+  },
+  "estado": "PROMETEDOR_PERO_INESTABLE"
+}
