@@ -1,27 +1,27 @@
 {
-  "generated_at_lima": "2026-09-16T15:25:15.404045-05:00",
+  "generated_at_lima": "2026-09-16T18:11:27.401265-05:00",
   "signal_date": "2026-09-16",
-  "mode": "INTRADIA PROVISIONAL - ULTIMO CORTE",
+  "mode": "CIERRE DIARIO",
   "market_open": false,
   "role": "UNICO CHALLENGER EN SOMBRA; no reemplaza el OLS rolling 90 oficial.",
   "official": {
     "model": "OLS rolling 90 oficial · SPY EEM EPU MCHI NEM FCX USD/PEN",
-    "return_estimated": 0.008952078765368483,
+    "return_estimated": 0.0015302191876275313,
     "signal": "SUBE",
-    "vc_estimated": 72.0536620783505
+    "vc_estimated": 71.5236347626212
   },
   "challenger": {
     "model": "OLS 60/30 · sin NEM ni FCX + QQQ",
-    "return_estimated": 0.008356878452915786,
+    "return_estimated": 0.005121225621858216,
     "signal": "SUBE",
-    "vc_estimated": 69.78322912794277,
+    "vc_estimated": 69.55930612239479,
     "blind_chain": true,
     "reanchored_with_latest_sbs": false
   },
   "comparison": {
     "same_signal": true,
-    "vc_difference": -2.2704329504077236,
-    "return_difference_pp": -0.059520031245269625
+    "vc_difference": -1.9643286402264124,
+    "return_difference_pp": 0.35910064342306847
   },
   "cycle": {
     "train_window": 60,
@@ -52,16 +52,16 @@
     "n_blocks": 10,
     "n_predictions": 300,
     "official_current_7f": {
-      "vc_mae": 0.923742351972024,
-      "vc_rmse": 1.7001108229833057,
-      "mean_endpoint_abs_error": 1.7523057813757212
+      "vc_mae": 0.9237423519720216,
+      "vc_rmse": 1.700110822983303,
+      "mean_endpoint_abs_error": 1.7523057813757164
     },
     "challenger_6030": {
-      "vc_mae": 0.7890758034935097,
-      "vc_rmse": 1.4716121530521804,
-      "mean_endpoint_abs_error": 1.401209149491688
+      "vc_mae": 0.7890758034935107,
+      "vc_rmse": 1.471612153052181,
+      "mean_endpoint_abs_error": 1.4012091494916923
     },
-    "mae_improvement_pct": 14.578366813108163,
+    "mae_improvement_pct": 14.578366813107827,
     "challenger_better_blocks": 7,
     "official_better_blocks": 3
   },
