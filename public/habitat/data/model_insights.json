@@ -1,5 +1,5 @@
 {
-  "generated_for": "2026-09-16",
+  "generated_for": "2026-09-17",
   "current_signal": "SUBE",
   "confidence": {
     "historical_accuracy": 0.9069767441860465,
@@ -10,7 +10,7 @@
   "performance": {
     "window_n": 90,
     "classification_accuracy": 0.7555555555555555,
-    "mae_return_pp": 0.32053279221385567,
+    "mae_return_pp": 0.3174429803342491,
     "sube_n": 43,
     "sube_accuracy": 0.9069767441860465,
     "baja_n": 34,
@@ -19,70 +19,70 @@
     "neutro_accuracy": 0.15384615384615385
   },
   "uncertainty": {
-    "relative_q80": 0.005104786891250719,
+    "relative_q80": 0.005104786891250716,
     "label": "Banda empírica 80%"
   },
   "benchmarks": {
-    "zero_change_mae_pp": 0.9299836986670341,
-    "ols_mae_pp": 0.32053279221385567,
-    "ols_mae_improvement_vs_zero": 0.6553350422450606
+    "zero_change_mae_pp": 0.9236182869255881,
+    "ols_mae_pp": 0.3174429803342491,
+    "ols_mae_improvement_vs_zero": 0.6563050073522158
   },
   "contributions": [
     {
-      "feature": "ret_EPU",
-      "label": "EPU",
-      "value": 0.008472661866721243,
-      "coefficient": 0.16990480441033512,
-      "contribution_pp": 0.14395459573001776
+      "feature": "ret_EEM",
+      "label": "EEM",
+      "value": 0.018107157932178763,
+      "coefficient": 0.4166454730455159,
+      "contribution_pp": 0.7544265382162487
     },
     {
-      "feature": "ret_MCHI",
-      "label": "MCHI",
-      "value": -0.01133998253357471,
-      "coefficient": -0.0832657405188126,
-      "contribution_pp": 0.09442320431284988
+      "feature": "ret_EPU",
+      "label": "EPU",
+      "value": 0.01489864322917489,
+      "coefficient": 0.1689183274048968,
+      "contribution_pp": 0.25166538948745126
+    },
+    {
+      "feature": "ret_USD_PEN",
+      "label": "USD/PEN",
+      "value": 0.037120752389373735,
+      "coefficient": 0.04016477434585711,
+      "contribution_pp": 0.14909466432676322
     },
     {
       "feature": "ret_SPY",
       "label": "SPY",
-      "value": -0.004409916675517711,
-      "coefficient": 0.13216230968277767,
-      "contribution_pp": -0.05828247733450172
+      "value": 0.011338754633487547,
+      "coefficient": 0.12381948683384955,
+      "contribution_pp": 0.14039587800533618
     },
     {
       "feature": "ret_NEM",
       "label": "NEM",
-      "value": -0.019566794890130357,
-      "coefficient": 0.02457341298569915,
-      "contribution_pp": -0.04808229316416411
+      "value": 0.02159984565765205,
+      "coefficient": 0.026685440032424013,
+      "contribution_pp": 0.0576401386006888
     },
     {
-      "feature": "ret_EEM",
-      "label": "EEM",
-      "value": -0.0006082864085751316,
-      "coefficient": 0.40666528676838365,
-      "contribution_pp": -0.02473689667805161
+      "feature": "ret_MCHI",
+      "label": "MCHI",
+      "value": 0.006881987883833318,
+      "coefficient": -0.08249994452234174,
+      "contribution_pp": -0.05677636186196768
+    },
+    {
+      "feature": "ret_FCX",
+      "label": "FCX",
+      "value": 0.02325246476060361,
+      "coefficient": 0.024167388052328945,
+      "contribution_pp": 0.056195133904261146
     },
     {
       "feature": "intercept",
       "label": "Base",
       "value": 1.0,
-      "coefficient": 0.000111532628375508,
-      "contribution_pp": 0.0111532628375508
-    },
-    {
-      "feature": "ret_FCX",
-      "label": "FCX",
-      "value": -0.002017863868415515,
-      "coefficient": 0.02887465515868718,
-      "contribution_pp": -0.0058265123357672515
-    },
-    {
-      "feature": "ret_USD_PEN",
-      "label": "USD/PEN",
-      "value": -0.0005931198102016033,
-      "coefficient": 0.03888663224057436,
-      "contribution_pp": -0.0023064431933909014
+      "coefficient": 8.272365969247647e-05,
+      "contribution_pp": 0.008272365969247648
     }
   ],
   "quality": {
@@ -90,8 +90,8 @@
     "warnings": [],
     "critical": [],
     "training_n": 90,
-    "latest_sbs_date": "2026-09-14",
-    "fx_provisional": false
+    "latest_sbs_date": "2026-09-15",
+    "fx_provisional": true
   },
   "challenger_huber": {
     "status": "NO APLICA EN HÁBITAT",
