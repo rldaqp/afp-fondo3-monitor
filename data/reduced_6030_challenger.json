@@ -1,33 +1,33 @@
 {
-  "generated_at_lima": "2026-09-16T18:11:27.401265-05:00",
-  "signal_date": "2026-09-16",
-  "mode": "CIERRE DIARIO",
-  "market_open": false,
+  "generated_at_lima": "2026-09-17T12:34:14.020577-05:00",
+  "signal_date": "2026-09-17",
+  "mode": "INTRADÍA PROVISIONAL",
+  "market_open": true,
   "role": "UNICO CHALLENGER EN SOMBRA; no reemplaza el OLS rolling 90 oficial.",
   "official": {
     "model": "OLS rolling 90 oficial · SPY EEM EPU MCHI NEM FCX USD/PEN",
-    "return_estimated": 0.0015302191876275313,
+    "return_estimated": 0.012928076915070346,
     "signal": "SUBE",
-    "vc_estimated": 71.5236347626212
+    "vc_estimated": 72.33760542227355
   },
   "challenger": {
     "model": "OLS 60/30 · sin NEM ni FCX + QQQ",
-    "return_estimated": 0.005121225621858216,
+    "return_estimated": 0.013214152126353643,
     "signal": "SUBE",
-    "vc_estimated": 69.55930612239479,
+    "vc_estimated": 70.47847337529971,
     "blind_chain": true,
     "reanchored_with_latest_sbs": false
   },
   "comparison": {
     "same_signal": true,
-    "vc_difference": -1.9643286402264124,
-    "return_difference_pp": 0.35910064342306847
+    "vc_difference": -1.8591320469738406,
+    "return_difference_pp": 0.028607521128329663
   },
   "cycle": {
     "train_window": 60,
     "freeze_horizon": 30,
     "cycle_start": "2026-08-19",
-    "cycle_day": 20,
+    "cycle_day": 21,
     "anchor_date": "2026-08-18",
     "anchor_vc": 69.6328126,
     "train_start": "2026-05-14",
@@ -44,8 +44,8 @@
     "rule": "Coeficientes congelados 30 sesiones. El VC se encadena desde el ancla del ciclo y no se corrige con SBS dentro del bloque."
   },
   "qqq": {
-    "return": 0.000255475461144572,
-    "source": "CIERRE DIARIO YAHOO"
+    "return": 0.016574035356602623,
+    "source": "INTRADIA YAHOO"
   },
   "blind_backtest": {
     "design": "Bloques no superpuestos: entrenar 60 observaciones, congelar 30, un solo VC SBS como ancla al inicio; dentro del bloque SBS solo evalua y nunca corrige.",
@@ -67,7 +67,7 @@
   },
   "forward_sbs": {
     "evaluated": 18,
-    "pending": 2,
+    "pending": 3,
     "challenger_vc_mae": 0.7090103790310202,
     "official_vc_mae": 0.8946595606423305
   },
