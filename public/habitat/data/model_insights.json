@@ -19,7 +19,7 @@
     "neutro_accuracy": 0.15384615384615385
   },
   "uncertainty": {
-    "relative_q80": 0.00510478689125071,
+    "relative_q80": 0.005104786891250719,
     "label": "Banda empírica 80%"
   },
   "benchmarks": {
@@ -32,22 +32,22 @@
       "feature": "ret_EPU",
       "label": "EPU",
       "value": 0.008472661866721243,
-      "coefficient": 0.16990480441033556,
-      "contribution_pp": 0.14395459573001815
+      "coefficient": 0.1699048044103355,
+      "contribution_pp": 0.1439545957300181
     },
     {
       "feature": "ret_USD_PEN",
       "label": "USD/PEN",
       "value": -0.03206155229942309,
-      "coefficient": 0.03888663224057505,
-      "contribution_pp": -0.12467657933296292
+      "coefficient": 0.03888663224057492,
+      "contribution_pp": -0.12467657933296249
     },
     {
       "feature": "ret_MCHI",
       "label": "MCHI",
       "value": -0.01133998253357471,
-      "coefficient": -0.08326574051881301,
-      "contribution_pp": 0.09442320431285037
+      "coefficient": -0.08326574051881279,
+      "contribution_pp": 0.09442320431285012
     },
     {
       "feature": "ret_SPY",
@@ -60,29 +60,29 @@
       "feature": "ret_NEM",
       "label": "NEM",
       "value": -0.019566794890130357,
-      "coefficient": 0.024573412985698817,
-      "contribution_pp": -0.04808229316416345
+      "coefficient": 0.024573412985698873,
+      "contribution_pp": -0.04808229316416356
     },
     {
       "feature": "ret_EEM",
       "label": "EEM",
       "value": -0.0006082864085751316,
-      "coefficient": 0.40666528676838315,
-      "contribution_pp": -0.024736896678051574
+      "coefficient": 0.4066652867683832,
+      "contribution_pp": -0.02473689667805158
     },
     {
       "feature": "intercept",
       "label": "Base",
       "value": 1.0,
-      "coefficient": 0.00011153262837550822,
-      "contribution_pp": 0.011153262837550821
+      "coefficient": 0.0001115326283755086,
+      "contribution_pp": 0.011153262837550859
     },
     {
       "feature": "ret_FCX",
       "label": "FCX",
       "value": -0.002017863868415515,
-      "coefficient": 0.028874655158687368,
-      "contribution_pp": -0.005826512335767289
+      "coefficient": 0.028874655158687226,
+      "contribution_pp": -0.005826512335767261
     }
   ],
   "quality": {
