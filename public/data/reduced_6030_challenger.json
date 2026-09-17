@@ -1,27 +1,27 @@
 {
-  "generated_at_lima": "2026-09-17T15:32:49.092255-05:00",
+  "generated_at_lima": "2026-09-17T18:04:19.905319-05:00",
   "signal_date": "2026-09-17",
-  "mode": "INTRADIA PROVISIONAL - ULTIMO CORTE",
+  "mode": "CIERRE DIARIO",
   "market_open": false,
   "role": "UNICO CHALLENGER EN SOMBRA; no reemplaza el OLS rolling 90 oficial.",
   "official": {
     "model": "OLS rolling 90 oficial · SPY EEM EPU MCHI NEM FCX USD/PEN",
-    "return_estimated": 0.012928076915070346,
+    "return_estimated": 0.014113220520373653,
     "signal": "SUBE",
-    "vc_estimated": 72.33760542227355
+    "vc_estimated": 72.42224168860182
   },
   "challenger": {
     "model": "OLS 60/30 · sin NEM ni FCX + QQQ",
-    "return_estimated": 0.01355721610713958,
+    "return_estimated": 0.014771469597805486,
     "signal": "SUBE",
-    "vc_estimated": 70.50233666775877,
+    "vc_estimated": 70.58679929802618,
     "blind_chain": true,
     "reanchored_with_latest_sbs": false
   },
   "comparison": {
     "same_signal": true,
-    "vc_difference": -1.8352687545147859,
-    "return_difference_pp": 0.06291391920692346
+    "vc_difference": -1.8354423905756363,
+    "return_difference_pp": 0.06582490774318331
   },
   "cycle": {
     "train_window": 60,
