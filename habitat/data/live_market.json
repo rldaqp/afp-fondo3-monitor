@@ -1,11 +1,11 @@
 {
   "generated_at_lima": "2026-09-17T12:34:07.257077-05:00",
-  "mode": "INTRADÍA PROVISIONAL",
-  "market_open": true,
+  "mode": "INTRADIA PROVISIONAL - ULTIMO CORTE",
+  "market_open": false,
   "signal_date": "2026-09-17",
-  "vc_base": 33.07372607525851,
-  "vc_estimated": 33.48844142405543,
-  "return_estimated": 0.012539117843971924,
+  "vc_base": 33.114203325983425,
+  "vc_estimated": 33.52942622379718,
+  "return_estimated": 0.012539117843971926,
   "signal": "SUBE",
   "assets": [
     {
@@ -86,12 +86,12 @@
       "usado_modelo": true
     }
   ],
-  "action": "ESPERAR",
+  "action": "ULTIMO_CORTE",
   "engine": "LIVE HABITAT INDEPENDIENTE",
   "fx_fresh": false,
   "fx_source": "YAHOO PEN=X PROVISIONAL",
   "fx_provisional": true,
   "fx_rule": "Histórico/entrenamiento: BCRP. Predicción: BCRP si existe; si está rezagado, Yahoo PEN=X provisional; 0 % solo si ambas fuentes faltan.",
-  "checked_at_lima": null,
+  "checked_at_lima": "2026-09-17T15:32:43.890695-05:00",
   "note": "Snapshot calculado con los coeficientes propios de Habitat y los mismos retornos de mercado del motor en vivo."
 }
