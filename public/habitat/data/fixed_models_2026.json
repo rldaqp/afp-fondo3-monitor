@@ -1,6 +1,6 @@
 {
   "fund": "HÁBITAT Fondo 3",
-  "generated_at_lima": "2026-09-17T19:22:30.734488-05:00",
+  "generated_at_lima": "2026-09-17T23:55:03.473083-05:00",
   "model_version": "habitat-rolling90-levels-returns-v4",
   "history_start": "2026-01-05",
   "window": 90,
@@ -31,7 +31,7 @@
   "latest": {
     "latest_sbs_date": "2026-09-15",
     "latest_sbs_vc": 33.0665198,
-    "latest_market_date": "2026-09-16"
+    "latest_market_date": "2026-09-17"
   },
   "models": {
     "niveles": {
@@ -3929,7 +3929,7 @@
       "vc_niveles": 33.13452679618611,
       "vc_niveles_raw": 33.13452679618611,
       "ret_niveles_implicito": -0.018816595160478733,
-      "ret_vc_estimado": -0.014960565512897817,
+      "ret_vc_estimado": -0.014960565512897818,
       "vc_retornos": 33.310361053326254,
       "error_niveles_pct": 0.021591497607142962,
       "error_retornos_pct": 0.5523738548485202,
@@ -3952,7 +3952,7 @@
       "vc_niveles": 33.10332937405424,
       "vc_niveles_raw": 33.10332937405424,
       "ret_niveles_implicito": -0.0009415381823246749,
-      "ret_vc_estimado": -0.0012381962870195887,
+      "ret_vc_estimado": -0.0012381962870195884,
       "vc_retornos": 33.086355908390665,
       "error_niveles_pct": 0.11131977080405253,
       "error_retornos_pct": 0.05998849746100543,
@@ -3977,6 +3977,29 @@
       "ret_niveles_implicito": 0.002814788083614239,
       "ret_vc_estimado": 0.0023614886282825234,
       "vc_retornos": 33.14460601048458,
+      "error_niveles_pct": null,
+      "error_retornos_pct": null,
+      "fase": "PROYECCIÓN"
+    },
+    {
+      "fecha": "2026-09-17",
+      "SPBLSCUP": 455.17,
+      "SPY": 762.5999755859375,
+      "EEM": 66.91000366210938,
+      "MCHI": 52.66999816894531,
+      "QQQ": 716.9199829101562,
+      "vc_sbs": null,
+      "ret_SPY": 0.011338754633487547,
+      "ret_EEM": 0.018107157932178763,
+      "ret_MCHI": 0.006881987883833318,
+      "ret_QQQ": 0.0173118582049816,
+      "ret_SPBLSCUP": 0.01777648584589242,
+      "ret_vc_sbs": null,
+      "vc_niveles": 33.70094290529276,
+      "vc_niveles_raw": 33.70094290529276,
+      "ret_niveles_implicito": 0.015195413646421851,
+      "ret_vc_estimado": 0.01371228480381872,
+      "vc_retornos": 33.59909428781071,
       "error_niveles_pct": null,
       "error_retornos_pct": null,
       "fase": "PROYECCIÓN"
