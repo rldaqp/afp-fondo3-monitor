@@ -1,5 +1,5 @@
 {
-  "generated_from": "2026-09-18T14:32:00.453276-05:00",
+  "generated_from": "2026-09-18T14:33:45.335979-05:00",
   "validation_start": "2026-08-18",
   "policy": {
     "champion": "Coeficientes fijos calibrados 07/07/2026–17/08/2026.",
@@ -198,38 +198,47 @@
           "base_pred_return": -1.21274389500714e-05,
           "challenger_pred_return": 0.0001156685085106357,
           "challenger_prediction": 70.53959636939625
+        },
+        {
+          "date": "2026-09-16",
+          "base_error_pct": 0.6669456291290121,
+          "challenger_error_pct": 0.3125944961303695,
+          "actual_return": 0.002340756405077249,
+          "base_pred_return": 0.005445431807548529,
+          "challenger_pred_return": 0.0029863843808846102,
+          "challenger_prediction": 70.75025471822772
         }
       ],
       "base": {
         "full": {
-          "n": 20,
-          "mae_pct": 0.2659673294487253,
-          "rmse_pct": 0.34020972828168944,
-          "bias_pct": -0.06641898761090448,
-          "direction_n": 20,
-          "direction_accuracy": 0.9
+          "n": 21,
+          "mae_pct": 0.28506153419540564,
+          "rmse_pct": 0.3625090906291548,
+          "bias_pct": -0.03149686300424178,
+          "direction_n": 21,
+          "direction_accuracy": 0.9047619047619048
         },
         "recent_5": {
           "n": 5,
-          "mae_pct": 0.20486338234004142,
-          "rmse_pct": 0.244372853588441,
-          "bias_pct": 0.15416570020241993,
+          "mae_pct": 0.2658790666289934,
+          "rmse_pct": 0.3499883009678707,
+          "bias_pct": 0.21518138449137192,
           "direction_n": 5,
           "direction_accuracy": 1.0
         },
         "recent_10": {
           "n": 10,
-          "mae_pct": 0.19707750817723024,
-          "rmse_pct": 0.23402564664416736,
-          "bias_pct": 0.11007077660472042,
+          "mae_pct": 0.24797103376702045,
+          "rmse_pct": 0.3110513184408428,
+          "bias_pct": 0.16096430219451063,
           "direction_n": 10,
           "direction_accuracy": 1.0
         },
         "recent_20": {
           "n": 20,
-          "mae_pct": 0.2659673294487253,
-          "rmse_pct": 0.34020972828168944,
-          "bias_pct": -0.06641898761090448,
+          "mae_pct": 0.27954627950986133,
+          "rmse_pct": 0.36078767205257456,
+          "bias_pct": -0.013303374759139341,
           "direction_n": 20,
           "direction_accuracy": 0.9
         }
@@ -237,31 +246,31 @@
       "challenger": {
         "window": 30,
         "full": {
-          "n": 20,
-          "mae_pct": 0.2896522011273167,
-          "rmse_pct": 0.3721233532046799,
-          "bias_pct": 0.03489922846469595,
-          "direction_n": 19,
-          "direction_accuracy": 0.7894736842105263
+          "n": 21,
+          "mae_pct": 0.2907446913655573,
+          "rmse_pct": 0.36950617747377495,
+          "bias_pct": 0.04812281263925183,
+          "direction_n": 20,
+          "direction_accuracy": 0.8
         },
         "coefficients": {
-          "intercept": 17.01725036398573,
-          "SPY": -0.024242117792144278,
-          "EEM": 0.9002922586137927,
-          "MCHI": -0.2152991779876323,
-          "QQQ": 0.011532698435981922,
-          "SPBLSCUP": 0.035849228833047704
+          "intercept": 18.687521188541144,
+          "SPY": -0.025542771946829513,
+          "EEM": 0.9250003283400927,
+          "MCHI": -0.17241927178798983,
+          "QQQ": 0.007992855279981299,
+          "SPBLSCUP": 0.031122859670853535
         },
-        "effect_drift": 0.24277172791685
+        "effect_drift": 0.32107039335310034
       },
       "status": {
         "code": "MAINTAIN",
         "label": "MANTENER",
         "reason": "No existe evidencia suficiente de que recalibrar mejore de forma consistente al modelo base.",
-        "mae_improvement": -0.08905180845964589,
-        "rmse_improvement": -0.09380573884285393,
-        "challenger_win_share": 0.5,
-        "challenger_recent5_wins": 2
+        "mae_improvement": -0.019936597851381688,
+        "rmse_improvement": -0.019301824493494157,
+        "challenger_win_share": 0.5238095238095238,
+        "challenger_recent5_wins": 3
       }
     },
     "retornos": {
@@ -445,38 +454,47 @@
           "base_pred_return": 0.00045971478443463054,
           "challenger_pred_return": -0.0012072009530514414,
           "challenger_prediction": 70.58763993967895
+        },
+        {
+          "date": "2026-09-16",
+          "base_error_pct": 0.5156542185539958,
+          "challenger_error_pct": 0.17979384634163598,
+          "actual_return": 0.002340756405077249,
+          "base_pred_return": 0.0075093687997660665,
+          "challenger_pred_return": 0.004142903404467703,
+          "challenger_prediction": 70.65659070877314
         }
       ],
       "base": {
         "full": {
-          "n": 20,
-          "mae_pct": 0.2926375274676962,
-          "rmse_pct": 0.36962710427966433,
-          "bias_pct": 0.10246468911459194,
-          "direction_n": 20,
-          "direction_accuracy": 0.9
+          "n": 21,
+          "mae_pct": 0.30325736990037716,
+          "rmse_pct": 0.3778626102973917,
+          "bias_pct": 0.1221403809926588,
+          "direction_n": 21,
+          "direction_accuracy": 0.9047619047619048
         },
         "recent_5": {
           "n": 5,
-          "mae_pct": 0.19461758579883082,
-          "rmse_pct": 0.25179495504016486,
-          "bias_pct": 0.18111100656222234,
+          "mae_pct": 0.25828963228744506,
+          "rmse_pct": 0.3298417357083205,
+          "bias_pct": 0.24478305305083659,
           "direction_n": 5,
           "direction_accuracy": 0.8
         },
         "recent_10": {
           "n": 10,
-          "mae_pct": 0.32604994003152865,
-          "rmse_pct": 0.44297961872465497,
-          "bias_pct": 0.2089516161825855,
+          "mae_pct": 0.28720037623984784,
+          "rmse_pct": 0.3755957582575665,
+          "bias_pct": 0.1701020523909047,
           "direction_n": 10,
           "direction_accuracy": 0.9
         },
         "recent_20": {
           "n": 20,
-          "mae_pct": 0.2926375274676962,
-          "rmse_pct": 0.36962710427966433,
-          "bias_pct": 0.10246468911459194,
+          "mae_pct": 0.3114013190013609,
+          "rmse_pct": 0.38591949326847585,
+          "bias_pct": 0.12122848064825664,
           "direction_n": 20,
           "direction_accuracy": 0.9
         }
@@ -484,30 +502,30 @@
       "challenger": {
         "window": 30,
         "full": {
-          "n": 20,
-          "mae_pct": 0.3139729856275203,
-          "rmse_pct": 0.38571719164682705,
-          "bias_pct": 0.05970287088685022,
-          "direction_n": 20,
-          "direction_accuracy": 0.95
+          "n": 21,
+          "mae_pct": 0.3075835028043829,
+          "rmse_pct": 0.3784605952829625,
+          "bias_pct": 0.06542148876564954,
+          "direction_n": 21,
+          "direction_accuracy": 0.9523809523809523
         },
         "coefficients": {
-          "intercept": 0.00035477454809150727,
-          "SPY": -0.4371684144279573,
-          "EEM": 0.6730054746789068,
-          "MCHI": -0.098551476799475,
-          "QQQ": 0.3655700519002703,
-          "SPBLSCUP": 0.23482721747139917
+          "intercept": 0.00022012536398476865,
+          "SPY": -0.450282627021571,
+          "EEM": 0.6787124270389427,
+          "MCHI": -0.09009115319884305,
+          "QQQ": 0.36878373099498135,
+          "SPBLSCUP": 0.22777103688890082
         },
-        "effect_drift": 0.19380327470606634
+        "effect_drift": 0.1993771376056559
       },
       "status": {
         "code": "MAINTAIN",
         "label": "MANTENER",
         "reason": "No existe evidencia suficiente de que recalibrar mejore de forma consistente al modelo base.",
-        "mae_improvement": -0.07290745771551554,
-        "rmse_improvement": -0.04353059389007563,
-        "challenger_win_share": 0.5,
+        "mae_improvement": -0.014265549112382425,
+        "rmse_improvement": -0.0015825460611202935,
+        "challenger_win_share": 0.5238095238095238,
         "challenger_recent5_wins": 2
       }
     }
