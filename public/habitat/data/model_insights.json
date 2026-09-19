@@ -10,7 +10,7 @@
   "performance": {
     "window_n": 90,
     "classification_accuracy": 0.7555555555555555,
-    "mae_return_pp": 0.3165483225680177,
+    "mae_return_pp": 0.3165483225680176,
     "sube_n": 43,
     "sube_accuracy": 0.9069767441860465,
     "baja_n": 34,
@@ -19,70 +19,70 @@
     "neutro_accuracy": 0.15384615384615385
   },
   "uncertainty": {
-    "relative_q80": 0.005104786891250711,
+    "relative_q80": 0.00510478689125071,
     "label": "Banda empírica 80%"
   },
   "benchmarks": {
-    "zero_change_mae_pp": 0.9182268815180389,
-    "ols_mae_pp": 0.3165483225680177,
-    "ols_mae_improvement_vs_zero": 0.655261320552181
+    "zero_change_mae_pp": 0.9182268815180391,
+    "ols_mae_pp": 0.3165483225680176,
+    "ols_mae_improvement_vs_zero": 0.6552613205521811
   },
   "contributions": [
     {
       "feature": "ret_EEM",
       "label": "EEM",
       "value": 0.0017933808193086875,
-      "coefficient": 0.4180423276372803,
-      "contribution_pp": 0.07497090920438565
+      "coefficient": 0.41804232763727955,
+      "contribution_pp": 0.07497090920438551
     },
     {
       "feature": "ret_MCHI",
       "label": "MCHI",
       "value": 0.0075944852816560715,
-      "coefficient": -0.07750237109891706,
-      "contribution_pp": -0.05885906166041725
+      "coefficient": -0.07750237109891704,
+      "contribution_pp": -0.05885906166041724
     },
     {
       "feature": "ret_EPU",
       "label": "EPU",
-      "value": 0.001600488685464585,
-      "coefficient": 0.16793586897483903,
-      "contribution_pp": 0.026877945817789288
+      "value": 0.001600488685464807,
+      "coefficient": 0.1679358689748392,
+      "contribution_pp": 0.026877945817793045
     },
     {
       "feature": "ret_FCX",
       "label": "FCX",
       "value": 0.009738919636791188,
-      "coefficient": 0.024651662948019862,
-      "contribution_pp": 0.024008056436402837
+      "coefficient": 0.024651662948020042,
+      "contribution_pp": 0.024008056436403014
     },
     {
       "feature": "ret_NEM",
       "label": "NEM",
       "value": -0.007878412511839072,
-      "coefficient": 0.025382299539903508,
-      "contribution_pp": -0.01999722262744229
+      "coefficient": 0.025382299539903452,
+      "contribution_pp": -0.01999722262744225
     },
     {
       "feature": "ret_USD_PEN",
       "label": "USD/PEN",
       "value": 0.00527412311549158,
-      "coefficient": 0.03657850903233312,
-      "contribution_pp": 0.019291956001764563
+      "coefficient": 0.03657850903233304,
+      "contribution_pp": 0.019291956001764525
     },
     {
       "feature": "ret_SPY",
       "label": "SPY",
       "value": -0.0011932509489422927,
-      "coefficient": 0.12242269812511969,
-      "contribution_pp": -0.014608100070987489
+      "coefficient": 0.12242269812512092,
+      "contribution_pp": -0.014608100070987638
     },
     {
       "feature": "intercept",
       "label": "Base",
       "value": 1.0,
-      "coefficient": 0.00011514185582675075,
-      "contribution_pp": 0.011514185582675075
+      "coefficient": 0.00011514185582674902,
+      "contribution_pp": 0.011514185582674901
     }
   ],
   "quality": {
