@@ -1,5 +1,5 @@
 {
-  "generated_at_lima": "2026-09-21T13:51:05.198218-05:00",
+  "generated_at_lima": "2026-09-21T13:52:07.686770-05:00",
   "model_version": "v2-sbs-corrected-20260831",
   "history_start": "2026-01-05",
   "training": {
@@ -75,9 +75,9 @@
   },
   "latest": {
     "market_date": "2026-09-18",
-    "vc_niveles": 72.11921339257441,
-    "ret_vc_estimado": 0.0009402267436970672,
-    "vc_retornos": 71.81913410709033,
+    "vc_niveles": 72.11921269487998,
+    "ret_vc_estimado": 0.0009402234901197629,
+    "vc_retornos": 71.81913387364072,
     "latest_sbs_date": "2026-09-16",
     "latest_sbs_vc": 70.5297825
   },
@@ -2795,19 +2795,19 @@
     {
       "fecha": "2026-09-18",
       "fase": "PROYECCIÓN",
-      "SPY": 761.69,
-      "EEM": 67.03,
-      "MCHI": 53.07,
-      "QQQ": 721.45,
+      "SPY": 761.6900024414062,
+      "EEM": 67.02999877929688,
+      "MCHI": 53.06999969482422,
+      "QQQ": 721.4500122070312,
       "SPBLSCUP": 451.2,
-      "source": "CIERRE REGULAR VERIFICADO · 5/5 CON FECHA PROPIA",
+      "source": "GOOGLE FINANCE · SNAPSHOT FIJO DE CIERRE · FECHA COINCIDENTE",
       "vc_sbs": null,
-      "vc_niveles": 72.11921339257441,
-      "ret_vc_estimado": 0.0009402267436970672,
-      "vc_retornos": 71.81913410709033,
+      "vc_niveles": 72.11921269487998,
+      "ret_vc_estimado": 0.0009402234901197629,
+      "vc_retornos": 71.81913387364072,
       "error_niveles_pct": null,
       "error_retornos_pct": null
     }
   ],
-  "data_revision": "a1f6ae36476414db34b861a67c533401cd78836a9138cc2770df739fdf065243"
+  "data_revision": "4c079184c3c75ed3526e79ac5949441c9fdfe5a9b16fa2a708ed4ef789e67c38"
 }
