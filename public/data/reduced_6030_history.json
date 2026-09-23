@@ -2,7 +2,7 @@
   "model": "OLS 60/30 sin NEM ni FCX + QQQ",
   "rule": "Backtest: coeficientes estimados con 60 observaciones y congelados 30; SBS solo evalua dentro de cada bloque. Operativo: cadena ciega desde el ancla del ciclo.",
   "first_date": "2025-05-19",
-  "last_date": "2026-09-22",
+  "last_date": "2026-09-23",
   "backtest_history": [
     {
       "fecha": "2025-05-19",
@@ -5152,6 +5152,20 @@
       "challenger_return": 0.012975764145566,
       "official_vc": 72.1895626314807,
       "official_return": 0.0108550652567,
+      "actual_vc": null,
+      "challenger_abs_error": null,
+      "official_abs_error": null
+    },
+    {
+      "fecha": "2026-09-23",
+      "source": "SOMBRA OPERATIVA 60/30",
+      "cycle_start": "2026-08-19",
+      "train_start": "2026-05-14",
+      "train_end": "2026-08-18",
+      "challenger_vc": 72.00834283008797,
+      "challenger_return": -0.0117491570219554,
+      "official_vc": 70.23108658740462,
+      "official_return": -0.0165690575274275,
       "actual_vc": null,
       "challenger_abs_error": null,
       "official_abs_error": null
