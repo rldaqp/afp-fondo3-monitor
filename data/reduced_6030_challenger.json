@@ -1,33 +1,33 @@
 {
-  "generated_at_lima": "2026-09-22T18:13:16.695773-05:00",
-  "signal_date": "2026-09-22",
-  "mode": "CIERRE DIARIO",
-  "market_open": false,
+  "generated_at_lima": "2026-09-23T12:47:43.459542-05:00",
+  "signal_date": "2026-09-23",
+  "mode": "INTRADÍA PROVISIONAL",
+  "market_open": true,
   "role": "UNICO CHALLENGER EN SOMBRA; no reemplaza el OLS rolling 90 oficial.",
   "official": {
     "model": "OLS rolling 90 oficial · SPY EEM EPU MCHI NEM FCX USD/PEN",
-    "return_estimated": 0.010855065256700087,
-    "signal": "SUBE",
-    "vc_estimated": 72.1895626314807
+    "return_estimated": -0.016569057527427513,
+    "signal": "BAJA",
+    "vc_estimated": 70.23108658740462
   },
   "challenger": {
     "model": "OLS 60/30 · sin NEM ni FCX + QQQ",
-    "return_estimated": 0.012975764145566003,
-    "signal": "SUBE",
-    "vc_estimated": 72.86443856004658,
+    "return_estimated": -0.011749157021955402,
+    "signal": "BAJA",
+    "vc_estimated": 72.00834283008797,
     "blind_chain": true,
     "reanchored_with_latest_sbs": false
   },
   "comparison": {
     "same_signal": true,
-    "vc_difference": 0.6748759285658821,
-    "return_difference_pp": 0.21206988888659156
+    "vc_difference": 1.7772562426833503,
+    "return_difference_pp": 0.48199005054721106
   },
   "cycle": {
     "train_window": 60,
     "freeze_horizon": 30,
     "cycle_start": "2026-08-19",
-    "cycle_day": 24,
+    "cycle_day": 25,
     "anchor_date": "2026-08-18",
     "anchor_vc": 69.6328126,
     "train_start": "2026-05-14",
@@ -44,8 +44,8 @@
     "rule": "Coeficientes congelados 30 sesiones. El VC se encadena desde el ancla del ciclo y no se corrige con SBS dentro del bloque."
   },
   "qqq": {
-    "return": 0.008078616135797079,
-    "source": "CIERRE DIARIO YAHOO"
+    "return": -0.001024921791165867,
+    "source": "INTRADIA YAHOO"
   },
   "blind_backtest": {
     "design": "Bloques no superpuestos: entrenar 60 observaciones, congelar 30, un solo VC SBS como ancla al inicio; dentro del bloque SBS solo evalua y nunca corrige.",
@@ -67,7 +67,7 @@
   },
   "forward_sbs": {
     "evaluated": 22,
-    "pending": 2,
+    "pending": 3,
     "challenger_vc_mae": 0.7839849060886156,
     "official_vc_mae": 0.8829322116786863
   },
