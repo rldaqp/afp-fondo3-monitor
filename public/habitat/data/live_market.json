@@ -1,11 +1,11 @@
 {
-  "generated_at_lima": "2026-09-22T18:13:15.989704-05:00",
+  "generated_at_lima": "2026-09-22T19:37:26.242673-05:00",
   "mode": "CIERRE DIARIO",
   "market_open": false,
   "signal_date": "2026-09-22",
   "vc_base": 34.033945522314895,
-  "vc_estimated": 34.29445782423229,
-  "return_estimated": 0.007654484307339221,
+  "vc_estimated": 34.257406661974905,
+  "return_estimated": 0.006565831149770588,
   "signal": "SUBE",
   "assets": [
     {
@@ -25,8 +25,8 @@
       "timestamp": "2026-09-22",
       "precio_anterior": 123.0500030517578,
       "precio_actual": 127.26000213623048,
-      "retorno": 0.034213725965547725,
-      "retorno_modelo": 0.034213725965547725,
+      "retorno": 0.03421372596554795,
+      "retorno_modelo": 0.03421372596554795,
       "estado": "CIERRE DIARIO YAHOO · USADO POR MODELO",
       "usado_modelo": true
     },
@@ -47,8 +47,8 @@
       "timestamp": "2026-09-22",
       "precio_anterior": 91.13999938964844,
       "precio_actual": 93.08000183105467,
-      "retorno": 0.02128596065830779,
-      "retorno_modelo": 0.02128596065830779,
+      "retorno": 0.021285960658307568,
+      "retorno_modelo": 0.021285960658307568,
       "estado": "CIERRE DIARIO YAHOO · USADO POR MODELO",
       "usado_modelo": true
     },
@@ -80,15 +80,15 @@
       "timestamp": "2026-09-21",
       "precio_anterior": 3.356,
       "precio_actual": 3.356,
-      "retorno": 0.03312033982464513,
-      "retorno_modelo": 0.03312033982464513,
+      "retorno": 0.0014208240940249972,
+      "retorno_modelo": 0.0014208240940249972,
       "estado": "BCRP REZAGADO · MODELO USA 0 %",
       "usado_modelo": true
     }
   ],
   "action": "CIERRE",
   "engine": "LIVE HABITAT INDEPENDIENTE",
-  "warning": null,
+  "warning": "Cierre OLS pesado pendiente; cálculo provisional coherente con los activos del mismo día.",
   "fx_source": "YAHOO PEN=X PROVISIONAL",
   "fx_provisional": true,
   "fx_rule": "Histórico/entrenamiento: BCRP. Predicción: BCRP si existe; si está rezagado, Yahoo PEN=X provisional; 0 % solo si ambas fuentes faltan.",

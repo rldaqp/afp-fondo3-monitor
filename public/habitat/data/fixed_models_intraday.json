@@ -1,7 +1,7 @@
 {
   "fund": "HÁBITAT Fondo 3",
-  "generated_at_lima": "2026-09-22T17:12:51.609177-05:00",
-  "generated_at_ny": "2026-09-22T18:12:51.609177-04:00",
+  "generated_at_lima": "2026-09-22T19:37:30.293433-05:00",
+  "generated_at_ny": "2026-09-22T20:37:30.293433-04:00",
   "signal_date": "2026-09-22",
   "market_open": false,
   "session_open_ny": "2026-09-22T09:30:00-04:00",
@@ -31,7 +31,7 @@
       "equation": "6.543672496661 + 0.000606715498×VC_SPY + 0.214507806366×VC_EEM − 0.087204663702×VC_MCHI + 0.008508212282×VC_QQQ + 0.023810776088×VC_SPBLSCUP"
     },
     "retornos": {
-      "return_intraday": 0.007083293866907182,
+      "return_intraday": 0.0070832938669071885,
       "vc_intraday": 34.33163708689249,
       "base_vc": 34.09016642016668,
       "base_date": "2026-09-21",
@@ -52,12 +52,12 @@
       "previous_close_date": "2026-09-21",
       "previous_close_basis": "CIERRE BASE FIJA",
       "source": "YAHOO SPY · CIERRE REGULAR CONFIRMADO",
-      "level_coefficient": 0.0006067154984676325,
-      "return_coefficient": -0.03256421692144007,
-      "level_contribution": 0.4692216322048976,
-      "return_contribution": 5.051979354327389e-06,
-      "level_weight_abs_pct": 1.2561122931827124,
-      "return_weight_abs_pct": 0.06503645511034575
+      "level_coefficient": 0.0006067154984676186,
+      "return_coefficient": -0.03256421692144257,
+      "level_contribution": 0.4692216322048869,
+      "return_contribution": 5.051979354327777e-06,
+      "level_weight_abs_pct": 1.256112293182685,
+      "return_weight_abs_pct": 0.06503645511035074
     },
     {
       "ticker": "EEM",
@@ -72,11 +72,11 @@
       "previous_close_basis": "CIERRE BASE FIJA",
       "source": "YAHOO EEM · CIERRE REGULAR CONFIRMADO",
       "level_coefficient": 0.21450780636590958,
-      "return_coefficient": 0.3215379413071458,
+      "return_coefficient": 0.3215379413071462,
       "level_contribution": 14.82248941988435,
-      "return_contribution": 0.0012612909064343863,
-      "level_weight_abs_pct": 39.67999320150076,
-      "return_weight_abs_pct": 16.23717827491569
+      "return_contribution": 0.0012612909064343878,
+      "level_weight_abs_pct": 39.67999320150079,
+      "return_weight_abs_pct": 16.237178274915703
     },
     {
       "ticker": "MCHI",
@@ -90,12 +90,12 @@
       "previous_close_date": "2026-09-21",
       "previous_close_basis": "CIERRE BASE FIJA",
       "source": "YAHOO MCHI · CIERRE REGULAR CONFIRMADO",
-      "level_coefficient": -0.0872046637021482,
-      "return_coefficient": -0.07969453517450645,
-      "level_contribution": -4.73085300584154,
-      "return_contribution": -0.00036895618136344855,
-      "level_weight_abs_pct": 12.664553827055888,
-      "return_weight_abs_pct": 4.749742713491996
+      "level_coefficient": -0.08720466370214812,
+      "return_coefficient": -0.0796945351745064,
+      "level_contribution": -4.730853005841536,
+      "return_contribution": -0.0003689561813634484,
+      "level_weight_abs_pct": 12.664553827055885,
+      "return_weight_abs_pct": 4.749742713491991
     },
     {
       "ticker": "QQQ",
@@ -109,12 +109,12 @@
       "previous_close_date": "2026-09-21",
       "previous_close_basis": "CIERRE BASE FIJA",
       "source": "YAHOO QQQ · CIERRE REGULAR CONFIRMADO",
-      "level_coefficient": 0.008508212281760909,
-      "return_coefficient": 0.2174389337498267,
-      "level_contribution": 6.359548352125009,
-      "return_contribution": 0.0017565992351755394,
-      "level_weight_abs_pct": 17.0245920390682,
-      "return_weight_abs_pct": 22.613510327888456
+      "level_coefficient": 0.0085082122817609,
+      "return_coefficient": 0.2174389337498276,
+      "level_contribution": 6.359548352125003,
+      "return_contribution": 0.0017565992351755465,
+      "level_weight_abs_pct": 17.024592039068196,
+      "return_weight_abs_pct": 22.613510327888537
     },
     {
       "ticker": "SPBLSCUP",
@@ -128,12 +128,12 @@
       "previous_close_date": "2026-09-21",
       "previous_close_basis": "CIERRE BASE FIJA",
       "source": "GOOGLE FINANCE SPBLSCUP · CIERRE REGULAR CONFIRMADO",
-      "level_coefficient": 0.023810776087827647,
-      "return_coefficient": 0.281267820446621,
-      "level_contribution": 10.972958052314493,
-      "return_contribution": 0.00437602100655194,
-      "level_weight_abs_pct": 29.374748639192433,
-      "return_weight_abs_pct": 56.33453222859352
+      "level_coefficient": 0.023810776087827643,
+      "return_coefficient": 0.28126782044662063,
+      "level_contribution": 10.97295805231449,
+      "return_contribution": 0.004376021006551934,
+      "level_weight_abs_pct": 29.37474863919245,
+      "return_weight_abs_pct": 56.33453222859342
     }
   ],
   "weight_note": "Peso relativo del aporte absoluto al cálculo; no representa tenencia de cartera."
