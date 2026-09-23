@@ -1,16 +1,16 @@
 {
-  "generated_for": "2026-09-22",
-  "current_signal": "SUBE",
+  "generated_for": "2026-09-23",
+  "current_signal": "BAJA",
   "confidence": {
-    "historical_accuracy": 0.9318181818181818,
-    "n": 44,
-    "label": "SUBE",
+    "historical_accuracy": 0.7878787878787878,
+    "n": 33,
+    "label": "BAJA",
     "description": "Aciertos históricos de la misma clase de señal; no es garantía futura."
   },
   "performance": {
     "window_n": 90,
     "classification_accuracy": 0.7777777777777778,
-    "mae_return_pp": 0.3061592936809004,
+    "mae_return_pp": 0.3061592936809002,
     "sube_n": 44,
     "sube_accuracy": 0.9318181818181818,
     "baja_n": 33,
@@ -24,65 +24,65 @@
   },
   "benchmarks": {
     "zero_change_mae_pp": 0.9107370051072101,
-    "ols_mae_pp": 0.3061592936809004,
-    "ols_mae_improvement_vs_zero": 0.6638334755653638
+    "ols_mae_pp": 0.3061592936809002,
+    "ols_mae_improvement_vs_zero": 0.6638334755653639
   },
   "contributions": [
     {
-      "feature": "ret_EPU",
-      "label": "EPU",
-      "value": 0.021285960658307568,
-      "coefficient": 0.17348172405671458,
-      "contribution_pp": 0.36927251532065963
-    },
-    {
       "feature": "ret_EEM",
       "label": "EEM",
-      "value": 0.0039226592457330955,
-      "coefficient": 0.42271925006850963,
-      "contribution_pp": 0.16581835746305998
+      "value": -0.020115765851558054,
+      "coefficient": 0.4227192500685104,
+      "contribution_pp": -0.8503321455324372
     },
     {
-      "feature": "ret_NEM",
-      "label": "NEM",
-      "value": 0.03421372596554795,
-      "coefficient": 0.02784038852293841,
-      "contribution_pp": 0.0952523423698201
-    },
-    {
-      "feature": "ret_FCX",
-      "label": "FCX",
-      "value": 0.030349150510945222,
-      "coefficient": 0.013477715482854147,
-      "contribution_pp": 0.04090372157328372
+      "feature": "ret_EPU",
+      "label": "EPU",
+      "value": -0.016222626842779753,
+      "coefficient": 0.17348172405671425,
+      "contribution_pp": -0.28143292734141623
     },
     {
       "feature": "ret_MCHI",
       "label": "MCHI",
-      "value": 0.004629629629629539,
-      "coefficient": -0.08405618666978651,
-      "contribution_pp": -0.03891490123601151
+      "value": -0.019907867853542593,
+      "coefficient": -0.08405618666978647,
+      "contribution_pp": 0.16733794564948173
+    },
+    {
+      "feature": "ret_SPY",
+      "label": "SPY",
+      "value": -0.007202161019229769,
+      "coefficient": 0.1264441072725817,
+      "contribution_pp": -0.09106708205098953
+    },
+    {
+      "feature": "ret_NEM",
+      "label": "NEM",
+      "value": -0.029152907608009926,
+      "coefficient": 0.027840388522938464,
+      "contribution_pp": -0.0811628274380325
+    },
+    {
+      "feature": "ret_USD_PEN",
+      "label": "USD/PEN",
+      "value": 0.031501767882392784,
+      "coefficient": 0.0213210493088846,
+      "contribution_pp": 0.06716507463375337
+    },
+    {
+      "feature": "ret_FCX",
+      "label": "FCX",
+      "value": -0.023806276790745096,
+      "coefficient": 0.013477715482853897,
+      "contribution_pp": -0.032085422529173055
     },
     {
       "feature": "intercept",
       "label": "Base",
       "value": 1.0,
-      "coefficient": 0.0002503563582571467,
-      "contribution_pp": 0.025035635825714667
-    },
-    {
-      "feature": "ret_USD_PEN",
-      "label": "USD/PEN",
-      "value": 0.0029797377830751426,
-      "coefficient": 0.02132104930888477,
-      "contribution_pp": 0.00635311362004921
-    },
-    {
-      "feature": "ret_SPY",
-      "label": "SPY",
-      "value": -0.00015513266604716414,
-      "coefficient": 0.12644410727258315,
-      "contribution_pp": -0.001961561146714944
+      "coefficient": 0.0002503563582571479,
+      "contribution_pp": 0.02503563582571479
     }
   ],
   "quality": {
@@ -91,7 +91,7 @@
     "critical": [],
     "training_n": 90,
     "latest_sbs_date": "2026-09-21",
-    "fx_provisional": false
+    "fx_provisional": true
   },
   "challenger_huber": {
     "status": "NO APLICA EN HÁBITAT",
