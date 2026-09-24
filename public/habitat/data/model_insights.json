@@ -59,16 +59,9 @@
     {
       "feature": "ret_NEM",
       "label": "NEM",
-      "value": -0.029152907608009926,
+      "value": -0.029152907608010037,
       "coefficient": 0.027840388522938464,
-      "contribution_pp": -0.0811628274380325
-    },
-    {
-      "feature": "ret_USD_PEN",
-      "label": "USD/PEN",
-      "value": 0.031501767882392784,
-      "coefficient": 0.0213210493088846,
-      "contribution_pp": 0.06716507463375337
+      "contribution_pp": -0.0811628274380328
     },
     {
       "feature": "ret_FCX",
@@ -83,6 +76,13 @@
       "value": 1.0,
       "coefficient": 0.0002503563582571479,
       "contribution_pp": 0.02503563582571479
+    },
+    {
+      "feature": "ret_USD_PEN",
+      "label": "USD/PEN",
+      "value": 0.0012683671917921302,
+      "coefficient": 0.0213210493088846,
+      "contribution_pp": 0.00270429194379715
     }
   ],
   "quality": {
