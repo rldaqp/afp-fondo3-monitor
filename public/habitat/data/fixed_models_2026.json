@@ -1,6 +1,6 @@
 {
   "fund": "HÁBITAT Fondo 3",
-  "generated_at_lima": "2026-09-23T19:34:19.739892-05:00",
+  "generated_at_lima": "2026-09-24T00:04:12.082596-05:00",
   "model_version": "habitat-rolling90-levels-returns-v4",
   "history_start": "2026-01-05",
   "window": 90,
@@ -31,7 +31,7 @@
   "latest": {
     "latest_sbs_date": "2026-09-21",
     "latest_sbs_vc": 34.0522743,
-    "latest_market_date": "2026-09-21"
+    "latest_market_date": "2026-09-23"
   },
   "models": {
     "niveles": {
@@ -4018,12 +4018,12 @@
       "ret_QQQ": 0.006318737662307061,
       "ret_SPBLSCUP": -0.008722015950084594,
       "ret_vc_sbs": 0.0009570083925631856,
-      "vc_niveles": 33.637054541775875,
-      "vc_niveles_raw": 33.637054541775875,
-      "ret_niveles_implicito": -0.0019327831219336788,
+      "vc_niveles": 33.63705454177587,
+      "vc_niveles_raw": 33.63705454177587,
+      "ret_niveles_implicito": -0.001932783121933901,
       "ret_vc_estimado": -0.0010578499181813643,
       "vc_retornos": 33.53764893089216,
-      "error_niveles_pct": 0.0945102330643488,
+      "error_niveles_pct": 0.0945102330643266,
       "error_retornos_pct": -0.2012931918005223,
       "fase": "ENTRENAMIENTO 90"
     },
@@ -4041,14 +4041,37 @@
       "ret_QQQ": 0.027749612803871893,
       "ret_SPBLSCUP": 0.005718085106382942,
       "ret_vc_sbs": 0.013300886421940161,
-      "vc_niveles": 34.178960556748294,
-      "vc_niveles_raw": 34.178960556748294,
+      "vc_niveles": 34.17896055674829,
+      "vc_niveles_raw": 34.17896055674829,
       "ret_niveles_implicito": 0.016110388449719792,
       "ret_vc_estimado": 0.014275920026592627,
       "vc_retornos": 34.08504059104173,
-      "error_niveles_pct": 0.3720346418926157,
+      "error_niveles_pct": 0.3720346418925935,
       "error_retornos_pct": 0.09622350258622347,
       "fase": "ENTRENAMIENTO 90"
+    },
+    {
+      "fecha": "2026-09-23",
+      "SPBLSCUP": 451.23,
+      "SPY": 767.8099975585938,
+      "EEM": 67.70999908447266,
+      "MCHI": 53.16999816894531,
+      "QQQ": 741.2100219726562,
+      "vc_sbs": null,
+      "ret_SPY": -0.0073561763948367664,
+      "ret_EEM": -0.016272013900727633,
+      "ret_MCHI": -0.01537040427879055,
+      "ret_QQQ": -0.0003505856484278258,
+      "ret_SPBLSCUP": -0.005619463175988271,
+      "ret_vc_sbs": null,
+      "vc_niveles": 33.9494110969133,
+      "vc_niveles_raw": 33.9494110969133,
+      "ret_niveles_implicito": -0.006716104179173565,
+      "ret_vc_estimado": -0.005293359858015493,
+      "vc_retornos": 33.87202335814625,
+      "error_niveles_pct": null,
+      "error_retornos_pct": null,
+      "fase": "PROYECCIÓN"
     }
   ]
 }
