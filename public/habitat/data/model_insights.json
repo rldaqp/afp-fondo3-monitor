@@ -1,16 +1,16 @@
 {
-  "generated_for": "2026-09-24",
-  "current_signal": "BAJA",
+  "generated_for": "2026-09-25",
+  "current_signal": "SUBE",
   "confidence": {
-    "historical_accuracy": 0.7878787878787878,
-    "n": 33,
-    "label": "BAJA",
+    "historical_accuracy": 0.9318181818181818,
+    "n": 44,
+    "label": "SUBE",
     "description": "Aciertos históricos de la misma clase de señal; no es garantía futura."
   },
   "performance": {
     "window_n": 90,
     "classification_accuracy": 0.7777777777777778,
-    "mae_return_pp": 0.3107648885539409,
+    "mae_return_pp": 0.310764888553941,
     "sube_n": 44,
     "sube_accuracy": 0.9318181818181818,
     "baja_n": 33,
@@ -19,70 +19,70 @@
     "neutro_accuracy": 0.23076923076923078
   },
   "uncertainty": {
-    "relative_q80": 0.0050105304319004,
+    "relative_q80": 0.005010530431900401,
     "label": "Banda empírica 80%"
   },
   "benchmarks": {
-    "zero_change_mae_pp": 0.9157807829697687,
-    "ols_mae_pp": 0.3107648885539409,
-    "ols_mae_improvement_vs_zero": 0.6606558094108864
+    "zero_change_mae_pp": 0.9157807829697693,
+    "ols_mae_pp": 0.310764888553941,
+    "ols_mae_improvement_vs_zero": 0.6606558094108865
   },
   "contributions": [
     {
       "feature": "ret_EEM",
       "label": "EEM",
-      "value": -0.006793665495383849,
-      "coefficient": 0.42099822599453374,
-      "contribution_pp": -0.28601211215568756
+      "value": 0.010855068504588727,
+      "coefficient": 0.42099822599453357,
+      "contribution_pp": 0.4569964583480989
+    },
+    {
+      "feature": "ret_SPY",
+      "label": "SPY",
+      "value": 0.005435468794763754,
+      "coefficient": 0.12476749904129528,
+      "contribution_pp": 0.0678169847639677
     },
     {
       "feature": "ret_EPU",
       "label": "EPU",
-      "value": -0.009719333762308047,
-      "coefficient": 0.17946912892711736,
-      "contribution_pp": -0.17443203640733473
-    },
-    {
-      "feature": "ret_NEM",
-      "label": "NEM",
-      "value": -0.018211250056039407,
-      "coefficient": 0.03083856411882474,
-      "contribution_pp": -0.05616088025371219
+      "value": 0.0028672489562797665,
+      "coefficient": 0.17946912892711742,
+      "contribution_pp": 0.05145826726007163
     },
     {
       "feature": "ret_MCHI",
       "label": "MCHI",
-      "value": -0.006582630922968846,
-      "coefficient": -0.07915883611697716,
-      "contribution_pp": 0.052107340244983695
+      "value": -0.0037864589946040583,
+      "coefficient": -0.07915883611697656,
+      "contribution_pp": 0.02997316870175145
     },
     {
       "feature": "intercept",
       "label": "Base",
       "value": 1.0,
-      "coefficient": 0.00026493250256294835,
-      "contribution_pp": 0.026493250256294835
+      "coefficient": 0.00026493250256294965,
+      "contribution_pp": 0.026493250256294964
     },
     {
       "feature": "ret_USD_PEN",
       "label": "USD/PEN",
-      "value": 0.006778661951075682,
-      "coefficient": 0.023364789013600597,
-      "contribution_pp": 0.015838200628140547
-    },
-    {
-      "feature": "ret_SPY",
-      "label": "SPY",
-      "value": -0.000820521854125067,
-      "coefficient": 0.12476749904129555,
-      "contribution_pp": -0.010237445964791135
+      "value": 0.004890336642221271,
+      "coefficient": 0.02336478901360033,
+      "contribution_pp": 0.011426168385097869
     },
     {
       "feature": "ret_FCX",
       "label": "FCX",
-      "value": -0.006888949950206058,
-      "coefficient": 0.013085737088607927,
-      "contribution_pp": -0.009014698786497514
+      "value": 0.0031908396461772792,
+      "coefficient": 0.013085737088607309,
+      "contribution_pp": 0.004175448870178064
+    },
+    {
+      "feature": "ret_NEM",
+      "label": "NEM",
+      "value": 0.0010717003309761441,
+      "coefficient": 0.030838564118825074,
+      "contribution_pp": 0.0033049699372973878
     }
   ],
   "quality": {
@@ -91,7 +91,7 @@
     "critical": [],
     "training_n": 90,
     "latest_sbs_date": "2026-09-23",
-    "fx_provisional": false
+    "fx_provisional": true
   },
   "challenger_huber": {
     "status": "NO APLICA EN HÁBITAT",
