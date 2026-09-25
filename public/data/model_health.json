@@ -1,5 +1,5 @@
 {
-  "generated_from": "2026-09-25T13:57:11.875397-05:00",
+  "generated_from": "2026-09-25T14:03:19.130341-05:00",
   "validation_start": "2026-08-18",
   "policy": {
     "champion": "Coeficientes fijos calibrados 07/07/2026–17/08/2026.",
@@ -243,38 +243,47 @@
           "base_pred_return": 0.008718527094983664,
           "challenger_pred_return": 0.0062159104601509085,
           "challenger_prediction": 73.88837858480693
+        },
+        {
+          "date": "2026-09-23",
+          "base_error_pct": -0.17434134876462837,
+          "challenger_error_pct": -0.2984751664240948,
+          "actual_return": -0.017707687152921703,
+          "base_pred_return": -0.017059482861426778,
+          "challenger_pred_return": -0.015629347941006122,
+          "challenger_prediction": 72.7335514071082
         }
       ],
       "base": {
         "full": {
-          "n": 25,
-          "mae_pct": 0.2916847940700791,
-          "rmse_pct": 0.3770944656442154,
-          "bias_pct": 0.006561996214161425,
-          "direction_n": 25,
-          "direction_accuracy": 0.88
+          "n": 26,
+          "mae_pct": 0.28717158463525405,
+          "rmse_pct": 0.3713489343117601,
+          "bias_pct": -0.0003958247465612591,
+          "direction_n": 26,
+          "direction_accuracy": 0.8846153846153846
         },
         "recent_5": {
           "n": 5,
-          "mae_pct": 0.3945546525554944,
-          "rmse_pct": 0.4980266491137576,
-          "bias_pct": 0.29848593151442504,
+          "mae_pct": 0.29603379648261763,
+          "rmse_pct": 0.4063818770103227,
+          "bias_pct": 0.13022853593569694,
           "direction_n": 5,
           "direction_accuracy": 0.8
         },
         "recent_10": {
           "n": 10,
-          "mae_pct": 0.2997090174477679,
-          "rmse_pct": 0.3922681702601139,
-          "bias_pct": 0.22632581585842249,
+          "mae_pct": 0.2809564315558055,
+          "rmse_pct": 0.3792347826721659,
+          "bias_pct": 0.17270496021353443,
           "direction_n": 10,
           "direction_accuracy": 0.9
         },
         "recent_20": {
           "n": 20,
-          "mae_pct": 0.2696257574974892,
-          "rmse_pct": 0.35906899239127665,
-          "bias_pct": 0.10318273035781145,
+          "mae_pct": 0.2553557252122979,
+          "rmse_pct": 0.3462400200979785,
+          "bias_pct": 0.07147856319615731,
           "direction_n": 20,
           "direction_accuracy": 0.85
         }
@@ -282,31 +291,31 @@
       "challenger": {
         "window": 30,
         "full": {
-          "n": 25,
-          "mae_pct": 0.29571657964784714,
-          "rmse_pct": 0.3665057470872438,
-          "bias_pct": 0.019365447472052377,
-          "direction_n": 24,
-          "direction_accuracy": 0.7916666666666666
+          "n": 26,
+          "mae_pct": 0.29582267913924126,
+          "rmse_pct": 0.3641242915000823,
+          "bias_pct": 0.007140808476046718,
+          "direction_n": 25,
+          "direction_accuracy": 0.8
         },
         "coefficients": {
-          "intercept": 19.36117587518664,
-          "SPY": -0.034669111080968824,
-          "EEM": 0.9327820288413959,
-          "MCHI": -0.10648905843730427,
-          "QQQ": 0.012902308263540944,
-          "SPBLSCUP": 0.028247189998989137
+          "intercept": 19.503630532617645,
+          "SPY": -0.04699156657919215,
+          "EEM": 0.8961313547160267,
+          "MCHI": -0.0729053011158249,
+          "QQQ": 0.023484814896913144,
+          "SPBLSCUP": 0.033469975065078185
         },
-        "effect_drift": 0.38596391908116745
+        "effect_drift": 0.4046325629737291
       },
       "status": {
         "code": "MAINTAIN",
         "label": "MANTENER",
         "reason": "No existe evidencia suficiente de que recalibrar mejore de forma consistente al modelo base.",
-        "mae_improvement": -0.013822405760375078,
-        "rmse_improvement": 0.028079750623977384,
-        "challenger_win_share": 0.52,
-        "challenger_recent5_wins": 3
+        "mae_improvement": -0.030125175911729807,
+        "rmse_improvement": 0.019455132744806702,
+        "challenger_win_share": 0.5,
+        "challenger_recent5_wins": 2
       }
     },
     "retornos": {
@@ -535,38 +544,47 @@
           "base_pred_return": 0.009897555382954393,
           "challenger_pred_return": 0.009624032750737883,
           "challenger_prediction": 74.01601680659775
+        },
+        {
+          "date": "2026-09-23",
+          "base_error_pct": 0.5879568566580229,
+          "challenger_error_pct": 0.21515041248827416,
+          "actual_return": -0.017707687152921703,
+          "base_pred_return": -0.011932232147112674,
+          "challenger_pred_return": -0.015594281189990778,
+          "challenger_prediction": 73.10824790758987
         }
       ],
       "base": {
         "full": {
-          "n": 25,
-          "mae_pct": 0.29906625342178383,
-          "rmse_pct": 0.3675836642588787,
-          "bias_pct": 0.08486588638442161,
-          "direction_n": 25,
-          "direction_accuracy": 0.92
+          "n": 26,
+          "mae_pct": 0.31017743046933144,
+          "rmse_pct": 0.3784399668396146,
+          "bias_pct": 0.10421553908725242,
+          "direction_n": 26,
+          "direction_accuracy": 0.9230769230769231
         },
         "recent_5": {
           "n": 5,
-          "mae_pct": 0.3247811572381343,
-          "rmse_pct": 0.35929370475592926,
-          "bias_pct": 0.014470675463740257,
+          "mae_pct": 0.3392416848589397,
+          "rmse_pct": 0.38085530679376256,
+          "bias_pct": 0.028931203084545665,
           "direction_n": 5,
           "direction_accuracy": 1.0
         },
         "recent_10": {
           "n": 10,
-          "mae_pct": 0.25969937151848255,
-          "rmse_pct": 0.3102359309146182,
-          "bias_pct": 0.0977908410129813,
+          "mae_pct": 0.29876565857319237,
+          "rmse_pct": 0.3562627789483828,
+          "bias_pct": 0.13685712806769113,
           "direction_n": 10,
           "direction_accuracy": 0.9
         },
         "recent_20": {
           "n": 20,
-          "mae_pct": 0.31098959309626195,
-          "rmse_pct": 0.3886426434297181,
-          "bias_pct": 0.11215316103481199,
+          "mae_pct": 0.32063892568170493,
+          "rmse_pct": 0.4006590750460034,
+          "bias_pct": 0.12180249362025497,
           "direction_n": 20,
           "direction_accuracy": 0.9
         }
@@ -574,30 +592,30 @@
       "challenger": {
         "window": 30,
         "full": {
-          "n": 25,
-          "mae_pct": 0.3147970303589962,
-          "rmse_pct": 0.38097411200205156,
-          "bias_pct": 0.05821184688852332,
-          "direction_n": 25,
-          "direction_accuracy": 0.96
+          "n": 26,
+          "mae_pct": 0.31096446813319917,
+          "rmse_pct": 0.37595118087263096,
+          "bias_pct": 0.06424794556543681,
+          "direction_n": 26,
+          "direction_accuracy": 0.9615384615384616
         },
         "coefficients": {
-          "intercept": 0.00012570332242118002,
-          "SPY": -0.5909348738622286,
-          "EEM": 0.6463051258355003,
-          "MCHI": -0.07779076626531584,
-          "QQQ": 0.4744615908512788,
-          "SPBLSCUP": 0.21844241102902426
+          "intercept": 0.00025324213376985,
+          "SPY": -0.6705096638216143,
+          "EEM": 0.6166847291891981,
+          "MCHI": -0.06477873315873967,
+          "QQQ": 0.5417324381589621,
+          "SPBLSCUP": 0.24127611631913526
         },
-        "effect_drift": 0.15207999835577526
+        "effect_drift": 0.19200958541059332
       },
       "status": {
         "code": "MAINTAIN",
         "label": "MANTENER",
         "reason": "No existe evidencia suficiente de que recalibrar mejore de forma consistente al modelo base.",
-        "mae_improvement": -0.05259963890016928,
-        "rmse_improvement": -0.036428299310228285,
-        "challenger_win_share": 0.48,
+        "mae_improvement": -0.002537378888840758,
+        "rmse_improvement": 0.0065764353267645514,
+        "challenger_win_share": 0.5,
         "challenger_recent5_wins": 2
       }
     }
