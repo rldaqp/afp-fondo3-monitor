@@ -1,11 +1,11 @@
 {
-  "generated_at_lima": "2026-09-24T12:49:07.165972-05:00",
+  "generated_at_lima": "2026-09-25T10:18:21.522518-05:00",
   "mode": "INTRADIA PROVISIONAL - ULTIMO CORTE",
   "market_open": false,
   "signal_date": "2026-09-24",
-  "vc_base": 33.89144521709346,
-  "vc_estimated": 33.69445723473329,
-  "return_estimated": -0.005812321696473803,
+  "vc_base": 34.05522591355112,
+  "vc_estimated": 33.93806589347422,
+  "return_estimated": -0.003440294901414373,
   "signal": "BAJA",
   "assets": [
     {
@@ -14,8 +14,8 @@
       "timestamp": "2026-09-24T13:45:00-04:00",
       "precio_anterior": 767.8099975585938,
       "precio_actual": 766.635009765625,
-      "retorno": -0.0015303106194304306,
-      "retorno_modelo": -0.0015303106194304306,
+      "retorno": -0.000820521854125067,
+      "retorno_modelo": -0.000820521854125067,
       "estado": "INTRADÍA YAHOO · USADO POR MODELO",
       "usado_modelo": true
     },
@@ -25,8 +25,8 @@
       "timestamp": "2026-09-24T13:45:00-04:00",
       "precio_anterior": 123.5500030517578,
       "precio_actual": 120.625,
-      "retorno": -0.023674649773439915,
-      "retorno_modelo": -0.023674649773439915,
+      "retorno": -0.018211250056039407,
+      "retorno_modelo": -0.018211250056039407,
       "estado": "INTRADÍA YAHOO · USADO POR MODELO",
       "usado_modelo": true
     },
@@ -36,8 +36,8 @@
       "timestamp": "2026-09-24T13:45:00-04:00",
       "precio_anterior": 72.58000183105469,
       "precio_actual": 72.08499908447266,
-      "retorno": -0.006820098292836252,
-      "retorno_modelo": -0.006820098292836252,
+      "retorno": -0.006888949950206058,
+      "retorno_modelo": -0.006888949950206058,
       "estado": "INTRADÍA YAHOO · USADO POR MODELO",
       "usado_modelo": true
     },
@@ -47,8 +47,8 @@
       "timestamp": "2026-09-24T13:45:00-04:00",
       "precio_anterior": 91.56999969482422,
       "precio_actual": 90.12000274658203,
-      "retorno": -0.01583484714507588,
-      "retorno_modelo": -0.01583484714507588,
+      "retorno": -0.009719333762308047,
+      "retorno_modelo": -0.009719333762308047,
       "estado": "INTRADÍA YAHOO · USADO POR MODELO",
       "usado_modelo": true
     },
@@ -58,8 +58,8 @@
       "timestamp": "2026-09-24T13:45:00-04:00",
       "precio_anterior": 53.16999816894531,
       "precio_actual": 52.83000183105469,
-      "retorno": -0.006394514756429048,
-      "retorno_modelo": -0.006394514756429048,
+      "retorno": -0.006582630922968846,
+      "retorno_modelo": -0.006582630922968846,
       "estado": "INTRADÍA YAHOO · USADO POR MODELO",
       "usado_modelo": true
     },
@@ -69,8 +69,8 @@
       "timestamp": "2026-09-24T13:45:00-04:00",
       "precio_anterior": 67.70999908447266,
       "precio_actual": 67.22000122070312,
-      "retorno": -0.007236713489808588,
-      "retorno_modelo": -0.007236713489808588,
+      "retorno": -0.006793665495383849,
+      "retorno_modelo": -0.006793665495383849,
       "estado": "INTRADÍA YAHOO · USADO POR MODELO",
       "usado_modelo": true
     },
@@ -80,18 +80,19 @@
       "timestamp": "2026-09-24T13:45:00-04:00",
       "precio_anterior": 3.385699987411499,
       "precio_actual": 3.409600019454956,
-      "retorno": 0.007059111005795149,
-      "retorno_modelo": 0.007059111005795149,
+      "retorno": 0.029676319779238902,
+      "retorno_modelo": 0.029676319779238902,
       "estado": "YAHOO PEN=X · PROVISIONAL · USADO POR MODELO",
       "usado_modelo": true
     }
   ],
-  "action": "ULTIMO_CORTE",
+  "action": "CIERRE",
   "engine": "LIVE HABITAT INDEPENDIENTE",
-  "fx_fresh": false,
+  "warning": null,
   "fx_source": "YAHOO PEN=X PROVISIONAL",
   "fx_provisional": true,
   "fx_rule": "Histórico/entrenamiento: BCRP. Predicción: BCRP si existe; si está rezagado, Yahoo PEN=X provisional; 0 % solo si ambas fuentes faltan.",
-  "checked_at_lima": "2026-09-24T18:35:13.453725-05:00",
-  "note": "Snapshot calculado con los coeficientes propios de Habitat y los mismos retornos de mercado del motor en vivo."
+  "model_snapshot_source": "PREDICCION OLS EXACTA DE HÁBITAT",
+  "model_snapshot_date": "2026-09-24",
+  "note": "Cierre diario de Hábitat alineado con el OLS exacto del mismo día."
 }
