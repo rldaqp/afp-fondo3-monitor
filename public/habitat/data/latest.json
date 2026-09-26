@@ -1,7 +1,7 @@
 {
   "afp": "Hábitat",
   "fund": 3,
-  "generated_at_lima": "2026-09-25T17:28:16.814867-05:00",
+  "generated_at_lima": "2026-09-25T20:36:51.160512-05:00",
   "model": "OLS rolling 90",
   "window": 90,
   "threshold": 0.001,
@@ -17,14 +17,14 @@
   "signal": "SUBE",
   "estimate_type": "CIERRE DIARIO · OLS ROLLING 90 · MISMA METODOLOGÍA PROFUTURO",
   "coefficients": {
-    "intercept": 0.00026493250256294965,
-    "ret_SPY": 0.12476749904129528,
-    "ret_NEM": 0.030838564118825074,
-    "ret_FCX": 0.013085737088607309,
-    "ret_EPU": 0.17946912892711742,
-    "ret_MCHI": -0.07915883611697656,
-    "ret_EEM": 0.42099822599453357,
-    "ret_USD_PEN": 0.02336478901360033
+    "intercept": 0.0002649325025629488,
+    "ret_SPY": 0.12476749904129511,
+    "ret_NEM": 0.03083856411882524,
+    "ret_FCX": 0.013085737088607788,
+    "ret_EPU": 0.17946912892711703,
+    "ret_MCHI": -0.07915883611697634,
+    "ret_EEM": 0.4209982259945338,
+    "ret_USD_PEN": 0.023364789013600118
   },
   "parity_rule": "Misma metodología de Profuturo: LinearRegression OLS, ventana móvil de 90 observaciones completas, siete factores, Yahoo Close, BCRP para USD/PEN histórico, PEN=X solo como respaldo pendiente y VC encadenado.",
   "parity_verified": true,
