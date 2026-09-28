@@ -1,5 +1,5 @@
 {
-  "generated_at_lima": "2026-09-28T15:06:05.621763-05:00",
+  "generated_at_lima": "2026-09-28T15:11:46.555086-05:00",
   "model_version": "v2-sbs-corrected-20260831",
   "history_start": "2026-01-05",
   "training": {
@@ -75,9 +75,9 @@
   },
   "latest": {
     "market_date": "2026-09-28",
-    "vc_niveles": 72.33217745402062,
-    "ret_vc_estimado": -0.011092816517129046,
-    "vc_retornos": 72.89214189260191,
+    "vc_niveles": 72.34365785617526,
+    "ret_vc_estimado": -0.010976128050088237,
+    "vc_retornos": 72.90074686024226,
     "latest_sbs_date": "2026-09-24",
     "latest_sbs_vc": 72.9362887
   },
@@ -2875,16 +2875,16 @@
     {
       "fecha": "2026-09-25",
       "fase": "PROYECCIÓN",
-      "SPY": 771.35,
-      "EEM": 67.98,
-      "MCHI": 52.62,
+      "SPY": 771.3499755859375,
+      "EEM": 67.9800033569336,
+      "MCHI": 52.619998931884766,
       "QQQ": 744.5,
       "SPBLSCUP": 452.86,
-      "source": "CIERRE REGULAR VERIFICADO · 5/5 CON FECHA PROPIA",
+      "source": "GOOGLE FINANCE · SNAPSHOT FIJO DE CIERRE · FECHA COINCIDENTE",
       "vc_sbs": null,
-      "vc_niveles": 73.28803691537313,
-      "ret_vc_estimado": 0.010605178771245165,
-      "vc_retornos": 73.70979108057465,
+      "vc_niveles": 73.28804044894144,
+      "ret_vc_estimado": 0.010605232629620381,
+      "vc_retornos": 73.70979500880466,
       "error_niveles_pct": null,
       "error_retornos_pct": null
     },
@@ -2895,15 +2895,15 @@
       "EEM": 67.2,
       "MCHI": 52.54,
       "QQQ": 736.53,
-      "SPBLSCUP": 446.5,
+      "SPBLSCUP": 446.7,
       "source": "CIERRE REGULAR VERIFICADO · 5/5 CON FECHA PROPIA",
       "vc_sbs": null,
-      "vc_niveles": 72.33217745402062,
-      "ret_vc_estimado": -0.011092816517129046,
-      "vc_retornos": 72.89214189260191,
+      "vc_niveles": 72.34365785617526,
+      "ret_vc_estimado": -0.010976128050088237,
+      "vc_retornos": 72.90074686024226,
       "error_niveles_pct": null,
       "error_retornos_pct": null
     }
   ],
-  "data_revision": "9d8dbcf9e4be5cfb26b7208eb0219c3e455c50c9ae6819f9a92762e1414eeaee"
+  "data_revision": "2d34d41aeb3fc4ee04fec15c49f0b30675d5dbcfc47199b6f1d1d77045ff035e"
 }
