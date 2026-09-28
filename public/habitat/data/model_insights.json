@@ -43,6 +43,13 @@
       "contribution_pp": 0.06781698476396762
     },
     {
+      "feature": "ret_USD_PEN",
+      "label": "USD/PEN",
+      "value": -0.02641732917210249,
+      "coefficient": 0.023364789013600118,
+      "contribution_pp": -0.06172353224089981
+    },
+    {
       "feature": "ret_EPU",
       "label": "EPU",
       "value": 0.0028672489562797665,
@@ -62,13 +69,6 @@
       "value": 1.0,
       "coefficient": 0.0002649325025629488,
       "contribution_pp": 0.026493250256294877
-    },
-    {
-      "feature": "ret_USD_PEN",
-      "label": "USD/PEN",
-      "value": 0.004890336642221271,
-      "coefficient": 0.023364789013600118,
-      "contribution_pp": 0.011426168385097765
     },
     {
       "feature": "ret_FCX",
