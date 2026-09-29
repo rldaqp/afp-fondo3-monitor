@@ -1,27 +1,27 @@
 {
-  "generated_at_lima": "2026-09-29T13:31:57.219156-05:00",
+  "generated_at_lima": "2026-09-29T17:34:17.930304-05:00",
   "signal_date": "2026-09-29",
-  "mode": "INTRADÍA PROVISIONAL",
-  "market_open": true,
+  "mode": "CIERRE DIARIO",
+  "market_open": false,
   "role": "UNICO CHALLENGER EN SOMBRA; no reemplaza el OLS rolling 90 oficial.",
   "official": {
     "model": "OLS rolling 90 oficial · SPY EEM EPU MCHI NEM FCX USD/PEN",
-    "return_estimated": 7.421431574146398e-05,
-    "signal": "NEUTRO",
-    "vc_estimated": 71.41965511360586
+    "return_estimated": 0.0019369374438577705,
+    "signal": "SUBE",
+    "vc_estimated": 71.55268028461602
   },
   "challenger": {
     "model": "OLS 60/30 · sin NEM ni FCX + QQQ",
-    "return_estimated": 0.001484174635318507,
+    "return_estimated": 0.0030288021341017715,
     "signal": "SUBE",
-    "vc_estimated": 71.49749485349541,
+    "vc_estimated": 71.6077681852583,
     "blind_chain": true,
     "reanchored_with_latest_sbs": false
   },
   "comparison": {
-    "same_signal": false,
-    "vc_difference": 0.07783973988955495,
-    "return_difference_pp": 0.1409960319577043
+    "same_signal": true,
+    "vc_difference": 0.05508790064227753,
+    "return_difference_pp": 0.1091864690244001
   },
   "cycle": {
     "train_window": 60,
@@ -44,32 +44,32 @@
     "rule": "Coeficientes congelados 30 sesiones. El VC se encadena desde el ancla del ciclo y no se corrige con SBS dentro del bloque."
   },
   "qqq": {
-    "return": 0.0010888095339904869,
-    "source": "INTRADIA YAHOO"
+    "return": 0.0019007553300205426,
+    "source": "CIERRE DIARIO YAHOO"
   },
   "blind_backtest": {
     "design": "Bloques no superpuestos: entrenar 60 observaciones, congelar 30, un solo VC SBS como ancla al inicio; dentro del bloque SBS solo evalua y nunca corrige.",
     "n_blocks": 10,
     "n_predictions": 300,
     "official_current_7f": {
-      "vc_mae": 0.923742351972024,
-      "vc_rmse": 1.7001108229833057,
-      "mean_endpoint_abs_error": 1.7523057813757212
+      "vc_mae": 0.9237423519720216,
+      "vc_rmse": 1.700110822983303,
+      "mean_endpoint_abs_error": 1.7523057813757164
     },
     "challenger_6030": {
-      "vc_mae": 0.7890758034935097,
-      "vc_rmse": 1.4716121530521804,
-      "mean_endpoint_abs_error": 1.401209149491688
+      "vc_mae": 0.7890758034935107,
+      "vc_rmse": 1.471612153052181,
+      "mean_endpoint_abs_error": 1.4012091494916923
     },
-    "mae_improvement_pct": 14.578366813108163,
+    "mae_improvement_pct": 14.578366813107827,
     "challenger_better_blocks": 7,
     "official_better_blocks": 3
   },
   "forward_sbs": {
-    "evaluated": 26,
-    "pending": 3,
-    "challenger_vc_mae": 0.8623836293571505,
-    "official_vc_mae": 1.076634686286654
+    "evaluated": 27,
+    "pending": 2,
+    "challenger_vc_mae": 0.8916107064193289,
+    "official_vc_mae": 1.1031324431847072
   },
   "ledger": "data/rolling90/reduced_6030_shadow.csv"
 }
