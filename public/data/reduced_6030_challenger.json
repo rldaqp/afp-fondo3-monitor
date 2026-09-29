@@ -1,33 +1,33 @@
 {
-  "generated_at_lima": "2026-09-28T19:20:49.874886-05:00",
-  "signal_date": "2026-09-28",
-  "mode": "INTRADIA PROVISIONAL - ULTIMO CORTE",
-  "market_open": false,
+  "generated_at_lima": "2026-09-29T13:31:57.219156-05:00",
+  "signal_date": "2026-09-29",
+  "mode": "INTRADÍA PROVISIONAL",
+  "market_open": true,
   "role": "UNICO CHALLENGER EN SOMBRA; no reemplaza el OLS rolling 90 oficial.",
   "official": {
     "model": "OLS rolling 90 oficial · SPY EEM EPU MCHI NEM FCX USD/PEN",
-    "return_estimated": -0.007878415368886301,
-    "signal": "BAJA",
-    "vc_estimated": 70.8517231929624
+    "return_estimated": 7.421431574146398e-05,
+    "signal": "NEUTRO",
+    "vc_estimated": 71.41965511360586
   },
   "challenger": {
     "model": "OLS 60/30 · sin NEM ni FCX + QQQ",
-    "return_estimated": -0.006698949142941574,
-    "signal": "BAJA",
-    "vc_estimated": 71.39153734459218,
+    "return_estimated": 0.001484174635318507,
+    "signal": "SUBE",
+    "vc_estimated": 71.49749485349541,
     "blind_chain": true,
     "reanchored_with_latest_sbs": false
   },
   "comparison": {
-    "same_signal": true,
-    "vc_difference": 0.5398141516297841,
-    "return_difference_pp": 0.1179466225944727
+    "same_signal": false,
+    "vc_difference": 0.07783973988955495,
+    "return_difference_pp": 0.1409960319577043
   },
   "cycle": {
     "train_window": 60,
     "freeze_horizon": 30,
     "cycle_start": "2026-08-19",
-    "cycle_day": 28,
+    "cycle_day": 29,
     "anchor_date": "2026-08-18",
     "anchor_vc": 69.6328126,
     "train_start": "2026-05-14",
@@ -44,8 +44,8 @@
     "rule": "Coeficientes congelados 30 sesiones. El VC se encadena desde el ancla del ciclo y no se corrige con SBS dentro del bloque."
   },
   "qqq": {
-    "return": -0.01069176893573709,
-    "source": "ULTIMO CORTE YAHOO"
+    "return": 0.0010888095339904869,
+    "source": "INTRADIA YAHOO"
   },
   "blind_backtest": {
     "design": "Bloques no superpuestos: entrenar 60 observaciones, congelar 30, un solo VC SBS como ancla al inicio; dentro del bloque SBS solo evalua y nunca corrige.",
@@ -67,7 +67,7 @@
   },
   "forward_sbs": {
     "evaluated": 26,
-    "pending": 2,
+    "pending": 3,
     "challenger_vc_mae": 0.8623836293571505,
     "official_vc_mae": 1.076634686286654
   },
