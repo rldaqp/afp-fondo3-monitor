@@ -1,5 +1,5 @@
 {
-  "generated_at_lima": "2026-09-29T14:43:58.514794-05:00",
+  "generated_at_lima": "2026-09-29T14:50:03.343456-05:00",
   "model_version": "v2-sbs-corrected-20260831",
   "history_start": "2026-01-05",
   "training": {
@@ -50,14 +50,14 @@
   "metrics": {
     "validation_from_2026_08_18": {
       "niveles": {
-        "n": 27,
-        "mae_pct": 0.3015752958255912,
-        "rmse_pct": 0.38693830818690766
+        "n": 28,
+        "mae_pct": 0.30229193935536947,
+        "rmse_pct": 0.3847971173481537
       },
       "retornos": {
-        "n": 27,
-        "mae_pct": 0.3083017807541022,
-        "rmse_pct": 0.3747095358635976
+        "n": 28,
+        "mae_pct": 0.3062903958830961,
+        "rmse_pct": 0.3710261260391493
       }
     },
     "retrospective_before_2026_07_07": {
@@ -77,9 +77,9 @@
     "market_date": "2026-09-28",
     "vc_niveles": 72.39281103586943,
     "ret_vc_estimado": -0.010502374241896935,
-    "vc_retornos": 72.93566715632869,
-    "latest_sbs_date": "2026-09-24",
-    "latest_sbs_vc": 72.9362887
+    "vc_retornos": 72.75234361514063,
+    "latest_sbs_date": "2026-09-25",
+    "latest_sbs_vc": 73.5245257
   },
   "sources": {
     "SPY_EEM_MCHI_QQQ": "Yahoo Finance · cierre diario no ajustado",
@@ -2874,19 +2874,19 @@
     },
     {
       "fecha": "2026-09-25",
-      "fase": "PROYECCIÓN",
+      "fase": "VALIDACIÓN",
       "SPY": 771.3499755859375,
       "EEM": 67.9800033569336,
       "MCHI": 52.619998931884766,
       "QQQ": 744.5,
       "SPBLSCUP": 452.86,
       "source": "GOOGLE FINANCE · SNAPSHOT FIJO DE CIERRE · FECHA COINCIDENTE",
-      "vc_sbs": null,
+      "vc_sbs": 73.5245257,
       "vc_niveles": 73.28804044894144,
       "ret_vc_estimado": 0.010605232629620381,
       "vc_retornos": 73.70979500880466,
-      "error_niveles_pct": null,
-      "error_retornos_pct": null
+      "error_niveles_pct": -0.32164131465938217,
+      "error_retornos_pct": 0.2519830043659299
     },
     {
       "fecha": "2026-09-28",
@@ -2900,10 +2900,10 @@
       "vc_sbs": null,
       "vc_niveles": 72.39281103586943,
       "ret_vc_estimado": -0.010502374241896935,
-      "vc_retornos": 72.93566715632869,
+      "vc_retornos": 72.75234361514063,
       "error_niveles_pct": null,
       "error_retornos_pct": null
     }
   ],
-  "data_revision": "f64325104457d8ae8efcf355d0f0002aae7ce692eb66ecb0e39d2820126852b2"
+  "data_revision": "605217f77a879454df99ef699a92724a38424c1df917f57b385aa51803a7848b"
 }
