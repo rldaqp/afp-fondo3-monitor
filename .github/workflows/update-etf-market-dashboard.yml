@@ -55,6 +55,35 @@ jobs:
           python scripts/enrich_etf_stats_news.py
           python scripts/enrich_etf_news_fallback.py
 
+      - name: Normalizar horario del visor a Lima
+        run: |
+          python - <<'PY'
+          import json
+          from datetime import datetime
+          from pathlib import Path
+          from zoneinfo import ZoneInfo
+
+          p = Path('public/data/etf_market_snapshot.json')
+          data = json.loads(p.read_text(encoding='utf-8'))
+          lima = ZoneInfo('America/Lima')
+
+          def to_lima(value):
+              if not value:
+                  return value
+              try:
+                  return datetime.fromisoformat(value).astimezone(lima).isoformat()
+              except Exception:
+                  return value
+
+          for item in data.get('tickers', []):
+              item['last_bar'] = to_lima(item.get('last_bar'))
+              bars = item.get('bars') or {}
+              bars['time'] = [to_lima(x) for x in bars.get('time', [])]
+
+          p.write_text(json.dumps(data, ensure_ascii=False, separators=(',', ':')), encoding='utf-8')
+          print('Horas de velas normalizadas a America/Lima')
+          PY
+
       - name: Validar salida
         run: |
           python -m py_compile scripts/build_etf_market_dashboard.py scripts/enrich_cper_holdings.py scripts/enrich_etf_stats_news.py scripts/enrich_etf_news_fallback.py
