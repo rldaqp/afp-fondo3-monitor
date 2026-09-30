@@ -21,6 +21,7 @@ TICKERS: dict[str, dict[str, str]] = {
     "MCHI": {"name": "China", "factor": "China"},
     "CPER": {"name": "Cobre", "factor": "Cobre"},
 }
+MAX_HOLDINGS = 12
 
 
 def _safe_float(value: Any) -> float | None:
@@ -156,6 +157,107 @@ def _series_payload(day: pd.DataFrame, limit: int = 90) -> dict[str, list[Any]]:
     }
 
 
+def _normalized_column_map(df: pd.DataFrame) -> dict[str, Any]:
+    return {
+        str(c).strip().lower().replace("_", " "): c
+        for c in df.columns
+    }
+
+
+def fetch_holdings(symbol: str) -> list[dict[str, Any]]:
+    """Obtiene las principales posiciones publicadas por Yahoo/yfinance."""
+    data = yf.Ticker(symbol).funds_data.top_holdings
+    if data is None or not isinstance(data, pd.DataFrame) or data.empty:
+        return []
+
+    df = data.copy()
+    cmap = _normalized_column_map(df)
+    name_col = next((cmap[k] for k in ("name", "holding name", "company name") if k in cmap), None)
+    weight_col = next(
+        (
+            cmap[k]
+            for k in (
+                "holding percent",
+                "holding percentage",
+                "% assets",
+                "percent assets",
+                "weight",
+                "portfolio weight",
+            )
+            if k in cmap
+        ),
+        None,
+    )
+    symbol_col = next((cmap[k] for k in ("symbol", "ticker", "holding symbol") if k in cmap), None)
+
+    rows: list[dict[str, Any]] = []
+    for idx, row in df.head(MAX_HOLDINGS).iterrows():
+        raw_symbol = row[symbol_col] if symbol_col is not None else idx
+        holding_symbol = str(raw_symbol).strip() if raw_symbol is not None else ""
+        if holding_symbol.lower() in {"", "nan", "none"}:
+            holding_symbol = ""
+
+        raw_name = row[name_col] if name_col is not None else holding_symbol
+        name = str(raw_name).strip() if raw_name is not None else holding_symbol
+        if name.lower() in {"", "nan", "none"}:
+            name = holding_symbol or "Posición"
+
+        weight = _safe_float(row[weight_col]) if weight_col is not None else None
+        if weight is not None and weight > 1.5:
+            weight /= 100.0
+        if weight is None or weight <= 0:
+            continue
+
+        rows.append({"symbol": holding_symbol, "name": name, "weight": weight, "change": None})
+
+    rows.sort(key=lambda x: x.get("weight") or 0, reverse=True)
+    return rows[:MAX_HOLDINGS]
+
+
+def _daily_changes(symbols: list[str]) -> dict[str, float | None]:
+    clean = sorted({s for s in symbols if s and s.lower() not in {"nan", "none"}})
+    if not clean:
+        return {}
+
+    result: dict[str, float | None] = {s: None for s in clean}
+    try:
+        raw = yf.download(
+            clean,
+            period="5d",
+            interval="1d",
+            auto_adjust=False,
+            actions=False,
+            progress=False,
+            threads=True,
+            group_by="ticker",
+        )
+    except Exception:
+        return result
+
+    if raw is None or raw.empty:
+        return result
+
+    for symbol in clean:
+        try:
+            if isinstance(raw.columns, pd.MultiIndex):
+                if symbol not in raw.columns.get_level_values(0):
+                    continue
+                frame = raw[symbol]
+            else:
+                if len(clean) != 1:
+                    continue
+                frame = raw
+            if "Close" not in frame.columns:
+                continue
+            close = pd.to_numeric(frame["Close"], errors="coerce").dropna()
+            if len(close) < 2 or float(close.iloc[-2]) == 0:
+                continue
+            result[symbol] = _safe_float(float(close.iloc[-1]) / float(close.iloc[-2]) - 1)
+        except Exception:
+            continue
+    return result
+
+
 def fetch_ticker(symbol: str) -> dict[str, Any]:
     hist = yf.Ticker(symbol).history(
         period="5d",
@@ -225,6 +327,7 @@ def main() -> None:
     previous_map = {x.get("symbol"): x for x in previous.get("tickers", []) if isinstance(x, dict)}
     rows: list[dict[str, Any]] = []
     errors: dict[str, str] = {}
+    holdings_errors: dict[str, str] = {}
 
     for symbol, meta in TICKERS.items():
         try:
@@ -237,6 +340,29 @@ def main() -> None:
         item.update(meta)
         rows.append(item)
 
+    all_holding_symbols: list[str] = []
+    for item in rows:
+        symbol = item["symbol"]
+        try:
+            holdings = fetch_holdings(symbol)
+            if not holdings:
+                raise RuntimeError("Yahoo no devolvió posiciones")
+        except Exception as exc:
+            holdings_errors[symbol] = str(exc)
+            old = previous_map.get(symbol, {})
+            holdings = old.get("holdings", []) if isinstance(old, dict) else []
+        item["holdings"] = holdings
+        all_holding_symbols.extend(h.get("symbol", "") for h in holdings if isinstance(h, dict))
+
+    changes = _daily_changes(all_holding_symbols)
+    for item in rows:
+        for holding in item.get("holdings", []):
+            if not isinstance(holding, dict):
+                continue
+            hs = holding.get("symbol", "")
+            if hs in changes and changes[hs] is not None:
+                holding["change"] = changes[hs]
+
     payload = {
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "source": "Yahoo Finance vía yfinance. Datos gratuitos; pueden presentar retrasos o interrupciones.",
@@ -244,14 +370,21 @@ def main() -> None:
             "Perfil aproximado: el volumen de cada vela de 5 minutos se asigna al precio típico "
             "(máximo+mínimo+cierre)/3. No es Level II ni volumen exacto ejecutado por precio."
         ),
+        "holdings_method": (
+            "Mapa de calor de las principales posiciones reportadas por Yahoo Finance para cada ETF. "
+            "El tamaño representa el peso en el ETF y el color la variación diaria cuando existe una cotización compatible."
+        ),
         "tickers": rows,
         "errors": errors,
+        "holdings_errors": holdings_errors,
     }
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_text(json.dumps(payload, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
     print(f"Snapshot ETF escrito en {OUT}")
     if errors:
-        print("Advertencias:", errors)
+        print("Advertencias ETF:", errors)
+    if holdings_errors:
+        print("Advertencias posiciones:", holdings_errors)
 
 
 if __name__ == "__main__":
