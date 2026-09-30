@@ -38,6 +38,13 @@ MACRO_SOURCES = {
     "China": ["MCHI", "FXI"],
     "Cobre": ["HG=F", "CPER"],
 }
+MACRO_QUOTES = [
+    {"label": "Brent", "symbol": "BZ=F", "topic": "Brent / petróleo", "unit": "USD/barril", "decimals": 2},
+    {"label": "Treasury 10 años", "symbol": "^TNX", "topic": "Tasas / bonos", "unit": "%", "decimals": 3},
+    {"label": "Dólar DXY", "symbol": "DX-Y.NYB", "topic": "Dólar", "unit": "puntos", "decimals": 2},
+    {"label": "China (MCHI)", "symbol": "MCHI", "topic": "China", "unit": "USD", "decimals": 2},
+    {"label": "Cobre", "symbol": "HG=F", "topic": "Cobre", "unit": "USD/libra", "decimals": 4},
+]
 
 
 def _translate_es(text: str) -> str | None:
@@ -225,6 +232,51 @@ def _collect_macro() -> list[dict[str, Any]]:
     return _dedupe(raw, limit=10)
 
 
+def _macro_market_snapshot(previous: list[dict[str, Any]] | None = None) -> list[dict[str, Any]]:
+    """Cotizaciones macro gratuitas. Se conserva el último dato si una fuente falla temporalmente."""
+    old = {str(x.get("label")): x for x in (previous or []) if isinstance(x, dict)}
+    rows: list[dict[str, Any]] = []
+    for cfg in MACRO_QUOTES:
+        try:
+            hist = yf.Ticker(cfg["symbol"]).history(
+                period="5d",
+                interval="1d",
+                auto_adjust=False,
+                actions=False,
+            )
+            if hist is None or hist.empty or "Close" not in hist.columns:
+                raise RuntimeError("sin cotización")
+            hist = hist.dropna(subset=["Close"])
+            if hist.empty:
+                raise RuntimeError("serie vacía")
+            last = hist.iloc[-1]
+            price = float(last["Close"])
+            prev = float(hist.iloc[-2]["Close"]) if len(hist) >= 2 else None
+            change = (price / prev - 1) if prev not in (None, 0) else None
+            delta = (price - prev) if prev is not None else None
+            idx = hist.index[-1]
+            asof = idx.isoformat() if hasattr(idx, "isoformat") else str(idx)
+            rows.append({
+                **cfg,
+                "price": price,
+                "prev_close": prev,
+                "change": change,
+                "delta": delta,
+                "open": float(last["Open"]) if "Open" in hist.columns and last.get("Open") == last.get("Open") else None,
+                "high": float(last["High"]) if "High" in hist.columns and last.get("High") == last.get("High") else None,
+                "low": float(last["Low"]) if "Low" in hist.columns and last.get("Low") == last.get("Low") else None,
+                "asof": asof,
+                "stale": False,
+            })
+        except Exception:
+            prior = old.get(cfg["label"])
+            if prior:
+                kept = dict(prior)
+                kept["stale"] = True
+                rows.append(kept)
+    return rows
+
+
 def _load(path: Path, fallback: dict[str, Any]) -> dict[str, Any]:
     if not path.exists():
         return fallback
@@ -255,6 +307,7 @@ def main() -> None:
     cache.setdefault("by_symbol", {})
     cache.setdefault("attempted_by_symbol", {})
     cache.setdefault("macro_news", [])
+    cache.setdefault("macro_market", [])
     by_symbol = {x.get("symbol"): x for x in payload.get("tickers", []) if isinstance(x, dict)}
     now = datetime.now(timezone.utc)
 
@@ -287,6 +340,10 @@ def main() -> None:
             cache["macro_news"] = macro_rows
     cache["macro_news"] = [_ensure_spanish(row) for row in (cache.get("macro_news") or [])]
 
+    macro_market = _macro_market_snapshot(cache.get("macro_market") or [])
+    if macro_market:
+        cache["macro_market"] = macro_market
+
     total = sum(len(cache["by_symbol"].get(s, []) or []) for s in SYMBOLS)
     if (attempted or macro_attempted) and (total > 0 or cache.get("macro_news")):
         cache["refreshed_at"] = now.isoformat()
@@ -299,12 +356,18 @@ def main() -> None:
         if s in by_symbol:
             by_symbol[s]["news"] = cache["by_symbol"].get(s, []) or []
     payload["macro_news"] = cache.get("macro_news", []) or []
+    payload["macro_market"] = cache.get("macro_market", []) or []
     payload["news_refreshed_at"] = cache.get("refreshed_at")
     payload["news_refresh_minutes"] = REFRESH_MINUTES
     payload["news_fallback_counts"] = {s: len(cache["by_symbol"].get(s, []) or []) for s in SYMBOLS}
     payload["news_language"] = "es"
     SNAPSHOT.write_text(json.dumps(payload, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
-    print("Noticias por ETF:", payload["news_fallback_counts"], "macro:", len(payload["macro_news"]), "refrescados:", attempted)
+    print(
+        "Noticias por ETF:", payload["news_fallback_counts"],
+        "macro:", len(payload["macro_news"]),
+        "cotizaciones macro:", len(payload["macro_market"]),
+        "refrescados:", attempted,
+    )
 
 
 if __name__ == "__main__":
