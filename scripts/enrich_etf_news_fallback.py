@@ -22,7 +22,7 @@ QUERIES = {
 }
 
 
-def _parse(item: dict[str, Any]) -> dict[str, Any] | None:
+def _parse(item: dict[str, Any], related_to: str | None = None) -> dict[str, Any] | None:
     if not isinstance(item, dict):
         return None
     content = item.get("content") if isinstance(item.get("content"), dict) else item
@@ -45,34 +45,23 @@ def _parse(item: dict[str, Any]) -> dict[str, Any] | None:
         except Exception:
             published = None
     summary = content.get("summary") or item.get("summary") or ""
+    if related_to:
+        source = f"{source} · {related_to} (componente)"
     return {
         "title": str(title).strip(),
         "source": str(source).strip(),
         "url": str(url).strip() if url else None,
         "published_at": published,
         "summary": str(summary).strip()[:500],
+        "related_to": related_to,
     }
 
 
-def _collect(symbol: str) -> list[dict[str, Any]]:
-    raw: list[dict[str, Any]] = []
-    try:
-        raw.extend(yf.Ticker(symbol).get_news(count=8, tab="news") or [])
-    except Exception:
-        pass
-    try:
-        raw.extend(getattr(yf.Search(symbol, news_count=8, raise_errors=False), "news", None) or [])
-    except Exception:
-        pass
-    try:
-        raw.extend(getattr(yf.Search(QUERIES[symbol], news_count=8, raise_errors=False), "news", None) or [])
-    except Exception:
-        pass
-
+def _dedupe(raw: list[tuple[dict[str, Any], str | None]]) -> list[dict[str, Any]]:
     rows: list[dict[str, Any]] = []
     seen: set[str] = set()
-    for item in raw:
-        parsed = _parse(item)
+    for item, related_to in raw:
+        parsed = _parse(item, related_to=related_to)
         if not parsed:
             continue
         key = (parsed.get("url") or parsed["title"]).lower()
@@ -85,6 +74,40 @@ def _collect(symbol: str) -> list[dict[str, Any]]:
     return rows
 
 
+def _collect(symbol: str) -> list[dict[str, Any]]:
+    raw: list[tuple[dict[str, Any], str | None]] = []
+    try:
+        raw.extend((x, None) for x in (yf.Ticker(symbol).get_news(count=8, tab="news") or []))
+    except Exception:
+        pass
+    try:
+        raw.extend((x, None) for x in (getattr(yf.Search(symbol, news_count=8, raise_errors=False), "news", None) or []))
+    except Exception:
+        pass
+    try:
+        raw.extend((x, None) for x in (getattr(yf.Search(QUERIES[symbol], news_count=8, raise_errors=False), "news", None) or []))
+    except Exception:
+        pass
+    return _dedupe(raw)
+
+
+def _collect_components(item: dict[str, Any]) -> list[dict[str, Any]]:
+    raw: list[tuple[dict[str, Any], str | None]] = []
+    holdings = item.get("holdings", []) if isinstance(item, dict) else []
+    for holding in holdings[:5]:
+        hs = str(holding.get("symbol") or "").strip() if isinstance(holding, dict) else ""
+        if not hs or hs.lower() in {"nan", "none"}:
+            continue
+        try:
+            news = yf.Ticker(hs).get_news(count=4, tab="news") or []
+            raw.extend((x, hs) for x in news)
+        except Exception:
+            continue
+        if len(raw) >= 12:
+            break
+    return _dedupe(raw)
+
+
 def _load(path: Path, fallback: dict[str, Any]) -> dict[str, Any]:
     if not path.exists():
         return fallback
@@ -95,8 +118,9 @@ def _load(path: Path, fallback: dict[str, Any]) -> dict[str, Any]:
         return fallback
 
 
-def _recent_attempt(cache: dict[str, Any], now: datetime) -> bool:
-    raw = cache.get("fallback_attempted_at")
+def _recent_symbol_attempt(cache: dict[str, Any], symbol: str, now: datetime) -> bool:
+    attempts = cache.get("attempted_by_symbol") if isinstance(cache.get("attempted_by_symbol"), dict) else {}
+    raw = attempts.get(symbol)
     if not raw:
         return False
     try:
@@ -114,31 +138,34 @@ def main() -> None:
     payload = _load(SNAPSHOT, {})
     cache = _load(NEWS_CACHE, {"by_symbol": {}})
     cache.setdefault("by_symbol", {})
+    cache.setdefault("attempted_by_symbol", {})
     by_symbol = {x.get("symbol"): x for x in payload.get("tickers", []) if isinstance(x, dict)}
     now = datetime.now(timezone.utc)
 
-    existing_total = sum(len(cache["by_symbol"].get(s, []) or []) for s in SYMBOLS)
-    if existing_total > 0 or _recent_attempt(cache, now):
-        for s in SYMBOLS:
-            if s in by_symbol:
-                by_symbol[s]["news"] = cache["by_symbol"].get(s, []) or []
-        payload["news_refreshed_at"] = cache.get("refreshed_at")
-        payload["news_refresh_minutes"] = REFRESH_MINUTES
-        SNAPSHOT.write_text(json.dumps(payload, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
-        print(f"Noticias fallback: sin consulta nueva; caché={existing_total} artículos")
-        return
-
     counts: dict[str, int] = {}
+    attempted: list[str] = []
     for symbol in SYMBOLS:
+        existing = cache["by_symbol"].get(symbol, []) or []
+        if existing:
+            counts[symbol] = len(existing)
+            continue
+        if _recent_symbol_attempt(cache, symbol, now):
+            counts[symbol] = 0
+            continue
+
+        attempted.append(symbol)
         rows = _collect(symbol)
-        counts[symbol] = len(rows)
+        if not rows:
+            rows = _collect_components(by_symbol.get(symbol, {}))
+        cache["attempted_by_symbol"][symbol] = now.isoformat()
         if rows:
             cache["by_symbol"][symbol] = rows
+        counts[symbol] = len(rows)
 
-    cache["fallback_attempted_at"] = now.isoformat()
     total = sum(len(cache["by_symbol"].get(s, []) or []) for s in SYMBOLS)
-    if total > 0:
+    if attempted and total > 0:
         cache["refreshed_at"] = now.isoformat()
+    cache["fallback_attempted_at"] = now.isoformat() if attempted else cache.get("fallback_attempted_at")
     cache["refresh_minutes"] = REFRESH_MINUTES
     NEWS_CACHE.parent.mkdir(parents=True, exist_ok=True)
     NEWS_CACHE.write_text(json.dumps(cache, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
@@ -148,9 +175,9 @@ def main() -> None:
             by_symbol[s]["news"] = cache["by_symbol"].get(s, []) or []
     payload["news_refreshed_at"] = cache.get("refreshed_at")
     payload["news_refresh_minutes"] = REFRESH_MINUTES
-    payload["news_fallback_counts"] = counts
+    payload["news_fallback_counts"] = {s: len(cache["by_symbol"].get(s, []) or []) for s in SYMBOLS}
     SNAPSHOT.write_text(json.dumps(payload, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
-    print("Noticias fallback por ETF:", counts, "total:", total)
+    print("Noticias fallback por ETF:", payload["news_fallback_counts"], "intentados:", attempted, "total:", total)
 
 
 if __name__ == "__main__":
