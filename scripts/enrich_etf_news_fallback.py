@@ -22,6 +22,13 @@ QUERIES = {
     "MCHI": "China economy stocks Alibaba Tencent technology",
     "CPER": "copper price China demand inventories mining",
 }
+MACRO_QUERIES = {
+    "Brent / petróleo": "Brent crude oil price OPEC Middle East oil market",
+    "Tasas / bonos": "US Treasury yields Federal Reserve interest rates inflation",
+    "Dólar": "US dollar DXY emerging markets currencies",
+    "China": "China economy stimulus demand stocks commodities",
+    "Cobre": "copper price inventories China demand mining",
+}
 
 
 def _translate_es(text: str) -> str | None:
@@ -29,13 +36,7 @@ def _translate_es(text: str) -> str | None:
     if not text:
         return ""
     try:
-        params = urlencode({
-            "client": "gtx",
-            "sl": "auto",
-            "tl": "es",
-            "dt": "t",
-            "q": text[:3500],
-        })
+        params = urlencode({"client": "gtx", "sl": "auto", "tl": "es", "dt": "t", "q": text[:3500]})
         req = Request(
             f"https://translate.googleapis.com/translate_a/single?{params}",
             headers={"User-Agent": "Mozilla/5.0"},
@@ -59,7 +60,6 @@ def _ensure_spanish(row: dict[str, Any]) -> dict[str, Any]:
     summary = str(row.get("summary") or "").strip()
     if row.get("title_es") and (not summary or row.get("summary_es") is not None):
         return row
-
     combined = title if not summary else f"{title}\n\n{summary}"
     translated = _translate_es(combined)
     if translated:
@@ -72,7 +72,7 @@ def _ensure_spanish(row: dict[str, Any]) -> dict[str, Any]:
     return row
 
 
-def _parse(item: dict[str, Any], related_to: str | None = None) -> dict[str, Any] | None:
+def _parse(item: dict[str, Any], related_to: str | None = None, macro_topic: str | None = None) -> dict[str, Any] | None:
     if not isinstance(item, dict):
         return None
     content = item.get("content") if isinstance(item.get("content"), dict) else item
@@ -104,14 +104,15 @@ def _parse(item: dict[str, Any], related_to: str | None = None) -> dict[str, Any
         "published_at": published,
         "summary": str(summary).strip()[:500],
         "related_to": related_to,
+        "macro_topic": macro_topic,
     }
 
 
-def _dedupe(raw: list[tuple[dict[str, Any], str | None]]) -> list[dict[str, Any]]:
+def _dedupe(raw: list[tuple[dict[str, Any], str | None, str | None]], limit: int = 5) -> list[dict[str, Any]]:
     rows: list[dict[str, Any]] = []
     seen: set[str] = set()
-    for item, related_to in raw:
-        parsed = _parse(item, related_to=related_to)
+    for item, related_to, macro_topic in raw:
+        parsed = _parse(item, related_to=related_to, macro_topic=macro_topic)
         if not parsed:
             continue
         key = (parsed.get("url") or parsed["title"]).lower()
@@ -119,30 +120,30 @@ def _dedupe(raw: list[tuple[dict[str, Any], str | None]]) -> list[dict[str, Any]
             continue
         seen.add(key)
         rows.append(parsed)
-        if len(rows) >= 5:
+        if len(rows) >= limit:
             break
     return rows
 
 
 def _collect(symbol: str) -> list[dict[str, Any]]:
-    raw: list[tuple[dict[str, Any], str | None]] = []
+    raw: list[tuple[dict[str, Any], str | None, str | None]] = []
     try:
-        raw.extend((x, None) for x in (yf.Ticker(symbol).get_news(count=8, tab="news") or []))
+        raw.extend((x, None, None) for x in (yf.Ticker(symbol).get_news(count=8, tab="news") or []))
     except Exception:
         pass
     try:
-        raw.extend((x, None) for x in (getattr(yf.Search(symbol, news_count=8, raise_errors=False), "news", None) or []))
+        raw.extend((x, None, None) for x in (getattr(yf.Search(symbol, news_count=8, raise_errors=False), "news", None) or []))
     except Exception:
         pass
     try:
-        raw.extend((x, None) for x in (getattr(yf.Search(QUERIES[symbol], news_count=8, raise_errors=False), "news", None) or []))
+        raw.extend((x, None, None) for x in (getattr(yf.Search(QUERIES[symbol], news_count=8, raise_errors=False), "news", None) or []))
     except Exception:
         pass
-    return _dedupe(raw)
+    return _dedupe(raw, limit=5)
 
 
 def _collect_components(item: dict[str, Any]) -> list[dict[str, Any]]:
-    raw: list[tuple[dict[str, Any], str | None]] = []
+    raw: list[tuple[dict[str, Any], str | None, str | None]] = []
     holdings = item.get("holdings", []) if isinstance(item, dict) else []
     for holding in holdings[:5]:
         hs = str(holding.get("symbol") or "").strip() if isinstance(holding, dict) else ""
@@ -150,12 +151,23 @@ def _collect_components(item: dict[str, Any]) -> list[dict[str, Any]]:
             continue
         try:
             news = yf.Ticker(hs).get_news(count=4, tab="news") or []
-            raw.extend((x, hs) for x in news)
+            raw.extend((x, hs, None) for x in news)
         except Exception:
             continue
         if len(raw) >= 12:
             break
-    return _dedupe(raw)
+    return _dedupe(raw, limit=5)
+
+
+def _collect_macro() -> list[dict[str, Any]]:
+    raw: list[tuple[dict[str, Any], str | None, str | None]] = []
+    for topic, query in MACRO_QUERIES.items():
+        try:
+            news = getattr(yf.Search(query, news_count=4, raise_errors=False), "news", None) or []
+            raw.extend((x, None, topic) for x in news[:2])
+        except Exception:
+            continue
+    return _dedupe(raw, limit=8)
 
 
 def _load(path: Path, fallback: dict[str, Any]) -> dict[str, Any]:
@@ -168,9 +180,7 @@ def _load(path: Path, fallback: dict[str, Any]) -> dict[str, Any]:
         return fallback
 
 
-def _recent_symbol_attempt(cache: dict[str, Any], symbol: str, now: datetime) -> bool:
-    attempts = cache.get("attempted_by_symbol") if isinstance(cache.get("attempted_by_symbol"), dict) else {}
-    raw = attempts.get(symbol)
+def _recent(raw: Any, now: datetime) -> bool:
     if not raw:
         return False
     try:
@@ -189,33 +199,38 @@ def main() -> None:
     cache = _load(NEWS_CACHE, {"by_symbol": {}})
     cache.setdefault("by_symbol", {})
     cache.setdefault("attempted_by_symbol", {})
+    cache.setdefault("macro_news", [])
     by_symbol = {x.get("symbol"): x for x in payload.get("tickers", []) if isinstance(x, dict)}
     now = datetime.now(timezone.utc)
 
-    counts: dict[str, int] = {}
     attempted: list[str] = []
     for symbol in SYMBOLS:
         existing = cache["by_symbol"].get(symbol, []) or []
-        if not existing and not _recent_symbol_attempt(cache, symbol, now):
+        last_attempt = cache["attempted_by_symbol"].get(symbol)
+        if not _recent(last_attempt, now):
             attempted.append(symbol)
             rows = _collect(symbol)
             if not rows:
                 rows = _collect_components(by_symbol.get(symbol, {}))
             cache["attempted_by_symbol"][symbol] = now.isoformat()
             if rows:
-                cache["by_symbol"][symbol] = rows
                 existing = rows
-
-        # La traducción se guarda en caché: solo se consulta cuando falta.
-        translated_rows = []
-        for row in existing:
-            translated_rows.append(_ensure_spanish(row))
+                cache["by_symbol"][symbol] = rows
+        translated_rows = [_ensure_spanish(row) for row in existing]
         if translated_rows:
             cache["by_symbol"][symbol] = translated_rows
-        counts[symbol] = len(translated_rows)
+
+    macro_attempted = False
+    if not _recent(cache.get("macro_attempted_at"), now):
+        macro_attempted = True
+        macro_rows = _collect_macro()
+        cache["macro_attempted_at"] = now.isoformat()
+        if macro_rows:
+            cache["macro_news"] = macro_rows
+    cache["macro_news"] = [_ensure_spanish(row) for row in (cache.get("macro_news") or [])]
 
     total = sum(len(cache["by_symbol"].get(s, []) or []) for s in SYMBOLS)
-    if attempted and total > 0:
+    if (attempted or macro_attempted) and (total > 0 or cache.get("macro_news")):
         cache["refreshed_at"] = now.isoformat()
     cache["fallback_attempted_at"] = now.isoformat() if attempted else cache.get("fallback_attempted_at")
     cache["refresh_minutes"] = REFRESH_MINUTES
@@ -225,12 +240,18 @@ def main() -> None:
     for s in SYMBOLS:
         if s in by_symbol:
             by_symbol[s]["news"] = cache["by_symbol"].get(s, []) or []
+    payload["macro_news"] = cache.get("macro_news", []) or []
     payload["news_refreshed_at"] = cache.get("refreshed_at")
     payload["news_refresh_minutes"] = REFRESH_MINUTES
     payload["news_fallback_counts"] = {s: len(cache["by_symbol"].get(s, []) or []) for s in SYMBOLS}
     payload["news_language"] = "es"
     SNAPSHOT.write_text(json.dumps(payload, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
-    print("Noticias fallback por ETF:", payload["news_fallback_counts"], "intentados:", attempted, "total:", total)
+    print(
+        "Noticias por ETF:",
+        payload["news_fallback_counts"],
+        "macro:", len(payload["macro_news"]),
+        "refrescados:", attempted,
+    )
 
 
 if __name__ == "__main__":
