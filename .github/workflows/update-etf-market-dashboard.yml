@@ -8,6 +8,7 @@ on:
     paths:
       - ".github/workflows/update-etf-market-dashboard.yml"
       - "scripts/build_etf_market_dashboard.py"
+      - "scripts/enrich_cper_holdings.py"
       - "public/mercados.html"
   schedule:
     # Cada 10 minutos durante la franja que cubre la sesión regular de EE. UU.
@@ -43,24 +44,29 @@ jobs:
         run: pip install --disable-pip-version-check pandas numpy yfinance
 
       - name: Construir snapshot ETF
-        run: python scripts/build_etf_market_dashboard.py
+        run: |
+          python scripts/build_etf_market_dashboard.py
+          python scripts/enrich_cper_holdings.py
 
       - name: Validar salida
         run: |
-          python -m py_compile scripts/build_etf_market_dashboard.py
+          python -m py_compile scripts/build_etf_market_dashboard.py scripts/enrich_cper_holdings.py
           python - <<'PY'
           import json
           from pathlib import Path
           p = Path('public/data/etf_market_snapshot.json')
           data = json.loads(p.read_text(encoding='utf-8'))
-          symbols = {x.get('symbol') for x in data.get('tickers', [])}
+          by_symbol = {x.get('symbol'): x for x in data.get('tickers', [])}
           expected = {'SPY','QQQ','EEM','EPU','MCHI','CPER'}
-          missing = expected - symbols
+          missing = expected - set(by_symbol)
           if missing:
               raise SystemExit(f'Faltan ETF: {sorted(missing)}')
+          missing_holdings = [s for s in expected if not by_symbol[s].get('holdings')]
+          if missing_holdings:
+              raise SystemExit(f'Faltan posiciones: {sorted(missing_holdings)}')
           if not Path('public/mercados.html').exists():
               raise SystemExit('Falta public/mercados.html')
-          print('Visor ETF validado:', ', '.join(sorted(symbols)))
+          print('Visor ETF y posiciones validado:', ', '.join(sorted(expected)))
           PY
 
       - name: Persistir último snapshot
