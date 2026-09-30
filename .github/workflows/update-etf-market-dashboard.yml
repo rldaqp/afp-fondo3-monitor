@@ -10,11 +10,12 @@ on:
       - "scripts/build_etf_market_dashboard.py"
       - "scripts/enrich_cper_holdings.py"
       - "scripts/enrich_etf_stats_news.py"
+      - "scripts/enrich_etf_news_fallback.py"
       - "public/mercados.html"
       - "public/mercados-extra.js"
   schedule:
     # Mercado/volumen: cada 10 minutos durante la franja que cubre la sesión regular de EE. UU.
-    # Noticias: el script conserva caché y solo las vuelve a consultar cada 30 minutos.
+    # Noticias: la caché solo se vuelve a consultar cada 30 minutos.
     - cron: "3-53/10 13-21 * * 1-5"
 
 permissions:
@@ -50,10 +51,11 @@ jobs:
           python scripts/build_etf_market_dashboard.py
           python scripts/enrich_cper_holdings.py
           python scripts/enrich_etf_stats_news.py
+          python scripts/enrich_etf_news_fallback.py
 
       - name: Validar salida
         run: |
-          python -m py_compile scripts/build_etf_market_dashboard.py scripts/enrich_cper_holdings.py scripts/enrich_etf_stats_news.py
+          python -m py_compile scripts/build_etf_market_dashboard.py scripts/enrich_cper_holdings.py scripts/enrich_etf_stats_news.py scripts/enrich_etf_news_fallback.py
           python - <<'PY'
           import json
           from pathlib import Path
@@ -74,6 +76,7 @@ jobs:
               if not Path(required).exists():
                   raise SystemExit(f'Falta {required}')
           print('Visor ETF, posiciones y distribución validados:', ', '.join(sorted(expected)))
+          print('Noticias disponibles:', {s: len(by_symbol[s].get('news', []) or []) for s in sorted(expected)})
           PY
 
       - name: Persistir último snapshot
