@@ -24,8 +24,10 @@ permissions:
   id-token: write
 
 concurrency:
-  group: profuturo-fixed-publish
-  cancel-in-progress: false
+  # Grupo exclusivo del visor ETF: no competir con los workflows intradía del monitor principal.
+  group: etf-market-dashboard-publish
+  # Si se acumula una ejecución antigua, prioriza la más reciente para evitar datos congelados.
+  cancel-in-progress: true
 
 jobs:
   update:
