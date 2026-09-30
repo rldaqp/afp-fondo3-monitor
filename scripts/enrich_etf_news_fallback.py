@@ -4,6 +4,8 @@ import json
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
+from urllib.parse import urlencode
+from urllib.request import Request, urlopen
 
 import yfinance as yf
 
@@ -20,6 +22,54 @@ QUERIES = {
     "MCHI": "China economy stocks Alibaba Tencent technology",
     "CPER": "copper price China demand inventories mining",
 }
+
+
+def _translate_es(text: str) -> str | None:
+    text = str(text or "").strip()
+    if not text:
+        return ""
+    try:
+        params = urlencode({
+            "client": "gtx",
+            "sl": "auto",
+            "tl": "es",
+            "dt": "t",
+            "q": text[:3500],
+        })
+        req = Request(
+            f"https://translate.googleapis.com/translate_a/single?{params}",
+            headers={"User-Agent": "Mozilla/5.0"},
+        )
+        with urlopen(req, timeout=8) as response:
+            data = json.loads(response.read().decode("utf-8"))
+        translated = "".join(
+            str(segment[0])
+            for segment in (data[0] if isinstance(data, list) and data else [])
+            if isinstance(segment, list) and segment and segment[0]
+        ).strip()
+        return translated or None
+    except Exception:
+        return None
+
+
+def _ensure_spanish(row: dict[str, Any]) -> dict[str, Any]:
+    if not isinstance(row, dict):
+        return row
+    title = str(row.get("title") or "").strip()
+    summary = str(row.get("summary") or "").strip()
+    if row.get("title_es") and (not summary or row.get("summary_es") is not None):
+        return row
+
+    combined = title if not summary else f"{title}\n\n{summary}"
+    translated = _translate_es(combined)
+    if translated:
+        parts = translated.split("\n", 1)
+        row["title_es"] = parts[0].strip() or title
+        if summary:
+            row["summary_es"] = (parts[1].strip() if len(parts) > 1 else "")[:700]
+        else:
+            row["summary_es"] = ""
+    return row
 
 
 def _parse(item: dict[str, Any], related_to: str | None = None) -> dict[str, Any] | None:
@@ -146,21 +196,23 @@ def main() -> None:
     attempted: list[str] = []
     for symbol in SYMBOLS:
         existing = cache["by_symbol"].get(symbol, []) or []
-        if existing:
-            counts[symbol] = len(existing)
-            continue
-        if _recent_symbol_attempt(cache, symbol, now):
-            counts[symbol] = 0
-            continue
+        if not existing and not _recent_symbol_attempt(cache, symbol, now):
+            attempted.append(symbol)
+            rows = _collect(symbol)
+            if not rows:
+                rows = _collect_components(by_symbol.get(symbol, {}))
+            cache["attempted_by_symbol"][symbol] = now.isoformat()
+            if rows:
+                cache["by_symbol"][symbol] = rows
+                existing = rows
 
-        attempted.append(symbol)
-        rows = _collect(symbol)
-        if not rows:
-            rows = _collect_components(by_symbol.get(symbol, {}))
-        cache["attempted_by_symbol"][symbol] = now.isoformat()
-        if rows:
-            cache["by_symbol"][symbol] = rows
-        counts[symbol] = len(rows)
+        # La traducción se guarda en caché: solo se consulta cuando falta.
+        translated_rows = []
+        for row in existing:
+            translated_rows.append(_ensure_spanish(row))
+        if translated_rows:
+            cache["by_symbol"][symbol] = translated_rows
+        counts[symbol] = len(translated_rows)
 
     total = sum(len(cache["by_symbol"].get(s, []) or []) for s in SYMBOLS)
     if attempted and total > 0:
@@ -176,6 +228,7 @@ def main() -> None:
     payload["news_refreshed_at"] = cache.get("refreshed_at")
     payload["news_refresh_minutes"] = REFRESH_MINUTES
     payload["news_fallback_counts"] = {s: len(cache["by_symbol"].get(s, []) or []) for s in SYMBOLS}
+    payload["news_language"] = "es"
     SNAPSHOT.write_text(json.dumps(payload, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
     print("Noticias fallback por ETF:", payload["news_fallback_counts"], "intentados:", attempted, "total:", total)
 
