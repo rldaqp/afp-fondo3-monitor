@@ -12,6 +12,7 @@ import yfinance as yf
 
 ROOT = Path(__file__).resolve().parents[1]
 SNAPSHOT = ROOT / "public" / "data" / "etf_market_snapshot.json"
+NEWS_CACHE = ROOT / "public" / "data" / "etf_news_cache.json"
 SYMBOLS = ["SPY", "QQQ", "EEM", "EPU", "MCHI", "CPER"]
 NEWS_REFRESH_MINUTES = 30
 NEWS_QUERIES = {
@@ -65,16 +66,7 @@ def _stats(r: pd.Series) -> dict[str, Any]:
     x = pd.to_numeric(r, errors="coerce").dropna().astype(float)
     n = int(len(x))
     if n < 3:
-        return {
-            "n": n,
-            "mean": None,
-            "std": None,
-            "skew": None,
-            "excess_kurtosis": None,
-            "jb": None,
-            "p_value": None,
-            "normality": "muestra insuficiente",
-        }
+        return {"n": n, "mean": None, "std": None, "skew": None, "excess_kurtosis": None, "jb": None, "p_value": None, "normality": "muestra insuficiente"}
     mean = _safe_float(x.mean())
     std = _safe_float(x.std(ddof=1))
     skew = _safe_float(x.skew())
@@ -83,24 +75,9 @@ def _stats(r: pd.Series) -> dict[str, Any]:
     p = None
     if n >= 8 and skew is not None and kurt is not None:
         jb = n / 6.0 * (skew**2 + (kurt**2) / 4.0)
-        # Bajo H0 y muestra razonable, JB ~ chi-cuadrado con 2 gl; SF = exp(-x/2).
         p = math.exp(-jb / 2.0)
-    if p is None:
-        label = "muestra insuficiente"
-    elif p >= 0.05:
-        label = "compatible con normalidad"
-    else:
-        label = "no compatible con normalidad"
-    return {
-        "n": n,
-        "mean": mean,
-        "std": std,
-        "skew": skew,
-        "excess_kurtosis": kurt,
-        "jb": _safe_float(jb),
-        "p_value": _safe_float(p),
-        "normality": label,
-    }
+    label = "muestra insuficiente" if p is None else ("compatible con normalidad" if p >= 0.05 else "no compatible con normalidad")
+    return {"n": n, "mean": mean, "std": std, "skew": skew, "excess_kurtosis": kurt, "jb": _safe_float(jb), "p_value": _safe_float(p), "normality": label}
 
 
 def _prob_hist(values: np.ndarray, edges: np.ndarray) -> np.ndarray:
@@ -118,7 +95,6 @@ def _distribution_payload(frame: pd.DataFrame) -> dict[str, Any]:
     base = r20 if len(r20) >= 30 else (r5 if len(r5) >= 10 else r1)
     if len(base) < 3:
         return {"windows": {}, "histogram": {}, "shift": {"label": "sin datos suficientes"}}
-
     vals = base.to_numpy(dtype=float)
     lo = float(np.nanpercentile(vals, 0.5))
     hi = float(np.nanpercentile(vals, 99.5))
@@ -128,18 +104,13 @@ def _distribution_payload(frame: pd.DataFrame) -> dict[str, Any]:
         lo, hi = mu - 4 * sd, mu + 4 * sd
     edges = np.linspace(lo, hi, 31)
     centers = (edges[:-1] + edges[1:]) / 2
-
     windows = {"today": r1, "5d": r5, "20d": r20}
     stats = {k: _stats(v) for k, v in windows.items()}
     probs = {k: _prob_hist(v.to_numpy(dtype=float), edges) for k, v in windows.items()}
-
-    p5 = probs["5d"]
-    p20 = probs["20d"]
+    p5, p20 = probs["5d"], probs["20d"]
     hellinger = _safe_float(np.sqrt(np.sum((np.sqrt(p5) - np.sqrt(p20)) ** 2)) / np.sqrt(2))
-    std5 = stats["5d"].get("std")
-    std20 = stats["20d"].get("std")
+    std5, std20 = stats["5d"].get("std"), stats["20d"].get("std")
     vol_ratio = _safe_float(std5 / std20) if std5 not in (None, 0) and std20 not in (None, 0) else None
-
     if hellinger is None or stats["5d"].get("n", 0) < 30 or stats["20d"].get("n", 0) < 100:
         shift_label = "sin datos suficientes"
     elif hellinger < 0.12 and (vol_ratio is None or 0.80 <= vol_ratio <= 1.25):
@@ -148,25 +119,11 @@ def _distribution_payload(frame: pd.DataFrame) -> dict[str, Any]:
         shift_label = "distribución cambiando"
     else:
         shift_label = "cambio fuerte de distribución"
-
     return {
         "windows": stats,
-        "histogram": {
-            "centers": [float(x) for x in centers],
-            "today": [float(x) for x in probs["today"]],
-            "5d": [float(x) for x in probs["5d"]],
-            "20d": [float(x) for x in probs["20d"]],
-        },
-        "shift": {
-            "hellinger_5d_vs_20d": hellinger,
-            "volatility_ratio_5d_vs_20d": vol_ratio,
-            "label": shift_label,
-        },
-        "method": (
-            "Rendimientos intradía de 5 minutos, excluyendo saltos entre sesiones. "
-            "Normalidad: prueba Jarque-Bera (umbral p=0,05). El cambio 5D vs 20D usa distancia de Hellinger y relación de volatilidad; "
-            "la etiqueta de cambio es una heurística descriptiva, no una predicción."
-        ),
+        "histogram": {"centers": [float(x) for x in centers], "today": [float(x) for x in probs["today"]], "5d": [float(x) for x in probs["5d"]], "20d": [float(x) for x in probs["20d"]]},
+        "shift": {"hellinger_5d_vs_20d": hellinger, "volatility_ratio_5d_vs_20d": vol_ratio, "label": shift_label},
+        "method": "Rendimientos intradía de 5 minutos, excluyendo saltos entre sesiones. Normalidad: Jarque-Bera (p=0,05). El cambio 5D vs 20D usa distancia de Hellinger y relación de volatilidad; la etiqueta es descriptiva, no una predicción.",
     }
 
 
@@ -193,18 +150,11 @@ def _parse_news_item(item: dict[str, Any]) -> dict[str, Any] | None:
         except Exception:
             published = None
     summary = content.get("summary") or item.get("summary") or ""
-    return {
-        "title": str(title).strip(),
-        "source": str(source).strip(),
-        "url": str(url).strip() if url else None,
-        "published_at": published,
-        "summary": str(summary).strip()[:500],
-    }
+    return {"title": str(title).strip(), "source": str(source).strip(), "url": str(url).strip() if url else None, "published_at": published, "summary": str(summary).strip()[:500]}
 
 
 def _fetch_news(symbol: str) -> list[dict[str, Any]]:
-    query = NEWS_QUERIES[symbol]
-    search = yf.Search(query, news_count=10)
+    search = yf.Search(NEWS_QUERIES[symbol], news_count=10)
     raw = getattr(search, "news", None) or []
     rows: list[dict[str, Any]] = []
     seen: set[str] = set()
@@ -222,8 +172,18 @@ def _fetch_news(symbol: str) -> list[dict[str, Any]]:
     return rows
 
 
-def _news_due(payload: dict[str, Any], now: datetime) -> bool:
-    raw = payload.get("news_refreshed_at")
+def _load_news_cache() -> dict[str, Any]:
+    if not NEWS_CACHE.exists():
+        return {"refreshed_at": None, "by_symbol": {}}
+    try:
+        data = json.loads(NEWS_CACHE.read_text(encoding="utf-8"))
+        return data if isinstance(data, dict) else {"refreshed_at": None, "by_symbol": {}}
+    except Exception:
+        return {"refreshed_at": None, "by_symbol": {}}
+
+
+def _news_due(cache: dict[str, Any], now: datetime) -> bool:
+    raw = cache.get("refreshed_at")
     if not raw:
         return True
     try:
@@ -240,53 +200,48 @@ def main() -> None:
         raise SystemExit(f"No existe {SNAPSHOT}")
     payload = json.loads(SNAPSHOT.read_text(encoding="utf-8"))
     by_symbol = {x.get("symbol"): x for x in payload.get("tickers", []) if isinstance(x, dict)}
-
-    raw = yf.download(
-        SYMBOLS,
-        period="1mo",
-        interval="5m",
-        auto_adjust=False,
-        actions=False,
-        progress=False,
-        threads=True,
-        group_by="ticker",
-    )
+    raw = yf.download(SYMBOLS, period="1mo", interval="5m", auto_adjust=False, actions=False, progress=False, threads=True, group_by="ticker")
     for symbol in SYMBOLS:
         item = by_symbol.get(symbol)
         if not item:
             continue
-        frame = _extract_frame(raw, symbol)
         try:
-            item["distribution"] = _distribution_payload(frame)
+            item["distribution"] = _distribution_payload(_extract_frame(raw, symbol))
         except Exception as exc:
             item["distribution"] = {"error": str(exc), "windows": {}, "histogram": {}, "shift": {"label": "sin datos"}}
 
     now = datetime.now(timezone.utc)
+    cache = _load_news_cache()
+    cache.setdefault("by_symbol", {})
     news_errors: dict[str, str] = {}
-    if _news_due(payload, now):
+    refreshed = False
+    if _news_due(cache, now):
         for symbol in SYMBOLS:
-            item = by_symbol.get(symbol)
-            if not item:
-                continue
-            previous_news = item.get("news", [])
             try:
                 news = _fetch_news(symbol)
-                item["news"] = news if news else previous_news
+                if news:
+                    cache["by_symbol"][symbol] = news
             except Exception as exc:
                 news_errors[symbol] = str(exc)
-                item["news"] = previous_news
-        payload["news_refreshed_at"] = now.isoformat()
+        cache["refreshed_at"] = now.isoformat()
+        cache["refresh_minutes"] = NEWS_REFRESH_MINUTES
+        NEWS_CACHE.parent.mkdir(parents=True, exist_ok=True)
+        NEWS_CACHE.write_text(json.dumps(cache, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
+        refreshed = True
+
+    for symbol in SYMBOLS:
+        item = by_symbol.get(symbol)
+        if item is not None:
+            item["news"] = cache.get("by_symbol", {}).get(symbol, [])
+
+    payload["news_refreshed_at"] = cache.get("refreshed_at")
     payload["news_refresh_minutes"] = NEWS_REFRESH_MINUTES
     payload["news_errors"] = news_errors
     payload["distribution_refreshed_at"] = now.isoformat()
-    payload["distribution_method"] = (
-        "Se analizan rendimientos intradía de 5 minutos en ventanas de hoy, 5 y 20 sesiones. "
-        "Jarque-Bera evalúa compatibilidad con una distribución normal; el cambio 5D vs 20D es descriptivo y no predice el precio."
-    )
-
+    payload["distribution_method"] = "Rendimientos intradía de 5 minutos en ventanas de hoy, 5 y 20 sesiones. Jarque-Bera evalúa compatibilidad con normalidad; el cambio 5D vs 20D es descriptivo y no predice el precio."
     SNAPSHOT.write_text(json.dumps(payload, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
     print("Distribución estadística actualizada para:", ", ".join(SYMBOLS))
-    print("Noticias refrescadas:", "sí" if payload.get("news_refreshed_at") == now.isoformat() else "no")
+    print("Noticias refrescadas:", "sí" if refreshed else "no; se conserva caché <30 min")
     if news_errors:
         print("Advertencias noticias:", news_errors)
 
