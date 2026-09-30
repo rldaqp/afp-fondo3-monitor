@@ -23,11 +23,18 @@ QUERIES = {
     "CPER": "copper price China demand inventories mining",
 }
 MACRO_QUERIES = {
-    "Brent / petróleo": "Brent crude oil price OPEC Middle East oil market",
-    "Tasas / bonos": "US Treasury yields Federal Reserve interest rates inflation",
-    "Dólar": "US dollar DXY emerging markets currencies",
-    "China": "China economy stimulus demand stocks commodities",
-    "Cobre": "copper price inventories China demand mining",
+    "Brent / petróleo": "Brent crude oil OPEC oil prices",
+    "Tasas / bonos": "Treasury yields Federal Reserve rates inflation",
+    "Dólar": "US dollar DXY emerging markets",
+    "China": "China economy stimulus demand",
+    "Cobre": "copper price inventories China demand",
+}
+MACRO_SOURCES = {
+    "Brent / petróleo": ["BZ=F", "CL=F"],
+    "Tasas / bonos": ["^TNX", "TLT"],
+    "Dólar": ["DX-Y.NYB", "UUP"],
+    "China": ["MCHI", "FXI"],
+    "Cobre": ["HG=F", "CPER"],
 }
 
 
@@ -65,10 +72,7 @@ def _ensure_spanish(row: dict[str, Any]) -> dict[str, Any]:
     if translated:
         parts = translated.split("\n", 1)
         row["title_es"] = parts[0].strip() or title
-        if summary:
-            row["summary_es"] = (parts[1].strip() if len(parts) > 1 else "")[:700]
-        else:
-            row["summary_es"] = ""
+        row["summary_es"] = (parts[1].strip() if summary and len(parts) > 1 else "")[:700]
     return row
 
 
@@ -161,13 +165,22 @@ def _collect_components(item: dict[str, Any]) -> list[dict[str, Any]]:
 
 def _collect_macro() -> list[dict[str, Any]]:
     raw: list[tuple[dict[str, Any], str | None, str | None]] = []
-    for topic, query in MACRO_QUERIES.items():
-        try:
-            news = getattr(yf.Search(query, news_count=4, raise_errors=False), "news", None) or []
-            raw.extend((x, None, topic) for x in news[:2])
-        except Exception:
-            continue
-    return _dedupe(raw, limit=8)
+    for topic, tickers in MACRO_SOURCES.items():
+        topic_rows: list[tuple[dict[str, Any], str | None, str | None]] = []
+        for ticker in tickers:
+            try:
+                news = yf.Ticker(ticker).get_news(count=5, tab="news") or []
+                topic_rows.extend((x, None, topic) for x in news[:3])
+            except Exception:
+                continue
+        if not topic_rows:
+            try:
+                news = getattr(yf.Search(MACRO_QUERIES[topic], news_count=5, raise_errors=False), "news", None) or []
+                topic_rows.extend((x, None, topic) for x in news[:3])
+            except Exception:
+                pass
+        raw.extend(topic_rows[:3])
+    return _dedupe(raw, limit=10)
 
 
 def _load(path: Path, fallback: dict[str, Any]) -> dict[str, Any]:
@@ -221,7 +234,7 @@ def main() -> None:
             cache["by_symbol"][symbol] = translated_rows
 
     macro_attempted = False
-    if not _recent(cache.get("macro_attempted_at"), now):
+    if not cache.get("macro_news") or not _recent(cache.get("macro_attempted_at"), now):
         macro_attempted = True
         macro_rows = _collect_macro()
         cache["macro_attempted_at"] = now.isoformat()
@@ -246,12 +259,7 @@ def main() -> None:
     payload["news_fallback_counts"] = {s: len(cache["by_symbol"].get(s, []) or []) for s in SYMBOLS}
     payload["news_language"] = "es"
     SNAPSHOT.write_text(json.dumps(payload, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
-    print(
-        "Noticias por ETF:",
-        payload["news_fallback_counts"],
-        "macro:", len(payload["macro_news"]),
-        "refrescados:", attempted,
-    )
+    print("Noticias por ETF:", payload["news_fallback_counts"], "macro:", len(payload["macro_news"]), "refrescados:", attempted)
 
 
 if __name__ == "__main__":
