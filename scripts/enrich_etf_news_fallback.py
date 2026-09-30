@@ -2,10 +2,12 @@ from __future__ import annotations
 
 import json
 from datetime import datetime, timedelta, timezone
+from email.utils import parsedate_to_datetime
 from pathlib import Path
 from typing import Any
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
+import xml.etree.ElementTree as ET
 
 import yfinance as yf
 
@@ -18,16 +20,16 @@ QUERIES = {
     "SPY": "S&P 500 Federal Reserve inflation US economy stocks",
     "QQQ": "Nasdaq technology semiconductors Nvidia Apple Microsoft stocks",
     "EEM": "emerging markets dollar China Taiwan Korea stocks",
-    "EPU": "Peru economy mining copper Credicorp Southern Copper stocks",
+    "EPU": "Peru economy mining copper Credicorp Southern Copper Buenaventura",
     "MCHI": "China economy stocks Alibaba Tencent technology",
     "CPER": "copper price China demand inventories mining",
 }
 MACRO_QUERIES = {
-    "Brent / petróleo": "Brent crude oil OPEC oil prices",
-    "Tasas / bonos": "Treasury yields Federal Reserve rates inflation",
-    "Dólar": "US dollar DXY emerging markets",
-    "China": "China economy stimulus demand",
-    "Cobre": "copper price inventories China demand",
+    "Brent / petróleo": "Brent crude oil OPEC Middle East oil price",
+    "Tasas / bonos": "US Treasury yields Federal Reserve interest rates inflation",
+    "Dólar": "US dollar DXY emerging markets currencies",
+    "China": "China economy stimulus demand commodities",
+    "Cobre": "copper price inventories China demand mining",
 }
 MACRO_SOURCES = {
     "Brent / petróleo": ["BZ=F", "CL=F"],
@@ -84,7 +86,7 @@ def _parse(item: dict[str, Any], related_to: str | None = None, macro_topic: str
     if not title:
         return None
     provider = content.get("provider") if isinstance(content.get("provider"), dict) else {}
-    source = provider.get("displayName") or item.get("publisher") or content.get("publisher") or "Yahoo Finance"
+    source = provider.get("displayName") or item.get("publisher") or content.get("publisher") or "Fuente financiera"
     url = None
     for key in ("canonicalUrl", "clickThroughUrl"):
         obj = content.get(key)
@@ -129,6 +131,45 @@ def _dedupe(raw: list[tuple[dict[str, Any], str | None, str | None]], limit: int
     return rows
 
 
+def _google_news_rss(query: str, *, macro_topic: str | None = None, limit: int = 4, days: int = 1) -> list[dict[str, Any]]:
+    """Google News RSS fallback. We keep only headline/source/time; no article-body scraping."""
+    try:
+        q = f"{query} when:{max(1, int(days))}d"
+        params = urlencode({"q": q, "hl": "en-US", "gl": "US", "ceid": "US:en"})
+        req = Request(
+            f"https://news.google.com/rss/search?{params}",
+            headers={"User-Agent": "Mozilla/5.0"},
+        )
+        with urlopen(req, timeout=10) as response:
+            root = ET.fromstring(response.read())
+        rows: list[dict[str, Any]] = []
+        for node in root.findall("./channel/item")[:limit]:
+            title = (node.findtext("title") or "").strip()
+            link = (node.findtext("link") or "").strip()
+            pub = (node.findtext("pubDate") or "").strip()
+            source_node = node.find("source")
+            source = ((source_node.text if source_node is not None else "") or "Google News").strip()
+            if not title:
+                continue
+            published_at = pub
+            if pub:
+                try:
+                    published_at = parsedate_to_datetime(pub).astimezone(timezone.utc).isoformat()
+                except Exception:
+                    pass
+            rows.append({
+                "title": title,
+                "publisher": source,
+                "link": link or None,
+                "pubDate": published_at,
+                "summary": "",
+                "macro_topic": macro_topic,
+            })
+        return rows
+    except Exception:
+        return []
+
+
 def _collect(symbol: str) -> list[dict[str, Any]]:
     raw: list[tuple[dict[str, Any], str | None, str | None]] = []
     try:
@@ -143,7 +184,11 @@ def _collect(symbol: str) -> list[dict[str, Any]]:
         raw.extend((x, None, None) for x in (getattr(yf.Search(QUERIES[symbol], news_count=8, raise_errors=False), "news", None) or []))
     except Exception:
         pass
-    return _dedupe(raw, limit=5)
+    rows = _dedupe(raw, limit=5)
+    if not rows and symbol == "EPU":
+        rss = _google_news_rss(QUERIES[symbol], limit=5, days=2)
+        rows = _dedupe([(x, None, None) for x in rss], limit=5)
+    return rows
 
 
 def _collect_components(item: dict[str, Any]) -> list[dict[str, Any]]:
@@ -170,16 +215,13 @@ def _collect_macro() -> list[dict[str, Any]]:
         for ticker in tickers:
             try:
                 news = yf.Ticker(ticker).get_news(count=5, tab="news") or []
-                topic_rows.extend((x, None, topic) for x in news[:3])
+                topic_rows.extend((x, None, topic) for x in news[:2])
             except Exception:
                 continue
         if not topic_rows:
-            try:
-                news = getattr(yf.Search(MACRO_QUERIES[topic], news_count=5, raise_errors=False), "news", None) or []
-                topic_rows.extend((x, None, topic) for x in news[:3])
-            except Exception:
-                pass
-        raw.extend(topic_rows[:3])
+            rss = _google_news_rss(MACRO_QUERIES[topic], macro_topic=topic, limit=3, days=1)
+            topic_rows.extend((x, None, topic) for x in rss)
+        raw.extend(topic_rows[:2])
     return _dedupe(raw, limit=10)
 
 
@@ -225,6 +267,9 @@ def main() -> None:
             rows = _collect(symbol)
             if not rows:
                 rows = _collect_components(by_symbol.get(symbol, {}))
+            if not rows and symbol == "EPU":
+                rss = _google_news_rss(QUERIES[symbol], limit=5, days=2)
+                rows = _dedupe([(x, None, None) for x in rss], limit=5)
             cache["attempted_by_symbol"][symbol] = now.isoformat()
             if rows:
                 existing = rows
