@@ -56,6 +56,7 @@ jobs:
       - name: Validar salida
         run: |
           python -m py_compile scripts/build_etf_market_dashboard.py scripts/enrich_cper_holdings.py scripts/enrich_etf_stats_news.py scripts/enrich_etf_news_fallback.py
+          node --check public/mercados-extra.js
           python - <<'PY'
           import json
           from pathlib import Path
