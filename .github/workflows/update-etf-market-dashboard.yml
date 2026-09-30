@@ -16,7 +16,7 @@ on:
   schedule:
     # Mercado/volumen: cada 10 minutos durante la franja que cubre la sesión regular de EE. UU.
     # Noticias: la caché solo se vuelve a consultar cada 30 minutos.
-    - cron: "3-53/10 13-21 * * 1-5"
+    - cron: "3,13,23,33,43,53 13-21 * * 1-5"
 
 permissions:
   contents: write
