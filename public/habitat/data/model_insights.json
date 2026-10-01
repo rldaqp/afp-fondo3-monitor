@@ -1,16 +1,16 @@
 {
-  "generated_for": "2026-09-30",
-  "current_signal": "BAJA",
+  "generated_for": "2026-10-01",
+  "current_signal": "NEUTRO",
   "confidence": {
-    "historical_accuracy": 0.7941176470588235,
-    "n": 34,
-    "label": "BAJA",
+    "historical_accuracy": 0.25,
+    "n": 12,
+    "label": "NEUTRO",
     "description": "Aciertos históricos de la misma clase de señal; no es garantía futura."
   },
   "performance": {
     "window_n": 90,
     "classification_accuracy": 0.7888888888888889,
-    "mae_return_pp": 0.3104094876233677,
+    "mae_return_pp": 0.3085151285634061,
     "sube_n": 44,
     "sube_accuracy": 0.9318181818181818,
     "baja_n": 34,
@@ -19,70 +19,70 @@
     "neutro_accuracy": 0.25
   },
   "uncertainty": {
-    "relative_q80": 0.0050105304319004,
+    "relative_q80": 0.005010530431900401,
     "label": "Banda empírica 80%"
   },
   "benchmarks": {
-    "zero_change_mae_pp": 0.9199599866083852,
-    "ols_mae_pp": 0.3104094876233677,
-    "ols_mae_improvement_vs_zero": 0.6625837078330399
+    "zero_change_mae_pp": 0.8947033739996615,
+    "ols_mae_pp": 0.3085151285634061,
+    "ols_mae_improvement_vs_zero": 0.655176075636971
   },
   "contributions": [
-    {
-      "feature": "ret_EEM",
-      "label": "EEM",
-      "value": -0.009050453954624116,
-      "coefficient": 0.4222808768719707,
-      "contribution_pp": -0.3821833632048066
-    },
-    {
-      "feature": "ret_EPU",
-      "label": "EPU",
-      "value": -0.009599207680660582,
-      "coefficient": 0.18462189778409602,
-      "contribution_pp": -0.17722239392272274
-    },
-    {
-      "feature": "ret_USD_PEN",
-      "label": "USD/PEN",
-      "value": -0.029238960959694582,
-      "coefficient": 0.0338819992970495,
-      "contribution_pp": -0.09906744546828296
-    },
-    {
-      "feature": "ret_NEM",
-      "label": "NEM",
-      "value": -0.01494576867993036,
-      "coefficient": 0.027394418702708256,
-      "contribution_pp": -0.040943064505183556
-    },
     {
       "feature": "intercept",
       "label": "Base",
       "value": 1.0,
-      "coefficient": 0.00028835824891985625,
-      "contribution_pp": 0.028835824891985624
+      "coefficient": 0.0002955482657170015,
+      "contribution_pp": 0.02955482657170015
     },
     {
       "feature": "ret_SPY",
       "label": "SPY",
-      "value": -0.002054445562863161,
-      "coefficient": 0.11735417582365956,
-      "contribution_pp": -0.02410977658043806
+      "value": 0.0017832832997064507,
+      "coefficient": 0.11719134907034276,
+      "contribution_pp": 0.020898537566721134
+    },
+    {
+      "feature": "ret_NEM",
+      "label": "NEM",
+      "value": -0.005808897088764753,
+      "coefficient": 0.02801381016084936,
+      "contribution_pp": -0.01627293402885663
     },
     {
       "feature": "ret_FCX",
       "label": "FCX",
-      "value": -0.011159781117534351,
-      "coefficient": 0.014357201223944589,
-      "contribution_pp": -0.01602232231196179
+      "value": -0.010285731724330338,
+      "coefficient": 0.013832089391492332,
+      "contribution_pp": -0.01422731606678458
+    },
+    {
+      "feature": "ret_EEM",
+      "label": "EEM",
+      "value": 0.00029939575972903754,
+      "coefficient": 0.42219356450492473,
+      "contribution_pp": 0.012640296299766237
     },
     {
       "feature": "ret_MCHI",
       "label": "MCHI",
-      "value": 0.0017274501962336597,
-      "coefficient": -0.07951313151663551,
-      "contribution_pp": -0.013735497464156482
+      "value": -0.0015328227335205113,
+      "coefficient": -0.08078805053638499,
+      "contribution_pp": 0.012383376045897485
+    },
+    {
+      "feature": "ret_EPU",
+      "label": "EPU",
+      "value": 0.0002253650660415385,
+      "coefficient": 0.1836647571544942,
+      "contribution_pp": 0.004139162012562572
+    },
+    {
+      "feature": "ret_USD_PEN",
+      "label": "USD/PEN",
+      "value": 0.0011294369141108263,
+      "coefficient": 0.03046797010548542,
+      "contribution_pp": 0.003441165013516036
     }
   ],
   "quality": {
@@ -90,7 +90,7 @@
     "warnings": [],
     "critical": [],
     "training_n": 90,
-    "latest_sbs_date": "2026-09-28",
+    "latest_sbs_date": "2026-09-29",
     "fx_provisional": true
   },
   "challenger_huber": {
