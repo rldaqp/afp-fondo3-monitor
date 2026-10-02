@@ -4807,18 +4807,18 @@
   ],
   "operational_history": [
     {
-      "fecha": "2026-08-18",
+      "fecha": "2026-09-30",
       "source": "ANCLA SBS DEL CICLO",
-      "challenger_vc": 69.6328126,
+      "challenger_vc": 72.5287181,
       "challenger_return": null,
       "official_vc": null,
       "official_return": null,
-      "actual_vc": 69.6328126,
+      "actual_vc": 72.5287181,
       "challenger_abs_error": 0.0,
       "official_abs_error": null,
-      "cycle_start": "2026-08-19",
-      "train_start": "2026-05-14",
-      "train_end": "2026-08-18"
+      "cycle_start": "2026-10-02",
+      "train_start": "2026-06-30",
+      "train_end": "2026-09-30"
     },
     {
       "fecha": "2026-08-19",
@@ -5236,9 +5236,9 @@
       "challenger_return": -0.0050894910163119,
       "official_vc": 70.76912784010072,
       "official_return": -0.0090349804977414,
-      "actual_vc": null,
-      "challenger_abs_error": null,
-      "official_abs_error": null
+      "actual_vc": 72.5287181,
+      "challenger_abs_error": 1.2853970076187267,
+      "official_abs_error": 1.7595902598992836
     },
     {
       "fecha": "2026-10-01",
@@ -5257,13 +5257,13 @@
     {
       "fecha": "2026-10-02",
       "source": "SOMBRA OPERATIVA 60/30",
-      "cycle_start": "2026-08-19",
-      "train_start": "2026-05-14",
-      "train_end": "2026-08-18",
-      "challenger_vc": 71.61779517342326,
-      "challenger_return": 0.0044514494363092,
-      "official_vc": 71.83697123648729,
-      "official_return": 0.0059178030735992,
+      "cycle_start": "2026-10-02",
+      "train_start": "2026-06-30",
+      "train_end": "2026-09-30",
+      "challenger_vc": 73.47582976744,
+      "challenger_return": 0.0130584366062302,
+      "official_vc": 72.30186466666952,
+      "official_return": 0.0124276067290562,
       "actual_vc": null,
       "challenger_abs_error": null,
       "official_abs_error": null
