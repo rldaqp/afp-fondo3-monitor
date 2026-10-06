@@ -1,11 +1,11 @@
 {
-  "generated_at_lima": "2026-10-05T20:44:37.020218-05:00",
+  "generated_at_lima": "2026-10-05T20:47:05.308990-05:00",
   "mode": "CIERRE DIARIO",
   "market_open": false,
-  "signal_date": "2026-10-02",
-  "vc_base": 33.8946993678883,
-  "vc_estimated": 34.25270617459098,
-  "return_estimated": 0.010562324297877042,
+  "signal_date": "2026-10-05",
+  "vc_base": 34.39191241024212,
+  "vc_estimated": 34.69083017035101,
+  "return_estimated": 0.008691513183194534,
   "signal": "SUBE",
   "assets": [
     {
@@ -80,19 +80,19 @@
       "timestamp": "2026-10-01",
       "precio_anterior": 3.453,
       "precio_actual": 3.453,
-      "retorno": 0.0024898368653005765,
-      "retorno_modelo": 0.0024898368653005765,
+      "retorno": 0.0,
+      "retorno_modelo": 0.0,
       "estado": "BCRP REZAGADO · MODELO USA 0 %",
       "usado_modelo": true
     }
   ],
   "action": "CIERRE",
   "engine": "LIVE HABITAT INDEPENDIENTE",
-  "warning": null,
+  "warning": "Cierre OLS pesado pendiente; cálculo provisional coherente con los activos del mismo día.",
   "fx_source": "YAHOO PEN=X PROVISIONAL",
   "fx_provisional": true,
   "fx_rule": "Histórico/entrenamiento: BCRP. Predicción: BCRP si existe; si está rezagado, Yahoo PEN=X provisional; 0 % solo si ambas fuentes faltan.",
   "model_snapshot_source": "PREDICCION OLS EXACTA DE HÁBITAT",
-  "model_snapshot_date": "2026-10-02",
+  "model_snapshot_date": "2026-10-05",
   "note": "Cierre diario de Hábitat alineado con el OLS exacto del mismo día."
 }
