@@ -1,5 +1,5 @@
 {
-  "generated_at_lima": "2026-10-05T20:45:59.653094-05:00",
+  "generated_at_lima": "2026-10-05T21:26:31.117472-05:00",
   "model_version": "v2-sbs-corrected-20260831",
   "history_start": "2026-01-05",
   "training": {
@@ -75,9 +75,9 @@
   },
   "latest": {
     "market_date": "2026-10-05",
-    "vc_niveles": 73.87405534261623,
-    "ret_vc_estimado": 0.0077740727026992685,
-    "vc_retornos": 74.89903387640636,
+    "vc_niveles": 73.87462936272395,
+    "ret_vc_estimado": 0.00778004305024241,
+    "vc_retornos": 74.8994757119699,
     "latest_sbs_date": "2026-10-01",
     "latest_sbs_vc": 73.1306442
   },
@@ -2955,16 +2955,16 @@
     {
       "fecha": "2026-10-02",
       "fase": "PROYECCIÓN",
-      "SPY": 769.64,
-      "EEM": 67.67,
-      "MCHI": 51.24,
-      "QQQ": 749.58,
+      "SPY": 769.6400146484375,
+      "EEM": 67.66999816894531,
+      "MCHI": 51.2400016784668,
+      "QQQ": 749.5800170898438,
       "SPBLSCUP": 444.69,
-      "source": "CIERRE REGULAR VERIFICADO · 5/5 CON FECHA PROPIA",
+      "source": "GOOGLE FINANCE · SNAPSHOT FIJO DE CIERRE · FECHA COINCIDENTE",
       "vc_sbs": null,
-      "vc_niveles": 73.16041686897546,
-      "ret_vc_estimado": 0.016280600963139606,
-      "vc_retornos": 74.32125503639755,
+      "vc_niveles": 73.16041484488635,
+      "ret_vc_estimado": 0.01628057534347865,
+      "vc_retornos": 74.32125316281524,
       "error_niveles_pct": null,
       "error_retornos_pct": null
     },
@@ -2975,15 +2975,15 @@
       "EEM": 68.73,
       "MCHI": 52.28,
       "QQQ": 756.2,
-      "SPBLSCUP": 448.72,
+      "SPBLSCUP": 448.73,
       "source": "CIERRE REGULAR VERIFICADO · 5/5 CON FECHA PROPIA",
       "vc_sbs": null,
-      "vc_niveles": 73.87405534261623,
-      "ret_vc_estimado": 0.0077740727026992685,
-      "vc_retornos": 74.89903387640636,
+      "vc_niveles": 73.87462936272395,
+      "ret_vc_estimado": 0.00778004305024241,
+      "vc_retornos": 74.8994757119699,
       "error_niveles_pct": null,
       "error_retornos_pct": null
     }
   ],
-  "data_revision": "777e2a1835821819bea0eb323126c99d9a3c7a9b5eccd6caf252b2bf8ee35fee"
+  "data_revision": "cf49fcde74d27a97e117ef0ccc3131935979dcceb22fddbd31d3d0cacea36dc1"
 }
