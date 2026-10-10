@@ -10,7 +10,7 @@
   "performance": {
     "window_n": 90,
     "classification_accuracy": 0.7777777777777778,
-    "mae_return_pp": 0.31178926359937265,
+    "mae_return_pp": 0.31178926359937253,
     "sube_n": 42,
     "sube_accuracy": 0.9285714285714286,
     "baja_n": 34,
@@ -24,16 +24,16 @@
   },
   "benchmarks": {
     "zero_change_mae_pp": 0.8918402995597433,
-    "ols_mae_pp": 0.31178926359937265,
-    "ols_mae_improvement_vs_zero": 0.6503978753221991
+    "ols_mae_pp": 0.31178926359937253,
+    "ols_mae_improvement_vs_zero": 0.6503978753221993
   },
   "contributions": [
     {
       "feature": "ret_EPU",
       "label": "EPU",
       "value": 0.02278362914087828,
-      "coefficient": 0.20324324272588862,
-      "contribution_pp": 0.4630618667656154
+      "coefficient": 0.20324324272588895,
+      "contribution_pp": 0.46306186676561606
     },
     {
       "feature": "ret_EEM",
@@ -46,43 +46,43 @@
       "feature": "ret_MCHI",
       "label": "MCHI",
       "value": 0.023169754917587326,
-      "coefficient": -0.09765778560048209,
-      "contribution_pp": -0.22627069581574588
+      "coefficient": -0.09765778560048183,
+      "contribution_pp": -0.22627069581574524
     },
     {
       "feature": "ret_SPY",
       "label": "SPY",
       "value": 0.005995393242733904,
-      "coefficient": 0.12446454142546412,
-      "contribution_pp": 0.07462138706222016
+      "coefficient": 0.12446454142546437,
+      "contribution_pp": 0.07462138706222031
     },
     {
       "feature": "ret_NEM",
       "label": "NEM",
       "value": 0.01981820186631289,
-      "coefficient": 0.026271782568645596,
-      "contribution_pp": 0.05206594903332986
+      "coefficient": 0.026271782568645374,
+      "contribution_pp": 0.052065949033329416
     },
     {
       "feature": "intercept",
       "label": "Base",
       "value": 1.0,
-      "coefficient": 0.0003002427299066367,
-      "contribution_pp": 0.03002427299066367
-    },
-    {
-      "feature": "ret_USD_PEN",
-      "label": "USD/PEN",
-      "value": -0.004645770150506268,
-      "coefficient": 0.05073603123306836,
-      "contribution_pp": -0.023570793945774268
+      "coefficient": 0.00030024272990663686,
+      "contribution_pp": 0.030024272990663684
     },
     {
       "feature": "ret_FCX",
       "label": "FCX",
       "value": 0.035844856250151436,
-      "coefficient": -0.00480261390894553,
-      "contribution_pp": -0.01721490051911304
+      "coefficient": -0.004802613908945541,
+      "contribution_pp": -0.01721490051911308
+    },
+    {
+      "feature": "ret_USD_PEN",
+      "label": "USD/PEN",
+      "value": -0.0011614252308191908,
+      "coefficient": 0.050736031233068336,
+      "contribution_pp": -0.005892610678571606
     }
   ],
   "quality": {
