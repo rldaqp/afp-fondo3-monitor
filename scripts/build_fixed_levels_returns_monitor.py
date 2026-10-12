@@ -399,8 +399,8 @@ def main() -> None:
             },
         },
         "metrics": {
-            "validation_from_2026_10_01": validation,
-            "retrospective_before_2026_08_19": retrospective,
+            "validation_from_2026_08_18": validation,
+            "retrospective_before_2026_07_07": retrospective,
         },
         "latest": {
             "market_date": pd.Timestamp(last["fecha"]).date().isoformat(),
