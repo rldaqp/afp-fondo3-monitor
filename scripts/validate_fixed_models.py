@@ -21,10 +21,11 @@ def main():
     assert base["models"]["retornos"]["coefficients"] == RETURN_COEFF
     assert len(base["rows"]) >= 100
     assert base["training"]["n"] == 30
-    close(base["training"]["levels_r2"], 0.9839967207688474, "R2 niveles", 1e-12)
-    close(base["training"]["returns_r2"], 0.9518032304214648, "R2 retornos", 1e-12)
+    assert (base["training"]["start"], base["training"]["end"]) == ("2026-08-19", "2026-09-30")
+    close(base["training"]["levels_r2"], 0.9732119078135525, "R2 niveles", 1e-12)
+    close(base["training"]["returns_r2"], 0.9297303916047586, "R2 retornos", 1e-12)
     assert base["training"]["sbs_corrections"] == {"2026-08-14": 70.8740985, "2026-08-17": 71.5395979}
-    assert base["model_version"] == "v2-sbs-corrected-20260831"
+    assert base["model_version"] == "v3-30vc-through-20260930"
     by = {r["fecha"]: r for r in base["rows"]}
     for d, value in {"2026-08-28": 454.70, "2026-08-31": 450.67, "2026-09-01": 446.70, "2026-09-02": 455.17}.items():
         close(by[d]["SPBLSCUP"], value, (d, "SPBLSCUP auditado"), 0.005)
