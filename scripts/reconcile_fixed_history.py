@@ -74,7 +74,8 @@ def main(sbs_only=False, root=ROOT):
     base_path, snap_path = (root / "public/data" / n for n in ("fixed_models_2026.json", "fixed_models_intraday.json"))
     base = json.loads(base_path.read_text(encoding="utf-8"))
     official = read_official(root)
-    synchronize_calibration(base)
+    if root == ROOT:
+        synchronize_calibration(base)
     recalculate(base, official)
     if not sbs_only:
         snap = json.loads(snap_path.read_text(encoding="utf-8"))
