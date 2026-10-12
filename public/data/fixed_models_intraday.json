@@ -1,6 +1,6 @@
 {
-  "generated_at_lima": "2026-10-12T16:49:55.923918-05:00",
-  "generated_at_ny": "2026-10-12T17:49:55.923918-04:00",
+  "generated_at_lima": "2026-10-12T17:22:42.858618-05:00",
+  "generated_at_ny": "2026-10-12T18:22:42.858618-04:00",
   "signal_date": "2026-10-12",
   "market_open": false,
   "session_open_ny": "2026-10-12T09:30:00-04:00",
@@ -12,22 +12,22 @@
   "fresh_factors": 5,
   "total_factors": 5,
   "problems": [],
-  "base_revision": "7daa399ff259ef3322a9621e60b0e7e3950243e75edfd0abcdfabe4679a52574",
+  "base_revision": "8fe602eebdd5a6a84b651241e81542608020d9404112ac8a3d96abf86c09fc1d",
   "latest_sbs_date": "2026-10-07",
   "latest_sbs_vc": 73.7833419,
   "previous_close_rule": "Cierre regular validado de la sesión anterior; sin reutilizar otra fecha.",
   "models": {
     "niveles": {
-      "vc_intraday": 71.7041467699847,
-      "equation": "VC = 16.07900257 - 0.02264564·SPY + 0.78253147·EEM - 0.33122840·MCHI + 0.01734644·QQQ + 0.05740201·SPBLSCUP"
+      "vc_intraday": 71.7895261603316,
+      "equation": "VC = 13.88935016 - 0.03515844·SPY + 0.74157875·EEM - 0.10681725·MCHI + 0.03592193·QQQ + 0.03329520·SPBLSCUP"
     },
     "retornos": {
-      "return_intraday": -0.007702558325294458,
-      "vc_intraday": 72.5943645543396,
-      "base_vc": 73.15786729412677,
+      "return_intraday": -0.010109747685696998,
+      "vc_intraday": 72.71138611978434,
+      "base_vc": 73.45398739889553,
       "base_date": "2026-10-09",
       "base_rule": "VC estimado por retornos de la sesión anterior",
-      "equation": "RVC = 0.0007122785 - 0.51299471·RSPY + 0.63173761·REEM - 0.29664485·RMCHI + 0.48131281·RQQQ + 0.26433762·RSPBLSCUP"
+      "equation": "RVC = 0.0001081555 - 0.63026640·RSPY + 0.55404242·REEM - 0.01280332·RMCHI + 0.53713071·RQQQ + 0.27871670·RSPBLSCUP"
     }
   },
   "tickers": [
@@ -43,12 +43,12 @@
       "previous_close_date": "2026-10-09",
       "previous_close_basis": "CIERRE BASE FIJA",
       "provider_previous_close": null,
-      "level_coefficient": -0.022645639344358,
-      "return_coefficient": -0.512994712486852,
-      "level_contribution": -17.62057197384496,
-      "return_contribution": 0.00030968476808264714,
-      "level_weight_abs_pct": 14.04999030914744,
-      "return_weight_abs_pct": 2.2854628332246665,
+      "level_coefficient": -0.03515844391161688,
+      "return_coefficient": -0.6302663993238228,
+      "level_contribution": -27.35678520762909,
+      "return_contribution": 0.0003804793674357524,
+      "level_weight_abs_pct": 22.10563825278566,
+      "return_weight_abs_pct": 3.4051105986960333,
       "source": "YAHOO SPY · CIERRE REGULAR CONFIRMADO + CIERRE BASE FIJA"
     },
     {
@@ -63,12 +63,12 @@
       "previous_close_date": "2026-10-09",
       "previous_close_basis": "CIERRE BASE FIJA",
       "provider_previous_close": null,
-      "level_coefficient": 0.782531468403534,
-      "return_coefficient": 0.631737612710381,
-      "level_contribution": 51.76445663489378,
-      "return_contribution": -0.006147176009165364,
-      "level_weight_abs_pct": 41.27505708430415,
-      "return_weight_abs_pct": 45.36594545873307,
+      "level_coefficient": 0.7415787466367807,
+      "return_coefficient": 0.5540424204898641,
+      "level_contribution": 49.05543409002305,
+      "return_contribution": -0.005391156402233379,
+      "level_weight_abs_pct": 39.639221936977,
+      "return_weight_abs_pct": 48.24830299785622,
       "source": "YAHOO EEM · CIERRE REGULAR CONFIRMADO + CIERRE BASE FIJA"
     },
     {
@@ -83,12 +83,12 @@
       "previous_close_date": "2026-10-09",
       "previous_close_basis": "CIERRE BASE FIJA",
       "provider_previous_close": null,
-      "level_coefficient": -0.331228398975249,
-      "return_coefficient": -0.296644846397524,
-      "level_contribution": -17.273561006559238,
-      "return_contribution": 0.002257996459746286,
-      "level_weight_abs_pct": 13.773296639113958,
-      "return_weight_abs_pct": 16.66393545363454,
+      "level_coefficient": -0.10681724934315551,
+      "return_coefficient": -0.012803321943839846,
+      "level_contribution": -5.57051955324556,
+      "return_contribution": 9.745611957620585e-05,
+      "level_weight_abs_pct": 4.5012558745307185,
+      "return_weight_abs_pct": 0.8721862315773599,
       "source": "YAHOO MCHI · CIERRE REGULAR CONFIRMADO + CIERRE BASE FIJA"
     },
     {
@@ -103,12 +103,12 @@
       "previous_close_date": "2026-10-09",
       "previous_close_basis": "CIERRE BASE FIJA",
       "provider_previous_close": null,
-      "level_coefficient": 0.017346437590436,
-      "return_coefficient": 0.481312806588779,
-      "level_contribution": 12.941136299968873,
-      "return_contribution": -0.0033506932443154525,
-      "level_weight_abs_pct": 10.318781925683625,
-      "return_weight_abs_pct": 24.727999774842804,
+      "level_coefficient": 0.03592193097315369,
+      "return_coefficient": 0.5371307116230812,
+      "level_contribution": 26.799197383211574,
+      "return_contribution": -0.0037392735495764143,
+      "level_weight_abs_pct": 21.655079656547745,
+      "return_weight_abs_pct": 33.464731822117564,
       "source": "YAHOO QQQ · CIERRE REGULAR CONFIRMADO + CIERRE BASE FIJA"
     },
     {
@@ -123,12 +123,12 @@
       "previous_close_date": "2026-10-09",
       "previous_close_basis": "CIERRE BASE FIJA",
       "provider_previous_close": null,
-      "level_coefficient": 0.057402010773155,
-      "return_coefficient": 0.264337624798652,
-      "level_contribution": 25.813684244687803,
-      "return_contribution": -0.001484648786017575,
-      "level_weight_abs_pct": 20.582874041750827,
-      "return_weight_abs_pct": 10.956656479564899,
+      "level_coefficient": 0.03329519521057234,
+      "return_coefficient": 0.27871670470934645,
+      "level_contribution": 14.97284928619438,
+      "return_contribution": -0.0015654086988363535,
+      "level_weight_abs_pct": 12.09880427915887,
+      "return_weight_abs_pct": 14.009668349752818,
       "source": "GOOGLE FINANCE SPBLSCUP · CIERRE REGULAR CONFIRMADO + CIERRE BASE FIJA"
     }
   ],
