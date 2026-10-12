@@ -1,5 +1,5 @@
 {
-  "generated_at_lima": "2026-10-09T21:11:24.811506-05:00",
+  "generated_at_lima": "2026-10-12T16:40:12.145607-05:00",
   "mode": "CIERRE DIARIO",
   "market_open": false,
   "signal_date": "2026-10-09",
@@ -94,10 +94,10 @@
     {
       "serie": ".INX",
       "ticker": ".INX:INDEXSP",
-      "timestamp": "2026-10-09T15:55:00-04:00",
+      "timestamp": "2026-10-12T15:55:00-04:00",
       "precio_anterior": null,
-      "precio_actual": 7811.08984375,
-      "retorno": 0.005888971184063951,
+      "precio_actual": 7807.7900390625,
+      "retorno": -0.000480058987248011,
       "retorno_modelo": null,
       "estado": "YAHOO ^GSPC · RESPALDO EQUIVALENTE · NUEVO 60/30 EXPERIMENTAL",
       "usado_modelo": false
@@ -105,10 +105,10 @@
     {
       "serie": "CPER",
       "ticker": "CPER:NYSEARCA",
-      "timestamp": "2026-10-09T15:55:00-04:00",
+      "timestamp": "2026-10-12T15:55:00-04:00",
       "precio_anterior": null,
-      "precio_actual": 40.29499816894531,
-      "retorno": 0.021160646321485288,
+      "precio_actual": 40.63999938964844,
+      "retorno": 0.008186504716322762,
       "retorno_modelo": null,
       "estado": "YAHOO CPER · RESPALDO EQUIVALENTE · NUEVO 60/30 EXPERIMENTAL",
       "usado_modelo": false
@@ -116,10 +116,10 @@
     {
       "serie": "EEM",
       "ticker": "EEM:NYSEARCA",
-      "timestamp": "2026-10-09T15:55:00-04:00",
+      "timestamp": "2026-10-12T15:55:00-04:00",
       "precio_anterior": null,
-      "precio_actual": 66.80999755859375,
-      "retorno": 0.010741287456317083,
+      "precio_actual": 66.16500091552734,
+      "retorno": -0.009506019569167634,
       "retorno_modelo": null,
       "estado": "YAHOO EEM · RESPALDO EQUIVALENTE · NUEVO 60/30 EXPERIMENTAL",
       "usado_modelo": false
@@ -127,10 +127,10 @@
     {
       "serie": "NDX",
       "ticker": "NDX:INDEXNASDAQ",
-      "timestamp": "2026-10-09T15:55:00-04:00",
+      "timestamp": "2026-10-12T15:55:00-04:00",
       "precio_anterior": null,
-      "precio_actual": 30881.857421875,
-      "retorno": 0.0050786902679731405,
+      "precio_actual": 30669.271484375,
+      "retorno": -0.006925423849081347,
       "retorno_modelo": null,
       "estado": "YAHOO ^NDX · RESPALDO EQUIVALENTE · NUEVO 60/30 EXPERIMENTAL",
       "usado_modelo": false
