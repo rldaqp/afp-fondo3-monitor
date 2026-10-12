@@ -19,9 +19,9 @@ OUT_JSON = ROOT / "public" / "data" / "fixed_models_2026.json"
 OUT_CSV = ROOT / "public" / "data" / "fixed_models_2026.csv"
 
 LIMA = ZoneInfo("America/Lima")
-TRAIN_START = pd.Timestamp("2026-07-07")
-TRAIN_END = pd.Timestamp("2026-08-17")
-VALIDATION_START = pd.Timestamp("2026-08-18")
+TRAIN_START = pd.Timestamp("2026-08-19")
+TRAIN_END = pd.Timestamp("2026-09-30")
+VALIDATION_START = pd.Timestamp("2026-10-01")
 HISTORY_START = pd.Timestamp("2026-01-05")
 
 # Cierres SPBLSCUP auditados para las ruedas donde se detectó un desplazamiento
@@ -34,33 +34,30 @@ AUDITED_SPBLSCUP = {
     "2026-09-02": 455.17,
 }
 
-# Modelo recalibrado sobre la misma muestra original de 30 ruedas, corrigiendo
-# únicamente los VC SBS que estaban mal transcritos en el Excel de calibración:
-# 2026-08-14 = 70.8740985 y 2026-08-17 = 71.5395979.
-# Los factores de la calibración conservan la precisión/redondeo del Excel
-# original para mantener reproducibilidad con la hoja RLD del usuario.
+# Calibración OLS fija: 30 sesiones con VC SBS (19/08–30/09/2026).
+# Retornos usa el VC y los precios del 18/08 como base de la primera observación.
 LEVEL_COEFF = {
-    "intercept": 16.079002570838444,
-    "SPY": -0.022645639344358,
-    "EEM": 0.782531468403534,
-    "MCHI": -0.331228398975249,
-    "QQQ": 0.017346437590436,
-    "SPBLSCUP": 0.057402010773155,
+    "intercept": 13.889350161777259,
+    "SPY": -0.03515844391161688,
+    "EEM": 0.7415787466367807,
+    "MCHI": -0.10681724934315551,
+    "QQQ": 0.03592193097315369,
+    "SPBLSCUP": 0.03329519521057234,
 }
 RETURN_COEFF = {
-    "intercept": 0.000712278486375,
-    "SPY": -0.512994712486852,
-    "EEM": 0.631737612710381,
-    "MCHI": -0.296644846397524,
-    "QQQ": 0.481312806588779,
-    "SPBLSCUP": 0.264337624798652,
+    "intercept": 0.00010815547793719166,
+    "SPY": -0.6302663993238228,
+    "EEM": 0.5540424204898641,
+    "MCHI": -0.012803321943839846,
+    "QQQ": 0.5371307116230812,
+    "SPBLSCUP": 0.27871670470934645,
 }
-TRAIN_R2_LEVEL = 0.9839967207688474
-TRAIN_R2_RETURN = 0.9518032304214648
-TRAIN_ADJ_R2_LEVEL = 0.9806627042623572
-TRAIN_ADJ_R2_RETURN = 0.94176223675927
-TRAIN_STDERR_LEVEL = 0.190351025609838
-TRAIN_STDERR_RETURN = 0.003847219671018321
+TRAIN_R2_LEVEL = 0.9732119078135525
+TRAIN_R2_RETURN = 0.9297303916047586
+TRAIN_ADJ_R2_LEVEL = 0.9676310552747093
+TRAIN_ADJ_R2_RETURN = 0.9150908898557499
+TRAIN_STDERR_LEVEL = 0.1823216306775916
+TRAIN_STDERR_RETURN = 0.0031800287920045766
 TRAIN_SBS_CORRECTIONS = {
     "2026-08-14": 70.8740985,
     "2026-08-17": 71.5395979,
@@ -371,7 +368,7 @@ def main() -> None:
     rows = [{k: clean(v) for k, v in r.items()} for r in out.to_dict(orient="records")]
     payload = {
         "generated_at_lima": datetime.now(LIMA).isoformat(),
-        "model_version": "v2-sbs-corrected-20260831",
+        "model_version": "v3-30vc-through-20260930",
         "history_start": HISTORY_START.date().isoformat(),
         "training": {
             "start": TRAIN_START.date().isoformat(),
@@ -386,24 +383,24 @@ def main() -> None:
             "sbs_corrections": TRAIN_SBS_CORRECTIONS,
         },
         "methodology": {
-            "calibration_note": "Misma muestra y mismos factores del Excel RLD original; se corrigieron los VC SBS de 14/08/2026 y 17/08/2026 antes de recalibrar ambos modelos.",
-            "before_training": "RETROSPECTIVO: aplica coeficientes calibrados en julio-agosto a fechas anteriores; no es validación fuera de muestra.",
-            "after_training": "VALIDACIÓN/PROYECCIÓN: coeficientes v2 congelados desde 18/08/2026 para evaluación comparable.",
+            "calibration_note": "OLS con las 30 últimas sesiones con VC SBS oficial antes del 01/10/2026: 19/08–30/09/2026. Mismos cinco factores.",
+            "before_training": "RETROSPECTIVO: coeficientes calibrados en agosto-septiembre; fechas anteriores no son validación fuera de muestra.",
+            "after_training": "VALIDACIÓN/PROYECCIÓN: coeficientes v3 congelados desde 01/10/2026.",
             "returns_base": "Usa VC SBS real del día anterior cuando existe; si no, encadena desde el VC estimado anterior.",
         },
         "models": {
             "niveles": {
                 "coefficients": LEVEL_COEFF,
-                "equation": "VC = 16.07900257 - 0.02264564·SPY + 0.78253147·EEM - 0.33122840·MCHI + 0.01734644·QQQ + 0.05740201·SPBLSCUP",
+                "equation": "VC = 13.88935016 - 0.03515844·SPY + 0.74157875·EEM - 0.10681725·MCHI + 0.03592193·QQQ + 0.03329520·SPBLSCUP",
             },
             "retornos": {
                 "coefficients": RETURN_COEFF,
-                "equation": "RVC = 0.0007122785 - 0.51299471·RSPY + 0.63173761·REEM - 0.29664485·RMCHI + 0.48131281·RQQQ + 0.26433762·RSPBLSCUP",
+                "equation": "RVC = 0.0001081555 - 0.63026640·RSPY + 0.55404242·REEM - 0.01280332·RMCHI + 0.53713071·RQQQ + 0.27871670·RSPBLSCUP",
             },
         },
         "metrics": {
-            "validation_from_2026_08_18": validation,
-            "retrospective_before_2026_07_07": retrospective,
+            "validation_from_2026_10_01": validation,
+            "retrospective_before_2026_08_19": retrospective,
         },
         "latest": {
             "market_date": pd.Timestamp(last["fecha"]).date().isoformat(),
