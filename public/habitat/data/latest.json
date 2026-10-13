@@ -1,7 +1,7 @@
 {
   "afp": "Hábitat",
   "fund": 3,
-  "generated_at_lima": "2026-10-13T07:45:09.137884-05:00",
+  "generated_at_lima": "2026-10-13T14:53:26.234102-05:00",
   "model": "OLS rolling 90",
   "window": 90,
   "threshold": 0.001,
@@ -12,19 +12,19 @@
   "latest_sbs_vc": 34.3837402,
   "latest_market_date": "2026-10-12",
   "latest_estimate_date": "2026-10-12",
-  "latest_estimated_vc": 34.30153749269344,
-  "latest_return_estimated": -0.0033152792797637477,
+  "latest_estimated_vc": 34.29907331658281,
+  "latest_return_estimated": -0.0033868797635365107,
   "signal": "BAJA",
   "estimate_type": "CIERRE DIARIO · OLS ROLLING 90 · MISMA METODOLOGÍA PROFUTURO",
   "coefficients": {
-    "intercept": 0.00034050042031026227,
-    "ret_SPY": 0.1300076117214118,
+    "intercept": 0.0003405004203102623,
+    "ret_SPY": 0.13000761172141223,
     "ret_NEM": 0.025378424201675798,
-    "ret_FCX": 0.0005357607474286407,
-    "ret_EPU": 0.19383305690381417,
-    "ret_MCHI": -0.09890200125808901,
-    "ret_EEM": 0.43382352130941837,
-    "ret_USD_PEN": 0.04934705341618426
+    "ret_FCX": 0.0005357607474286846,
+    "ret_EPU": 0.19383305690381397,
+    "ret_MCHI": -0.09890200125808882,
+    "ret_EEM": 0.43382352130941804,
+    "ret_USD_PEN": 0.049347053416184436
   },
   "parity_rule": "Misma metodología de Profuturo: LinearRegression OLS, ventana móvil de 90 observaciones completas, siete factores, Yahoo Close, BCRP para USD/PEN histórico, PEN=X solo como respaldo pendiente y VC encadenado.",
   "parity_verified": true,
@@ -39,11 +39,11 @@
     "EEM",
     "USD_PEN"
   ],
-  "latest_fx_source": "SIN DATO · 0 % PROVISIONAL",
-  "latest_fx_provisional": true,
+  "latest_fx_source": "BCRP",
+  "latest_fx_provisional": false,
   "sources": {
     "sbs": "SBS oficial · Hábitat Fondo 3",
-    "market": "Yahoo Finance actualizado; respaldo guardado solo donde Yahoo no trae valor; BCRP exclusivo para USD/PEN hasta 2026-10-09; reintento individual Yahoo habilitado para huecos recientes",
+    "market": "Yahoo Finance actualizado; respaldo guardado solo donde Yahoo no trae valor; BCRP exclusivo para USD/PEN hasta 2026-10-12; reintento individual Yahoo habilitado para huecos recientes",
     "fx": "BCRP PD04646PD para histórico y entrenamiento; Yahoo PEN=X solo como respaldo provisional posterior al último VC SBS.",
     "EEM": "Yahoo Finance · Close · auto_adjust=False"
   },
