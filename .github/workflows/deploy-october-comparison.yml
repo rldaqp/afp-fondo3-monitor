@@ -46,6 +46,8 @@ jobs:
           assert "aria-pressed" in html, "Falta el estado accesible de los controles"
           assert 'id="octTable"' in html, "Falta el cuadro diario comparativo"
           assert "renderOctoberComparison();" in html, "Falta el renderizado del cuadro diario"
+          assert 'id="vcPointPanel"' in html, "Falta panel de valores por fecha"
+          assert "updateVcPointPanel" in html, "Falta interacción de panel por fecha"
           print("Comparativo de octubre validado; modelos originales sin modificar")
           PY
 
@@ -78,6 +80,8 @@ jobs:
                   assert "visible:vcVisible[i]" in html, "La versión pública aún no activa las líneas táctiles"
                   assert 'id="octTable"' in html, "La versión pública aún no incluye el cuadro diario"
                   assert "renderOctoberComparison();" in html, "La versión pública aún no renderiza el cuadro"
+                  assert 'id="vcPointPanel"' in html, "La versión pública aún no muestra el panel por fecha"
+                  assert "updateVcPointPanel" in html, "La versión pública aún no activa el panel por fecha"
                   print("PUBLICACIÓN VERIFICADA: leyenda interactiva y cuadro diario visibles en HTML público")
                   break
               except Exception as exc:
