@@ -1,0 +1,62 @@
+name: Publicar comparativo octubre en visor existente
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - migracion-github-actions
+    paths:
+      - "public/index.html"
+      - "public/data/experimento_defensivo_octubre_2026.json"
+      - ".github/workflows/deploy-october-comparison.yml"
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: profuturo-fixed-publish
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout de la rama del visor
+        uses: actions/checkout@v4
+        with:
+          ref: migracion-github-actions
+
+      - name: Validar comparativo de octubre sin alterar modelos
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          base = json.loads(Path("public/data/fixed_models_2026.json").read_text())
+          exp = json.loads(Path("public/data/experimento_defensivo_octubre_2026.json").read_text())
+          html = Path("public/index.html").read_text()
+          assert base["model_version"] == exp["fuente_version"], "Versiones de modelo no coinciden"
+          assert exp["observaciones"], "Sin observaciones comparativas"
+          assert all(o["fecha"].startswith("2026-10-") for o in exp["observaciones"]), "El comparativo incluye fechas fuera de octubre"
+          assert "Niveles · comparativo 20%" in html and "Retornos · comparativo 20%" in html, "Faltan curvas comparativas"
+          assert "data/experimento_defensivo_octubre_2026.json" in html, "El visor no carga el comparativo"
+          print("Comparativo de octubre validado; modelos originales sin modificar")
+          PY
+
+      - name: Configurar GitHub Pages
+        uses: actions/configure-pages@v5
+        with:
+          enablement: true
+
+      - name: Preparar sitio existente
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./public
+
+      - name: Publicar el visor actualizado
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+      - name: Mostrar URL
+        run: echo "${{ steps.deployment.outputs.page_url }}"
