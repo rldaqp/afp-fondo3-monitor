@@ -44,6 +44,8 @@ jobs:
           assert html.count('data-vc-series="') == 5, "La leyenda debe tener cinco controles táctiles"
           assert "visible:vcVisible[i]" in html, "Los controles no están conectados a las curvas"
           assert "aria-pressed" in html, "Falta el estado accesible de los controles"
+          assert 'id="octTable"' in html, "Falta el cuadro diario comparativo"
+          assert "renderOctoberComparison();" in html, "Falta el renderizado del cuadro diario"
           print("Comparativo de octubre validado; modelos originales sin modificar")
           PY
 
@@ -74,7 +76,9 @@ jobs:
                       html = response.read().decode("utf-8")
                   assert html.count('data-vc-series="') == 5, "GitHub Pages aún sirve la versión antigua"
                   assert "visible:vcVisible[i]" in html, "La versión pública aún no activa las líneas táctiles"
-                  print("PUBLICACIÓN VERIFICADA: leyenda interactiva visible en la web")
+                  assert 'id="octTable"' in html, "La versión pública aún no incluye el cuadro diario"
+                  assert "renderOctoberComparison();" in html, "La versión pública aún no renderiza el cuadro"
+                  print("PUBLICACIÓN VERIFICADA: leyenda interactiva y cuadro diario visibles en HTML público")
                   break
               except Exception as exc:
                   if attempt == 11:
