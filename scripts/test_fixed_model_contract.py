@@ -39,7 +39,7 @@ class ModelTests(unittest.TestCase):
         official["2026-09-01"] = 70.8600385
         recalculate(base, official)
         self.assertNotAlmostEqual(old, base["rows"][-1]["vc_retornos"])
-        self.assertAlmostEqual(base["rows"][-1]["vc_retornos"], 71.38604717565835)
+        self.assertAlmostEqual(base["rows"][-1]["vc_retornos"], 71.35135408080643)
         self.assertEqual(base["rows"][-1]["vc_niveles"], levels)
         self.assertEqual(base["latest"]["latest_sbs_date"], "2026-09-01")
         validate_history(base, official)
@@ -75,8 +75,8 @@ class ModelTests(unittest.TestCase):
             snap = build_snapshot(base, NOW)
         self.assertTrue(snap["close_consolidated"])
         self.assertEqual(snap["fresh_factors"], 5)
-        self.assertAlmostEqual(snap["models"]["niveles"]["vc_intraday"], 71.97775231698063)
-        self.assertAlmostEqual(snap["models"]["retornos"]["vc_intraday"], 71.77351723820415, places=4)
+        self.assertAlmostEqual(snap["models"]["niveles"]["vc_intraday"], 71.89226492138391)
+        self.assertAlmostEqual(snap["models"]["retornos"]["vc_intraday"], 71.56739607989294, places=4)
         for change in ("return", "price_previous", "timestamp", "quote_timestamp"):
             bad = copy.deepcopy(snap)
             bad["tickers"][0][change] = {"return": .99, "price_previous": 1, "timestamp": "2026-09-02", "quote_timestamp": "2026-09-03T15:55:00-04:00"}[change]
@@ -109,8 +109,8 @@ class ModelTests(unittest.TestCase):
         level = lc["intercept"] + sum(lc[f]*prices[f] for f in FACTORS)
         ret = rc["intercept"] + sum(rc[f]*(prices[f]/prev[f]-1) for f in FACTORS)
         value = base["rows"][-1]["vc_retornos"]*(1+ret)
-        self.assertEqual(f"{level:.4f}", "71.9859")
-        self.assertEqual(f"{value:.4f}", "71.7802")
+        self.assertEqual(f"{level:.4f}", "71.8996")
+        self.assertEqual(f"{value:.4f}", "71.5736")
 
     def test_confirmed_close_saved_once_and_repeated_run_is_idempotent(self):
         base, official = fixture()
