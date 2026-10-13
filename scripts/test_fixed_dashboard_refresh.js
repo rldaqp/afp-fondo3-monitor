@@ -3,7 +3,7 @@ const fs = require('fs');
 const vm = require('vm');
 
 function element() {
-  return {textContent: '', innerHTML: '', style: {}, className: '', classList: {toggle() {}}, appendChild() {}};
+  return {textContent: '', innerHTML: '', style: {}, className: '', classList: {toggle() {}}, appendChild() {}, setAttribute() {}, addEventListener() {}, dataset: {}};
 }
 const nodes = new Map();
 const node = id => {if (!nodes.has(id)) nodes.set(id, element()); return nodes.get(id);};
@@ -16,7 +16,7 @@ live.base_revision = 'initial';
 const script = [...fs.readFileSync('public/index.html', 'utf8').matchAll(/<script>([\s\S]*?)<\/script>/g)]
   .map(m => m[1]).find(s => s.includes('const BASE_URL='));
 vm.runInNewContext(script, {
-  document: {getElementById: node, querySelector: node, createElement: element},
+  document: {getElementById: node, querySelector: node, querySelectorAll: () => [], createElement: element},
   Plotly: {react: (id, traces) => plots.set(id, traces)},
   setInterval: fn => timers.push(fn),
   fetch: async url => ({ok: true, json: async () => structuredClone(String(url).startsWith('data/fixed_models_intraday.json') ? live : base)}),
