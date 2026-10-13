@@ -41,6 +41,9 @@ jobs:
           assert all(o["fecha"].startswith("2026-10-") for o in exp["observaciones"]), "El comparativo incluye fechas fuera de octubre"
           assert "Niveles · comparativo 20%" in html and "Retornos · comparativo 20%" in html, "Faltan curvas comparativas"
           assert "data/experimento_defensivo_octubre_2026.json" in html, "El visor no carga el comparativo"
+          assert html.count('data-vc-series="') == 5, "La leyenda debe tener cinco controles táctiles"
+          assert "visible:vcVisible[i]" in html, "Los controles no están conectados a las curvas"
+          assert "aria-pressed" in html, "Falta el estado accesible de los controles"
           print("Comparativo de octubre validado; modelos originales sin modificar")
           PY
 
@@ -57,6 +60,27 @@ jobs:
       - name: Publicar el visor actualizado
         id: deployment
         uses: actions/deploy-pages@v4
+
+      - name: Verificar publicación desde GitHub Pages
+        run: |
+          python - <<'PY'
+          import time
+          import urllib.request
+          url = "https://rldaqp.github.io/afp-fondo3-monitor/?revision=interactive-legend"
+          for attempt in range(12):
+              try:
+                  req = urllib.request.Request(url, headers={"Cache-Control": "no-cache", "User-Agent": "Mozilla/5.0"})
+                  with urllib.request.urlopen(req, timeout=15) as response:
+                      html = response.read().decode("utf-8")
+                  assert html.count('data-vc-series="') == 5, "GitHub Pages aún sirve la versión antigua"
+                  assert "visible:vcVisible[i]" in html, "La versión pública aún no activa las líneas táctiles"
+                  print("PUBLICACIÓN VERIFICADA: leyenda interactiva visible en la web")
+                  break
+              except Exception as exc:
+                  if attempt == 11:
+                      raise SystemExit(f"No se pudo verificar la publicación: {exc}")
+                  time.sleep(10)
+          PY
 
       - name: Mostrar URL
         run: echo "${{ steps.deployment.outputs.page_url }}"
