@@ -3,7 +3,7 @@ const fs = require('fs');
 const vm = require('vm');
 
 function element() {
-  return {textContent: '', innerHTML: '', style: {}, className: '', classList: {toggle() {}}, appendChild() {}, setAttribute() {}, addEventListener() {}, dataset: {}};
+  return {textContent: '', innerHTML: '', style: {}, className: '', classList: {toggle() {}}, appendChild() {}, setAttribute() {}, addEventListener() {}, on() {}, dataset: {}};
 }
 const nodes = new Map();
 const node = id => {if (!nodes.has(id)) nodes.set(id, element()); return nodes.get(id);};
