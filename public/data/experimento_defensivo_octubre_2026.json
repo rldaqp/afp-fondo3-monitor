@@ -1,9 +1,9 @@
 {
-  "descripcion": "Experimento externo octubre 2026: 20% amortiguación de cambios diarios, anclaje al último VC SBS oficial conocido; no es modelo de bonos reales ni sustituye al visor",
+  "descripcion": "Experimento octubre 2026: trayectorias independientes con amortiguacion del 20% de las variaciones diarias; base comun VC SBS 2026-09-30, sin reanclaje diario al SBS.",
   "fuente_version": "v3-30vc-through-20260930",
   "fuente_generado": "2026-10-12T17:22:44.751814-05:00",
-  "formula_niveles": "SBS_prev + 0.8 * (niveles_hoy - niveles_ayer)",
-  "formula_retornos": "SBS_prev * (1 + 0.8 * retorno_estimado_hoy)",
+  "formula_niveles": "N20_t = N20_(t-1) + 0.8 * (niveles_t - niveles_(t-1))",
+  "formula_retornos": "R20_t = R20_(t-1) * (1 + 0.8 * retorno_estimado_t)",
   "observaciones": [
     {
       "fecha": "2026-10-01",
@@ -23,11 +23,11 @@
       "vc_sbs_origen": "monitor",
       "vc_sbs_anterior": 73.1306442,
       "vc_niveles_visor": 73.27172325697754,
-      "vc_niveles_defensivo": 73.83477623391146,
+      "vc_niveles_defensivo": 73.17010189959412,
       "vc_retornos_visor": 73.84097844082733,
-      "vc_retornos_defensivo": 73.69891159266186,
-      "error_abs_niveles_defensivo": 0.2735518339114549,
-      "error_abs_retornos_defensivo": 0.1376871926618577
+      "vc_retornos_defensivo": 72.9914970507574,
+      "error_abs_niveles_defensivo": 0.3911225004058849,
+      "error_abs_retornos_defensivo": 0.5697273492425978
     },
     {
       "fecha": "2026-10-05",
@@ -35,11 +35,11 @@
       "vc_sbs_origen": "monitor",
       "vc_sbs_anterior": 73.5612244,
       "vc_niveles_visor": 74.13522232482602,
-      "vc_niveles_defensivo": 74.25202365427879,
+      "vc_niveles_defensivo": 73.8609011538729,
       "vc_retornos_visor": 74.40921161640506,
-      "vc_retornos_defensivo": 74.23961417312405,
-      "error_abs_niveles_defensivo": 0.18946514572121487,
-      "error_abs_retornos_defensivo": 0.2018746268759486
+      "vc_retornos_defensivo": 73.6646327350548,
+      "error_abs_niveles_defensivo": 0.5805876461270998,
+      "error_abs_retornos_defensivo": 0.776856064945207
     },
     {
       "fecha": "2026-10-06",
@@ -47,11 +47,11 @@
       "vc_sbs_origen": "monitor",
       "vc_sbs_anterior": 74.4414888,
       "vc_niveles_visor": 73.81063891912251,
-      "vc_niveles_defensivo": 74.1818220754372,
+      "vc_niveles_defensivo": 73.6012344293101,
       "vc_retornos_visor": 74.14906391815786,
-      "vc_retornos_defensivo": 74.2075488945263,
-      "error_abs_niveles_defensivo": 0.13661362456279846,
-      "error_abs_retornos_defensivo": 0.11088680547369734
+      "vc_retornos_defensivo": 73.43313417831456,
+      "error_abs_niveles_defensivo": 0.7172012706898983,
+      "error_abs_retornos_defensivo": 0.8853015216854345
     },
     {
       "fecha": "2026-10-07",
@@ -59,11 +59,11 @@
       "vc_sbs_origen": "monitor",
       "vc_sbs_anterior": 74.3184357,
       "vc_niveles_visor": 72.9701943675463,
-      "vc_niveles_defensivo": 73.64608005873903,
+      "vc_niveles_defensivo": 72.92887878804913,
       "vc_retornos_visor": 73.48516055941232,
-      "vc_retornos_defensivo": 73.65181558752987,
-      "error_abs_niveles_defensivo": 0.1372618412609654,
-      "error_abs_retornos_defensivo": 0.13152631247012891
+      "vc_retornos_defensivo": 72.7744550268509,
+      "error_abs_niveles_defensivo": 0.8544631119508637,
+      "error_abs_retornos_defensivo": 1.0088868731490948
     },
     {
       "fecha": "2026-10-08",
@@ -71,11 +71,11 @@
       "vc_sbs_origen": "proporcionado_por_usuario",
       "vc_sbs_anterior": 73.7833419,
       "vc_niveles_visor": 71.75808451381872,
-      "vc_niveles_defensivo": 72.81365401701792,
+      "vc_niveles_defensivo": 71.95919090506706,
       "vc_retornos_visor": 72.62028322562786,
-      "vc_retornos_defensivo": 72.8528949605023,
-      "error_abs_niveles_defensivo": 0.026345982982078908,
-      "error_abs_retornos_defensivo": 0.012894960502293884
+      "vc_retornos_defensivo": 71.85673068407013,
+      "error_abs_niveles_defensivo": 0.8808090949329426,
+      "error_abs_retornos_defensivo": 0.9832693159298742
     },
     {
       "fecha": "2026-10-09",
@@ -83,11 +83,11 @@
       "vc_sbs_origen": "proporcionado_por_usuario",
       "vc_sbs_anterior": 72.84,
       "vc_niveles_visor": 72.48474526080014,
-      "vc_niveles_defensivo": 73.42132859758514,
+      "vc_niveles_defensivo": 72.5405195026522,
       "vc_retornos_visor": 73.45398739889553,
-      "vc_retornos_defensivo": 73.5089812739192,
-      "error_abs_niveles_defensivo": 0.12132859758514769,
-      "error_abs_retornos_defensivo": 0.20898127391920696
+      "vc_retornos_defensivo": 72.51668135997208,
+      "error_abs_niveles_defensivo": 0.7594804973477949,
+      "error_abs_retornos_defensivo": 0.7833186400279146
     },
     {
       "fecha": "2026-10-12",
@@ -95,11 +95,15 @@
       "vc_sbs_origen": "pendiente",
       "vc_sbs_anterior": 73.3,
       "vc_niveles_visor": 71.7895261603316,
-      "vc_niveles_defensivo": 72.74382471962517,
+      "vc_niveles_defensivo": 71.98434505238089,
       "vc_retornos_visor": 72.71138611978434,
-      "vc_retornos_defensivo": 72.70716439571072,
+      "vc_retornos_defensivo": 71.93018202654669,
       "error_abs_niveles_defensivo": null,
       "error_abs_retornos_defensivo": null
     }
-  ]
+  ],
+  "ancla_inicial": {
+    "fecha": "2026-09-30",
+    "vc_sbs": 72.5287181
+  }
 }
