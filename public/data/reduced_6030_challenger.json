@@ -1,33 +1,33 @@
 {
-  "generated_at_lima": "2026-10-13T18:28:16.087833-05:00",
-  "signal_date": "2026-10-13",
-  "mode": "INTRADIA PROVISIONAL - ULTIMO CORTE",
-  "market_open": false,
+  "generated_at_lima": "2026-10-14T12:54:06.039913-05:00",
+  "signal_date": "2026-10-14",
+  "mode": "INTRADÍA PROVISIONAL",
+  "market_open": true,
   "role": "UNICO CHALLENGER EN SOMBRA; no reemplaza el OLS rolling 90 oficial.",
   "official": {
     "model": "OLS rolling 90 oficial · SPY EEM EPU MCHI NEM FCX USD/PEN",
-    "return_estimated": -0.00845832172811582,
+    "return_estimated": -0.019729915144012435,
     "signal": "BAJA",
-    "vc_estimated": 70.81030955427289
+    "vc_estimated": 70.00535597900756
   },
   "challenger": {
     "model": "OLS 60/30 · sin NEM ni FCX + QQQ",
-    "return_estimated": -0.007390932793667144,
+    "return_estimated": -0.017287266878548837,
     "signal": "BAJA",
-    "vc_estimated": 71.70686362268171,
+    "vc_estimated": 70.46724793421271,
     "blind_chain": true,
     "reanchored_with_latest_sbs": false
   },
   "comparison": {
     "same_signal": true,
-    "vc_difference": 0.8965540684088182,
-    "return_difference_pp": 0.10673889344486763
+    "vc_difference": 0.4618919552051466,
+    "return_difference_pp": 0.24426482654635978
   },
   "cycle": {
     "train_window": 60,
     "freeze_horizon": 30,
     "cycle_start": "2026-10-02",
-    "cycle_day": 8,
+    "cycle_day": 9,
     "anchor_date": "2026-09-30",
     "anchor_vc": 72.5287181,
     "train_start": "2026-06-30",
@@ -44,8 +44,8 @@
     "rule": "Coeficientes congelados 30 sesiones. El VC se encadena desde el ancla del ciclo y no se corrige con SBS dentro del bloque."
   },
   "qqq": {
-    "return": -0.003310775261207932,
-    "source": "CIERRE DIARIO YAHOO"
+    "return": -0.021094177285387206,
+    "source": "INTRADIA YAHOO"
   },
   "blind_backtest": {
     "design": "Bloques no superpuestos: entrenar 60 observaciones, congelar 30, un solo VC SBS como ancla al inicio; dentro del bloque SBS solo evalua y nunca corrige.",
@@ -66,10 +66,10 @@
     "official_better_blocks": 3
   },
   "forward_sbs": {
-    "evaluated": 35,
-    "pending": 4,
-    "challenger_vc_mae": 0.8863570560070705,
-    "official_vc_mae": 1.3237414410697677
+    "evaluated": 37,
+    "pending": 3,
+    "challenger_vc_mae": 0.8746582426491974,
+    "official_vc_mae": 1.338512538159188
   },
   "ledger": "data/rolling90/reduced_6030_shadow.csv"
 }
