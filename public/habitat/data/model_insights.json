@@ -57,13 +57,6 @@
       "contribution_pp": 0.02651050243356142
     },
     {
-      "feature": "ret_USD_PEN",
-      "label": "USD/PEN",
-      "value": 0.004356940869473469,
-      "coefficient": 0.008598412822911307,
-      "contribution_pp": 0.0037462776240747018
-    },
-    {
       "feature": "ret_FCX",
       "label": "FCX",
       "value": -0.011870688166381371,
@@ -83,6 +76,13 @@
       "value": -0.00011562244330465266,
       "coefficient": 0.1483789611973326,
       "contribution_pp": -0.0017155938028641843
+    },
+    {
+      "feature": "ret_USD_PEN",
+      "label": "USD/PEN",
+      "value": -0.0011624527753559821,
+      "coefficient": 0.008598412822911307,
+      "contribution_pp": -0.0009995248849649714
     }
   ],
   "quality": {
@@ -91,7 +91,7 @@
     "critical": [],
     "training_n": 90,
     "latest_sbs_date": "2026-10-09",
-    "fx_provisional": true
+    "fx_provisional": false
   },
   "challenger_huber": {
     "status": "NO APLICA EN HÁBITAT",
