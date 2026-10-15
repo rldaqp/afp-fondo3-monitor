@@ -1,6 +1,6 @@
 {
-  "generated_at_lima": "2026-10-15T15:00:48.894440-05:00",
-  "generated_at_ny": "2026-10-15T16:00:48.894440-04:00",
+  "generated_at_lima": "2026-10-15T15:05:44.928088-05:00",
+  "generated_at_ny": "2026-10-15T16:05:44.928088-04:00",
   "signal_date": "2026-10-15",
   "market_open": false,
   "session_open_ny": "2026-10-15T09:30:00-04:00",
@@ -20,12 +20,12 @@
   "previous_close_rule": "Cierre regular validado de la sesión anterior; sin reutilizar otra fecha.",
   "models": {
     "niveles": {
-      "vc_intraday": 69.53865580837589,
+      "vc_intraday": 69.53832285642378,
       "equation": "VC = 13.88935016 - 0.03515844·SPY + 0.74157875·EEM - 0.10681725·MCHI + 0.03592193·QQQ + 0.03329520·SPBLSCUP"
     },
     "retornos": {
-      "return_intraday": -0.006248695592893782,
-      "vc_intraday": 70.15651093125467,
+      "return_intraday": -0.006254994987282077,
+      "vc_intraday": 70.15606620878809,
       "base_vc": 70.59765418180918,
       "base_date": "2026-10-14",
       "base_rule": "VC estimado por retornos de la sesión anterior",
@@ -49,8 +49,8 @@
       "return_coefficient": -0.6302663993238228,
       "level_contribution": -27.134232257668558,
       "return_contribution": -0.001777148541168569,
-      "level_weight_abs_pct": 22.432301344823465,
-      "return_weight_abs_pct": 27.956428762712203,
+      "level_weight_abs_pct": 22.432363091400013,
+      "return_weight_abs_pct": 27.92875244554397,
       "source": "YAHOO SPY · CIERRE REGULAR CONFIRMADO + CIERRE BASE FIJA"
     },
     {
@@ -69,8 +69,8 @@
       "return_coefficient": 0.5540424204898641,
       "level_contribution": 47.42396141320181,
       "return_contribution": -0.003785959100245786,
-      "level_weight_abs_pct": 39.20614312150175,
-      "return_weight_abs_pct": 59.557146424556414,
+      "level_weight_abs_pct": 39.20625103932437,
+      "return_weight_abs_pct": 59.49818601555455,
       "source": "YAHOO EEM · SNAPSHOT NO CONSOLIDADO + CIERRE BASE FIJA"
     },
     {
@@ -89,8 +89,8 @@
       "return_coefficient": -0.012803321943839846,
       "level_contribution": -5.521383618547708,
       "return_contribution": -6.222488635497293e-05,
-      "level_weight_abs_pct": 4.564615648435382,
-      "return_weight_abs_pct": 0.9788633658651819,
+      "level_weight_abs_pct": 4.564628212879182,
+      "return_weight_abs_pct": 0.9778943102963181,
       "source": "YAHOO MCHI · CIERRE REGULAR CONFIRMADO + CIERRE BASE FIJA"
     },
     {
@@ -109,28 +109,28 @@
       "return_coefficient": 0.5371307116230812,
       "level_contribution": 26.151165748455885,
       "return_contribution": -0.0007000215711202632,
-      "level_weight_abs_pct": 21.619584627163988,
-      "return_weight_abs_pct": 11.01208071921615,
+      "level_weight_abs_pct": 21.61964413667737,
+      "return_weight_abs_pct": 11.001178974889147,
       "source": "YAHOO QQQ · CIERRE REGULAR CONFIRMADO + CIERRE BASE FIJA"
     },
     {
       "ticker": "SPBLSCUP",
       "timestamp": "2026-10-15",
-      "quote_timestamp": "2026-10-15T16:00:23-04:00",
+      "quote_timestamp": "2026-10-15T16:05:18-04:00",
       "fresh": true,
       "close_confirmed": true,
       "price_previous": 442.45,
-      "price_current": 442.4,
-      "return": -0.00011300711944850494,
+      "price_current": 442.39,
+      "return": -0.00013560854333827255,
       "previous_close_date": "2026-10-14",
       "previous_close_basis": "CIERRE BASE FIJA",
       "provider_previous_close": null,
       "level_coefficient": 0.03329519521057234,
       "return_coefficient": 0.27871670470934645,
-      "level_contribution": 14.729794361157202,
-      "return_contribution": -3.1496971941382796e-05,
-      "level_weight_abs_pct": 12.177355258075417,
-      "return_weight_abs_pct": 0.49548072765004203,
+      "level_contribution": 14.729461409205095,
+      "return_contribution": -3.779636632967792e-05,
+      "level_weight_abs_pct": 12.177113519719073,
+      "return_weight_abs_pct": 0.5939882537160072,
       "source": "GOOGLE FINANCE SPBLSCUP · CIERRE REGULAR CONFIRMADO + CIERRE BASE FIJA"
     }
   ],
