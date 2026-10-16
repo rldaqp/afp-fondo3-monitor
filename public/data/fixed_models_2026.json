@@ -1,5 +1,5 @@
 {
-  "generated_at_lima": "2026-10-16T15:13:49.567257-05:00",
+  "generated_at_lima": "2026-10-16T17:46:07.991466-05:00",
   "model_version": "v3-30vc-through-20260930",
   "history_start": "2026-01-05",
   "training": {
@@ -75,9 +75,9 @@
   },
   "latest": {
     "market_date": "2026-10-16",
-    "vc_niveles": 68.33516553322022,
-    "ret_vc_estimado": -0.017411501418937856,
-    "vc_retornos": 68.93159628569371,
+    "vc_niveles": 68.3294680850604,
+    "ret_vc_estimado": -0.01752235269442951,
+    "vc_retornos": 68.92381972879225,
     "latest_sbs_date": "2026-10-14",
     "latest_sbs_vc": 70.5928189
   },
@@ -3115,19 +3115,19 @@
     {
       "fecha": "2026-10-16",
       "fase": "PROYECCIÓN",
-      "SPY": 763.23,
+      "SPY": 763.25,
       "EEM": 62.85,
       "MCHI": 51.2,
       "QQQ": 709.8,
-      "SPBLSCUP": 439.8,
+      "SPBLSCUP": 439.65,
       "source": "CIERRE REGULAR VERIFICADO · 5/5 CON FECHA PROPIA",
       "vc_sbs": null,
-      "vc_niveles": 68.33516553322022,
-      "ret_vc_estimado": -0.017411501418937856,
-      "vc_retornos": 68.93159628569371,
+      "vc_niveles": 68.3294680850604,
+      "ret_vc_estimado": -0.01752235269442951,
+      "vc_retornos": 68.92381972879225,
       "error_niveles_pct": null,
       "error_retornos_pct": null
     }
   ],
-  "data_revision": "5043fb2042b71186da9e493d8aed988250979514f4897f9f63c50ccbb15bd9d3"
+  "data_revision": "3d60c6dde998eb41535de65977a7559b8e4c024a90ed54eb0e996f0064dc4a69"
 }
