@@ -1,0 +1,143 @@
+name: Auditar V4 walk-forward diario
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - modelo-salida-60-20-20
+    paths:
+      - "src/modelo_salida/07_walk_forward_selectivo_diario_v4.py"
+      - ".github/workflows/evaluar-modelo-salida-v4-walk-forward.yml"
+  pull_request:
+    branches:
+      - migracion-github-actions
+    paths:
+      - "src/modelo_salida/07_walk_forward_selectivo_diario_v4.py"
+      - ".github/workflows/evaluar-modelo-salida-v4-walk-forward.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: modelo-salida-v4-walk-forward
+  cancel-in-progress: true
+
+jobs:
+  auditar:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Descargar rama experimental
+        uses: actions/checkout@v4
+        with:
+          ref: modelo-salida-60-20-20
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Instalar dependencias
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install tabulate
+
+      - name: Validar sintaxis
+        run: |
+          python -m py_compile \
+            src/modelo_salida/00_ejecutar_constructor_seguro.py \
+            src/modelo_salida/04_modelo_rebote_salida_v2.py \
+            src/modelo_salida/06_modelo_selectivo_diario_v4.py \
+            src/modelo_salida/07_walk_forward_selectivo_diario_v4.py
+
+      - name: Reconstruir base diaria
+        run: |
+          python src/modelo_salida/00_ejecutar_constructor_seguro.py
+
+      - name: Seleccionar modelo y cobertura en validacion
+        run: |
+          python src/modelo_salida/06_modelo_selectivo_diario_v4.py
+
+      - name: Ejecutar walk-forward diario
+        run: |
+          python src/modelo_salida/07_walk_forward_selectivo_diario_v4.py
+
+      - name: Auditar temporalidad y estabilidad
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          import pandas as pd
+
+          raiz = Path("data/processed/modelo_salida")
+          resumen = pd.read_csv(raiz / "v4_walk_forward_resumen.csv", encoding="utf-8-sig")
+          pred = pd.read_csv(
+              raiz / "v4_walk_forward_predicciones_diarias.csv", encoding="utf-8-sig"
+          )
+          estabilidad = pd.read_csv(
+              raiz / "v4_walk_forward_estabilidad.csv", encoding="utf-8-sig"
+          )
+
+          if set(resumen["afp"]) != {"Habitat", "Integra", "Prima", "Profuturo"}:
+              raise SystemExit("Faltan AFP en el walk-forward V4")
+          if not resumen["frecuencia"].eq("diaria").all():
+              raise SystemExit("La frecuencia no es diaria")
+          if pred.duplicated(["afp", "fecha_cuota"]).any():
+              raise SystemExit("Hay mas de una prediccion por AFP y dia")
+
+          decision = pd.to_datetime(pred["fecha_cuota"], errors="coerce")
+          objetivo = pd.to_datetime(pred["fecha_objetivo_t1"], errors="coerce")
+          if decision.isna().any() or objetivo.isna().any():
+              raise SystemExit("Existen fechas invalidas")
+          if not (objetivo > decision).all():
+              raise SystemExit("Fuga temporal detectada")
+          if not pred["probabilidad_riesgo"].between(0, 1).all():
+              raise SystemExit("Probabilidades fuera del rango")
+          if not pred["estado_diario"].isin(["RIESGO_ALTO", "SIN_SENAL"]).all():
+              raise SystemExit("Estado diario no reconocido")
+          if set(estabilidad["segmento"]) != {"primera_mitad", "segunda_mitad"}:
+              raise SystemExit("La estabilidad no separa ambas mitades")
+
+          manifiesto = json.loads(
+              (raiz / "v4_walk_forward_manifiesto.json").read_text(encoding="utf-8")
+          )
+          if manifiesto.get("frecuencia") != "diaria":
+              raise SystemExit("El manifiesto no confirma frecuencia diaria")
+
+          print(resumen[[
+              "afp", "walk_cobertura_dias_pct", "walk_precision_alerta_pct",
+              "walk_mejora_precision_pp", "walk_cobertura_caidas_pct",
+              "walk_proteccion_neta_suma_pct", "estado"
+          ]].to_string(index=False))
+          print(estabilidad.to_string(index=False))
+          PY
+
+      - name: Subir resultados como artefacto
+        uses: actions/upload-artifact@v4
+        with:
+          name: modelo-salida-v4-walk-forward
+          path: |
+            data/processed/modelo_salida/v4_walk_forward_*.csv
+            data/processed/modelo_salida/v4_walk_forward_*.json
+            docs/modelo_salida_resultados_v4_walk_forward.md
+          retention-days: 30
+
+      - name: Guardar resultados en la rama experimental
+        if: github.event_name != 'pull_request'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- \
+            data/processed/modelo_salida/v4_walk_forward_predicciones_diarias.csv \
+            data/processed/modelo_salida/v4_walk_forward_resumen.csv \
+            data/processed/modelo_salida/v4_walk_forward_estabilidad.csv \
+            data/processed/modelo_salida/v4_walk_forward_manifiesto.json \
+            docs/modelo_salida_resultados_v4_walk_forward.md
+          if git diff --cached --quiet; then
+            echo "No hay resultados nuevos."
+          else
+            git commit -m "Guardar auditoria walk-forward diaria V4 [skip ci]"
+            git push
+          fi

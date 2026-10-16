@@ -1,0 +1,51 @@
+{
+  "version": "modelo_salida_v1",
+  "objetivo": "Estimar el riesgo de que la siguiente cuota SBS disponible sea menor que la cuota estimada al momento de decidir.",
+  "division_temporal": {
+    "entrenamiento": 0.60,
+    "validacion": 0.20,
+    "test_reservado": 0.20,
+    "barajar_fechas": false
+  },
+  "afps": [
+    "Habitat",
+    "Integra",
+    "Prima",
+    "Profuturo"
+  ],
+  "horizonte": {
+    "tipo": "siguiente_fecha_sbs_disponible",
+    "pasos": 1,
+    "descripcion": "La fila de fecha t utiliza solo informacion conocida en t y se evalua contra el retorno oficial de la siguiente fecha SBS disponible."
+  },
+  "ventanas": {
+    "momentum": [2, 3, 5],
+    "volatilidad": [5, 10, 20],
+    "maximo_retroceso": [5, 10, 20]
+  },
+  "umbrales_validacion": {
+    "probabilidad_riesgo": [0.55, 0.60, 0.65, 0.70, 0.75],
+    "retroceso_volatilidad": [0.50, 0.75, 1.00, 1.25],
+    "min_alertas_validacion": 20,
+    "min_alertas_test": 20
+  },
+  "modelos_candidatos": [
+    "regresion_logistica",
+    "gradient_boosting"
+  ],
+  "estados_salida": [
+    "CONTINUIDAD",
+    "VIGILANCIA",
+    "RIESGO_ALTO",
+    "SIN_SENAL"
+  ],
+  "criterio_inicial": {
+    "nota": "Los parametros definitivos se eligen solamente en validacion. El test final no se usa para ajustar umbrales.",
+    "riesgo_alto_requiere": [
+      "probabilidad_calibrada_supera_umbral",
+      "perdida_de_impulso_o_retroceso",
+      "datos_suficientes"
+    ]
+  },
+  "advertencia": "Modelo experimental de control de riesgo. No elimina el riesgo de mercado ni constituye una recomendacion financiera."
+}
