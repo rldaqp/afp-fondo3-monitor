@@ -1,0 +1,56 @@
+name: Prueba robusta OLS Ridge Huber
+
+on:
+  pull_request:
+    branches:
+      - migracion-github-actions
+    paths:
+      - "research/robust_regression.py"
+      - ".github/workflows/research_robust_regression.yml"
+  push:
+    branches:
+      - research-robust-regression
+    paths:
+      - "research/robust_regression.py"
+      - ".github/workflows/research_robust_regression.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  robust-regression:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: research-robust-regression
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Instalar dependencias
+        run: python -m pip install --upgrade pip pandas numpy scikit-learn
+
+      - name: Ejecutar prueba
+        run: python research/robust_regression.py
+
+      - name: Guardar resultados en rama de investigación
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add research_outputs_robust/
+          if git diff --cached --quiet; then
+            echo "Sin cambios en resultados"
+          else
+            git commit -m "Resultados prueba OLS Ridge Huber"
+            git push origin HEAD:research-robust-regression
+          fi
+
+      - name: Publicar artefacto
+        uses: actions/upload-artifact@v4
+        with:
+          name: resultados-robust-regression
+          path: research_outputs_robust/
