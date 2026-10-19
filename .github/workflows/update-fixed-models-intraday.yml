@@ -167,5 +167,9 @@ jobs:
       - name: Desplegar visor intradia
         uses: actions/deploy-pages@v4
 
+      # La verificación externa no debe retener indefinidamente el turno de publicación.
+      # Si Pages no refleja el corte dentro de 3 minutos, falla y libera la cola;
+      # el supervisor independiente detectará el desfase y solicitará recuperación.
       - name: Confirmar corte publicado
+        timeout-minutes: 3
         run: python scripts/profuturo_watchdog.py --verify-publication
