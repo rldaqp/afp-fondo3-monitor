@@ -1,6 +1,6 @@
 {
-  "generated_at_lima": "2026-10-19T15:01:04.963822-05:00",
-  "generated_at_ny": "2026-10-19T16:01:04.963822-04:00",
+  "generated_at_lima": "2026-10-19T15:06:05.700979-05:00",
+  "generated_at_ny": "2026-10-19T16:06:05.700979-04:00",
   "signal_date": "2026-10-19",
   "market_open": false,
   "session_open_ny": "2026-10-19T09:30:00-04:00",
@@ -8,13 +8,11 @@
   "next_session_open_ny": "2026-10-20T09:30:00-04:00",
   "next_session_close_ny": "2026-10-20T16:00:00-04:00",
   "mode": "CIERRE / ÚLTIMO SNAPSHOT",
-  "close_consolidated": false,
-  "fresh_factors": 4,
+  "close_consolidated": true,
+  "fresh_factors": 5,
   "total_factors": 5,
-  "problems": [
-    "SPBLSCUP: falta cierre confirmado de 2026-10-19; dato 2026-10-19"
-  ],
-  "base_revision": "749c4e206ddb0d6846d7c452b9553567188929877ed68097b2481310275098f1",
+  "problems": [],
+  "base_revision": "c27a384b2e97156ee5ac1a04581e600378e3f09196c707eea79583f6d36e8afc",
   "latest_sbs_date": "2026-10-15",
   "latest_sbs_vc": 70.3689275,
   "previous_close_rule": "Cierre regular validado de la sesión anterior; sin reutilizar otra fecha.",
@@ -36,7 +34,7 @@
     {
       "ticker": "SPY",
       "timestamp": "2026-10-19",
-      "quote_timestamp": "2026-10-19T16:00:01-04:00",
+      "quote_timestamp": "2026-10-19T16:00:00-04:00",
       "fresh": true,
       "close_confirmed": true,
       "price_previous": 763.25,
@@ -71,7 +69,7 @@
       "return_contribution": 0.004143210650022483,
       "level_weight_abs_pct": 39.221870189622514,
       "return_weight_abs_pct": 28.16162191724485,
-      "source": "GOOGLE FINANCE EEM · CIERRE REGULAR CONFIRMADO + CIERRE BASE FIJA"
+      "source": "CACHE CIERRE VERIFICADO EEM · CIERRE REGULAR CONFIRMADO + CIERRE BASE FIJA"
     },
     {
       "ticker": "MCHI",
@@ -116,9 +114,9 @@
     {
       "ticker": "SPBLSCUP",
       "timestamp": "2026-10-19",
-      "quote_timestamp": "2026-10-19T15:54:23-04:00",
-      "fresh": false,
-      "close_confirmed": false,
+      "quote_timestamp": "2026-10-19T16:05:13-04:00",
+      "fresh": true,
+      "close_confirmed": true,
       "price_previous": 439.65,
       "price_current": 437.69,
       "return": -0.0044580916638234935,
@@ -131,7 +129,7 @@
       "return_contribution": -0.0012425446178330917,
       "level_weight_abs_pct": 12.17245862490691,
       "return_weight_abs_pct": 8.44564148398613,
-      "source": "GOOGLE FINANCE SPBLSCUP · SNAPSHOT NO CONSOLIDADO + CIERRE BASE FIJA"
+      "source": "GOOGLE FINANCE SPBLSCUP · CIERRE REGULAR CONFIRMADO + CIERRE BASE FIJA"
     }
   ],
   "weight_note": "Peso relativo del aporte absoluto; no representa tenencia de cartera.",
