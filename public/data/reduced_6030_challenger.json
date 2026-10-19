@@ -1,27 +1,27 @@
 {
-  "generated_at_lima": "2026-10-19T14:11:25.383841-05:00",
+  "generated_at_lima": "2026-10-19T17:54:59.523431-05:00",
   "signal_date": "2026-10-19",
-  "mode": "INTRADÍA PROVISIONAL",
-  "market_open": true,
+  "mode": "CIERRE DIARIO",
+  "market_open": false,
   "role": "UNICO CHALLENGER EN SOMBRA; no reemplaza el OLS rolling 90 oficial.",
   "official": {
     "model": "OLS rolling 90 oficial · SPY EEM EPU MCHI NEM FCX USD/PEN",
-    "return_estimated": 0.0023011802528735015,
+    "return_estimated": 0.003258196047953173,
     "signal": "SUBE",
-    "vc_estimated": 71.57869244993847
+    "vc_estimated": 71.64703711580873
   },
   "challenger": {
     "model": "OLS 60/30 · sin NEM ni FCX + QQQ",
-    "return_estimated": 0.007570020624743896,
+    "return_estimated": 0.00790790633176281,
     "signal": "SUBE",
-    "vc_estimated": 69.85684867629955,
+    "vc_estimated": 69.8802749694821,
     "blind_chain": true,
     "reanchored_with_latest_sbs": false
   },
   "comparison": {
     "same_signal": true,
-    "vc_difference": -1.7218437736389234,
-    "return_difference_pp": 0.5268840371870395
+    "vc_difference": -1.7667621463266272,
+    "return_difference_pp": 0.4649710283809636
   },
   "cycle": {
     "train_window": 60,
@@ -44,8 +44,8 @@
     "rule": "Coeficientes congelados 30 sesiones. El VC se encadena desde el ancla del ciclo y no se corrige con SBS dentro del bloque."
   },
   "qqq": {
-    "return": 0.013609515843645115,
-    "source": "INTRADIA YAHOO"
+    "return": 0.01205973190449039,
+    "source": "CIERRE DIARIO YAHOO"
   },
   "blind_backtest": {
     "design": "Bloques no superpuestos: entrenar 60 observaciones, congelar 30, un solo VC SBS como ancla al inicio; dentro del bloque SBS solo evalua y nunca corrige.",
@@ -66,10 +66,10 @@
     "official_better_blocks": 3
   },
   "forward_sbs": {
-    "evaluated": 40,
-    "pending": 3,
-    "challenger_vc_mae": 0.8272426317410823,
-    "official_vc_mae": 1.311935999397971
+    "evaluated": 41,
+    "pending": 2,
+    "challenger_vc_mae": 0.8072480135274214,
+    "official_vc_mae": 1.311114274048013
   },
   "ledger": "data/rolling90/reduced_6030_shadow.csv"
 }
