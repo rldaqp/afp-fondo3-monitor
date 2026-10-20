@@ -52,6 +52,9 @@ RETURN_COEFF = {
     "QQQ": 0.5371307116230812,
     "SPBLSCUP": 0.27871670470934645,
 }
+LEVEL_ROLLING_WINDOW = 15
+LEVEL_DECAY_SESSIONS = 12.0
+LEVEL_ROLLING_START = pd.Timestamp("2026-10-12")
 TRAIN_R2_LEVEL = 0.9732119078135525
 TRAIN_R2_RETURN = 0.9297303916047586
 TRAIN_ADJ_R2_LEVEL = 0.9676310552747093
@@ -269,6 +272,31 @@ def metric_block(df: pd.DataFrame, mask: pd.Series) -> dict:
     return out
 
 
+def rolling_weighted_levels(df: pd.DataFrame, factors: list[str]) -> pd.Series:
+    """15-session exponentially weighted regression; SBS only as training target.
+    No SBS quota is used as an anchor in the prediction itself.
+    """
+    result = pd.Series(np.nan, index=df.index, dtype=float)
+    for i, row in df.iterrows():
+        if row["fecha"] < LEVEL_ROLLING_START or not all(finite(row[c]) for c in factors):
+            continue
+        prior = df.iloc[:i].dropna(subset=["vc_sbs", *factors]).tail(LEVEL_ROLLING_WINDOW)
+        if len(prior) < LEVEL_ROLLING_WINDOW:
+            continue
+        x = prior[factors].to_numpy(dtype=float)
+        y = prior["vc_sbs"].to_numpy(dtype=float)
+        mu = x.mean(axis=0)
+        sigma = x.std(axis=0)
+        if np.any(sigma < 1e-12):
+            continue
+        design = np.column_stack([np.ones(len(prior)), (x - mu) / sigma])
+        weights = np.exp(-np.arange(len(prior) - 1, -1, -1) / LEVEL_DECAY_SESSIONS)
+        beta = np.linalg.lstsq(design * np.sqrt(weights[:, None]), y * np.sqrt(weights), rcond=None)[0]
+        point = np.r_[1.0, (row[factors].to_numpy(dtype=float) - mu) / sigma]
+        result.loc[i] = float(point @ beta)
+    return result
+
+
 def main() -> None:
     yahoo = yahoo_history()
     spb = load_spblscup_levels()
@@ -295,6 +323,8 @@ def main() -> None:
         valid_levels &= df[c].notna()
         df["vc_niveles"] += LEVEL_COEFF[c] * df[c]
     df.loc[~valid_levels, "vc_niveles"] = np.nan
+    rolling = rolling_weighted_levels(df, factors)
+    df.loc[rolling.notna(), "vc_niveles"] = rolling.loc[rolling.notna()]
 
     df["ret_vc_estimado"] = RETURN_COEFF["intercept"]
     valid_returns = pd.Series(True, index=df.index)
@@ -368,7 +398,7 @@ def main() -> None:
     rows = [{k: clean(v) for k, v in r.items()} for r in out.to_dict(orient="records")]
     payload = {
         "generated_at_lima": datetime.now(LIMA).isoformat(),
-        "model_version": "v3-30vc-through-20260930",
+        "model_version": "v4-rolling-wls15-from-20261012",
         "history_start": HISTORY_START.date().isoformat(),
         "training": {
             "start": TRAIN_START.date().isoformat(),
@@ -383,15 +413,19 @@ def main() -> None:
             "sbs_corrections": TRAIN_SBS_CORRECTIONS,
         },
         "methodology": {
-            "calibration_note": "OLS con las 30 últimas sesiones con VC SBS oficial antes del 01/10/2026: 19/08–30/09/2026. Mismos cinco factores.",
+            "calibration_note": "Niveles: regresión lineal ponderada exponencial de 15 sesiones previas con VC SBS disponible (decaimiento 12), recalculada por fecha desde el 12/10/2026. Sin anclaje al VC SBS. Retornos conserva su calibración anterior.",
             "before_training": "RETROSPECTIVO: coeficientes calibrados en agosto-septiembre; fechas anteriores no son validación fuera de muestra.",
-            "after_training": "VALIDACIÓN/PROYECCIÓN: coeficientes v3 congelados desde 01/10/2026.",
+            "after_training": "Niveles: coeficientes móviles WLS-15 desde el 12/10/2026; antes se conserva la serie histórica OLS. Retornos no cambia.",
             "returns_base": "Usa VC SBS real del día anterior cuando existe; si no, encadena desde el VC estimado anterior.",
         },
         "models": {
             "niveles": {
-                "coefficients": LEVEL_COEFF,
-                "equation": "VC = 13.88935016 - 0.03515844·SPY + 0.74157875·EEM - 0.10681725·MCHI + 0.03592193·QQQ + 0.03329520·SPBLSCUP",
+                "coefficients": None,
+                "equation": "VC = WLS ponderada de 15 sesiones previas, factores SPY, EEM, MCHI, QQQ, SPBLSCUP; sin anclaje SBS",
+                "rolling_window": LEVEL_ROLLING_WINDOW,
+                "decay_sessions": LEVEL_DECAY_SESSIONS,
+                "effective_from": LEVEL_ROLLING_START.date().isoformat(),
+                "historical_ols_coefficients": LEVEL_COEFF,
             },
             "retornos": {
                 "coefficients": RETURN_COEFF,
