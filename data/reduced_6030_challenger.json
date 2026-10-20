@@ -1,27 +1,27 @@
 {
-  "generated_at_lima": "2026-10-20T16:07:58.702004-05:00",
+  "generated_at_lima": "2026-10-20T18:52:12.945116-05:00",
   "signal_date": "2026-10-20",
-  "mode": "INTRADIA PROVISIONAL - ULTIMO CORTE",
+  "mode": "CIERRE DIARIO",
   "market_open": false,
   "role": "UNICO CHALLENGER EN SOMBRA; no reemplaza el OLS rolling 90 oficial.",
   "official": {
     "model": "OLS rolling 90 oficial · SPY EEM EPU MCHI NEM FCX USD/PEN",
-    "return_estimated": -0.00043716357953012524,
-    "signal": "NEUTRO",
-    "vc_estimated": 71.38313539097906
+    "return_estimated": -0.0017093274206473933,
+    "signal": "BAJA",
+    "vc_estimated": 71.29228463062547
   },
   "challenger": {
     "model": "OLS 60/30 · sin NEM ni FCX + QQQ",
-    "return_estimated": -0.00040068271478366815,
-    "signal": "NEUTRO",
-    "vc_estimated": 69.8522751511975,
+    "return_estimated": -0.0018251267923908036,
+    "signal": "BAJA",
+    "vc_estimated": 69.75273460737567,
     "blind_chain": true,
     "reanchored_with_latest_sbs": false
   },
   "comparison": {
     "same_signal": true,
-    "vc_difference": -1.5308602397815605,
-    "return_difference_pp": 0.003648086474645709
+    "vc_difference": -1.5395500232498023,
+    "return_difference_pp": -0.011579937174341033
   },
   "cycle": {
     "train_window": 60,
@@ -52,16 +52,16 @@
     "n_blocks": 11,
     "n_predictions": 330,
     "official_current_7f": {
-      "vc_mae": 0.9301917209154903,
-      "vc_rmse": 1.6613949918439508,
-      "mean_endpoint_abs_error": 1.7992680605686289
+      "vc_mae": 0.9301917209154881,
+      "vc_rmse": 1.6613949918439477,
+      "mean_endpoint_abs_error": 1.7992680605686244
     },
     "challenger_6030": {
-      "vc_mae": 0.7515437795040324,
-      "vc_rmse": 1.4098464466750624,
-      "mean_endpoint_abs_error": 1.3221673295622538
+      "vc_mae": 0.7515437795040333,
+      "vc_rmse": 1.4098464466750633,
+      "mean_endpoint_abs_error": 1.3221673295622578
     },
-    "mae_improvement_pct": 19.20549682334664,
+    "mae_improvement_pct": 19.205496823346348,
     "challenger_better_blocks": 8,
     "official_better_blocks": 3
   },
