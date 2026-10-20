@@ -1,7 +1,7 @@
 {
   "descripcion": "Experimento octubre 2026: amortiguación del 20% del movimiento diario de los modelos. Reanclaje al VC SBS de la rueda anterior cuando está disponible; de lo contrario encadenamiento independiente de cada serie experimental. No es VC oficial.",
   "fuente_version": "v3-30vc-through-20260930",
-  "fuente_generado": "2026-10-19T14:25:18.456734-05:00",
+  "fuente_generado": "2026-10-19T20:10:00.608774-05:00",
   "formula_niveles": "ancla_niveles + 0.8 * (niveles_hoy - niveles_ayer)",
   "formula_retornos": "ancla_retornos * (1 + 0.8 * retorno_estimado_hoy)",
   "observaciones": [
@@ -142,8 +142,8 @@
     },
     {
       "fecha": "2026-10-15",
-      "vc_sbs": null,
-      "vc_sbs_origen": "pendiente",
+      "vc_sbs": 70.3689275,
+      "vc_sbs_origen": "monitor",
       "vc_sbs_anterior": 70.5928189,
       "anclaje_tipo": "SBS oficial de rueda anterior",
       "anclaje_niveles": 70.5928189,
@@ -152,21 +152,36 @@
       "vc_niveles_defensivo": 70.22399079919522,
       "vc_retornos_visor": 70.1530665026474,
       "vc_retornos_defensivo": 70.24101698211793,
-      "error_abs_niveles_defensivo": null,
-      "error_abs_retornos_defensivo": null
+      "error_abs_niveles_defensivo": 0.14493670080477727,
+      "error_abs_retornos_defensivo": 0.12791051788207142
     },
     {
       "fecha": "2026-10-16",
       "vc_sbs": null,
       "vc_sbs_origen": "pendiente",
+      "vc_sbs_anterior": 70.3689275,
+      "anclaje_tipo": "SBS oficial de rueda anterior",
+      "anclaje_niveles": 70.3689275,
+      "anclaje_retornos": 70.3689275,
+      "vc_niveles_visor": 68.3294664335058,
+      "vc_niveles_defensivo": 69.39833705812667,
+      "vc_retornos_visor": 69.13589675642399,
+      "vc_retornos_defensivo": 69.38250290513919,
+      "error_abs_niveles_defensivo": null,
+      "error_abs_retornos_defensivo": null
+    },
+    {
+      "fecha": "2026-10-19",
+      "vc_sbs": null,
+      "vc_sbs_origen": "pendiente",
       "vc_sbs_anterior": null,
       "anclaje_tipo": "encadenado desde proyección 20% de rueda anterior",
-      "anclaje_niveles": 70.22399079919522,
-      "anclaje_retornos": 70.24101698211793,
-      "vc_niveles_visor": 68.3294664335058,
-      "vc_niveles_defensivo": 69.2534003573219,
-      "vc_retornos_visor": 68.92381815643812,
-      "vc_retornos_defensivo": 69.25638542411676,
+      "anclaje_niveles": 69.39833705812667,
+      "anclaje_retornos": 69.38250290513919,
+      "vc_niveles_visor": 68.83018699810214,
+      "vc_niveles_defensivo": 69.79891350980374,
+      "vc_retornos_visor": 69.60126523625976,
+      "vc_retornos_defensivo": 69.75612565591277,
       "error_abs_niveles_defensivo": null,
       "error_abs_retornos_defensivo": null
     }
