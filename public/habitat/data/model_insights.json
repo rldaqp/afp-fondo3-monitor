@@ -19,7 +19,7 @@
     "neutro_accuracy": 0.26666666666666666
   },
   "uncertainty": {
-    "relative_q80": 0.004755283397758106,
+    "relative_q80": 0.0047552833977581085,
     "label": "Banda empírica 80%"
   },
   "benchmarks": {
@@ -32,43 +32,43 @@
       "feature": "ret_EEM",
       "label": "EEM",
       "value": 0.0073190598303567445,
-      "coefficient": 0.47027480902898283,
-      "contribution_pp": 0.34419694639927173
+      "coefficient": 0.4702748090289829,
+      "contribution_pp": 0.3441969463992718
     },
     {
       "feature": "ret_MCHI",
       "label": "MCHI",
       "value": -0.006445348166743692,
-      "coefficient": -0.12405251635596347,
-      "contribution_pp": 0.0799561658874851
+      "coefficient": -0.1240525163559634,
+      "contribution_pp": 0.07995616588748505
     },
     {
       "feature": "ret_SPY",
       "label": "SPY",
       "value": 0.004231877456600142,
-      "coefficient": 0.18256022617335785,
-      "contribution_pp": 0.07725725056148562
+      "coefficient": 0.18256022617335757,
+      "contribution_pp": 0.0772572505614855
     },
     {
       "feature": "ret_NEM",
       "label": "NEM",
       "value": -0.004974674076571484,
-      "coefficient": 0.05491561358855057,
-      "contribution_pp": -0.02731872793179792
+      "coefficient": 0.05491561358855074,
+      "contribution_pp": -0.027318727931798008
     },
     {
       "feature": "ret_FCX",
       "label": "FCX",
       "value": 0.0030198314884659627,
-      "coefficient": 0.05846856437450586,
-      "contribution_pp": 0.017656521178353198
+      "coefficient": 0.058468564374505705,
+      "contribution_pp": 0.017656521178353153
     },
     {
       "feature": "ret_USD_PEN",
       "label": "USD/PEN",
       "value": 0.0018896126937579805,
-      "coefficient": 0.0357179473534275,
-      "contribution_pp": 0.006749308671401588
+      "coefficient": 0.03571794735342758,
+      "contribution_pp": 0.006749308671401601
     },
     {
       "feature": "intercept",
@@ -81,8 +81,8 @@
       "feature": "ret_EPU",
       "label": "EPU",
       "value": -0.00044675254281201227,
-      "coefficient": 0.013794272100253606,
-      "contribution_pp": -0.0006162626137029095
+      "coefficient": 0.013794272100253531,
+      "contribution_pp": -0.0006162626137029062
     }
   ],
   "quality": {
