@@ -20,6 +20,11 @@ PRICES = {"SPY": 773.17, "EEM": 67.47, "MCHI": 54.37, "QQQ": 717.67, "SPBLSCUP":
 
 def fixture():
     base = json.loads((ROOT / "public/data/fixed_models_2026.json").read_text(encoding="utf-8"))
+    # Historical contract fixtures use the original fixed OLS coefficients.
+    # The published base may instead describe a rolling levels model with
+    # coefficients=null; never mutate the published calibration in this test.
+    if base["models"]["niveles"].get("coefficients") is None:
+        base["models"]["niveles"]["coefficients"] = base["models"]["niveles"]["historical_ols_coefficients"]
     base["rows"] = [r for r in base["rows"] if r["fecha"] <= "2026-09-02"]
     official = {r["fecha"]: r["vc_sbs"] for r in base["rows"] if r.get("vc_sbs") is not None and r["fecha"] < "2026-09-01"}
     recalculate(base, official)
