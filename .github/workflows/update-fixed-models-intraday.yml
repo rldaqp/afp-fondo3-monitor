@@ -1,4 +1,5 @@
 name: Actualizar intradia modelos fijos
+# Reactivación operativa 2026-10-21: un push a este workflow inicia una actualización inmediata.
 
 on:
   workflow_dispatch:
