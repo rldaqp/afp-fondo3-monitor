@@ -1,6 +1,6 @@
 {
-  "generated_at_lima": "2026-10-20T16:08:48.558331-05:00",
-  "model_version": "v4-rolling-wls15-from-20261012",
+  "generated_at_lima": "2026-10-21T08:44:38.057810-05:00",
+  "model_version": "v3-30vc-through-20260930",
   "history_start": "2026-01-05",
   "training": {
     "start": "2026-08-19",
@@ -18,26 +18,22 @@
     }
   },
   "methodology": {
-    "calibration_note": "Niveles: WLS exponencial 15 sesiones anteriores con VC SBS disponible, recalculado por fecha desde 12/10/2026; sin anclaje. Retornos sin cambios.",
+    "calibration_note": "OLS de las últimas 30 sesiones con VC SBS antes del 01/10/2026 (19/08–30/09).",
     "before_training": "RETROSPECTIVO: fechas anteriores al 19/08/2026; no son validación fuera de muestra.",
-    "after_training": "Niveles: WLS-15 móvil desde 12/10/2026; Retornos sin cambios.",
+    "after_training": "VALIDACIÓN/PROYECCIÓN: coeficientes congelados desde el 01/10/2026.",
     "returns_base": "Usa VC SBS real del día anterior cuando existe; si no, encadena desde el VC estimado anterior."
   },
   "models": {
     "niveles": {
-      "coefficients": null,
-      "equation": "Regresión ponderada exponencial de 15 sesiones previas; sin anclaje SBS",
-      "rolling_window": 15,
-      "decay_sessions": 12,
-      "effective_from": "2026-10-12",
-      "historical_ols_coefficients": {
+      "coefficients": {
         "intercept": 13.889350161777259,
         "SPY": -0.03515844391161688,
         "EEM": 0.7415787466367807,
         "MCHI": -0.10681724934315551,
         "QQQ": 0.03592193097315369,
         "SPBLSCUP": 0.03329519521057234
-      }
+      },
+      "equation": "VC = 13.88935016 - 0.03515844·SPY + 0.74157875·EEM - 0.10681725·MCHI + 0.03592193·QQQ + 0.03329520·SPBLSCUP"
     },
     "retornos": {
       "coefficients": {
@@ -55,8 +51,8 @@
     "validation_from_2026_08_18": {
       "niveles": {
         "n": 12,
-        "mae_pct": 0.6813112594209304,
-        "rmse_pct": 0.817938355837424
+        "mae_pct": 0.9810891878697956,
+        "rmse_pct": 1.0452908114939252
       },
       "retornos": {
         "n": 12,
@@ -79,7 +75,7 @@
   },
   "latest": {
     "market_date": "2026-10-20",
-    "vc_niveles": 69.8063859018217,
+    "vc_niveles": 68.73704632297651,
     "ret_vc_estimado": -0.0007393342201592064,
     "vc_retornos": 69.77954419600024,
     "latest_sbs_date": "2026-10-16",
@@ -3062,10 +3058,10 @@
       "SPBLSCUP": 449.7,
       "source": "GOOGLE FINANCE · SNAPSHOT FIJO DE CIERRE · FECHA COINCIDENTE",
       "vc_sbs": 72.6094468,
-      "vc_niveles": 72.68712150521027,
+      "vc_niveles": 71.789527197961,
       "ret_vc_estimado": -0.010109731347777961,
       "vc_retornos": 72.56648589658028,
-      "error_niveles_pct": 0.10697603222928898,
+      "error_niveles_pct": -1.129218907695917,
       "error_retornos_pct": -0.059167099204127105
     },
     {
@@ -3078,10 +3074,10 @@
       "SPBLSCUP": 449.18,
       "source": "GOOGLE FINANCE · SNAPSHOT FIJO DE CIERRE · FECHA COINCIDENTE",
       "vc_sbs": 71.9665629,
-      "vc_niveles": 72.33636268711237,
+      "vc_niveles": 71.38366903641167,
       "ret_vc_estimado": -0.00535112730722567,
       "vc_retornos": 72.22090440646598,
-      "error_niveles_pct": 0.5138494492591184,
+      "error_niveles_pct": -0.809950955137706,
       "error_retornos_pct": 0.35341622027911246
     },
     {
@@ -3094,10 +3090,10 @@
       "SPBLSCUP": 442.45,
       "source": "GOOGLE FINANCE · SNAPSHOT FIJO DE CIERRE · FECHA COINCIDENTE",
       "vc_sbs": 70.5928189,
-      "vc_niveles": 70.74953477116726,
+      "vc_niveles": 70.00373961185342,
       "ret_vc_estimado": -0.019021454728815817,
       "vc_retornos": 70.59765418180918,
-      "error_niveles_pct": 0.2219997353969827,
+      "error_niveles_pct": -0.8344748054062712,
       "error_retornos_pct": 0.006849537792263938
     },
     {
@@ -3110,10 +3106,10 @@
       "SPBLSCUP": 442.32,
       "source": "GOOGLE FINANCE · SNAPSHOT FIJO DE CIERRE · FECHA COINCIDENTE",
       "vc_sbs": 70.3689275,
-      "vc_niveles": 70.35107350832159,
+      "vc_niveles": 69.54270448584745,
       "ret_vc_estimado": -0.006229421125334877,
       "vc_retornos": 70.1530665026474,
-      "error_niveles_pct": -0.025371982084576583,
+      "error_niveles_pct": -1.1741304628417826,
       "error_retornos_pct": -0.3067561280546638
     },
     {
@@ -3126,10 +3122,10 @@
       "SPBLSCUP": 439.65,
       "source": "GOOGLE FINANCE · SNAPSHOT FIJO DE CIERRE · FECHA COINCIDENTE",
       "vc_sbs": 69.4499836,
-      "vc_niveles": 68.68904873043488,
+      "vc_niveles": 68.3294664335058,
       "ret_vc_estimado": -0.01752237510762134,
       "vc_retornos": 69.13589675642399,
-      "error_niveles_pct": -1.095658818219103,
+      "error_niveles_pct": -1.6134160274937748,
       "error_retornos_pct": -0.45224898163404026
     },
     {
@@ -3142,7 +3138,7 @@
       "SPBLSCUP": 435.6,
       "source": "GOOGLE FINANCE · SNAPSHOT FIJO DE CIERRE · FECHA COINCIDENTE",
       "vc_sbs": null,
-      "vc_niveles": 69.89276287864512,
+      "vc_niveles": 68.76492970847417,
       "ret_vc_estimado": 0.005488686273270659,
       "vc_retornos": 69.83117277166419,
       "error_niveles_pct": null,
@@ -3158,12 +3154,12 @@
       "SPBLSCUP": 438.33,
       "source": "CIERRE REGULAR VERIFICADO · 5/5 CON FECHA PROPIA",
       "vc_sbs": null,
-      "vc_niveles": 69.8063859018217,
+      "vc_niveles": 68.73704632297651,
       "ret_vc_estimado": -0.0007393342201592064,
       "vc_retornos": 69.77954419600024,
       "error_niveles_pct": null,
       "error_retornos_pct": null
     }
   ],
-  "data_revision": "f665a693dc64587ab806d8e61bd6087589037422bb2fbf7c4bc991ffa9db787c"
+  "data_revision": "3a0070fb6c871d0a5c30ba3b84134aeed4c3b14331f3ac76f4717babea757625"
 }
