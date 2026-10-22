@@ -1,5 +1,5 @@
 {
-  "generated_at_lima": "2026-10-22T14:27:20.742690-05:00",
+  "generated_at_lima": "2026-10-22T14:32:19.151806-05:00",
   "model_version": "v3-30vc-through-20260930",
   "history_start": "2026-01-05",
   "training": {
@@ -50,14 +50,14 @@
   "metrics": {
     "validation_from_2026_08_18": {
       "niveles": {
-        "n": 13,
-        "mae_pct": 1.025281680172757,
-        "rmse_pct": 1.0930359891035843
+        "n": 14,
+        "mae_pct": 1.0549260142615062,
+        "rmse_pct": 1.121412713498959
       },
       "retornos": {
-        "n": 13,
-        "mae_pct": 0.31293566365084674,
-        "rmse_pct": 0.40447749230820584
+        "n": 14,
+        "mae_pct": 0.29655981395277603,
+        "rmse_pct": 0.39040526952514615
       }
     },
     "retrospective_before_2026_07_07": {
@@ -77,9 +77,9 @@
     "market_date": "2026-10-21",
     "vc_niveles": 69.06929219014432,
     "ret_vc_estimado": 0.003346878601057587,
-    "vc_retornos": 70.03350243080217,
-    "latest_sbs_date": "2026-10-19",
-    "latest_sbs_vc": 69.8515343
+    "vc_retornos": 69.97495175210047,
+    "latest_sbs_date": "2026-10-20",
+    "latest_sbs_vc": 69.7415353
   },
   "sources": {
     "SPY_EEM_MCHI_QQQ": "Yahoo Finance · cierre diario no ajustado",
@@ -3146,19 +3146,19 @@
     },
     {
       "fecha": "2026-10-20",
-      "fase": "PROYECCIÓN",
+      "fase": "VALIDACIÓN",
       "SPY": 769.05,
       "EEM": 63.32,
       "MCHI": 50.96,
       "QQQ": 717.63,
       "SPBLSCUP": 438.33,
       "source": "CIERRE REGULAR VERIFICADO · 5/5 CON FECHA PROPIA",
-      "vc_sbs": null,
+      "vc_sbs": 69.7415353,
       "vc_niveles": 68.73704632297651,
       "ret_vc_estimado": -0.0007393342201592064,
       "vc_retornos": 69.79989067036138,
-      "error_niveles_pct": null,
-      "error_retornos_pct": null
+      "error_niveles_pct": -1.4403023574152463,
+      "error_retornos_pct": 0.08367376787785652
     },
     {
       "fecha": "2026-10-21",
@@ -3172,10 +3172,10 @@
       "vc_sbs": null,
       "vc_niveles": 69.06929219014432,
       "ret_vc_estimado": 0.003346878601057587,
-      "vc_retornos": 70.03350243080217,
+      "vc_retornos": 69.97495175210047,
       "error_niveles_pct": null,
       "error_retornos_pct": null
     }
   ],
-  "data_revision": "63eccb4109d00936dfe4b6c54ca1c3cdf951460254ef6d82909ca1e55e198bf1"
+  "data_revision": "2831ca3acf079ce8e6546695aac3e9b3ef0c5abc6a9875edfb11d96cde1173b1"
 }
