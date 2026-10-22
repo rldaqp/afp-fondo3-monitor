@@ -1,27 +1,27 @@
 {
-  "generated_at_lima": "2026-10-21T16:32:36.010404-05:00",
+  "generated_at_lima": "2026-10-21T19:10:20.937823-05:00",
   "signal_date": "2026-10-21",
-  "mode": "INTRADIA PROVISIONAL - ULTIMO CORTE",
+  "mode": "CIERRE DIARIO",
   "market_open": false,
   "role": "UNICO CHALLENGER EN SOMBRA; no reemplaza el OLS rolling 90 oficial.",
   "official": {
     "model": "OLS rolling 90 oficial · SPY EEM EPU MCHI NEM FCX USD/PEN",
-    "return_estimated": 0.0007042918262972954,
-    "signal": "NEUTRO",
-    "vc_estimated": 71.46465169271427
+    "return_estimated": 0.0010867305935523272,
+    "signal": "SUBE",
+    "vc_estimated": 71.49196331066065
   },
   "challenger": {
     "model": "OLS 60/30 · sin NEM ni FCX + QQQ",
-    "return_estimated": 0.004241397285497603,
+    "return_estimated": 0.004573731160426334,
     "signal": "SUBE",
-    "vc_estimated": 70.04858366659542,
+    "vc_estimated": 70.07176486317438,
     "blind_chain": true,
     "reanchored_with_latest_sbs": false
   },
   "comparison": {
-    "same_signal": false,
-    "vc_difference": -1.4160680261188503,
-    "return_difference_pp": 0.35371054592003076
+    "same_signal": true,
+    "vc_difference": -1.4201984474862712,
+    "return_difference_pp": 0.3487000566874007
   },
   "cycle": {
     "train_window": 60,
@@ -44,8 +44,8 @@
     "rule": "Coeficientes congelados 30 sesiones. El VC se encadena desde el ancla del ciclo y no se corrige con SBS dentro del bloque."
   },
   "qqq": {
-    "return": 0.010548621535765967,
-    "source": "CIERRE DIARIO YAHOO"
+    "return": 0.010562569901298335,
+    "source": "ULTIMO CORTE YAHOO"
   },
   "blind_backtest": {
     "design": "Bloques no superpuestos: entrenar 60 observaciones, congelar 30, un solo VC SBS como ancla al inicio; dentro del bloque SBS solo evalua y nunca corrige.",
@@ -66,10 +66,10 @@
     "official_better_blocks": 3
   },
   "forward_sbs": {
-    "evaluated": 42,
-    "pending": 3,
-    "challenger_vc_mae": 0.7908368613899933,
-    "official_vc_mae": 1.313701300583157
+    "evaluated": 43,
+    "pending": 2,
+    "challenger_vc_mae": 0.7731136941363215,
+    "official_vc_mae": 1.3263802878259352
   },
   "ledger": "data/rolling90/reduced_6030_shadow.csv"
 }
