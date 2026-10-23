@@ -17,6 +17,7 @@ on:
       - "scripts/fixed_model_contract.py"
       - "scripts/test_fixed_model_contract.py"
       - "scripts/reconcile_fixed_history.py"
+      - "scripts/update_october_defensive_20.py"
       - "scripts/validate_fixed_models.py"
       - "scripts/test_fixed_model_contract.py"
       - "scripts/profuturo_watchdog.py"
@@ -91,6 +92,7 @@ jobs:
       - name: Consolidar cierre y validar generación
         run: |
           python scripts/reconcile_fixed_history.py
+          python scripts/update_october_defensive_20.py
           python scripts/build_model_health.py
           python scripts/validate_fixed_models.py
 
@@ -114,6 +116,7 @@ jobs:
           git add public/data/fixed_models_intraday.json \
             public/data/fixed_models_2026.json public/data/fixed_models_2026.csv \
             public/data/sbs_sync_status.json public/data/series.json public/data/model_health.json \
+            public/data/experimento_defensivo_octubre_2026.json \
             data/rolling90/sbs_profuturo_f3.csv \
             data/fixed_models/yahoo_levels_2026.csv data/fixed_models/spblscup_levels_2026.csv
           if git diff --cached --quiet; then
