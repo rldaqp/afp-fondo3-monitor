@@ -1,11 +1,11 @@
 {
-  "generated_at_lima": "2026-10-22T19:01:32.305503-05:00",
+  "generated_at_lima": "2026-10-22T20:33:47.912923-05:00",
   "mode": "CIERRE DIARIO",
   "market_open": false,
   "signal_date": "2026-10-22",
   "vc_base": 32.99441813615198,
-  "vc_estimated": 32.362486445684134,
-  "return_estimated": -0.01915268479232372,
+  "vc_estimated": 32.35223961425851,
+  "return_estimated": -0.019463247366372942,
   "signal": "BAJA",
   "assets": [
     {
@@ -80,15 +80,15 @@
       "timestamp": "2026-10-21",
       "precio_anterior": 3.435,
       "precio_actual": 3.435,
-      "retorno": 0.0025109479376652644,
-      "retorno_modelo": 0.0025109479376652644,
+      "retorno": -0.026633826856318432,
+      "retorno_modelo": -0.026633826856318432,
       "estado": "BCRP REZAGADO · MODELO USA 0 %",
       "usado_modelo": true
     }
   ],
   "action": "CIERRE",
   "engine": "LIVE HABITAT INDEPENDIENTE",
-  "warning": null,
+  "warning": "Cierre OLS pesado pendiente; cálculo provisional coherente con los activos del mismo día.",
   "fx_source": "YAHOO PEN=X PROVISIONAL",
   "fx_provisional": true,
   "fx_rule": "Histórico/entrenamiento: BCRP. Predicción: BCRP si existe; si está rezagado, Yahoo PEN=X provisional; 0 % solo si ambas fuentes faltan.",
