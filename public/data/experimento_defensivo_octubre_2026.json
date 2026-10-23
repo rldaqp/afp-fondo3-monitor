@@ -1,7 +1,7 @@
 {
   "descripcion": "Experimento octubre 2026: amortiguación del 20% del movimiento diario de los modelos. Reanclaje al VC SBS de la rueda anterior cuando está disponible; de lo contrario encadenamiento independiente de cada serie experimental. No es VC oficial.",
   "fuente_version": "v3-30vc-through-20260930",
-  "fuente_generado": "2026-10-23T15:07:14.415982-05:00",
+  "fuente_generado": "2026-10-23T15:41:39.301442-05:00",
   "formula_niveles": "ancla_niveles + 0.8 * (niveles_hoy - niveles_ayer)",
   "formula_retornos": "ancla_retornos * (1 + 0.8 * retorno_estimado_hoy)",
   "observaciones": [
@@ -238,10 +238,10 @@
       "anclaje_tipo": "encadenado desde proyección 20% de rueda anterior",
       "anclaje_niveles": 68.10271789244484,
       "anclaje_retornos": 67.85767255313998,
-      "vc_niveles_visor": 67.02519267620453,
-      "vc_niveles_defensivo": 68.3720523825824,
-      "vc_retornos_visor": 67.76147137723756,
-      "vc_retornos_defensivo": 68.16097928869779,
+      "vc_niveles_visor": 67.02484109176541,
+      "vc_niveles_defensivo": 68.37177111503111,
+      "vc_retornos_visor": 67.76091545169078,
+      "vc_retornos_defensivo": 68.16053142848577,
       "error_abs_niveles_defensivo": null,
       "error_abs_retornos_defensivo": null
     }
