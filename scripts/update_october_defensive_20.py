@@ -8,6 +8,7 @@ exp=json.loads(p.read_text())
 assert base["model_version"]==exp["fuente_version"]
 rows=base["rows"]
 old=[o for o in exp["observaciones"] if o["fecha"]<"2026-10-08"]
+# Reconstruir siempre todas las ruedas desde el 08/10 con la base vigente.
 prev_n=prev_r=None
 for i,r in enumerate(rows):
     if not ("2026-10-08"<=r["fecha"]<"2026-11-01"): continue
@@ -24,6 +25,9 @@ for i,r in enumerate(rows):
     prev_n,prev_r=n,ret
 dates=[o["fecha"] for o in old]
 assert dates==sorted(set(dates))
+expected=[r["fecha"] for r in rows if "2026-10-08"<=r["fecha"]<"2026-11-01"]
+assert [o["fecha"] for o in old if o["fecha"]>="2026-10-08"]==expected, "El comparativo 20% omite ruedas"
+assert all(isinstance(o.get("vc_retornos_defensivo"),(int,float)) and math.isfinite(o["vc_retornos_defensivo"]) for o in old if o["fecha"]>="2026-10-08"), "Retornos 20% incompleto"
 exp["observaciones"]=old
 exp["fuente_generado"]=base["generated_at_lima"]
 exp["formula_niveles"]="ancla_niveles + 0.8 * (niveles_hoy - niveles_ayer)"
