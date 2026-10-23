@@ -177,4 +177,23 @@ jobs:
       # el supervisor independiente detectará el desfase y solicitará recuperación.
       - name: Confirmar corte publicado
         timeout-minutes: 3
-        run: python scripts/profuturo_watchdog.py --verify-publication
+        run: |
+          python scripts/profuturo_watchdog.py --verify-publication
+          python - <<'PY'
+          import json, time, urllib.request
+          url = "https://rldaqp.github.io/afp-fondo3-monitor/data/experimento_defensivo_octubre_2026.json"
+          expected = {"2026-10-20", "2026-10-21", "2026-10-22"}
+          for attempt in range(12):
+              try:
+                  req = urllib.request.Request(url + "?verify=" + str(time.time_ns()), headers={"Cache-Control": "no-cache"})
+                  with urllib.request.urlopen(req, timeout=15) as response:
+                      data = json.load(response)
+                  rows = {row["fecha"]: row for row in data["observaciones"]}
+                  assert all(date in rows and isinstance(rows[date].get("vc_retornos_defensivo"), (int, float)) for date in expected), "Retornos 20% ausentes en Pages"
+                  print("VERIFICADO EN PAGES: Retornos 20% para 20, 21 y 22 de octubre:", [(d, rows[d]["vc_retornos_defensivo"]) for d in sorted(expected)])
+                  break
+              except Exception as exc:
+                  if attempt == 11:
+                      raise RuntimeError("Visor público sin Retornos 20% completos") from exc
+                  time.sleep(10)
+          PY
