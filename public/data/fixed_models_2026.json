@@ -1,5 +1,5 @@
 {
-  "generated_at_lima": "2026-10-26T12:21:38.873864-05:00",
+  "generated_at_lima": "2026-10-26T12:27:47.259510-05:00",
   "model_version": "v3-30vc-through-20260930",
   "history_start": "2026-01-05",
   "training": {
@@ -50,14 +50,14 @@
   "metrics": {
     "validation_from_2026_08_18": {
       "niveles": {
-        "n": 14,
-        "mae_pct": 1.0549260142615062,
-        "rmse_pct": 1.121412713498959
+        "n": 16,
+        "mae_pct": 1.1224105011214434,
+        "rmse_pct": 1.191197567098183
       },
       "retornos": {
-        "n": 14,
-        "mae_pct": 0.29655981395277603,
-        "rmse_pct": 0.39040526952514615
+        "n": 16,
+        "mae_pct": 0.29038429490690215,
+        "rmse_pct": 0.3783350299374679
       }
     },
     "retrospective_before_2026_07_07": {
@@ -77,9 +77,9 @@
     "market_date": "2026-10-23",
     "vc_niveles": 67.02450813981329,
     "ret_vc_estimado": 0.005572220315350617,
-    "vc_retornos": 67.7604629333964,
-    "latest_sbs_date": "2026-10-20",
-    "latest_sbs_vc": 69.7415353
+    "vc_retornos": 68.09677346074386,
+    "latest_sbs_date": "2026-10-22",
+    "latest_sbs_vc": 67.7194259
   },
   "sources": {
     "SPY_EEM_MCHI_QQQ": "Yahoo Finance · cierre diario no ajustado",
@@ -3162,35 +3162,35 @@
     },
     {
       "fecha": "2026-10-21",
-      "fase": "PROYECCIÓN",
+      "fase": "VALIDACIÓN",
       "SPY": 773.09,
       "EEM": 63.57,
       "MCHI": 50.05,
       "QQQ": 725.2,
       "SPBLSCUP": 435.92,
       "source": "CIERRE REGULAR VERIFICADO · 5/5 CON FECHA PROPIA",
-      "vc_sbs": null,
+      "vc_sbs": 70.2404043,
       "vc_niveles": 69.06929219014432,
       "ret_vc_estimado": 0.003346878601057587,
       "vc_retornos": 69.97495175210047,
-      "error_niveles_pct": null,
-      "error_retornos_pct": null
+      "error_niveles_pct": -1.6672912428775222,
+      "error_retornos_pct": -0.377920017040001
     },
     {
       "fecha": "2026-10-22",
-      "fase": "PROYECCIÓN",
+      "fase": "VALIDACIÓN",
       "SPY": 763.96,
       "EEM": 61.72,
       "MCHI": 49.02,
       "QQQ": 704.47,
       "SPBLSCUP": 415.04,
       "source": "CIERRE REGULAR VERIFICADO · 5/5 CON FECHA PROPIA",
-      "vc_sbs": null,
+      "vc_sbs": 67.7194259,
       "vc_niveles": 66.68852456353258,
       "ret_vc_estimado": -0.03701285535325134,
-      "vc_retornos": 67.38497898454922,
-      "error_niveles_pct": null,
-      "error_retornos_pct": null
+      "vc_retornos": 67.6406063756902,
+      "error_niveles_pct": -1.522312575404483,
+      "error_retornos_pct": -0.11639130613156912
     },
     {
       "fecha": "2026-10-23",
@@ -3204,10 +3204,10 @@
       "vc_sbs": null,
       "vc_niveles": 67.02450813981329,
       "ret_vc_estimado": 0.005572220315350617,
-      "vc_retornos": 67.7604629333964,
+      "vc_retornos": 68.09677346074386,
       "error_niveles_pct": null,
       "error_retornos_pct": null
     }
   ],
-  "data_revision": "2184f021db93eda96635cdcb620205ec3d9dd97b31ac0d299afb7c909c02a78d"
+  "data_revision": "14b055eeb7e9795a5bb8d13759b406959c93d093e18220a769ea169bba5878ce"
 }
