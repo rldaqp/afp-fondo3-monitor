@@ -1,7 +1,7 @@
 {
   "fund": "HÁBITAT Fondo 3",
-  "generated_at_lima": "2026-10-26T21:07:01.318635-05:00",
-  "generated_at_ny": "2026-10-26T22:07:01.318635-04:00",
+  "generated_at_lima": "2026-10-27T00:18:15.997817-05:00",
+  "generated_at_ny": "2026-10-27T01:18:15.997817-04:00",
   "signal_date": "2026-10-26",
   "market_open": false,
   "session_open_ny": "2026-10-26T09:30:00-04:00",
@@ -12,26 +12,28 @@
   "close_consolidated": true,
   "fresh_factors": 5,
   "total_factors": 5,
-  "problems": [],
+  "problems": [
+    "SPBLSCUP: falta dato propio de 2026-10-26; no se reutiliza como si fuera actual el dato de 2026-10-26"
+  ],
   "latest_sbs_date": "2026-10-22",
   "latest_sbs_vc": 32.0578915,
   "previous_close_rule": "Cierre regular validado de la sesión anterior; un dato antiguo nunca se reasigna a la fecha corriente.",
   "comparison_rule": "Misma lógica que Profuturo: Niveles es OLS absoluto directo; Retornos estima la variación diaria y la aplica al VC previo. Niveles normalizado se conserva solo como diagnóstico.",
-  "model_gap_pct": 0.09640413982718865,
+  "model_gap_pct": 0.09640413982716645,
   "models": {
     "niveles": {
-      "vc_intraday": 32.21950534455625,
+      "vc_intraday": 32.21950534455624,
       "return_intraday": 0.002845218715340714,
       "vc_normalized_intraday": null,
-      "vc_raw_intraday": 32.21950534455625,
-      "vc_raw_previous": 32.128093890530685,
+      "vc_raw_intraday": 32.21950534455624,
+      "vc_raw_previous": 32.12809389053068,
       "normalized_base_vc": null,
       "normalized_base_date": "2026-10-23",
       "normalized_base_rule": "Sin base consecutiva para diagnóstico normalizado",
       "equation": "4.504544607471 + 0.003952672454×VC_SPY + 0.203129648291×VC_EEM − 0.107563283425×VC_MCHI + 0.012482803822×VC_QQQ + 0.020511210307×VC_SPBLSCUP"
     },
     "retornos": {
-      "return_intraday": 0.002106273280181398,
+      "return_intraday": 0.0021062732801814,
       "vc_intraday": 32.18847432276189,
       "base_vc": 32.12081909975454,
       "base_date": "2026-10-23",
@@ -52,12 +54,12 @@
       "previous_close_date": "2026-10-23",
       "previous_close_basis": "CIERRE BASE FIJA",
       "source": "YAHOO SPY · CIERRE REGULAR CONFIRMADO",
-      "level_coefficient": 0.0039526724538393385,
-      "return_coefficient": -0.12724488636507159,
-      "level_contribution": 3.0252569159950147,
-      "return_contribution": -0.0009041490331692726,
-      "level_weight_abs_pct": 7.902561721444827,
-      "return_weight_abs_pct": 13.804937558205065
+      "level_coefficient": 0.0039526724538393,
+      "return_coefficient": -0.12724488636507153,
+      "level_contribution": 3.0252569159949854,
+      "return_contribution": -0.0009041490331692722,
+      "level_weight_abs_pct": 7.902561721444759,
+      "return_weight_abs_pct": 13.804937558205063
     },
     {
       "ticker": "EEM",
@@ -71,11 +73,11 @@
       "previous_close_date": "2026-10-23",
       "previous_close_basis": "CIERRE BASE FIJA",
       "source": "YAHOO EEM · CIERRE REGULAR CONFIRMADO",
-      "level_coefficient": 0.20312964829076724,
+      "level_coefficient": 0.20312964829076777,
       "return_coefficient": 0.33676041487454467,
-      "level_contribution": 12.557474857335231,
+      "level_contribution": 12.557474857335263,
       "return_contribution": -0.0010318322095933656,
-      "level_weight_abs_pct": 32.8025760724339,
+      "level_weight_abs_pct": 32.80257607243402,
       "return_weight_abs_pct": 15.754459388239347
     },
     {
@@ -90,12 +92,12 @@
       "previous_close_date": "2026-10-23",
       "previous_close_basis": "CIERRE BASE FIJA",
       "source": "YAHOO MCHI · CIERRE REGULAR CONFIRMADO",
-      "level_coefficient": -0.10756328342538207,
-      "return_coefficient": -0.1295071823969655,
-      "level_contribution": -5.283508481854767,
-      "return_contribution": -0.0003171604466864499,
-      "level_weight_abs_pct": 13.801555716765233,
-      "return_weight_abs_pct": 4.842542547539459
+      "level_coefficient": -0.10756328342538152,
+      "return_coefficient": -0.1295071823969652,
+      "level_contribution": -5.2835084818547395,
+      "return_contribution": -0.0003171604466864492,
+      "level_weight_abs_pct": 13.801555716765176,
+      "return_weight_abs_pct": 4.842542547539449
     },
     {
       "ticker": "QQQ",
@@ -109,12 +111,12 @@
       "previous_close_date": "2026-10-23",
       "previous_close_basis": "CIERRE BASE FIJA",
       "source": "YAHOO QQQ · CIERRE REGULAR CONFIRMADO",
-      "level_coefficient": 0.012482803821546025,
-      "return_coefficient": 0.3190609105891222,
-      "level_contribution": 8.890252881705079,
-      "return_contribution": 0.0035330312702534237,
-      "level_weight_abs_pct": 23.223076276753115,
-      "return_weight_abs_pct": 53.943845856995154
+      "level_coefficient": 0.012482803821546037,
+      "return_coefficient": 0.3190609105891223,
+      "level_contribution": 8.890252881705088,
+      "return_contribution": 0.003533031270253424,
+      "level_weight_abs_pct": 23.223076276753165,
+      "return_weight_abs_pct": 53.943845856995175
     },
     {
       "ticker": "SPBLSCUP",
@@ -127,13 +129,13 @@
       "close_confirmed": true,
       "previous_close_date": "2026-10-23",
       "previous_close_basis": "CIERRE BASE FIJA",
-      "source": "GOOGLE FINANCE SPBLSCUP · CIERRE REGULAR CONFIRMADO",
-      "level_coefficient": 0.020511210306517997,
-      "return_coefficient": 0.2681017705906039,
-      "level_contribution": 8.525484563904206,
-      "return_contribution": 0.0007632882700723732,
-      "level_weight_abs_pct": 22.27023021260292,
-      "return_weight_abs_pct": 11.654214649020963
+      "source": "CACHE DE CIERRE VERIFICADO · MISMA FECHA",
+      "level_coefficient": 0.02051121030651795,
+      "return_coefficient": 0.2681017705906038,
+      "level_contribution": 8.525484563904184,
+      "return_contribution": 0.0007632882700723729,
+      "level_weight_abs_pct": 22.27023021260289,
+      "return_weight_abs_pct": 11.65421464902096
     }
   ],
   "weight_note": "Peso relativo del aporte absoluto al cálculo; no representa tenencia de cartera."
