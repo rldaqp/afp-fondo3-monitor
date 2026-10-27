@@ -1,27 +1,27 @@
 {
-  "generated_at_lima": "2026-10-27T13:38:47.423136-05:00",
+  "generated_at_lima": "2026-10-27T17:37:42.833442-05:00",
   "signal_date": "2026-10-27",
-  "mode": "INTRADÍA PROVISIONAL",
-  "market_open": true,
+  "mode": "CIERRE DIARIO",
+  "market_open": false,
   "role": "UNICO CHALLENGER EN SOMBRA; no reemplaza el OLS rolling 90 oficial.",
   "official": {
     "model": "OLS rolling 90 oficial · SPY EEM EPU MCHI NEM FCX USD/PEN",
-    "return_estimated": 0.009681097946427955,
+    "return_estimated": 0.010568314748424991,
     "signal": "SUBE",
-    "vc_estimated": 72.105724513055
+    "vc_estimated": 72.16908452884441
   },
   "challenger": {
     "model": "OLS 60/30 · sin NEM ni FCX + QQQ",
-    "return_estimated": 0.012201529473119577,
+    "return_estimated": 0.012650315966082189,
     "signal": "SUBE",
-    "vc_estimated": 68.92706418019948,
+    "vc_estimated": 68.95762482894672,
     "blind_chain": true,
     "reanchored_with_latest_sbs": false
   },
   "comparison": {
     "same_signal": true,
-    "vc_difference": -3.1786603328555145,
-    "return_difference_pp": 0.2520431526691623
+    "vc_difference": -3.211459699897688,
+    "return_difference_pp": 0.20820012176571978
   },
   "cycle": {
     "train_window": 60,
@@ -44,24 +44,24 @@
     "rule": "Coeficientes congelados 30 sesiones. El VC se encadena desde el ancla del ciclo y no se corrige con SBS dentro del bloque."
   },
   "qqq": {
-    "return": 0.011654012427278593,
-    "source": "INTRADIA YAHOO"
+    "return": 0.012707087388167615,
+    "source": "CIERRE DIARIO YAHOO"
   },
   "blind_backtest": {
     "design": "Bloques no superpuestos: entrenar 60 observaciones, congelar 30, un solo VC SBS como ancla al inicio; dentro del bloque SBS solo evalua y nunca corrige.",
     "n_blocks": 11,
     "n_predictions": 330,
     "official_current_7f": {
-      "vc_mae": 0.9301917209154903,
-      "vc_rmse": 1.6613949918439508,
-      "mean_endpoint_abs_error": 1.7992680605686289
+      "vc_mae": 0.9301917209154881,
+      "vc_rmse": 1.6613949918439477,
+      "mean_endpoint_abs_error": 1.7992680605686244
     },
     "challenger_6030": {
-      "vc_mae": 0.7515437795040324,
-      "vc_rmse": 1.4098464466750624,
-      "mean_endpoint_abs_error": 1.3221673295622538
+      "vc_mae": 0.7515437795040333,
+      "vc_rmse": 1.4098464466750633,
+      "mean_endpoint_abs_error": 1.3221673295622578
     },
-    "mae_improvement_pct": 19.20549682334664,
+    "mae_improvement_pct": 19.205496823346348,
     "challenger_better_blocks": 8,
     "official_better_blocks": 3
   },
