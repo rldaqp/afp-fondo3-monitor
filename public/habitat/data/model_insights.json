@@ -1,10 +1,10 @@
 {
   "generated_for": "2026-10-26",
-  "current_signal": "NEUTRO",
+  "current_signal": "BAJA",
   "confidence": {
-    "historical_accuracy": 0.3333333333333333,
-    "n": 15,
-    "label": "NEUTRO",
+    "historical_accuracy": 0.8333333333333334,
+    "n": 36,
+    "label": "BAJA",
     "description": "Aciertos históricos de la misma clase de señal; no es garantía futura."
   },
   "performance": {
@@ -43,6 +43,13 @@
       "contribution_pp": 0.12456575581713177
     },
     {
+      "feature": "ret_USD_PEN",
+      "label": "USD/PEN",
+      "value": -0.028614267343872846,
+      "coefficient": 0.03936212382213597,
+      "contribution_pp": -0.11263183342692246
+    },
+    {
       "feature": "ret_NEM",
       "label": "NEM",
       "value": 0.01396157439808765,
@@ -55,13 +62,6 @@
       "value": 0.002448957793566686,
       "coefficient": -0.12122309322822766,
       "contribution_pp": -0.029687023892152914
-    },
-    {
-      "feature": "ret_USD_PEN",
-      "label": "USD/PEN",
-      "value": 0.004613138527600702,
-      "coefficient": 0.03936212382213597,
-      "contribution_pp": 0.018158292993208484
     },
     {
       "feature": "ret_EPU",
