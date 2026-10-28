@@ -1,5 +1,5 @@
 {
-  "generated_for": "2026-10-27",
+  "generated_for": "2026-10-28",
   "current_signal": "SUBE",
   "confidence": {
     "historical_accuracy": 0.9487179487179487,
@@ -10,7 +10,7 @@
   "performance": {
     "window_n": 90,
     "classification_accuracy": 0.8111111111111111,
-    "mae_return_pp": 0.2978802554451958,
+    "mae_return_pp": 0.3012139830572024,
     "sube_n": 39,
     "sube_accuracy": 0.9487179487179487,
     "baja_n": 36,
@@ -23,66 +23,66 @@
     "label": "Banda empírica 80%"
   },
   "benchmarks": {
-    "zero_change_mae_pp": 0.8225283608445352,
-    "ols_mae_pp": 0.2978802554451958,
-    "ols_mae_improvement_vs_zero": 0.6378480431491191
+    "zero_change_mae_pp": 0.8256998874022614,
+    "ols_mae_pp": 0.3012139830572024,
+    "ols_mae_improvement_vs_zero": 0.635201617860391
   },
   "contributions": [
     {
       "feature": "ret_EEM",
       "label": "EEM",
-      "value": 0.011323208773779125,
-      "coefficient": 0.5006466432469829,
-      "contribution_pp": 0.5668926463377305
-    },
-    {
-      "feature": "ret_USD_PEN",
-      "label": "USD/PEN",
-      "value": 0.03426631522756951,
-      "coefficient": 0.04152285641933373,
-      "contribution_pp": 0.1422835287213998
+      "value": 0.015994881520763338,
+      "coefficient": 0.5063100251885909,
+      "contribution_pp": 0.8098368865666212
     },
     {
       "feature": "ret_SPY",
       "label": "SPY",
-      "value": 0.005605103485520013,
-      "coefficient": 0.17988819799624184,
-      "contribution_pp": 0.10082919655926494
-    },
-    {
-      "feature": "ret_NEM",
-      "label": "NEM",
-      "value": 0.020382281116408718,
-      "coefficient": 0.03585199226883462,
-      "contribution_pp": 0.07307453850066993
+      "value": 0.003443110602771249,
+      "coefficient": 0.16144996869409375,
+      "contribution_pp": 0.05558900990277203
     },
     {
       "feature": "ret_FCX",
       "label": "FCX",
-      "value": 0.012123898737473437,
-      "coefficient": 0.05381605181177274,
-      "contribution_pp": 0.06524603626165566
+      "value": 0.009855975071371592,
+      "coefficient": 0.05172499963920761,
+      "contribution_pp": 0.05098003070107348
+    },
+    {
+      "feature": "ret_NEM",
+      "label": "NEM",
+      "value": 0.01136362558800319,
+      "coefficient": 0.035293900351504204,
+      "contribution_pp": 0.04010666691347879
     },
     {
       "feature": "ret_EPU",
       "label": "EPU",
-      "value": 0.01291464831972089,
-      "coefficient": 0.033730885742927194,
-      "contribution_pp": 0.0435622526882592
+      "value": -0.010176571984173655,
+      "coefficient": 0.0387465970832561,
+      "contribution_pp": -0.03943075343595286
     },
     {
       "feature": "intercept",
       "label": "Base",
       "value": 1.0,
-      "coefficient": -0.00010695482333578608,
-      "contribution_pp": -0.010695482333578608
+      "coefficient": -0.00022678416995476245,
+      "contribution_pp": -0.022678416995476246
+    },
+    {
+      "feature": "ret_USD_PEN",
+      "label": "USD/PEN",
+      "value": 0.003051425245624406,
+      "coefficient": 0.04184538208074767,
+      "contribution_pp": 0.01276880552939926
     },
     {
       "feature": "ret_MCHI",
       "label": "MCHI",
-      "value": -0.0008142732430743704,
-      "coefficient": -0.12183722975671488,
-      "contribution_pp": 0.00992087962011974
+      "value": -0.0008150145483905025,
+      "coefficient": -0.1250111796204189,
+      "contribution_pp": 0.01018859301020997
     }
   ],
   "quality": {
@@ -90,7 +90,7 @@
     "warnings": [],
     "critical": [],
     "training_n": 90,
-    "latest_sbs_date": "2026-10-23",
+    "latest_sbs_date": "2026-10-26",
     "fx_provisional": true
   },
   "challenger_huber": {
