@@ -1,6 +1,6 @@
 {
   "fund": "HÁBITAT Fondo 3",
-  "generated_at_lima": "2026-10-27T20:26:02.283638-05:00",
+  "generated_at_lima": "2026-10-28T00:56:57.689422-05:00",
   "model_version": "habitat-rolling90-levels-returns-v4",
   "history_start": "2026-01-05",
   "window": 90,
@@ -31,7 +31,7 @@
   "latest": {
     "latest_sbs_date": "2026-10-23",
     "latest_sbs_vc": 32.0261782,
-    "latest_market_date": "2026-10-26"
+    "latest_market_date": "2026-10-27"
   },
   "models": {
     "niveles": {
@@ -4596,7 +4596,7 @@
       "vc_niveles": 32.10585254233029,
       "vc_niveles_raw": 32.10585254233029,
       "ret_niveles_implicito": 0.0010939546046682125,
-      "ret_vc_estimado": 0.0018443671535432918,
+      "ret_vc_estimado": 0.0018443671535432913,
       "vc_retornos": 32.11701802209445,
       "error_niveles_pct": 0.24877880161888744,
       "error_retornos_pct": 0.2836424050574049,
@@ -4619,8 +4619,31 @@
       "vc_niveles": 32.17674131432021,
       "vc_niveles_raw": 32.17674131432021,
       "ret_niveles_implicito": 0.00220797039718712,
-      "ret_vc_estimado": 0.0014598561575117233,
+      "ret_vc_estimado": 0.0014598561575117235,
       "vc_retornos": 32.072931813446836,
+      "error_niveles_pct": null,
+      "error_retornos_pct": null,
+      "fase": "PROYECCIÓN"
+    },
+    {
+      "fecha": "2026-10-27",
+      "SPBLSCUP": 420.31,
+      "SPY": 769.6599731445312,
+      "EEM": 62.52000045776367,
+      "MCHI": 49.08000183105469,
+      "QQQ": 721.25,
+      "vc_sbs": null,
+      "ret_SPY": 0.005605103485520013,
+      "ret_EEM": 0.011323208773779125,
+      "ret_MCHI": -0.0008142732430743704,
+      "ret_QQQ": 0.012707087388167615,
+      "ret_SPBLSCUP": 0.013698960519016978,
+      "ret_vc_sbs": null,
+      "vc_niveles": 32.570540858554395,
+      "vc_niveles_raw": 32.570540858554395,
+      "ret_niveles_implicito": 0.012238639717656152,
+      "ret_vc_estimado": 0.011076812025888167,
+      "vc_retornos": 32.42819765026351,
       "error_niveles_pct": null,
       "error_retornos_pct": null,
       "fase": "PROYECCIÓN"
