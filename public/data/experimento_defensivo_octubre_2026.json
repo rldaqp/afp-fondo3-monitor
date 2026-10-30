@@ -1,7 +1,7 @@
 {
   "descripcion": "Experimento octubre 2026: amortiguación del 20% del movimiento diario de los modelos. Reanclaje al VC SBS de la rueda anterior cuando está disponible; de lo contrario encadenamiento independiente de cada serie experimental. No es VC oficial.",
   "fuente_version": "v3-30vc-through-20260930",
-  "fuente_generado": "2026-10-30T12:07:42.754014-05:00",
+  "fuente_generado": "2026-10-30T12:13:50.885261-05:00",
   "formula_niveles": "ancla_niveles + 0.8 * (niveles_hoy - niveles_ayer)",
   "formula_retornos": "ancla_retornos * (1 + 0.8 * retorno_estimado_hoy)",
   "observaciones": [
@@ -277,8 +277,8 @@
     },
     {
       "fecha": "2026-10-28",
-      "vc_sbs": null,
-      "vc_sbs_origen": "pendiente",
+      "vc_sbs": 69.8426343,
+      "vc_sbs_origen": "monitor",
       "vc_sbs_anterior": 68.7416094,
       "anclaje_tipo": "SBS oficial de rueda anterior",
       "anclaje_niveles": 68.7416094,
@@ -287,21 +287,21 @@
       "vc_niveles_defensivo": 69.32778718424268,
       "vc_retornos_visor": 69.32812545400591,
       "vc_retornos_defensivo": 69.21082224320475,
-      "error_abs_niveles_defensivo": null,
-      "error_abs_retornos_defensivo": null
+      "error_abs_niveles_defensivo": 0.5148471157573198,
+      "error_abs_retornos_defensivo": 0.6318120567952548
     },
     {
       "fecha": "2026-10-29",
       "vc_sbs": null,
       "vc_sbs_origen": "pendiente",
-      "vc_sbs_anterior": null,
-      "anclaje_tipo": "encadenado desde proyección 20% de rueda anterior",
-      "anclaje_niveles": 69.32778718424268,
-      "anclaje_retornos": 69.21082224320475,
+      "vc_sbs_anterior": 69.8426343,
+      "anclaje_tipo": "SBS oficial de rueda anterior",
+      "anclaje_niveles": 69.8426343,
+      "anclaje_retornos": 69.8426343,
       "vc_niveles_visor": 67.60516475028324,
-      "vc_niveles_defensivo": 68.54317233936705,
-      "vc_retornos_visor": 68.31148857275457,
-      "vc_retornos_defensivo": 68.39888885815047,
+      "vc_niveles_defensivo": 69.05801945512437,
+      "vc_retornos_visor": 68.81845259238645,
+      "vc_retornos_defensivo": 69.02328893390916,
       "error_abs_niveles_defensivo": null,
       "error_abs_retornos_defensivo": null
     }
