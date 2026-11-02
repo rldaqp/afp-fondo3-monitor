@@ -1,16 +1,16 @@
 {
-  "generated_for": "2026-10-29",
-  "current_signal": "BAJA",
+  "generated_for": "2026-11-02",
+  "current_signal": "NEUTRO",
   "confidence": {
-    "historical_accuracy": 0.8285714285714286,
-    "n": 35,
-    "label": "BAJA",
+    "historical_accuracy": 0.4,
+    "n": 15,
+    "label": "NEUTRO",
     "description": "Aciertos históricos de la misma clase de señal; no es garantía futura."
   },
   "performance": {
     "window_n": 90,
     "classification_accuracy": 0.8111111111111111,
-    "mae_return_pp": 0.30108404089782853,
+    "mae_return_pp": 0.30014133303893753,
     "sube_n": 40,
     "sube_accuracy": 0.95,
     "baja_n": 35,
@@ -19,70 +19,70 @@
     "neutro_accuracy": 0.4
   },
   "uncertainty": {
-    "relative_q80": 0.004755283397758113,
+    "relative_q80": 0.004701016210372096,
     "label": "Banda empírica 80%"
   },
   "benchmarks": {
-    "zero_change_mae_pp": 0.8047452178552165,
-    "ols_mae_pp": 0.30108404089782853,
-    "ols_mae_improvement_vs_zero": 0.6258641440575826
+    "zero_change_mae_pp": 0.8138487372746996,
+    "ols_mae_pp": 0.30014133303893753,
+    "ols_mae_improvement_vs_zero": 0.6312074722337127
   },
   "contributions": [
     {
-      "feature": "ret_EEM",
-      "label": "EEM",
-      "value": -0.01259444633651241,
-      "coefficient": 0.5265122463868946,
-      "contribution_pp": -0.6631130232636345
+      "feature": "ret_MCHI",
+      "label": "MCHI",
+      "value": 0.010597115569546567,
+      "coefficient": -0.12455245807730293,
+      "contribution_pp": -0.1319896792716283
     },
     {
       "feature": "ret_NEM",
       "label": "NEM",
-      "value": -0.018609507999144403,
-      "coefficient": 0.035422776620178786,
-      "contribution_pp": -0.06592004448651224
+      "value": 0.023262317918965048,
+      "coefficient": 0.03637175182028196,
+      "contribution_pp": 0.08460912541130947
     },
     {
       "feature": "ret_SPY",
       "label": "SPY",
-      "value": -0.0038197255200072,
-      "coefficient": 0.15441735750545868,
-      "contribution_pp": -0.05898319211956759
+      "value": -0.004790127636589259,
+      "coefficient": 0.1559121219382501,
+      "contribution_pp": -0.07468389641756862
+    },
+    {
+      "feature": "ret_EEM",
+      "label": "EEM",
+      "value": 0.0011467839740220143,
+      "coefficient": 0.5357413485094046,
+      "contribution_pp": 0.06143795926915279
     },
     {
       "feature": "ret_EPU",
       "label": "EPU",
-      "value": -0.010517600576234742,
-      "coefficient": 0.03856631890623868,
-      "contribution_pp": -0.04056251379515087
+      "value": 0.013469715975855001,
+      "coefficient": 0.03557502079803805,
+      "contribution_pp": 0.047918542598470705
     },
     {
       "feature": "ret_FCX",
       "label": "FCX",
-      "value": -0.006906893318494589,
-      "coefficient": 0.05230849020879469,
-      "contribution_pp": -0.03612891615236637
+      "value": 0.008003841687685087,
+      "coefficient": 0.04919091206847285,
+      "contribution_pp": 0.03937162726688944
     },
     {
       "feature": "intercept",
       "label": "Base",
       "value": 1.0,
-      "coefficient": -0.0002547485027256079,
-      "contribution_pp": -0.02547485027256079
+      "coefficient": -0.00023805875761560909,
+      "contribution_pp": -0.02380587576156091
     },
     {
       "feature": "ret_USD_PEN",
       "label": "USD/PEN",
-      "value": 0.004678852043290993,
-      "coefficient": 0.04921552558336355,
-      "contribution_pp": 0.02302721624373607
-    },
-    {
-      "feature": "ret_MCHI",
-      "label": "MCHI",
-      "value": -0.001631358677837147,
-      "coefficient": -0.12253504436209622,
-      "contribution_pp": 0.019989860795926545
+      "value": 0.0015326908901693859,
+      "coefficient": 0.06111900299232624,
+      "contribution_pp": 0.009367653910257387
     }
   ],
   "quality": {
@@ -90,7 +90,7 @@
     "warnings": [],
     "critical": [],
     "training_n": 90,
-    "latest_sbs_date": "2026-10-27",
+    "latest_sbs_date": "2026-10-29",
     "fx_provisional": true
   },
   "challenger_huber": {
