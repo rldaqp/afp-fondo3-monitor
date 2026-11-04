@@ -74,6 +74,7 @@ jobs:
           python - <<'PY'
           import time
           import urllib.request
+          import json
           url = "https://rldaqp.github.io/afp-fondo3-monitor/?revision=interactive-legend"
           for attempt in range(12):
               try:
@@ -86,6 +87,11 @@ jobs:
                   assert "renderOctoberComparison();" in html, "La versión pública aún no renderiza el cuadro"
                   assert 'id="vcPointPanel"' in html, "La versión pública aún no muestra el panel por fecha"
                   assert "updateVcPointPanel" in html, "La versión pública aún no activa el panel por fecha"
+                  data_url = "https://rldaqp.github.io/afp-fondo3-monitor/data/experimento_defensivo_octubre_2026.json?revision=november-continuity"
+                  with urllib.request.urlopen(urllib.request.Request(data_url, headers={"Cache-Control": "no-cache"}), timeout=15) as data_response:
+                      published = json.loads(data_response.read().decode("utf-8"))
+                  published_dates = [o["fecha"] for o in published["observaciones"]]
+                  assert "2026-11-02" in published_dates and "2026-11-03" in published_dates, "Pages no publicó la continuidad del 2 y 3 de noviembre"
                   print("PUBLICACIÓN VERIFICADA: leyenda interactiva y cuadro diario visibles en HTML público")
                   break
               except Exception as exc:
