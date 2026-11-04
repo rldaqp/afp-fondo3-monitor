@@ -38,7 +38,11 @@ jobs:
           html = Path("public/index.html").read_text()
           assert base["model_version"] == exp["fuente_version"], "Versiones de modelo no coinciden"
           assert exp["observaciones"], "Sin observaciones comparativas"
-          assert all(o["fecha"].startswith("2026-10-") for o in exp["observaciones"]), "El comparativo incluye fechas fuera de octubre"
+          assert all(o["fecha"] >= "2026-10-01" for o in exp["observaciones"]), "Fechas anteriores al experimento"
+          dates = [o["fecha"] for o in exp["observaciones"]]
+          assert dates == sorted(set(dates)), "Fechas duplicadas o desordenadas"
+          for d in ("2026-11-02", "2026-11-03"):
+              assert d in dates, f"Falta rueda comparativa {d}"
           assert "Niveles · comparativo 20%" in html and "Retornos · comparativo 20%" in html, "Faltan curvas comparativas"
           assert "data/experimento_defensivo_octubre_2026.json" in html, "El visor no carga el comparativo"
           assert html.count('data-vc-series="') == 5, "La leyenda debe tener cinco controles táctiles"
