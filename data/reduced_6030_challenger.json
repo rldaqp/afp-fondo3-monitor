@@ -1,33 +1,33 @@
 {
-  "generated_at_lima": "2026-11-03T19:34:07.392993-05:00",
-  "signal_date": "2026-11-03",
-  "mode": "INTRADIA PROVISIONAL - ULTIMO CORTE",
-  "market_open": false,
+  "generated_at_lima": "2026-11-04T15:21:45.934628-05:00",
+  "signal_date": "2026-11-04",
+  "mode": "INTRADÍA PROVISIONAL",
+  "market_open": true,
   "role": "UNICO CHALLENGER EN SOMBRA; no reemplaza el OLS rolling 90 oficial.",
   "official": {
     "model": "OLS rolling 90 oficial · SPY EEM EPU MCHI NEM FCX USD/PEN",
-    "return_estimated": -0.007198418372440854,
-    "signal": "BAJA",
-    "vc_estimated": 70.90028473996483
+    "return_estimated": 0.015518388367280185,
+    "signal": "SUBE",
+    "vc_estimated": 72.5225908442607
   },
   "challenger": {
     "model": "OLS 60/30 · sin NEM ni FCX + QQQ",
-    "return_estimated": -0.002615116934899717,
-    "signal": "BAJA",
-    "vc_estimated": 66.05641321169173,
+    "return_estimated": 0.004543897000958371,
+    "signal": "SUBE",
+    "vc_estimated": 66.3565667495784,
     "blind_chain": true,
     "reanchored_with_latest_sbs": false
   },
   "comparison": {
     "same_signal": true,
-    "vc_difference": -4.843871528273098,
-    "return_difference_pp": 0.4583301437541137
+    "vc_difference": -6.1660240946822995,
+    "return_difference_pp": -1.0974491366321812
   },
   "cycle": {
     "train_window": 60,
     "freeze_horizon": 30,
     "cycle_start": "2026-10-02",
-    "cycle_day": 23,
+    "cycle_day": 24,
     "anchor_date": "2026-09-30",
     "anchor_vc": 72.5287181,
     "train_start": "2026-06-30",
@@ -44,32 +44,32 @@
     "rule": "Coeficientes congelados 30 sesiones. El VC se encadena desde el ancla del ciclo y no se corrige con SBS dentro del bloque."
   },
   "qqq": {
-    "return": 0.006151906908329119,
-    "source": "CIERRE DIARIO YAHOO"
+    "return": 0.01199505363020581,
+    "source": "INTRADIA YAHOO"
   },
   "blind_backtest": {
     "design": "Bloques no superpuestos: entrenar 60 observaciones, congelar 30, un solo VC SBS como ancla al inicio; dentro del bloque SBS solo evalua y nunca corrige.",
     "n_blocks": 11,
     "n_predictions": 330,
     "official_current_7f": {
-      "vc_mae": 0.9301917209154881,
-      "vc_rmse": 1.6613949918439477,
-      "mean_endpoint_abs_error": 1.7992680605686244
+      "vc_mae": 0.9301917209154903,
+      "vc_rmse": 1.6613949918439508,
+      "mean_endpoint_abs_error": 1.7992680605686289
     },
     "challenger_6030": {
-      "vc_mae": 0.7515437795040333,
-      "vc_rmse": 1.4098464466750633,
-      "mean_endpoint_abs_error": 1.3221673295622578
+      "vc_mae": 0.7515437795040324,
+      "vc_rmse": 1.4098464466750624,
+      "mean_endpoint_abs_error": 1.3221673295622538
     },
-    "mae_improvement_pct": 19.205496823346348,
+    "mae_improvement_pct": 19.20549682334664,
     "challenger_better_blocks": 8,
     "official_better_blocks": 3
   },
   "forward_sbs": {
-    "evaluated": 52,
+    "evaluated": 53,
     "pending": 2,
-    "challenger_vc_mae": 0.6799287261219001,
-    "official_vc_mae": 1.499205000852878
+    "challenger_vc_mae": 0.6730006386484612,
+    "official_vc_mae": 1.591267397673177
   },
   "ledger": "data/rolling90/reduced_6030_shadow.csv"
 }
