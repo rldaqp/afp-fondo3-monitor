@@ -19,7 +19,7 @@ on:
   schedule:
     # Rescate adicional al relevo: también cubre noches y fines de semana.
     # El supervisor no consulta cotizaciones fuera de sesión ni en feriados.
-    - cron: "17 */3 * * *"
+    - cron: "*/10 * * * 1-5"
 
 permissions:
   actions: write
@@ -28,12 +28,12 @@ permissions:
 concurrency:
   group: intraday-heartbeat
   # Un cron tardío no debe interrumpir el reloj que ya funciona.
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   heartbeat:
     runs-on: ubuntu-latest
-    timeout-minutes: 195
+    timeout-minutes: 12
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -56,6 +56,6 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           # La instalación demuestra su primer relevo en ocho minutos.
-          # Los siguientes relevos duran tres horas, por debajo del límite de 6 h.
-          LEASE_SECONDS: ${{ github.event_name == 'push' && '480' || '10800' }}
+          # Cada ejecución dura ocho minutos y el cron programa el siguiente control.
+          LEASE_SECONDS: ${{ github.event_name == 'push' && '480' || '480' }}
         run: python -u scripts/profuturo_watchdog.py --lease-seconds "$LEASE_SECONDS"
