@@ -1,5 +1,5 @@
 {
-  "generated_from": "2026-11-05T15:00:36.703972-05:00",
+  "generated_from": "2026-11-05T15:06:48.239499-05:00",
   "validation_start": "2026-08-18",
   "policy": {
     "champion": "Coeficientes fijos calibrados 07/07/2026–17/08/2026.",
@@ -504,38 +504,47 @@
           "base_pred_return": -0.0019997793989021684,
           "challenger_pred_return": -0.003463217639642746,
           "challenger_prediction": 65.77808034398093
+        },
+        {
+          "date": "2026-11-03",
+          "base_error_pct": -0.9769265987450648,
+          "challenger_error_pct": 0.15492130037060292,
+          "actual_return": -0.0014320339867222032,
+          "base_pred_return": -0.0014020440429135528,
+          "challenger_pred_return": 0.0022251909931680913,
+          "challenger_prediction": 65.92444913591025
         }
       ],
       "base": {
         "full": {
-          "n": 54,
-          "mae_pct": 0.6178390971078855,
-          "rmse_pct": 0.8434074262902812,
-          "bias_pct": -0.5028395447850614,
-          "direction_n": 54,
-          "direction_accuracy": 0.9259259259259259
+          "n": 55,
+          "mae_pct": 0.6243679607740161,
+          "rmse_pct": 0.846023148859112,
+          "bias_pct": -0.5114593094025159,
+          "direction_n": 55,
+          "direction_accuracy": 0.9272727272727272
         },
         "recent_5": {
           "n": 5,
-          "mae_pct": 1.4769213932165037,
-          "rmse_pct": 1.5138628751092995,
-          "bias_pct": -1.4769213932165037,
+          "mae_pct": 1.4138320186195983,
+          "rmse_pct": 1.4658144774886197,
+          "bias_pct": -1.4138320186195983,
           "direction_n": 5,
           "direction_accuracy": 1.0
         },
         "recent_10": {
           "n": 10,
-          "mae_pct": 1.4262607622578338,
-          "rmse_pct": 1.454921888029238,
-          "bias_pct": -1.4262607622578338,
+          "mae_pct": 1.3799231863908157,
+          "rmse_pct": 1.415905777275639,
+          "bias_pct": -1.3799231863908157,
           "direction_n": 10,
           "direction_accuracy": 1.0
         },
         "recent_20": {
           "n": 20,
-          "mae_pct": 1.288783062397934,
-          "rmse_pct": 1.3295469076763238,
-          "bias_pct": -1.288783062397934,
+          "mae_pct": 1.3034658112469564,
+          "rmse_pct": 1.3386826559058023,
+          "bias_pct": -1.3034658112469564,
           "direction_n": 20,
           "direction_accuracy": 1.0
         }
@@ -543,30 +552,30 @@
       "challenger": {
         "window": 30,
         "full": {
-          "n": 54,
-          "mae_pct": 0.3515134017144736,
-          "rmse_pct": 0.4322002980676499,
-          "bias_pct": -0.06258169902355326,
-          "direction_n": 53,
-          "direction_accuracy": 0.8301886792452831
+          "n": 55,
+          "mae_pct": 0.3479389998718578,
+          "rmse_pct": 0.4287623601694841,
+          "bias_pct": -0.0586270990345686,
+          "direction_n": 54,
+          "direction_accuracy": 0.8148148148148148
         },
         "coefficients": {
-          "intercept": 10.030041874411726,
-          "SPY": -0.02442447576693599,
-          "EEM": 0.4598104599044265,
-          "MCHI": -0.15710309721630236,
-          "QQQ": 0.0583908097711182,
-          "SPBLSCUP": 0.03504921726763144
+          "intercept": 5.3902475406488835,
+          "SPY": -0.015425333747972343,
+          "EEM": 0.5033526214230967,
+          "MCHI": -0.12593748371620864,
+          "QQQ": 0.05140038404913045,
+          "SPBLSCUP": 0.03140175424610595
         },
-        "effect_drift": 0.37644525664526324
+        "effect_drift": 0.31150119832077616
       },
       "status": {
         "code": "WATCH",
         "label": "VIGILAR",
         "reason": "Hay señales de deterioro reciente o el challenger empieza a mejorar al modelo base. Todavía no se cumple el umbral de cambio.",
-        "mae_improvement": 0.4310599582319842,
-        "rmse_improvement": 0.4875545500367735,
-        "challenger_win_share": 0.5925925925925926,
+        "mae_improvement": 0.4427340579094978,
+        "rmse_improvement": 0.49320256691831277,
+        "challenger_win_share": 0.6,
         "challenger_recent5_wins": 5
       }
     },
@@ -1057,38 +1066,47 @@
           "base_pred_return": -0.0019349513811932485,
           "challenger_pred_return": -0.0030353969137791254,
           "challenger_prediction": 66.14894496877298
+        },
+        {
+          "date": "2026-11-03",
+          "base_error_pct": -0.07573803825772218,
+          "challenger_error_pct": 0.139714934176971,
+          "actual_return": -0.0014320339867222032,
+          "base_pred_return": -0.0021883297748507237,
+          "challenger_pred_return": -3.6885410294334054e-05,
+          "challenger_prediction": 65.91443992915677
         }
       ],
       "base": {
         "full": {
-          "n": 54,
-          "mae_pct": 0.2695773818992629,
-          "rmse_pct": 0.33199951076455897,
-          "bias_pct": -0.025013108601487748,
-          "direction_n": 54,
-          "direction_accuracy": 0.9444444444444444
+          "n": 55,
+          "mae_pct": 0.2660530301966894,
+          "rmse_pct": 0.32912596948518824,
+          "bias_pct": -0.02593538004978292,
+          "direction_n": 55,
+          "direction_accuracy": 0.9454545454545454
         },
         "recent_5": {
           "n": 5,
-          "mae_pct": 0.3914816927841991,
-          "rmse_pct": 0.44588192126092824,
-          "bias_pct": -0.038998180125286996,
+          "mae_pct": 0.3632117179605343,
+          "rmse_pct": 0.4365002926175472,
+          "bias_pct": -0.010728205301622218,
           "direction_n": 5,
           "direction_accuracy": 1.0
         },
         "recent_10": {
           "n": 10,
-          "mae_pct": 0.3148103474088748,
-          "rmse_pct": 0.36843104122169146,
-          "bias_pct": 0.0007081463198177484,
+          "mae_pct": 0.3140167744468614,
+          "rmse_pct": 0.3682593206376789,
+          "bias_pct": -0.015233034293740122,
           "direction_n": 10,
           "direction_accuracy": 1.0
         },
         "recent_20": {
           "n": 20,
-          "mae_pct": 0.28992694872237157,
-          "rmse_pct": 0.342750694326387,
-          "bias_pct": -0.04553912646451719,
+          "mae_pct": 0.282318846135578,
+          "rmse_pct": 0.3393640057994106,
+          "bias_pct": -0.037931023877723624,
           "direction_n": 20,
           "direction_accuracy": 1.0
         }
@@ -1096,30 +1114,30 @@
       "challenger": {
         "window": 30,
         "full": {
-          "n": 54,
-          "mae_pct": 0.31033369390377147,
-          "rmse_pct": 0.3846029164860769,
-          "bias_pct": 0.021585442423456405,
-          "direction_n": 54,
-          "direction_accuracy": 0.9444444444444444
+          "n": 55,
+          "mae_pct": 0.3072315346360115,
+          "rmse_pct": 0.3815558590057835,
+          "bias_pct": 0.023733251364429397,
+          "direction_n": 55,
+          "direction_accuracy": 0.9454545454545454
         },
         "coefficients": {
-          "intercept": 0.0003467831861905824,
-          "SPY": -0.46523478258959095,
-          "EEM": 0.5470899282239827,
-          "MCHI": -0.12527153380472053,
-          "QQQ": 0.48814789667959374,
-          "SPBLSCUP": 0.27623783751131004
+          "intercept": 0.0003915975248423018,
+          "SPY": -0.4088802048774126,
+          "EEM": 0.541250233536135,
+          "MCHI": -0.08592783101682529,
+          "QQQ": 0.5445225345998633,
+          "SPBLSCUP": 0.2121080979891912
         },
-        "effect_drift": 0.13391335108588504
+        "effect_drift": 0.15498012306171466
       },
       "status": {
         "code": "MAINTAIN",
         "label": "MANTENER",
         "reason": "No existe evidencia suficiente de que recalibrar mejore de forma consistente al modelo base.",
-        "mae_improvement": -0.15118594786167416,
-        "rmse_improvement": -0.15844422662062962,
-        "challenger_win_share": 0.4074074074074074,
+        "mae_improvement": -0.1547755513586122,
+        "rmse_improvement": -0.15930037244585993,
+        "challenger_win_share": 0.4,
         "challenger_recent5_wins": 2
       }
     }
@@ -1200,7 +1218,7 @@
         "actual_same_day_return": 0.015707870661759493,
         "forward_1d": 0.016016862415793254,
         "forward_3d": -0.03478627894912223,
-        "forward_5d": null
+        "forward_5d": -0.04246530340908772
       },
       {
         "date": "2026-10-28",
@@ -1217,8 +1235,8 @@
     "forward_3d_n": 10,
     "forward_3d_positive_rate": 0.3,
     "forward_3d_avg_return": -0.012850192049933217,
-    "forward_5d_n": 8,
-    "forward_5d_positive_rate": 0.125,
-    "forward_5d_avg_return": -0.014922115577654868
+    "forward_5d_n": 9,
+    "forward_5d_positive_rate": 0.1111111111111111,
+    "forward_5d_avg_return": -0.017982469781147408
   }
 }
