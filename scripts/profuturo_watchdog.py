@@ -170,7 +170,10 @@ class GitHub:
             payload = read_json(self.base + f"/actions/workflows/{workflow}/runs?per_page=10", token=self.token)
             for run in payload["workflow_runs"]:
                 if run.get("head_branch") == BRANCH and run.get("status") in ACTIVE:
-                    return True
+                    started = stamp(run.get("created_at"))
+                    if started is not None and (clock() - started).total_seconds() < 900:
+                        return True
+                    log("ejecucion_obsoleta_ignorada", workflow=workflow, run_id=run.get("id"))
         return False
 
     def dispatch(self, workflow):
