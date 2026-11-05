@@ -54,7 +54,7 @@ permissions:
 
 concurrency:
   group: profuturo-fixed-publish
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   update:
