@@ -1,16 +1,16 @@
 {
-  "generated_for": "2026-11-05",
-  "current_signal": "BAJA",
+  "generated_for": "2026-11-06",
+  "current_signal": "SUBE",
   "confidence": {
-    "historical_accuracy": 0.8285714285714286,
-    "n": 35,
-    "label": "BAJA",
+    "historical_accuracy": 0.95,
+    "n": 40,
+    "label": "SUBE",
     "description": "Aciertos históricos de la misma clase de señal; no es garantía futura."
   },
   "performance": {
     "window_n": 90,
     "classification_accuracy": 0.8111111111111111,
-    "mae_return_pp": 0.2904583141173141,
+    "mae_return_pp": 0.2904583141173139,
     "sube_n": 40,
     "sube_accuracy": 0.95,
     "baja_n": 35,
@@ -19,70 +19,70 @@
     "neutro_accuracy": 0.4
   },
   "uncertainty": {
-    "relative_q80": 0.00464041779768394,
+    "relative_q80": 0.004640417797683977,
     "label": "Banda empírica 80%"
   },
   "benchmarks": {
     "zero_change_mae_pp": 0.8145992014308817,
-    "ols_mae_pp": 0.2904583141173141,
-    "ols_mae_improvement_vs_zero": 0.6434340794747768
+    "ols_mae_pp": 0.2904583141173139,
+    "ols_mae_improvement_vs_zero": 0.643434079474777
   },
   "contributions": [
     {
       "feature": "ret_EEM",
       "label": "EEM",
-      "value": -0.05793573120263318,
-      "coefficient": 0.5652967069652587,
-      "contribution_pp": -3.2750878064472926
-    },
-    {
-      "feature": "ret_SPY",
-      "label": "SPY",
-      "value": -0.044091753715052806,
-      "coefficient": 0.13746621063242473,
-      "contribution_pp": -0.6061126303346445
+      "value": 0.022050001908991534,
+      "coefficient": 0.565296706965259,
+      "contribution_pp": 1.2464793467730588
     },
     {
       "feature": "ret_FCX",
       "label": "FCX",
-      "value": -0.07507982528442347,
-      "coefficient": 0.05257058676435476,
-      "contribution_pp": -0.3946990469367381
+      "value": 0.0262521002246785,
+      "coefficient": 0.05257058676435437,
+      "contribution_pp": 0.13800883126079877
     },
     {
       "feature": "ret_MCHI",
       "label": "MCHI",
-      "value": 0.009309533154608696,
-      "coefficient": -0.16801281557544756,
-      "contribution_pp": -0.15641208769987852
-    },
-    {
-      "feature": "ret_EPU",
-      "label": "EPU",
-      "value": -0.031189576801033292,
-      "coefficient": 0.04694548479751244,
-      "contribution_pp": -0.1464209803553755
-    },
-    {
-      "feature": "ret_NEM",
-      "label": "NEM",
-      "value": 0.013546680770915698,
-      "coefficient": 0.03279823806075055,
-      "contribution_pp": 0.04443072608574849
+      "value": -0.0028824274258255622,
+      "coefficient": -0.16801281557544884,
+      "contribution_pp": 0.04842847475048459
     },
     {
       "feature": "intercept",
       "label": "Base",
       "value": 1.0,
-      "coefficient": -0.0004362679524844123,
-      "contribution_pp": -0.04362679524844123
+      "coefficient": -0.00043626795248441225,
+      "contribution_pp": -0.04362679524844122
+    },
+    {
+      "feature": "ret_SPY",
+      "label": "SPY",
+      "value": 0.0031241173633611563,
+      "coefficient": 0.13746621063242434,
+      "contribution_pp": 0.04294605755122189
+    },
+    {
+      "feature": "ret_NEM",
+      "label": "NEM",
+      "value": 0.010024263526975163,
+      "coefficient": 0.03279823806075055,
+      "contribution_pp": 0.032877818154143035
     },
     {
       "feature": "ret_USD_PEN",
       "label": "USD/PEN",
-      "value": -0.0002901915264075239,
-      "coefficient": 0.14229385476986045,
-      "contribution_pp": -0.004129247091407632
+      "value": -0.001558532615143382,
+      "coefficient": 0.14229385476986225,
+      "contribution_pp": -0.022176961359330602
+    },
+    {
+      "feature": "ret_EPU",
+      "label": "EPU",
+      "value": 0.0033691574060057405,
+      "coefficient": 0.046945484797513065,
+      "contribution_pp": 0.015816672778407107
     }
   ],
   "quality": {
@@ -91,7 +91,7 @@
     "critical": [],
     "training_n": 90,
     "latest_sbs_date": "2026-11-04",
-    "fx_provisional": false
+    "fx_provisional": true
   },
   "challenger_huber": {
     "status": "NO APLICA EN HÁBITAT",
