@@ -19,7 +19,7 @@ on:
   schedule:
     # Rescate adicional al relevo: también cubre noches y fines de semana.
     # El supervisor no consulta cotizaciones fuera de sesión ni en feriados.
-    - cron: "*/10 * * * 1-5"
+    - cron: "7-59/10 * * * 1-5"
 
 permissions:
   actions: write
