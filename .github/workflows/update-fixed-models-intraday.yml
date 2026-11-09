@@ -35,7 +35,7 @@ on:
     # Minutos desplazados del :00 y de los múltiplos de cinco más saturados.
     # GitHub puede retrasar o descartar cron bajo carga; el push y workflow_run
     # se mantienen como disparadores independientes.
-    - cron: "3-58/5 13-22 * * 1-5"
+    - cron: "4-59/5 13-22 * * 1-5"
     # Salvaguardas de cierre. 20:07 UTC cubre el cierre cuando NY está en EDT
     # y 21:07 UTC cuando NY está en EST. Son ejecuciones adicionales al ciclo normal.
     - cron: "7 20 * * 1-5"
