@@ -28,7 +28,7 @@ jobs:
         with:
           python-version: "3.11"
       - name: Dependencias de pruebas
-        run: pip install --disable-pip-version-check exchange-calendars requests beautifulsoup4 lxml
+        run: pip install --disable-pip-version-check pandas numpy yfinance requests beautifulsoup4 lxml selenium exchange-calendars
       - name: Apertura frescura duplicados y relevo sin cron
         run: python -m unittest discover -s scripts -p test_profuturo_watchdog.py -v
       - name: Ecuaciones SBS cierres y fechas
