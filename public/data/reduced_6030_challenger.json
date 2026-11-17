@@ -1,5 +1,5 @@
 {
-  "generated_at_lima": "2026-11-16T23:49:31.491815-05:00",
+  "generated_at_lima": "2026-11-17T16:38:14.757244-05:00",
   "signal_date": "2026-11-16",
   "mode": "CIERRE DIARIO",
   "market_open": false,
@@ -12,26 +12,26 @@
   },
   "challenger": {
     "model": "OLS 60/30 · sin NEM ni FCX + QQQ",
-    "return_estimated": -0.02696760684080422,
+    "return_estimated": -0.02967938808160875,
     "signal": "BAJA",
-    "vc_estimated": 64.35327302632946,
+    "vc_estimated": 62.01926985149836,
     "blind_chain": true,
     "reanchored_with_latest_sbs": false
   },
   "comparison": {
     "same_signal": true,
-    "vc_difference": -5.056445245294896,
-    "return_difference_pp": 0.1102896216725012
+    "vc_difference": -7.390448420125999,
+    "return_difference_pp": -0.16088850240795172
   },
   "cycle": {
     "train_window": 60,
     "freeze_horizon": 30,
-    "cycle_start": "2026-10-02",
-    "cycle_day": 32,
-    "anchor_date": "2026-09-30",
-    "anchor_vc": 72.5287181,
-    "train_start": "2026-06-30",
-    "train_end": "2026-09-30",
+    "cycle_start": "2026-11-16",
+    "cycle_day": 1,
+    "anchor_date": "2026-11-13",
+    "anchor_vc": 63.9162655,
+    "train_start": "2026-08-20",
+    "train_end": "2026-11-13",
     "train_n": 60,
     "features": [
       "ret_SPY",
@@ -52,24 +52,24 @@
     "n_blocks": 11,
     "n_predictions": 330,
     "official_current_7f": {
-      "vc_mae": 0.9301917209154903,
-      "vc_rmse": 1.6613949918439508,
-      "mean_endpoint_abs_error": 1.7992680605686289
+      "vc_mae": 0.9301917209154881,
+      "vc_rmse": 1.6613949918439477,
+      "mean_endpoint_abs_error": 1.7992680605686244
     },
     "challenger_6030": {
-      "vc_mae": 0.7515437795040324,
-      "vc_rmse": 1.4098464466750624,
-      "mean_endpoint_abs_error": 1.3221673295622538
+      "vc_mae": 0.7515437795040333,
+      "vc_rmse": 1.4098464466750633,
+      "mean_endpoint_abs_error": 1.3221673295622578
     },
-    "mae_improvement_pct": 19.20549682334664,
+    "mae_improvement_pct": 19.205496823346348,
     "challenger_better_blocks": 8,
     "official_better_blocks": 3
   },
   "forward_sbs": {
-    "evaluated": 60,
-    "pending": 3,
-    "challenger_vc_mae": 0.731107322034178,
-    "official_vc_mae": 2.310121924390413
+    "evaluated": 62,
+    "pending": 1,
+    "challenger_vc_mae": 0.7817437937536649,
+    "official_vc_mae": 2.472715146013897
   },
   "ledger": "data/rolling90/reduced_6030_shadow.csv"
 }

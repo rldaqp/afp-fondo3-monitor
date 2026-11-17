@@ -1,5 +1,5 @@
 {
-  "generated_at_lima": "2026-11-17T09:29:10.956528-05:00",
+  "generated_at_lima": "2026-11-17T16:38:13.851590-05:00",
   "mode": "CIERRE DIARIO",
   "market_open": false,
   "signal_date": "2026-11-16",
@@ -77,9 +77,9 @@
     {
       "serie": "USD_PEN",
       "ticker": "BCRP PD04646PD",
-      "timestamp": "2026-11-12",
-      "precio_anterior": 3.404,
-      "precio_actual": 3.404,
+      "timestamp": "2026-11-13",
+      "precio_anterior": 3.405,
+      "precio_actual": 3.405,
       "retorno": 0.00010951159416139333,
       "retorno_modelo": 0.00010951159416139333,
       "estado": "BCRP REZAGADO · MODELO USA 0 %",
@@ -88,7 +88,7 @@
   ],
   "action": "CIERRE",
   "engine": "LIVE HABITAT INDEPENDIENTE",
-  "warning": "Cierre OLS pesado pendiente; cálculo provisional coherente con los activos del mismo día.",
+  "warning": null,
   "fx_source": "YAHOO PEN=X PROVISIONAL",
   "fx_provisional": true,
   "fx_rule": "Histórico/entrenamiento: BCRP. Predicción: BCRP si existe; si está rezagado, Yahoo PEN=X provisional; 0 % solo si ambas fuentes faltan.",
