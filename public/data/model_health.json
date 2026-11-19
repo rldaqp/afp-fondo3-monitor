@@ -1,5 +1,5 @@
 {
-  "generated_from": "2026-11-19T15:23:50.064364-05:00",
+  "generated_from": "2026-11-19T15:30:11.044582-05:00",
   "validation_start": "2026-08-18",
   "policy": {
     "champion": "Coeficientes fijos calibrados 07/07/2026–17/08/2026.",
@@ -594,38 +594,47 @@
           "base_pred_return": -0.03198831501663746,
           "challenger_pred_return": -0.029820563204637995,
           "challenger_prediction": 62.656452937296876
+        },
+        {
+          "date": "2026-11-17",
+          "base_error_pct": -0.20022692437876577,
+          "challenger_error_pct": 0.5943481809663309,
+          "actual_return": -0.006575797313554732,
+          "base_pred_return": -0.0061318855411683915,
+          "challenger_pred_return": 0.0013528055193674504,
+          "challenger_prediction": 62.741214932654444
         }
       ],
       "base": {
         "full": {
-          "n": 64,
-          "mae_pct": 0.6514092382175025,
-          "rmse_pct": 0.8700865528091088,
-          "bias_pct": -0.36534346861007405,
-          "direction_n": 64,
-          "direction_accuracy": 0.921875
+          "n": 65,
+          "mae_pct": 0.6444679718507528,
+          "rmse_pct": 0.8637247587006961,
+          "bias_pct": -0.3628032140834385,
+          "direction_n": 65,
+          "direction_accuracy": 0.9230769230769231
         },
         "recent_5": {
           "n": 5,
-          "mae_pct": 1.1558993058713396,
-          "rmse_pct": 1.2877686615038906,
-          "bias_pct": 1.0579782854033715,
+          "mae_pct": 1.027497421072161,
+          "rmse_pct": 1.2347039631004924,
+          "bias_pct": 0.8494856308526867,
           "direction_n": 5,
           "direction_accuracy": 1.0
         },
         "recent_10": {
           "n": 10,
-          "mae_pct": 0.832688000209434,
-          "rmse_pct": 1.001952609523277,
-          "bias_pct": 0.3771353427348578,
+          "mae_pct": 0.755018032772804,
+          "rmse_pct": 0.9552379577474723,
+          "bias_pct": 0.4548053101714878,
           "direction_n": 10,
           "direction_accuracy": 0.9
         },
         "recent_20": {
           "n": 20,
-          "mae_pct": 1.1294743812336339,
-          "rmse_pct": 1.2491410512822534,
-          "bias_pct": -0.524562709761488,
+          "mae_pct": 1.0674706095818096,
+          "rmse_pct": 1.207739360550134,
+          "bias_pct": -0.46255893810966403,
           "direction_n": 20,
           "direction_accuracy": 0.95
         }
@@ -633,30 +642,30 @@
       "challenger": {
         "window": 30,
         "full": {
-          "n": 64,
-          "mae_pct": 0.44137616750779907,
-          "rmse_pct": 0.5987257121568231,
-          "bias_pct": 0.07344178336721029,
-          "direction_n": 63,
-          "direction_accuracy": 0.8253968253968254
+          "n": 65,
+          "mae_pct": 0.4437295830994688,
+          "rmse_pct": 0.598658607962199,
+          "bias_pct": 0.0814557279456583,
+          "direction_n": 64,
+          "direction_accuracy": 0.8125
         },
         "coefficients": {
-          "intercept": 40.21707259108965,
-          "SPY": -0.074143102844278,
-          "EEM": 0.4423572840879493,
-          "MCHI": -0.38349931366706735,
-          "QQQ": 0.0648246618577891,
-          "SPBLSCUP": 0.07205323656994463
+          "intercept": 41.67042457065983,
+          "SPY": -0.07679474722338,
+          "EEM": 0.44620591669751036,
+          "MCHI": -0.3860921482898064,
+          "QQQ": 0.06585776478487773,
+          "SPBLSCUP": 0.0714166116794596
         },
-        "effect_drift": 0.7680468072611013
+        "effect_drift": 0.7901609168913996
       },
       "status": {
         "code": "WATCH",
         "label": "VIGILAR",
         "reason": "Hay señales de deterioro reciente o el challenger empieza a mejorar al modelo base. Todavía no se cumple el umbral de cambio.",
-        "mae_improvement": 0.32242875658999237,
-        "rmse_improvement": 0.3118779847547195,
-        "challenger_win_share": 0.5625,
+        "mae_improvement": 0.31147923173716907,
+        "rmse_improvement": 0.3068872902720039,
+        "challenger_win_share": 0.5538461538461539,
         "challenger_recent5_wins": 2
       }
     },
@@ -1237,38 +1246,47 @@
           "base_pred_return": -0.030667969644076327,
           "challenger_pred_return": -0.03129950300053683,
           "challenger_prediction": 61.91571815619964
+        },
+        {
+          "date": "2026-11-17",
+          "base_error_pct": 0.16591807442909445,
+          "challenger_error_pct": 0.29313234076298045,
+          "actual_return": -0.006575797313554732,
+          "base_pred_return": -0.004927527005544795,
+          "challenger_pred_return": -0.0036637496945139615,
+          "challenger_prediction": 62.55334505613494
         }
       ],
       "base": {
         "full": {
-          "n": 64,
-          "mae_pct": 0.30581482428375434,
-          "rmse_pct": 0.388003738732983,
-          "bias_pct": -0.007864725840991092,
-          "direction_n": 64,
-          "direction_accuracy": 0.9375
+          "n": 65,
+          "mae_pct": 0.3036625665936826,
+          "rmse_pct": 0.3855571490863125,
+          "bias_pct": -0.005191144298374391,
+          "direction_n": 65,
+          "direction_accuracy": 0.9384615384615385
         },
         "recent_5": {
           "n": 5,
-          "mae_pct": 0.5950776757347342,
-          "rmse_pct": 0.7191961851778629,
-          "bias_pct": -0.20814805315081175,
+          "mae_pct": 0.5637087381365524,
+          "rmse_pct": 0.7084587172855198,
+          "bias_pct": -0.23951699074899357,
           "direction_n": 5,
           "direction_accuracy": 1.0
         },
         "recent_10": {
           "n": 10,
-          "mae_pct": 0.5014970131600083,
-          "rmse_pct": 0.6068709272442137,
-          "bias_pct": 0.08473654106569084,
+          "mae_pct": 0.5105150167771455,
+          "rmse_pct": 0.6086637643498787,
+          "bias_pct": 0.1089021523343725,
           "direction_n": 10,
           "direction_accuracy": 0.9
         },
         "recent_20": {
           "n": 20,
-          "mae_pct": 0.40815368028444154,
-          "rmse_pct": 0.5020128257674057,
-          "bias_pct": 0.042722343692754294,
+          "mae_pct": 0.41226589561200344,
+          "rmse_pct": 0.5030340471921804,
+          "bias_pct": 0.04683455902031619,
           "direction_n": 20,
           "direction_accuracy": 0.95
         }
@@ -1276,30 +1294,30 @@
       "challenger": {
         "window": 30,
         "full": {
-          "n": 64,
-          "mae_pct": 0.34690373776446737,
-          "rmse_pct": 0.4361625114441494,
-          "bias_pct": 0.032514585494481524,
-          "direction_n": 64,
-          "direction_accuracy": 0.9375
+          "n": 65,
+          "mae_pct": 0.34607648550290604,
+          "rmse_pct": 0.4343189487021707,
+          "bias_pct": 0.0365240894216892,
+          "direction_n": 65,
+          "direction_accuracy": 0.9384615384615385
         },
         "coefficients": {
-          "intercept": -0.0007038673935777477,
-          "SPY": -0.3611755584565861,
-          "EEM": 0.5528705760765621,
-          "MCHI": -0.2020237700749236,
-          "QQQ": 0.365899702281965,
-          "SPBLSCUP": 0.3134937122650497
+          "intercept": -0.0006383618236667799,
+          "SPY": -0.48358685880165025,
+          "EEM": 0.4492612690306447,
+          "MCHI": -0.18338600381830653,
+          "QQQ": 0.5208163685138386,
+          "SPBLSCUP": 0.27100325324084507
         },
-        "effect_drift": 0.29386758312550776
+        "effect_drift": 0.1893005868278053
       },
       "status": {
         "code": "WATCH",
         "label": "VIGILAR",
         "reason": "Hay señales de deterioro reciente o el challenger empieza a mejorar al modelo base. Todavía no se cumple el umbral de cambio.",
-        "mae_improvement": -0.13435880218346807,
-        "rmse_improvement": -0.12411935222177939,
-        "challenger_win_share": 0.390625,
+        "mae_improvement": -0.13967450576802776,
+        "rmse_improvement": -0.12647100366680575,
+        "challenger_win_share": 0.38461538461538464,
         "challenger_recent5_wins": 1
       }
     }
