@@ -1,33 +1,33 @@
 {
-  "generated_at_lima": "2026-11-18T16:15:18.412467-05:00",
-  "signal_date": "2026-11-17",
+  "generated_at_lima": "2026-11-18T21:39:25.213514-05:00",
+  "signal_date": "2026-11-18",
   "mode": "CIERRE DIARIO",
   "market_open": false,
   "role": "UNICO CHALLENGER EN SOMBRA; no reemplaza el OLS rolling 90 oficial.",
   "official": {
     "model": "OLS rolling 90 oficial · SPY EEM EPU MCHI NEM FCX USD/PEN",
-    "return_estimated": -0.0033291072799714987,
+    "return_estimated": -0.02281889320784829,
     "signal": "BAJA",
-    "vc_estimated": 71.17660909649321
+    "vc_estimated": 69.78475860251827
   },
   "challenger": {
     "model": "OLS 60/30 · sin NEM ni FCX + QQQ",
-    "return_estimated": -0.003872949408186996,
+    "return_estimated": -0.011339636497665057,
     "signal": "BAJA",
-    "vc_estimated": 61.77907235703081,
+    "vc_estimated": 61.07852013333914,
     "blind_chain": true,
     "reanchored_with_latest_sbs": false
   },
   "comparison": {
     "same_signal": true,
-    "vc_difference": -9.397536739462396,
-    "return_difference_pp": -0.05438421282154973
+    "vc_difference": -8.706238469179127,
+    "return_difference_pp": 1.1479256710183234
   },
   "cycle": {
     "train_window": 60,
     "freeze_horizon": 30,
     "cycle_start": "2026-11-16",
-    "cycle_day": 2,
+    "cycle_day": 3,
     "anchor_date": "2026-11-13",
     "anchor_vc": 63.9162655,
     "train_start": "2026-08-20",
@@ -44,7 +44,7 @@
     "rule": "Coeficientes congelados 30 sesiones. El VC se encadena desde el ancla del ciclo y no se corrige con SBS dentro del bloque."
   },
   "qqq": {
-    "return": -0.007253476075509968,
+    "return": 0.0038967920100851927,
     "source": "CIERRE DIARIO YAHOO"
   },
   "blind_backtest": {
@@ -67,7 +67,7 @@
   },
   "forward_sbs": {
     "evaluated": 63,
-    "pending": 1,
+    "pending": 2,
     "challenger_vc_mae": 0.7814636977972835,
     "official_vc_mae": 2.5455859447088174
   },
