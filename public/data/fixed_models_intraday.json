@@ -1,6 +1,6 @@
 {
-  "generated_at_lima": "2026-11-19T16:08:06.720314-05:00",
-  "generated_at_ny": "2026-11-19T16:08:06.720314-05:00",
+  "generated_at_lima": "2026-11-19T16:11:28.648157-05:00",
+  "generated_at_ny": "2026-11-19T16:11:28.648157-05:00",
   "signal_date": "2026-11-19",
   "market_open": false,
   "session_open_ny": "2026-11-19T09:30:00-05:00",
@@ -8,24 +8,22 @@
   "next_session_open_ny": "2026-11-20T09:30:00-05:00",
   "next_session_close_ny": "2026-11-20T16:00:00-05:00",
   "mode": "CIERRE / ÚLTIMO SNAPSHOT",
-  "close_consolidated": false,
-  "fresh_factors": 4,
+  "close_consolidated": true,
+  "fresh_factors": 5,
   "total_factors": 5,
-  "problems": [
-    "EEM: falta cierre confirmado de 2026-11-19; dato 2026-11-19"
-  ],
-  "base_revision": "16cb2726d56cc4773e9cbe6c72404b8577b52312c97bde5d7ab78539f32286d2",
+  "problems": [],
+  "base_revision": "4bb9d771af72691fee7f448e711f9b8d97d76f294136f22bdf89c5fa58cd5e57",
   "latest_sbs_date": "2026-11-17",
   "latest_sbs_vc": 62.3705169,
   "previous_close_rule": "Cierre regular validado de la sesión anterior; sin reutilizar otra fecha.",
   "models": {
     "niveles": {
-      "vc_intraday": 60.72457518830652,
+      "vc_intraday": 60.72086650248178,
       "equation": "VC = 13.88935016 - 0.03515844·SPY + 0.74157875·EEM - 0.10681725·MCHI + 0.03592193·QQQ + 0.03329520·SPBLSCUP"
     },
     "retornos": {
-      "return_intraday": -0.015424010294773291,
-      "vc_intraday": 60.81092263409032,
+      "return_intraday": -0.015471881820060127,
+      "vc_intraday": 60.807965918051096,
       "base_vc": 61.763564488604445,
       "base_date": "2026-11-18",
       "base_rule": "VC estimado por retornos de la sesión anterior",
@@ -49,29 +47,29 @@
       "return_coefficient": -0.6302663993238228,
       "level_contribution": -25.16746890525271,
       "return_contribution": 0.01240335272292982,
-      "level_weight_abs_pct": 23.47377567113076,
-      "return_weight_abs_pct": 30.43659275159708,
+      "level_weight_abs_pct": 23.474587681221852,
+      "return_weight_abs_pct": 30.400880242586055,
       "source": "YAHOO SPY · CIERRE REGULAR CONFIRMADO + CIERRE BASE FIJA"
     },
     {
       "ticker": "EEM",
       "timestamp": "2026-11-19",
-      "quote_timestamp": "2026-11-19T15:55:00-05:00",
-      "fresh": false,
-      "close_confirmed": false,
+      "quote_timestamp": "2026-11-19T16:00:01-05:00",
+      "fresh": true,
+      "close_confirmed": true,
       "price_previous": 57.88,
-      "price_current": 56.755001068115234,
-      "return": -0.01943674726822331,
+      "price_current": 56.75,
+      "return": -0.01952315134761584,
       "previous_close_date": "2026-11-18",
       "previous_close_basis": "CIERRE BASE FIJA",
       "provider_previous_close": null,
       "level_coefficient": 0.7415787466367807,
       "return_coefficient": 0.5540424204898641,
-      "level_contribution": 42.08830255746204,
-      "return_contribution": -0.010768782502936195,
-      "level_weight_abs_pct": 39.25588927245454,
-      "return_weight_abs_pct": 26.425520163307205,
-      "source": "YAHOO EEM · SNAPSHOT NO CONSOLIDADO + CIERRE BASE FIJA"
+      "level_contribution": 42.0845938716373,
+      "return_contribution": -0.010816654028223032,
+      "level_weight_abs_pct": 39.25378799860851,
+      "return_weight_abs_pct": 26.511848133576216,
+      "source": "GOOGLE FINANCE EEM · CIERRE REGULAR CONFIRMADO + CIERRE BASE FIJA"
     },
     {
       "ticker": "MCHI",
@@ -89,8 +87,8 @@
       "return_coefficient": -0.012803321943839846,
       "level_contribution": -5.022547064115172,
       "return_contribution": 0.0002062891378270894,
-      "level_weight_abs_pct": 4.684545097664921,
-      "return_weight_abs_pct": 0.5062130068682017,
+      "level_weight_abs_pct": 4.684707146495275,
+      "return_weight_abs_pct": 0.5056190462788275,
       "source": "YAHOO MCHI · CIERRE REGULAR CONFIRMADO + CIERRE BASE FIJA"
     },
     {
@@ -109,8 +107,8 @@
       "return_coefficient": 0.5371307116230812,
       "level_contribution": 23.171082354923055,
       "return_contribution": -0.011784933355348646,
-      "level_weight_abs_pct": 21.611739794113337,
-      "return_weight_abs_pct": 28.91905319102557,
+      "level_weight_abs_pct": 21.61248739224347,
+      "return_weight_abs_pct": 28.885121273740882,
       "source": "YAHOO QQQ · CIERRE REGULAR CONFIRMADO + CIERRE BASE FIJA"
     },
     {
@@ -129,8 +127,8 @@
       "return_coefficient": 0.27871670470934645,
       "level_contribution": 11.765856083512052,
       "return_contribution": -0.005588091775182551,
-      "level_weight_abs_pct": 10.974050164636441,
-      "return_weight_abs_pct": 13.71262088720194,
+      "level_weight_abs_pct": 10.974429781430889,
+      "return_weight_abs_pct": 13.696531303818027,
       "source": "GOOGLE FINANCE SPBLSCUP · CIERRE REGULAR CONFIRMADO + CIERRE BASE FIJA"
     }
   ],
