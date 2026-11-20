@@ -1,6 +1,6 @@
 {
-  "generated_at_lima": "2026-11-20T16:10:00.324156-05:00",
-  "generated_at_ny": "2026-11-20T16:10:00.324156-05:00",
+  "generated_at_lima": "2026-11-20T16:15:12.713841-05:00",
+  "generated_at_ny": "2026-11-20T16:15:12.713841-05:00",
   "signal_date": "2026-11-20",
   "market_open": false,
   "session_open_ny": "2026-11-20T09:30:00-05:00",
@@ -8,13 +8,11 @@
   "next_session_open_ny": "2026-11-23T09:30:00-05:00",
   "next_session_close_ny": "2026-11-23T16:00:00-05:00",
   "mode": "CIERRE / ÚLTIMO SNAPSHOT",
-  "close_consolidated": false,
-  "fresh_factors": 4,
+  "close_consolidated": true,
+  "fresh_factors": 5,
   "total_factors": 5,
-  "problems": [
-    "SPBLSCUP: falta cierre confirmado de 2026-11-20; dato 2026-11-20"
-  ],
-  "base_revision": "f2f8ccdc3315b409e6313be1c99ea3d5b4742fb589249be2f0be0079c24bb4a3",
+  "problems": [],
+  "base_revision": "6c76c480081413b73fa573ede830d776ee2c9d236cb648482e13cb91b9688ebf",
   "latest_sbs_date": "2026-11-18",
   "latest_sbs_vc": 61.6280235,
   "previous_close_rule": "Cierre regular validado de la sesión anterior; sin reutilizar otra fecha.",
@@ -116,9 +114,9 @@
     {
       "ticker": "SPBLSCUP",
       "timestamp": "2026-11-20",
-      "quote_timestamp": "2026-11-20T15:59:33-05:00",
-      "fresh": false,
-      "close_confirmed": false,
+      "quote_timestamp": "2026-11-20T16:14:08-05:00",
+      "fresh": true,
+      "close_confirmed": true,
       "price_previous": 351.34,
       "price_current": 341.34,
       "return": -0.028462458017874392,
@@ -131,7 +129,7 @@
       "return_contribution": -0.007932962506670067,
       "level_weight_abs_pct": 11.10368053238239,
       "return_weight_abs_pct": 8.88482524615609,
-      "source": "GOOGLE FINANCE SPBLSCUP · SNAPSHOT NO CONSOLIDADO + CIERRE BASE FIJA"
+      "source": "GOOGLE FINANCE SPBLSCUP · CIERRE REGULAR CONFIRMADO + CIERRE BASE FIJA"
     }
   ],
   "weight_note": "Peso relativo del aporte absoluto; no representa tenencia de cartera.",
