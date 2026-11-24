@@ -1,16 +1,16 @@
 {
-  "generated_for": "2026-11-20",
-  "current_signal": "BAJA",
+  "generated_for": "2026-11-23",
+  "current_signal": "SUBE",
   "confidence": {
-    "historical_accuracy": 0.8461538461538461,
-    "n": 39,
-    "label": "BAJA",
+    "historical_accuracy": 0.9736842105263158,
+    "n": 38,
+    "label": "SUBE",
     "description": "Aciertos históricos de la misma clase de señal; no es garantía futura."
   },
   "performance": {
     "window_n": 90,
     "classification_accuracy": 0.8333333333333334,
-    "mae_return_pp": 0.29561802129859505,
+    "mae_return_pp": 0.29579272830497655,
     "sube_n": 38,
     "sube_accuracy": 0.9736842105263158,
     "baja_n": 39,
@@ -19,70 +19,70 @@
     "neutro_accuracy": 0.38461538461538464
   },
   "uncertainty": {
-    "relative_q80": 0.004611725602356356,
+    "relative_q80": 0.004611725602356315,
     "label": "Banda empírica 80%"
   },
   "benchmarks": {
-    "zero_change_mae_pp": 0.8789057547974809,
-    "ols_mae_pp": 0.29561802129859505,
-    "ols_mae_improvement_vs_zero": 0.6636521951472352
+    "zero_change_mae_pp": 0.8764499577991178,
+    "ols_mae_pp": 0.29579272830497655,
+    "ols_mae_improvement_vs_zero": 0.6625104198216275
   },
   "contributions": [
     {
       "feature": "ret_EEM",
       "label": "EEM",
-      "value": -0.05127753035087412,
-      "coefficient": 0.5729213288570236,
-      "contribution_pp": -2.9377990829129166
+      "value": 0.07410850050443418,
+      "coefficient": 0.5779423553159684,
+      "contribution_pp": 4.283044133046732
     },
     {
       "feature": "ret_USD_PEN",
       "label": "USD/PEN",
-      "value": 0.04178950918469093,
-      "coefficient": 0.24759302236880293,
-      "contribution_pp": 1.0346790882346477
+      "value": -0.03658998619856735,
+      "coefficient": 0.25383603493393586,
+      "contribution_pp": -0.9287857014931773
     },
     {
       "feature": "ret_MCHI",
       "label": "MCHI",
-      "value": -0.021267545518172892,
-      "coefficient": -0.14457900944460791,
-      "contribution_pp": 0.30748406643355475
-    },
-    {
-      "feature": "ret_SPY",
-      "label": "SPY",
-      "value": -0.03640325441259451,
-      "coefficient": 0.07427890636877203,
-      "contribution_pp": -0.2703993926031695
+      "value": 0.022598889725823357,
+      "coefficient": -0.14758968371189177,
+      "contribution_pp": -0.33353629868741896
     },
     {
       "feature": "ret_NEM",
       "label": "NEM",
-      "value": -0.05367318923322795,
-      "coefficient": 0.04866152499191617,
-      "contribution_pp": -0.26118192392685674
+      "value": 0.06389948280795554,
+      "coefficient": 0.0494543348998252,
+      "contribution_pp": 0.31601064227102565
     },
     {
-      "feature": "ret_FCX",
-      "label": "FCX",
-      "value": -0.06372144384120138,
-      "coefficient": 0.03178524195189164,
-      "contribution_pp": -0.2025401510016461
+      "feature": "ret_SPY",
+      "label": "SPY",
+      "value": 0.04708540117380822,
+      "coefficient": 0.06593349439623991,
+      "contribution_pp": 0.3104505034437992
     },
     {
       "feature": "ret_EPU",
       "label": "EPU",
-      "value": -0.024316924228227288,
-      "coefficient": 0.07544285588566292,
-      "contribution_pp": -0.18345382101327365
+      "value": 0.03892465486656471,
+      "coefficient": 0.07819996403784285,
+      "contribution_pp": 0.3043906610750805
+    },
+    {
+      "feature": "ret_FCX",
+      "label": "FCX",
+      "value": 0.08088709002477845,
+      "coefficient": 0.030241707267792045,
+      "contribution_pp": 0.2446163698272892
     },
     {
       "feature": "intercept",
       "label": "Base",
       "value": 1.0,
-      "coefficient": -0.0008300837188572088,
-      "contribution_pp": -0.08300837188572088
+      "coefficient": -0.0008382535590950354,
+      "contribution_pp": -0.08382535590950355
     }
   ],
   "quality": {
@@ -90,7 +90,7 @@
     "warnings": [],
     "critical": [],
     "training_n": 90,
-    "latest_sbs_date": "2026-11-18",
+    "latest_sbs_date": "2026-11-19",
     "fx_provisional": true
   },
   "challenger_huber": {
