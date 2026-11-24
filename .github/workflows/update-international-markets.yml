@@ -1,17 +1,17 @@
 name: Actualizar índices internacionales y premercado
 on:
   workflow_dispatch:
+    inputs:
+      force_refresh:
+        description: Consultar aunque el último archivo sea reciente
+        type: boolean
+        default: true
   push:
     branches: [migracion-github-actions]
     paths:
       - '.github/workflows/update-international-markets.yml'
       - 'scripts/update_international_markets.py'
       - 'scripts/test_international_markets.py'
-  # El relevo existente también funciona durante la madrugada peruana.
-  workflow_run:
-    workflows: ["Mantener intradia Fondo 3"]
-    branches: [migracion-github-actions]
-    types: [completed]
   schedule:
     - cron: '11,26,41,56 * * * 1-5'
     - cron: '11,26,41,56 22-23 * * 0'
@@ -41,11 +41,13 @@ jobs:
           python-version: '3.11'
       - run: pip install --quiet --disable-pip-version-check 'exchange-calendars>=4.13.3,<5'
       - name: Verificar las sesiones y los precios anteriores
-        if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+        if: github.event_name == 'push' || inputs.force_refresh
         run: python -m unittest discover -s scripts -p test_international_markets.py
       - name: Consultar las bolsas y el premercado
+        env:
+          FORCE_REFRESH: ${{ github.event_name == 'push' || inputs.force_refresh || false }}
         run: |
-          if [[ "$GITHUB_EVENT_NAME" == "workflow_dispatch" || "$GITHUB_EVENT_NAME" == "push" ]]; then
+          if [[ "$FORCE_REFRESH" == "true" ]]; then
             python scripts/update_international_markets.py --force
           else
             python scripts/update_international_markets.py

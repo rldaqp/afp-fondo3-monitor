@@ -126,7 +126,14 @@
     }
     const day = dayIn(ny.tz, session[0]), open = session[0] - 5.5 * 3600, end = session[0];
     const phase = now < open ? 'Próxima preapertura' : now < end ? 'Premercado abierto' : 'Premercado finalizado';
-    id('pre-state').textContent = phase + ' · ' + stamp(open) + '–' + limaTime.format(end * 1000) + ' Perú';
+    const minutesSinceCheck = Math.max(0, Math.floor((now - data.checked_at) / 60));
+    const delayed = open <= now && now < end && minutesSinceCheck >= 15;
+    const lastCheck = 'Última consulta del premercado · ' + stamp(data.checked_at) + ' Perú';
+    id('pre-state').replaceChildren(
+      element('span', phase + ' · ' + stamp(open) + '–' + limaTime.format(end * 1000) + ' Perú'),
+      document.createElement('br'),
+      element(delayed ? 'strong' : 'span', lastCheck + (delayed ? ' · Demorada (' + minutesSinceCheck + ' min)' : ''))
+    );
     const rows = Object.entries(labels).map(([symbol, label]) => {
       const tr = element('tr'), td = element('td'), link = element('a', symbol);
       link.href = 'https://www.nasdaq.com/market-activity/etf/' + symbol.toLowerCase() + '/pre-market';

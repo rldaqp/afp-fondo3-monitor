@@ -35,6 +35,15 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 12
     steps:
+      - name: Iniciar la consulta de índices y premercado
+        continue-on-error: true
+        timeout-minutes: 1
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh workflow run update-international-markets.yml --repo "$GITHUB_REPOSITORY" \
+            --ref migracion-github-actions -f force_refresh=false
+
       - name: Checkout
         uses: actions/checkout@v4
         with:
