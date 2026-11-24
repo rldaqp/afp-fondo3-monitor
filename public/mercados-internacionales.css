@@ -1,0 +1,37 @@
+.world-nav, .world-regions, .world-stamps { display:flex; flex-wrap:wrap; gap:.45rem; }
+.world-nav { margin:12px 0; }
+.world-nav a, .world-link { color:#83d1ff; font-size:.78rem; }
+.world-nav a { padding:.35rem .6rem; }
+.world-panel { margin:12px 0; padding:clamp(12px,2vw,22px); border:1px solid var(--line); background:var(--card); border-radius:14px; scroll-margin-top:8px; }
+.world-head { display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; }
+.world-head h2 { margin:0; font-size:1.1rem; }
+.world-head p, .world-meta, .world-foot { color:var(--muted); font-size:.75rem; line-height:1.45; margin:.25rem 0; }
+.world-regions { margin:.9rem 0 .4rem; }
+.world-regions button { color:var(--text); background:var(--inner); border:1px solid var(--line); border-radius:18px; padding:.45rem .8rem; cursor:pointer; font:inherit; font-size:.78rem; }
+.world-regions button[aria-pressed="true"] { color:#abddff; background:#15314a; border-color:#439aca; }
+.world-table { width:100%; border-collapse:collapse; color:var(--text); font-size:.84rem; font-variant-numeric:tabular-nums; }
+.world-table th, .world-table td { padding:8px 6px; border-bottom:1px solid var(--line); text-align:right; }
+.world-table thead th { color:var(--muted); font-size:.72rem; }
+.world-table th:first-child, .world-table td:first-child { text-align:left; padding-left:0; }
+.world-table td:last-child { padding-right:0; }
+.world-table small { display:block; color:var(--muted); font-size:.7rem; font-weight:400; margin-top:2px; }
+.world-table button, .world-table a { background:none; border:0; padding:2px 0; color:#9ed8ff; font:inherit; font-weight:650; text-align:left; cursor:pointer; }
+.world-table .market-open, .world-table .gain { color:var(--green); }
+.world-table .market-break, .world-table .late { color:var(--yellow); }
+.world-table .loss { color:var(--red); }
+.world-table .market-closed { color:#c6cedb; }
+#world-detail { margin-top:.7rem; }
+#world-detail summary { cursor:pointer; font-size:.82rem; color:#a6ddfe; }
+#world-chart { width:100%; height:210px; min-width:0; padding-top:5px; }
+.world-foot { margin-top:.6rem; }
+.etf-head { margin:1rem 0 .4rem; }
+@media(max-width:600px) {
+  .world-panel { padding:10px; }
+  .world-nav { gap:.2rem; }
+  .world-nav a { padding:.35rem .25rem; font-size:.7rem; }
+  .world-table { font-size:.74rem; }
+  .world-table th, .world-table td { padding:.45rem .16rem; }
+  .world-table thead th, .world-table small { font-size:.64rem; }
+  .world-table thead th:last-child { max-width:6.4rem; }
+  .world-regions button { padding:.4rem .55rem; font-size:.7rem; }
+}

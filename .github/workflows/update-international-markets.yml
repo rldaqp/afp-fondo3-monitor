@@ -1,0 +1,66 @@
+name: Actualizar índices internacionales y premercado
+on:
+  workflow_dispatch:
+  push:
+    branches: [migracion-github-actions]
+    paths:
+      - '.github/workflows/update-international-markets.yml'
+      - 'scripts/update_international_markets.py'
+      - 'scripts/test_international_markets.py'
+  # El relevo existente también funciona durante la madrugada peruana.
+  workflow_run:
+    workflows: ["Mantener intradia Fondo 3"]
+    branches: [migracion-github-actions]
+    types: [completed]
+  schedule:
+    - cron: '11,26,41,56 * * * 1-5'
+    - cron: '11,26,41,56 22-23 * * 0'
+
+permissions:
+  contents: write
+concurrency:
+  group: public-international-market-quotes
+  cancel-in-progress: false
+
+jobs:
+  quotes:
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: migracion-github-actions
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /scripts/update_international_markets.py
+            /scripts/test_international_markets.py
+            /data/processed/ca0001_modelo74_catalogo_indices.csv
+            /public/data/indices_internacionales.json
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install --quiet --disable-pip-version-check 'exchange-calendars>=4.13.3,<5'
+      - name: Verificar las sesiones y los precios anteriores
+        if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+        run: python -m unittest discover -s scripts -p test_international_markets.py
+      - name: Consultar las bolsas y el premercado
+        run: |
+          if [[ "$GITHUB_EVENT_NAME" == "workflow_dispatch" || "$GITHUB_EVENT_NAME" == "push" ]]; then
+            python scripts/update_international_markets.py --force
+          else
+            python scripts/update_international_markets.py
+          fi
+      - name: Publicar las cotizaciones para el visor
+        run: |
+          git add --sparse public/data/indices_internacionales.json
+          if git diff --cached --quiet; then exit 0; fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'Actualizar cotizaciones de índices y premercado'
+          for attempt in 1 2 3; do
+            git fetch origin migracion-github-actions
+            git rebase FETCH_HEAD
+            if git push origin HEAD:migracion-github-actions; then exit 0; fi
+            sleep 2
+          done
+          exit 1
