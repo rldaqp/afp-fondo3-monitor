@@ -19,7 +19,7 @@
     "neutro_accuracy": 0.38461538461538464
   },
   "uncertainty": {
-    "relative_q80": 0.004611725602356307,
+    "relative_q80": 0.004611725602356308,
     "label": "Banda empírica 80%"
   },
   "benchmarks": {
@@ -32,57 +32,57 @@
       "feature": "ret_EEM",
       "label": "EEM",
       "value": 0.07410850050443418,
-      "coefficient": 0.577942355315971,
-      "contribution_pp": 4.283044133046752
+      "coefficient": 0.5779423553159707,
+      "contribution_pp": 4.28304413304675
     },
     {
       "feature": "ret_USD_PEN",
       "label": "USD/PEN",
       "value": -0.03658998619856735,
-      "coefficient": 0.25383603493393764,
-      "contribution_pp": -0.9287857014931837
+      "coefficient": 0.2538360349339376,
+      "contribution_pp": -0.9287857014931835
     },
     {
       "feature": "ret_MCHI",
       "label": "MCHI",
       "value": 0.022598889725823357,
-      "coefficient": -0.14758968371189163,
-      "contribution_pp": -0.3335362986874187
+      "coefficient": -0.14758968371189152,
+      "contribution_pp": -0.3335362986874184
     },
     {
       "feature": "ret_NEM",
       "label": "NEM",
       "value": 0.06389948280795554,
-      "coefficient": 0.049454334899825814,
-      "contribution_pp": 0.31601064227102954
+      "coefficient": 0.049454334899825425,
+      "contribution_pp": 0.31601064227102704
     },
     {
       "feature": "ret_SPY",
       "label": "SPY",
       "value": 0.04708540117380822,
-      "coefficient": 0.06593349439623807,
-      "contribution_pp": 0.31045050344379055
+      "coefficient": 0.06593349439623865,
+      "contribution_pp": 0.31045050344379327
     },
     {
       "feature": "ret_EPU",
       "label": "EPU",
       "value": 0.03892465486656471,
-      "coefficient": 0.0781999640378403,
-      "contribution_pp": 0.3043906610750706
+      "coefficient": 0.07819996403784023,
+      "contribution_pp": 0.3043906610750703
     },
     {
       "feature": "ret_FCX",
       "label": "FCX",
       "value": 0.08088709002477845,
-      "coefficient": 0.03024170726779207,
-      "contribution_pp": 0.24461636982728938
+      "coefficient": 0.03024170726779224,
+      "contribution_pp": 0.24461636982729076
     },
     {
       "feature": "intercept",
       "label": "Base",
       "value": 1.0,
-      "coefficient": -0.0008382535590950382,
-      "contribution_pp": -0.08382535590950382
+      "coefficient": -0.0008382535590950374,
+      "contribution_pp": -0.08382535590950374
     }
   ],
   "quality": {
