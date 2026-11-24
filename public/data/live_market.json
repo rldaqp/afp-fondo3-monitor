@@ -1,5 +1,5 @@
 {
-  "generated_at_lima": "2026-11-20T21:07:51.757715-05:00",
+  "generated_at_lima": "2026-11-23T19:40:38.285508-05:00",
   "mode": "CIERRE DIARIO",
   "market_open": false,
   "signal_date": "2026-11-20",
@@ -76,9 +76,9 @@
     {
       "serie": "USD_PEN",
       "ticker": "BCRP PD04646PD",
-      "timestamp": "2026-11-18",
-      "precio_anterior": 3.433,
-      "precio_actual": 3.433,
+      "timestamp": "2026-11-19",
+      "precio_anterior": 3.451,
+      "precio_actual": 3.451,
       "retorno": 0.0,
       "retorno_modelo": 0.0,
       "estado": "BCRP REZAGADO · MODELO USA 0 %",
@@ -94,10 +94,10 @@
     {
       "serie": ".INX",
       "ticker": ".INX:INDEXSP",
-      "timestamp": "2026-11-20T15:55:00-05:00",
+      "timestamp": "2026-11-23T15:55:00-05:00",
       "precio_anterior": null,
-      "precio_actual": 6918.4501953125,
-      "retorno": -0.03586761113492698,
+      "precio_actual": 7236.85009765625,
+      "retorno": 0.04724190016462848,
       "retorno_modelo": null,
       "estado": "YAHOO ^GSPC · RESPALDO EQUIVALENTE · NUEVO 60/30 EXPERIMENTAL",
       "usado_modelo": false
@@ -105,10 +105,10 @@
     {
       "serie": "CPER",
       "ticker": "CPER:NYSEARCA",
-      "timestamp": "2026-11-20T15:55:00-05:00",
+      "timestamp": "2026-11-23T15:55:00-05:00",
       "precio_anterior": null,
-      "precio_actual": 32.90999984741211,
-      "retorno": -0.025177681172422806,
+      "precio_actual": 33.806400299072266,
+      "retorno": 0.026925947127273142,
       "retorno_modelo": null,
       "estado": "YAHOO CPER · RESPALDO EQUIVALENTE · NUEVO 60/30 EXPERIMENTAL",
       "usado_modelo": false
@@ -116,10 +116,10 @@
     {
       "serie": "EEM",
       "ticker": "EEM:NYSEARCA",
-      "timestamp": "2026-11-20T15:55:00-05:00",
+      "timestamp": "2026-11-23T15:55:00-05:00",
       "precio_anterior": null,
-      "precio_actual": 53.86000061035156,
-      "retorno": -0.05092509937706502,
+      "precio_actual": 57.790000915527344,
+      "retorno": 0.0733655414514256,
       "retorno_modelo": null,
       "estado": "YAHOO EEM · RESPALDO EQUIVALENTE · NUEVO 60/30 EXPERIMENTAL",
       "usado_modelo": false
@@ -127,10 +127,10 @@
     {
       "serie": "NDX",
       "ticker": "NDX:INDEXNASDAQ",
-      "timestamp": "2026-11-20T15:55:00-05:00",
+      "timestamp": "2026-11-23T15:55:00-05:00",
       "precio_anterior": null,
-      "precio_actual": 25065.40234375,
-      "retorno": -0.05474396264785408,
+      "precio_actual": 26745.640625,
+      "retorno": 0.0685868990306393,
       "retorno_modelo": null,
       "estado": "YAHOO ^NDX · RESPALDO EQUIVALENTE · NUEVO 60/30 EXPERIMENTAL",
       "usado_modelo": false
@@ -149,9 +149,9 @@
     {
       "serie": "USD/PEN",
       "ticker": "USD/PEN",
-      "timestamp": "2026-11-18",
-      "precio_anterior": 3.433,
-      "precio_actual": 3.433,
+      "timestamp": "2026-11-19",
+      "precio_anterior": 3.451,
+      "precio_actual": 3.451,
       "retorno": 0.0,
       "retorno_modelo": null,
       "estado": "BCRP REZAGADO · MODELO USA 0 % · NUEVO 60/30 EXPERIMENTAL",
