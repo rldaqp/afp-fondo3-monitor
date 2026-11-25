@@ -1,7 +1,7 @@
 {
   "afp": "Hábitat",
   "fund": 3,
-  "generated_at_lima": "2026-11-24T10:55:50.067088-05:00",
+  "generated_at_lima": "2026-11-24T19:47:57.384244-05:00",
   "model": "OLS rolling 90",
   "window": 90,
   "threshold": 0.001,
@@ -10,11 +10,11 @@
   "training_n": 90,
   "latest_sbs_date": "2026-11-19",
   "latest_sbs_vc": 28.4091895,
-  "latest_market_date": "2026-11-23",
-  "latest_estimate_date": "2026-11-23",
-  "latest_estimated_vc": 28.521469792301254,
-  "latest_return_estimated": 0.04112364953573825,
-  "signal": "SUBE",
+  "latest_market_date": "2026-11-24",
+  "latest_estimate_date": "2026-11-24",
+  "latest_estimated_vc": 28.641558079794525,
+  "latest_return_estimated": -0.004668889802925219,
+  "signal": "BAJA",
   "estimate_type": "CIERRE DIARIO · OLS ROLLING 90 · MISMA METODOLOGÍA PROFUTURO",
   "coefficients": {
     "intercept": -0.0008382535590950374,
@@ -43,7 +43,7 @@
   "latest_fx_provisional": true,
   "sources": {
     "sbs": "SBS oficial · Hábitat Fondo 3",
-    "market": "Yahoo Finance actualizado; respaldo guardado solo donde Yahoo no trae valor; BCRP exclusivo para USD/PEN hasta 2026-11-20; reintento individual Yahoo habilitado para huecos recientes",
+    "market": "Yahoo Finance actualizado; respaldo guardado solo donde Yahoo no trae valor; BCRP exclusivo para USD/PEN hasta 2026-11-23; reintento individual Yahoo habilitado para huecos recientes",
     "fx": "BCRP PD04646PD para histórico y entrenamiento; Yahoo PEN=X solo como respaldo provisional posterior al último VC SBS.",
     "EEM": "Yahoo Finance · Close · auto_adjust=False"
   },
