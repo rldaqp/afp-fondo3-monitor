@@ -1,11 +1,11 @@
 {
-  "generated_at_lima": "2026-11-25T17:17:28.868976-05:00",
+  "generated_at_lima": "2026-11-25T19:23:48.553757-05:00",
   "mode": "CIERRE DIARIO",
   "market_open": false,
-  "signal_date": "2026-11-24",
-  "vc_base": 28.652162976880305,
-  "vc_estimated": 28.533938140938012,
-  "return_estimated": -0.004126209809628962,
+  "signal_date": "2026-11-25",
+  "vc_base": 28.18401356921516,
+  "vc_estimated": 27.941182842512802,
+  "return_estimated": -0.008615902987202623,
   "signal": "BAJA",
   "assets": [
     {
@@ -25,8 +25,8 @@
       "timestamp": "2026-11-24",
       "precio_anterior": 100.7300033569336,
       "precio_actual": 99.69000244140624,
-      "retorno": -0.010324638944388176,
-      "retorno_modelo": -0.010324638944388176,
+      "retorno": -0.010324638944388287,
+      "retorno_modelo": -0.010324638944388287,
       "estado": "CIERRE DIARIO YAHOO · USADO POR MODELO",
       "usado_modelo": true
     },
@@ -69,8 +69,8 @@
       "timestamp": "2026-11-24",
       "precio_anterior": 57.83000183105469,
       "precio_actual": 56.68999862670898,
-      "retorno": -0.01971300654072472,
-      "retorno_modelo": -0.01971300654072472,
+      "retorno": -0.01971300654072483,
+      "retorno_modelo": -0.01971300654072483,
       "estado": "CIERRE DIARIO YAHOO · USADO POR MODELO",
       "usado_modelo": true
     },
@@ -80,19 +80,19 @@
       "timestamp": "2026-11-23",
       "precio_anterior": 3.458,
       "precio_actual": 3.458,
-      "retorno": 0.04038933361369801,
-      "retorno_modelo": 0.04038933361369801,
+      "retorno": 0.0,
+      "retorno_modelo": 0.0,
       "estado": "BCRP REZAGADO · MODELO USA 0 %",
       "usado_modelo": true
     }
   ],
   "action": "CIERRE",
   "engine": "LIVE HABITAT INDEPENDIENTE",
-  "warning": null,
+  "warning": "Cierre OLS pesado pendiente; cálculo provisional coherente con los activos del mismo día.",
   "fx_source": "YAHOO PEN=X PROVISIONAL",
   "fx_provisional": true,
   "fx_rule": "Histórico/entrenamiento: BCRP. Predicción: BCRP si existe; si está rezagado, Yahoo PEN=X provisional; 0 % solo si ambas fuentes faltan.",
   "model_snapshot_source": "PREDICCION OLS EXACTA DE HÁBITAT",
-  "model_snapshot_date": "2026-11-24",
+  "model_snapshot_date": "2026-11-25",
   "note": "Cierre diario de Hábitat alineado con el OLS exacto del mismo día."
 }

@@ -1,5 +1,5 @@
 {
-  "generated_for": "2026-11-24",
+  "generated_for": "2026-11-25",
   "current_signal": "BAJA",
   "confidence": {
     "historical_accuracy": 0.8461538461538461,
@@ -9,80 +9,80 @@
   },
   "performance": {
     "window_n": 90,
-    "classification_accuracy": 0.8333333333333334,
-    "mae_return_pp": 0.29968271050448453,
-    "sube_n": 38,
-    "sube_accuracy": 0.9736842105263158,
+    "classification_accuracy": 0.8444444444444444,
+    "mae_return_pp": 0.29837162347480395,
+    "sube_n": 39,
+    "sube_accuracy": 0.9743589743589743,
     "baja_n": 39,
     "baja_accuracy": 0.8461538461538461,
-    "neutro_n": 13,
-    "neutro_accuracy": 0.38461538461538464
+    "neutro_n": 12,
+    "neutro_accuracy": 0.4166666666666667
   },
   "uncertainty": {
-    "relative_q80": 0.004640417797683962,
+    "relative_q80": 0.004611725602356344,
     "label": "Banda empírica 80%"
   },
   "benchmarks": {
-    "zero_change_mae_pp": 0.9151063313778912,
-    "ols_mae_pp": 0.29968271050448453,
-    "ols_mae_improvement_vs_zero": 0.6725159686598965
+    "zero_change_mae_pp": 0.9643680293370585,
+    "ols_mae_pp": 0.29837162347480395,
+    "ols_mae_improvement_vs_zero": 0.6906039868618256
   },
   "contributions": [
     {
-      "feature": "ret_EEM",
-      "label": "EEM",
-      "value": -0.01971300654072472,
-      "coefficient": 0.5818891467339077,
-      "contribution_pp": -1.1470784555542248
-    },
-    {
       "feature": "ret_USD_PEN",
       "label": "USD/PEN",
-      "value": 0.04038933361369801,
-      "coefficient": 0.2665331087379752,
-      "contribution_pp": 1.0765094647914129
+      "value": -0.030474781540520857,
+      "coefficient": 0.24107580911156445,
+      "contribution_pp": -0.7346732617379235
     },
     {
-      "feature": "ret_EPU",
-      "label": "EPU",
-      "value": -0.02641508308740015,
-      "coefficient": 0.056212563475698786,
-      "contribution_pp": -0.14848595347663382
+      "feature": "ret_EEM",
+      "label": "EEM",
+      "value": -0.005115489642884663,
+      "coefficient": 0.5742025080334292,
+      "contribution_pp": -0.29373269827634046
     },
     {
-      "feature": "ret_FCX",
-      "label": "FCX",
-      "value": -0.03983101144040857,
-      "coefficient": 0.03502902040963285,
-      "contribution_pp": -0.13952413126823912
-    },
-    {
-      "feature": "ret_MCHI",
-      "label": "MCHI",
-      "value": -0.009562276876490916,
-      "coefficient": -0.14240163222447294,
-      "contribution_pp": 0.13616838349946414
+      "feature": "ret_NEM",
+      "label": "NEM",
+      "value": 0.01755441826805626,
+      "coefficient": 0.051570317925992315,
+      "contribution_pp": 0.09052869310895087
     },
     {
       "feature": "intercept",
       "label": "Base",
       "value": 1.0,
-      "coefficient": -0.0009018519425736898,
-      "contribution_pp": -0.09018519425736898
+      "coefficient": -0.0009037815887023167,
+      "contribution_pp": -0.09037815887023166
     },
     {
-      "feature": "ret_NEM",
-      "label": "NEM",
-      "value": -0.010324638944388176,
-      "coefficient": 0.05507023101334446,
-      "contribution_pp": -0.056858025179682976
+      "feature": "ret_EPU",
+      "label": "EPU",
+      "value": 0.012043227745143215,
+      "coefficient": 0.06034861969273505,
+      "contribution_pp": 0.07267921710646429
+    },
+    {
+      "feature": "ret_FCX",
+      "label": "FCX",
+      "value": 0.017179964439316686,
+      "coefficient": 0.036604574792798786,
+      "contribution_pp": 0.06288652932565912
+    },
+    {
+      "feature": "ret_MCHI",
+      "label": "MCHI",
+      "value": -0.003861838721705646,
+      "coefficient": -0.1393357972621109,
+      "contribution_pp": 0.05380923771865474
     },
     {
       "feature": "ret_SPY",
       "label": "SPY",
-      "value": -0.004859473116399671,
-      "coefficient": 0.08883076103856578,
-      "contribution_pp": -0.04316706951762338
+      "value": -0.0028938159173377276,
+      "coefficient": 0.07847720015441961,
+      "contribution_pp": -0.022709857095495823
     }
   ],
   "quality": {
@@ -90,7 +90,7 @@
     "warnings": [],
     "critical": [],
     "training_n": 90,
-    "latest_sbs_date": "2026-11-20",
+    "latest_sbs_date": "2026-11-23",
     "fx_provisional": true
   },
   "challenger_huber": {
