@@ -1,5 +1,5 @@
 {
-  "generated_at_lima": "2026-11-27T13:04:58.823534-05:00",
+  "generated_at_lima": "2026-11-27T16:53:55.956660-05:00",
   "model_version": "v3-30vc-through-20260930",
   "history_start": "2026-01-05",
   "training": {
@@ -50,14 +50,14 @@
   "metrics": {
     "validation_from_2026_08_18": {
       "niveles": {
-        "n": 39,
-        "mae_pct": 1.0306834371139943,
-        "rmse_pct": 1.1593270680877195
+        "n": 40,
+        "mae_pct": 1.031522029874957,
+        "rmse_pct": 1.1570448371046558
       },
       "retornos": {
-        "n": 39,
-        "mae_pct": 0.4782053717281525,
-        "rmse_pct": 0.6849546483777025
+        "n": 40,
+        "mae_pct": 0.46952152299763406,
+        "rmse_pct": 0.6766548979688035
       }
     },
     "retrospective_before_2026_07_07": {
@@ -75,11 +75,11 @@
   },
   "latest": {
     "market_date": "2026-11-27",
-    "vc_niveles": 61.78501190131566,
-    "ret_vc_estimado": 0.03251058112339882,
-    "vc_retornos": 62.676443735588116,
-    "latest_sbs_date": "2026-11-24",
-    "latest_sbs_vc": 60.6701207
+    "vc_niveles": 61.76010578892786,
+    "ret_vc_estimado": 0.032166033372281994,
+    "vc_retornos": 62.573650157479825,
+    "latest_sbs_date": "2026-11-25",
+    "latest_sbs_vc": 60.6236285
   },
   "sources": {
     "SPY_EEM_MCHI_QQQ": "Yahoo Finance · cierre diario no ajustado",
@@ -3562,36 +3562,36 @@
     },
     {
       "fecha": "2026-11-25",
-      "fase": "PROYECCIÓN",
+      "fase": "VALIDACIÓN",
       "SPY": 716.7,
       "EEM": 56.4,
       "MCHI": 46.43,
       "QQQ": 633.93,
       "SPBLSCUP": 349.89,
       "source": "CIERRE REGULAR VERIFICADO · 5/5 CON FECHA PROPIA",
-      "vc_sbs": null,
+      "vc_sbs": 60.6236285,
       "vc_niveles": 59.97845538767163,
       "ret_vc_estimado": 0.0005412001804021828,
       "vc_retornos": 60.70295538026786,
-      "error_niveles_pct": null,
-      "error_retornos_pct": null
+      "error_niveles_pct": -1.064227147552499,
+      "error_retornos_pct": 0.13085142250741644
     },
     {
       "fecha": "2026-11-27",
       "fase": "PROYECCIÓN",
-      "SPY": 728.68,
-      "EEM": 58.13,
+      "SPY": 728.32,
+      "EEM": 58.1,
       "MCHI": 47.985,
       "QQQ": 650.99,
-      "SPBLSCUP": 364.85,
+      "SPBLSCUP": 364.39,
       "source": "CIERRE REGULAR VERIFICADO · 5/5 CON FECHA PROPIA",
       "vc_sbs": null,
-      "vc_niveles": 61.78501190131566,
-      "ret_vc_estimado": 0.03251058112339882,
-      "vc_retornos": 62.676443735588116,
+      "vc_niveles": 61.76010578892786,
+      "ret_vc_estimado": 0.032166033372281994,
+      "vc_retornos": 62.573650157479825,
       "error_niveles_pct": null,
       "error_retornos_pct": null
     }
   ],
-  "data_revision": "6b923cd3849cf791f4a33f518f79a3d9634fcd0262d5d14476746eb1fac28738"
+  "data_revision": "f8e769f7ad77058e285d9e131b64979175a25fdabe651f7a04dd7a7d7486dc46"
 }
