@@ -1,5 +1,5 @@
 {
-  "generated_at_lima": "2026-11-26T23:17:32.055462-05:00",
+  "generated_at_lima": "2026-11-27T03:49:22.754864-05:00",
   "mode": "CIERRE DIARIO",
   "market_open": false,
   "signal_date": "2026-11-25",
@@ -88,7 +88,7 @@
   ],
   "action": "CIERRE",
   "engine": "LIVE HABITAT INDEPENDIENTE",
-  "warning": null,
+  "warning": "Cierre OLS pesado pendiente; cálculo provisional coherente con los activos del mismo día.",
   "fx_source": "BCRP",
   "fx_provisional": false,
   "fx_rule": "BCRP si existe; Yahoo PEN=X solo como respaldo provisional cuando BCRP aún no publicó la fecha.",
