@@ -1,27 +1,27 @@
 {
-  "generated_at_lima": "2026-11-26T17:12:35.648728-05:00",
+  "generated_at_lima": "2026-11-26T23:17:32.737083-05:00",
   "signal_date": "2026-11-25",
   "mode": "CIERRE DIARIO",
   "market_open": false,
   "role": "UNICO CHALLENGER EN SOMBRA; no reemplaza el OLS rolling 90 oficial.",
   "official": {
     "model": "OLS rolling 90 oficial · SPY EEM EPU MCHI NEM FCX USD/PEN",
-    "return_estimated": 0.003286494207760617,
+    "return_estimated": 0.002609267285967577,
     "signal": "SUBE",
-    "vc_estimated": 71.6490580106432
+    "vc_estimated": 71.60069428673577
   },
   "challenger": {
     "model": "OLS 60/30 · sin NEM ni FCX + QQQ",
-    "return_estimated": -0.0017422286451522378,
+    "return_estimated": -0.0028930227778040814,
     "signal": "BAJA",
-    "vc_estimated": 59.23461162611077,
+    "vc_estimated": 59.16632581310205,
     "blind_chain": true,
     "reanchored_with_latest_sbs": false
   },
   "comparison": {
     "same_signal": false,
-    "vc_difference": -12.414446384532432,
-    "return_difference_pp": -0.5028722852912855
+    "vc_difference": -12.434368473633725,
+    "return_difference_pp": -0.5502290063771658
   },
   "cycle": {
     "train_window": 60,
@@ -66,10 +66,10 @@
     "official_better_blocks": 3
   },
   "forward_sbs": {
-    "evaluated": 68,
-    "pending": 2,
-    "challenger_vc_mae": 0.7817568931240072,
-    "official_vc_mae": 3.143103560563056
+    "evaluated": 69,
+    "pending": 1,
+    "challenger_vc_mae": 0.7897332964776265,
+    "official_vc_mae": 3.242591535197318
   },
   "ledger": "data/rolling90/reduced_6030_shadow.csv"
 }
